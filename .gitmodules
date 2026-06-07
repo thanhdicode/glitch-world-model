@@ -1,0 +1,9 @@
+[submodule "external/le-wm"]
+	path = external/le-wm
+	url = https://github.com/lucas-maes/le-wm.git
+[submodule "external/world-of-bugs"]
+	path = external/world-of-bugs
+	url = https://github.com/BenedictWilkins/world-of-bugs.git
+[submodule "external/world-of-bugs-experiments"]
+	path = external/world-of-bugs-experiments
+	url = https://github.com/BenedictWilkins/world-of-bugs-experiments.git
