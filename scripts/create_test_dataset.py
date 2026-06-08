@@ -4,7 +4,6 @@ from pathlib import Path
 
 from PIL import Image, ImageDraw
 
-
 ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -43,9 +42,7 @@ def main() -> None:
         draw_frame(index, glitch).save(frame_dir / f"frame_{index:06d}.png")
 
     labels_path.write_text(
-        "source,start_frame,end_frame,label\n"
-        "my_frames,20,31,1\n"
-        "my_frames,52,61,1\n",
+        "source,start_frame,end_frame,label\nmy_frames,20,31,1\nmy_frames,52,61,1\n",
         encoding="utf-8",
     )
 

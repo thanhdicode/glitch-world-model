@@ -7,7 +7,7 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 
-from .manifest import clip_has_glitch, read_labels, read_manifest, ClipRecord
+from .manifest import ClipRecord, clip_has_glitch, read_labels, read_manifest
 from .preprocess import IMAGE_EXTENSIONS
 
 
@@ -37,9 +37,7 @@ def clip_feature(clip_dir: Path) -> np.ndarray:
 def score_records(records: list[ClipRecord], labels: list[int]) -> dict[str, float]:
     features = {record.clip_id: clip_feature(Path(record.clip_dir)) for record in records}
     normal_features = [
-        features[record.clip_id]
-        for record, label in zip(records, labels)
-        if label == 0
+        features[record.clip_id] for record, label in zip(records, labels) if label == 0
     ]
     if normal_features:
         centroid = np.mean(np.stack(normal_features), axis=0)
@@ -47,8 +45,7 @@ def score_records(records: list[ClipRecord], labels: list[int]) -> dict[str, flo
         centroid = np.mean(np.stack(list(features.values())), axis=0)
 
     return {
-        clip_id: float(np.linalg.norm(feature - centroid))
-        for clip_id, feature in features.items()
+        clip_id: float(np.linalg.norm(feature - centroid)) for clip_id, feature in features.items()
     }
 
 
@@ -83,9 +80,13 @@ def score_manifest(manifest_path: Path, labels_path: Path | None, output_path: P
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Score clips by distance from normal visual features.")
+    parser = argparse.ArgumentParser(
+        description="Score clips by distance from normal visual features."
+    )
     parser.add_argument("--manifest", required=True, type=Path, help="Path to manifest.csv.")
-    parser.add_argument("--labels", type=Path, default=None, help="Optional labels CSV for normal centroid fitting.")
+    parser.add_argument(
+        "--labels", type=Path, default=None, help="Optional labels CSV for normal centroid fitting."
+    )
     parser.add_argument("--output", required=True, type=Path, help="Output scores.csv path.")
     return parser
 

@@ -49,6 +49,8 @@ coverage.xml
 *.pycover
 .hypothesis/
 .pytest_cache/
+.ruff_cache/
+.mypy_cache/
 pytest-tmp/
 test-tmp/
 .pytest-tmp/
@@ -77,7 +79,23 @@ venv.bak/
 
 # Project specific
 data/
+data/raw/
+data/processed/
 outputs/
+checkpoints/
+*.ckpt
+*.pt
+*.pth
+*.onnx
+mlruns/
+wandb/
+.dvc/cache/
+paper/build/
+paper/*.aux
+paper/*.log
+paper/*.out
+paper/*.toc
+paper/*.synctex.gz
 
 # Keep external directory but ignore its contents if you are not tracking submodules? 
 # Actually, if 'external' contains code we want to track (like submodules), we shouldn't ignore it entirely.

@@ -9,7 +9,6 @@ from glitch_detection.frame_diff import score_manifest
 from glitch_detection.plot_scores import plot_scores
 from glitch_detection.preprocess import preprocess_input
 
-
 ROOT = Path(__file__).resolve().parents[1]
 ASSET_DIR = ROOT / "external" / "world-of-bugs" / "docs" / "Reference" / "Examples" / "imgs"
 
@@ -35,8 +34,7 @@ def write_repeated_frames(frame_dir: Path, normal_image: Path, glitch_image: Pat
 def write_labels(labels_path: Path) -> None:
     labels_path.parent.mkdir(parents=True, exist_ok=True)
     labels_path.write_text(
-        "source,start_frame,end_frame,label\n"
-        "worldofbugs_asset_frames,20,27,1\n",
+        "source,start_frame,end_frame,label\nworldofbugs_asset_frames,20,27,1\n",
         encoding="utf-8",
     )
 

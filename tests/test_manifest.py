@@ -32,10 +32,7 @@ def test_manifest_round_trip(tmp_path: Path):
 def test_read_labels_and_overlap(tmp_path: Path):
     labels_path = tmp_path / "labels.csv"
     labels_path.write_text(
-        "source,start_frame,end_frame,label\n"
-        "demo,10,20,1\n"
-        "demo,30,40,0\n"
-        "other,0,99,1\n",
+        "source,start_frame,end_frame,label\ndemo,10,20,1\ndemo,30,40,0\nother,0,99,1\n",
         encoding="utf-8",
     )
     labels = read_labels(labels_path)

@@ -8,7 +8,6 @@ from pathlib import Path
 
 from PIL import Image
 
-
 ROOT = Path(__file__).resolve().parents[1]
 ROWS_URL = (
     "https://datasets-server.huggingface.co/rows"
@@ -16,19 +15,14 @@ ROWS_URL = (
     "&offset={offset}&length={length}"
 )
 NORMAL_IMAGE = (
-    ROOT
-    / "external"
-    / "world-of-bugs"
-    / "docs"
-    / "Reference"
-    / "Examples"
-    / "imgs"
-    / "Maze-v0.png"
+    ROOT / "external" / "world-of-bugs" / "docs" / "Reference" / "Examples" / "imgs" / "Maze-v0.png"
 )
 
 
 def fetch_rows(limit: int, offset: int) -> list[dict]:
-    with urllib.request.urlopen(ROWS_URL.format(offset=offset, length=limit), timeout=60) as response:
+    with urllib.request.urlopen(
+        ROWS_URL.format(offset=offset, length=limit), timeout=60
+    ) as response:
         payload = json.loads(response.read().decode("utf-8"))
     return payload["rows"]
 
@@ -46,7 +40,9 @@ def save_resized(source: Path, destination: Path, size: int) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Download a lightweight GlitchBench image subset.")
-    parser.add_argument("--limit", type=int, default=12, help="Number of GlitchBench samples to download.")
+    parser.add_argument(
+        "--limit", type=int, default=12, help="Number of GlitchBench samples to download."
+    )
     parser.add_argument("--offset", type=int, default=0, help="Dataset viewer row offset.")
     parser.add_argument("--size", type=int, default=128, help="Output frame size.")
     parser.add_argument("--frames-per-sample", type=int, default=8)

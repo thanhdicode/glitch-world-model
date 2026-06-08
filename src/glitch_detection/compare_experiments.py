@@ -5,7 +5,6 @@ import json
 from pathlib import Path
 from typing import Any
 
-
 METRIC_KEYS = ["precision", "recall", "f1", "accuracy", "auroc", "threshold"]
 
 
@@ -74,7 +73,9 @@ def parse_metric_args(values: list[str]) -> list[tuple[str, Path]]:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Compare experiment metrics in one Markdown table.")
+    parser = argparse.ArgumentParser(
+        description="Compare experiment metrics in one Markdown table."
+    )
     parser.add_argument(
         "--metric",
         action="append",

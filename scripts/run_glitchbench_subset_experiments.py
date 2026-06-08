@@ -6,7 +6,6 @@ from glitch_detection.compare_experiments import build_comparison_rows, write_co
 from glitch_detection.dataset_report import build_report, write_markdown_report
 from glitch_detection.run_baseline import run_baseline
 
-
 ROOT = Path(__file__).resolve().parents[1]
 
 

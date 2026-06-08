@@ -7,8 +7,12 @@ from glitch_detection.compare_experiments import build_comparison_rows, write_co
 def test_build_comparison_rows(tmp_path: Path):
     frame_metrics = tmp_path / "frame.json"
     feature_metrics = tmp_path / "feature.json"
-    frame_metrics.write_text(json.dumps({"f1": 0.8, "auroc": 0.9, "precision": 1.0}), encoding="utf-8")
-    feature_metrics.write_text(json.dumps({"f1": 0.7, "auroc": 0.85, "precision": 0.75}), encoding="utf-8")
+    frame_metrics.write_text(
+        json.dumps({"f1": 0.8, "auroc": 0.9, "precision": 1.0}), encoding="utf-8"
+    )
+    feature_metrics.write_text(
+        json.dumps({"f1": 0.7, "auroc": 0.85, "precision": 0.75}), encoding="utf-8"
+    )
 
     rows = build_comparison_rows(
         [

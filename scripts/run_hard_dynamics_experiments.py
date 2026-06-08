@@ -2,12 +2,11 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from create_hard_dynamics_dataset import main as create_hard_dynamics_dataset
+
 from glitch_detection.compare_experiments import build_comparison_rows, write_comparison_markdown
 from glitch_detection.dataset_report import build_report, write_markdown_report
 from glitch_detection.run_baseline import run_baseline
-
-from create_hard_dynamics_dataset import main as create_hard_dynamics_dataset
-
 
 ROOT = Path(__file__).resolve().parents[1]
 

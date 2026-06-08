@@ -56,7 +56,9 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--clip-length", type=int, default=16, help="Number of frames per clip.")
     parser.add_argument("--stride", type=int, default=8, help="Frame stride between clips.")
     parser.add_argument("--size", type=int, default=128, help="Output frame size in pixels.")
-    parser.add_argument("--fps", type=float, default=None, help="Override FPS for frame-folder inputs.")
+    parser.add_argument(
+        "--fps", type=float, default=None, help="Override FPS for frame-folder inputs."
+    )
     parser.add_argument("--data-dir", type=Path, default=Path("data/processed"))
     parser.add_argument("--outputs-dir", type=Path, default=Path("outputs"))
     parser.add_argument("--scorer", choices=available_scorers(), default="frame_diff")

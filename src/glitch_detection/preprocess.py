@@ -71,7 +71,9 @@ def preprocess_frames(
     return manifest_path
 
 
-def extract_video_frames(video_path: Path, frames_dir: Path, size: int | None = None) -> tuple[Path, float]:
+def extract_video_frames(
+    video_path: Path, frames_dir: Path, size: int | None = None
+) -> tuple[Path, float]:
     try:
         import cv2
     except ImportError as exc:
@@ -134,12 +136,18 @@ def preprocess_input(
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Preprocess gameplay videos or frames into clips.")
-    parser.add_argument("--input", required=True, type=Path, help="Video file or folder of image frames.")
-    parser.add_argument("--output", required=True, type=Path, help="Output directory for clips and manifest.")
+    parser.add_argument(
+        "--input", required=True, type=Path, help="Video file or folder of image frames."
+    )
+    parser.add_argument(
+        "--output", required=True, type=Path, help="Output directory for clips and manifest."
+    )
     parser.add_argument("--clip-length", type=int, default=16, help="Number of frames per clip.")
     parser.add_argument("--stride", type=int, default=8, help="Frame stride between clips.")
     parser.add_argument("--size", type=int, default=128, help="Output frame size in pixels.")
-    parser.add_argument("--fps", type=float, default=None, help="Override FPS for frame-folder inputs.")
+    parser.add_argument(
+        "--fps", type=float, default=None, help="Override FPS for frame-folder inputs."
+    )
     return parser
 
 

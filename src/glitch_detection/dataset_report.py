@@ -85,7 +85,9 @@ def write_markdown_report(report: dict[str, Any], output_path: Path) -> Path:
     ]
     for key in ["precision", "recall", "f1", "accuracy", "auroc", "threshold"]:
         if key in metrics:
-            lines.append(f"| {key.upper() if key != 'f1' else 'F1'} | {_format_value(metrics[key])} |")
+            lines.append(
+                f"| {key.upper() if key != 'f1' else 'F1'} | {_format_value(metrics[key])} |"
+            )
     lines.extend(
         [
             "",
@@ -102,7 +104,9 @@ def write_markdown_report(report: dict[str, Any], output_path: Path) -> Path:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Create a compact Markdown report for an experiment.")
+    parser = argparse.ArgumentParser(
+        description="Create a compact Markdown report for an experiment."
+    )
     parser.add_argument("--name", required=True, help="Experiment name.")
     parser.add_argument("--manifest", required=True, type=Path, help="Path to manifest.csv.")
     parser.add_argument("--labels", type=Path, default=None, help="Optional labels CSV.")

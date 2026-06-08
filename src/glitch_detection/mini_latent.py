@@ -88,8 +88,7 @@ def score_records(
     image_size: int = 32,
 ) -> dict[str, float]:
     clip_matrices = {
-        record.clip_id: load_clip_matrix(Path(record.clip_dir), image_size)
-        for record in records
+        record.clip_id: load_clip_matrix(Path(record.clip_dir), image_size) for record in records
     }
     normal_frames = [
         clip_matrices[record.clip_id]
@@ -116,8 +115,7 @@ def score_records(
     weights = fit_transition(normal_latents)
 
     return {
-        record.clip_id: transition_error(encoded[record.clip_id], weights)
-        for record in records
+        record.clip_id: transition_error(encoded[record.clip_id], weights) for record in records
     }
 
 

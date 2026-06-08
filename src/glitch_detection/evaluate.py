@@ -36,7 +36,9 @@ def binary_metrics(labels: list[int], predictions: list[int]) -> dict[str, float
     }
 
 
-def choose_best_f1_threshold(labels: list[int], scores: list[float]) -> tuple[float, dict[str, float]]:
+def choose_best_f1_threshold(
+    labels: list[int], scores: list[float]
+) -> tuple[float, dict[str, float]]:
     if not scores:
         return 0.0, binary_metrics(labels, [])
 

@@ -14,8 +14,7 @@ def test_build_report_summarizes_experiment(tmp_path: Path):
     )
     labels_path = tmp_path / "labels.csv"
     labels_path.write_text(
-        "source,start_frame,end_frame,label\n"
-        "demo,8,15,1\n",
+        "source,start_frame,end_frame,label\ndemo,8,15,1\n",
         encoding="utf-8",
     )
     scores_path = tmp_path / "scores.csv"

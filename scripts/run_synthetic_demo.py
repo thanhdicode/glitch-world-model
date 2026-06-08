@@ -9,7 +9,6 @@ from glitch_detection.frame_diff import score_manifest
 from glitch_detection.plot_scores import plot_scores
 from glitch_detection.preprocess import preprocess_input
 
-
 ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -25,8 +24,7 @@ def write_synthetic_frames(frame_dir: Path) -> None:
 def write_synthetic_labels(labels_path: Path) -> None:
     labels_path.parent.mkdir(parents=True, exist_ok=True)
     labels_path.write_text(
-        "source,start_frame,end_frame,label\n"
-        "synthetic_frames,16,23,1\n",
+        "source,start_frame,end_frame,label\nsynthetic_frames,16,23,1\n",
         encoding="utf-8",
     )
 

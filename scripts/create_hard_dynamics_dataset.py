@@ -6,7 +6,6 @@ from pathlib import Path
 
 from PIL import Image, ImageDraw
 
-
 ROOT = Path(__file__).resolve().parents[1]
 RNG = random.Random(7)
 
@@ -29,7 +28,9 @@ def draw_scene(index: int, player_x: int, player_y: int, glitch: bool) -> Image.
     draw.text((6, 6), f"hard t={index:03d}", fill=(170, 180, 200))
 
     if glitch:
-        draw.rectangle((84 + jitter_x, 40, 98 + jitter_x, ground_y + 2), outline=(255, 60, 60), width=2)
+        draw.rectangle(
+            (84 + jitter_x, 40, 98 + jitter_x, ground_y + 2), outline=(255, 60, 60), width=2
+        )
         draw.text((100, 8), "SHORT TELEPORT", fill=(255, 150, 150))
 
     px = player_x + jitter_x
