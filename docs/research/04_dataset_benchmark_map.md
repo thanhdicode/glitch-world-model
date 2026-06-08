@@ -1,23 +1,25 @@
 # Dataset and Benchmark Map
 
-Public benchmarks should be the primary source of evidence. Synthetic and custom game-engine data should be used for sanity checks, controlled case studies, or external validation only. Do not overclaim based on toy data.
+Public benchmarks should remain the main source of paper-facing evidence. Synthetic or repo-local data can validate mechanics, not novelty or generalization.
 
-| Dataset / Benchmark | Source | Data modality | Label type | Temporal labels? | Access status | Planned use | Risk |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| World of Bugs | WOB project / GitHub submodule | 3D game observations, assets, bug labels | Bug classes and masks, exact format TBD / verify | Possibly frame/observation-level, verify | Declared submodule but may be uninitialized | Bug taxonomy, controlled game bug examples, possible evaluation source | Unity/platform setup and label adaptation |
-| GlitchBench | Project site / Hugging Face | Images from video game glitch scenarios | Image/question-style labels, verify | Mostly no, verify | Optional external dataset; no data committed | Public image-level evidence and feature baseline comparison | Static framing limits temporal claims |
-| VideoGlitch / GlitchAgent | Paper/project TBD | Gameplay videos | Open-ended descriptions and temporal spans, verify | Yes, reported | Not integrated | Future temporal benchmark comparison | Likely requires VLM-style evaluation and benchmark access |
-| VideoGlitchBench | Paper/project TBD | Gameplay videos | Glitch descriptions and temporal localization, verify | Yes, reported | Not integrated | Strong candidate for future temporal evaluation | New benchmark; access/protocol must be verified |
-| TempGlitch | Paper/project TBD | Controlled gameplay videos | Binary/category labels, verify | Yes, designed for temporal glitches | Not integrated | Best-aligned future temporal glitch benchmark | New dataset; exact access and license must be verified |
-| Procgen | OpenAI Procgen | Synthetic game frames | Environment state and generated labels if instrumented | Yes if custom logged | Not integrated | Controlled sanity checks for dynamics violations | Synthetic domain; labels require custom instrumentation |
-| Atari / ALE | Arcade Learning Environment | Game frames | Scores/actions/states; custom glitch labels needed | Yes if custom logged | Not integrated | External validation on classic game dynamics | Hard to define real glitches without injection |
-| Synthetic dynamics datasets in this repo | `scripts/create_*dynamics*` | Generated image frames | Interval labels CSV | Yes | Available through scripts; generated data ignored by git | Sanity checks for pipeline and latent proxy | Toy data; not publishable evidence alone |
-| Godot mini dataset | Future custom project | Gameplay videos | Controlled glitch toggles and timestamps | Yes if instrumented | Future only | Controlled case study and demonstration | Could overfit to one engine or scene |
-| Unity mini dataset | Future custom project or WOB | Gameplay videos / observations | Controlled bug labels | Yes if instrumented | Future only | External validation and WOB alignment | Setup and reproducibility overhead |
+| Dataset / Benchmark | Source ID | Data modality | Label type | Temporal labels? | Access status | Planned use | Risk | Verification notes |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| TempGlitch | [S-003](17_source_verification_log.md) | Gameplay videos | Video-level glitchy / glitch-free labels; internal temporal glitch segments described in paper; public file schema `TBD / verify` | Yes, within clips; public annotation export not inspected | verified-online=yes; downloaded-locally=no; converted-locally=no; evaluated-locally=no | Primary temporal benchmark if direct source URL, license, and download path are verified in Phase 2 | Paper says code/data exist at a project website, but the URL and public access path were not recovered from primary sources on 2026-06-08 | Paper verifies 5 temporal glitch categories and 1,500 total videos, but not a repo-ready annotation file format |
+| VideoGlitchBench | [S-004](17_source_verification_log.md) | Gameplay videos | Natural-language glitch descriptions plus precise temporal spans | Yes | verified-online=yes; downloaded-locally=no; converted-locally=no; evaluated-locally=no | Full-paper extension benchmark or fallback if public release is verified later | Public code/data release was not verified on 2026-06-08 | Paper reports 5,238 videos from 120 games and a joint semantic + temporal protocol |
+| GlitchBench | [S-005](17_source_verification_log.md) | Images plus short text metadata | Image-level descriptions and glitch-type metadata | No | verified-online=yes; downloaded-locally=no; converted-locally=no; evaluated-locally=no | Auxiliary static-image benchmark and qualitative evidence only | Static framing cannot support temporal-detection claims | Paper reports 593 images from 205 games; current HF dataset viewer exposes 607 validation rows under MIT license |
+| World of Bugs | [S-006](17_source_verification_log.md) | 2D / 3D game environments, agent observations, downloadable data, standalone builds | Bug scenarios and downloadable train/test data; exact public label schema `TBD / verify` | Potentially yes, but public mapping to this repo's CSV schema is still `TBD / verify` | verified-online=yes; downloaded-locally=no benchmark data; converted-locally=no; evaluated-locally=no | Controlled benchmark or case study after a safe data-conversion audit | Environment setup, Unity dependency, and label conversion overhead | Official docs expose PyPI, GitHub, standalone builds, and Kaggle train/test data, but not a ready-made `source,start_frame,end_frame,label` export |
+| Synthetic dynamics datasets in this repo | repo-local | Generated frame folders | Interval labels in `source,start_frame,end_frame,label` CSV | Yes | verified-online=n/a; downloaded-locally=n/a; converted-locally=generated-on-demand; evaluated-locally=Phase 0 sanity checks only | Sanity checks for pipeline mechanics and scorer behavior | Toy distribution; not publishable benchmark evidence by itself | Keep separated from public benchmark results in every report and manuscript draft |
 
-## Evidence policy
+## Interpretation rules
 
-- Primary claims should use public benchmarks when possible.
-- Synthetic data can test pipeline mechanics and reveal failure modes.
-- Custom Godot/Unity data can demonstrate controlled temporal violations.
-- A paper should clearly separate "sanity check", "case study", and "benchmark result".
+- `verified-online` means the source artifact was confirmed from an official page, paper, repo, or dataset page.
+- `downloaded-locally` means raw benchmark files are present under gitignored data paths. No public benchmark in this repo meets that bar yet.
+- `converted-locally` means labels or media were transformed into this repo's CSV pipeline. No public benchmark in this repo meets that bar yet.
+- `evaluated-locally` means the repo actually produced `scores.csv` and `metrics.json` on that benchmark. No public benchmark in this repo meets that bar yet.
+
+## Evidence guardrails
+
+- Do not mark TempGlitch as downloaded until files exist locally under gitignored `data/`.
+- Do not use GlitchBench to justify temporal localization claims.
+- Treat World of Bugs as a platform candidate until its downloadable data and labels are inspected against this repo's CSV interfaces.
+- Keep synthetic data in the paper as sanity-check-only evidence.
