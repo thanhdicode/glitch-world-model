@@ -115,3 +115,5 @@ Observed ranking on this smoke subset:
 ## 11. Immediate next step
 
 The next benchmark step should be a larger TempGlitch slice with a documented repo-defined split protocol, followed by failure analysis and at least one ablation. That is the minimum path from smoke-test feasibility to paper-usable evidence.
+
+Phase 3/4 subsequently completed a leakage-aware 30-video split experiment. See [21_phase3_phase4_baseline_results.md](21_phase3_phase4_baseline_results.md).

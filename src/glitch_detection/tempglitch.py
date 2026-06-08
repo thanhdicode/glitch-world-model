@@ -62,6 +62,14 @@ def normalize_tempglitch_label(label: str) -> str:
     return normalized
 
 
+def encode_tempglitch_video_url(video_url: str) -> str:
+    parsed = urllib.parse.urlsplit(video_url)
+    encoded_path = urllib.parse.quote(parsed.path, safe="/%")
+    return urllib.parse.urlunsplit(
+        (parsed.scheme, parsed.netloc, encoded_path, parsed.query, parsed.fragment)
+    )
+
+
 def parse_tempglitch_video_url(video_url: str) -> TempGlitchVideoRef:
     decoded_path = urllib.parse.unquote(urllib.parse.urlparse(video_url).path)
     parts = [part for part in decoded_path.split("/") if part]
@@ -238,7 +246,7 @@ def download_tempglitch_subset(
             local_video_path = output_dir / relative_video_path
             local_video_path.parent.mkdir(parents=True, exist_ok=True)
             if not local_video_path.exists():
-                urllib.request.urlretrieve(video_url, local_video_path)
+                urllib.request.urlretrieve(encode_tempglitch_video_url(video_url), local_video_path)
 
             samples.append(
                 TempGlitchSample(

@@ -3,6 +3,7 @@ from pathlib import Path
 from glitch_detection.manifest import ClipRecord, read_labels, read_manifest, write_manifest
 from glitch_detection.tempglitch import (
     combine_manifests,
+    encode_tempglitch_video_url,
     normalize_tempglitch_label,
     parse_tempglitch_video_url,
     write_tempglitch_full_video_labels,
@@ -20,6 +21,15 @@ def test_parse_tempglitch_video_url_handles_spaces_and_trailing_label_space():
     assert ref.public_label == "Buggy"
     assert ref.source_name == "Godot_Stuck_in_Place_1"
     assert normalize_tempglitch_label("Normal") == "Normal"
+
+
+def test_encode_tempglitch_video_url_quotes_category_spaces():
+    url = (
+        "https://huggingface.co/datasets/asgaardlab/TempGlitch/resolve/abc123/"
+        "Frozen Animation/Buggy/video 1.mp4"
+    )
+
+    assert encode_tempglitch_video_url(url).endswith("/Frozen%20Animation/Buggy/video%201.mp4")
 
 
 def test_combine_manifests_and_write_tempglitch_labels(tmp_path: Path):

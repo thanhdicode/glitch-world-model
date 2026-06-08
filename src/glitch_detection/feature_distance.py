@@ -34,19 +34,26 @@ def clip_feature(clip_dir: Path) -> np.ndarray:
     return np.mean(np.stack(per_frame_features), axis=0)
 
 
-def score_records(records: list[ClipRecord], labels: list[int]) -> dict[str, float]:
-    features = {record.clip_id: clip_feature(Path(record.clip_dir)) for record in records}
-    normal_features = [
-        features[record.clip_id] for record, label in zip(records, labels) if label == 0
-    ]
-    if normal_features:
-        centroid = np.mean(np.stack(normal_features), axis=0)
-    else:
-        centroid = np.mean(np.stack(list(features.values())), axis=0)
+def fit_centroid(records: list[ClipRecord]) -> np.ndarray:
+    if not records:
+        raise ValueError("Need at least one training record to fit feature centroid.")
+    return np.mean(np.stack([clip_feature(Path(record.clip_dir)) for record in records]), axis=0)
 
+
+def score_records_with_centroid(
+    records: list[ClipRecord],
+    centroid: np.ndarray,
+) -> dict[str, float]:
     return {
-        clip_id: float(np.linalg.norm(feature - centroid)) for clip_id, feature in features.items()
+        record.clip_id: float(np.linalg.norm(clip_feature(Path(record.clip_dir)) - centroid))
+        for record in records
     }
+
+
+def score_records(records: list[ClipRecord], labels: list[int]) -> dict[str, float]:
+    normal_records = [record for record, label in zip(records, labels) if label == 0]
+    centroid = fit_centroid(normal_records or records)
+    return score_records_with_centroid(records, centroid)
 
 
 def score_manifest(manifest_path: Path, labels_path: Path | None, output_path: Path) -> Path:

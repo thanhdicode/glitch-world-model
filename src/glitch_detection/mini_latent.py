@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+from dataclasses import dataclass
 from pathlib import Path
 
 import numpy as np
@@ -9,6 +10,14 @@ from PIL import Image
 
 from .manifest import ClipRecord, clip_has_glitch, read_labels, read_manifest
 from .preprocess import IMAGE_EXTENSIONS
+
+
+@dataclass(frozen=True)
+class MiniLatentModel:
+    mean: np.ndarray
+    components: np.ndarray
+    weights: np.ndarray
+    image_size: int
 
 
 def list_clip_frames(clip_dir: Path) -> list[Path]:
@@ -81,42 +90,48 @@ def transition_error(clip_latents: np.ndarray, weights: np.ndarray) -> float:
     return float(np.mean(np.linalg.norm(predictions - y, axis=1)))
 
 
+def fit_model(
+    records: list[ClipRecord],
+    latent_dim: int = 8,
+    image_size: int = 32,
+) -> MiniLatentModel:
+    matrices = [load_clip_matrix(Path(record.clip_dir), image_size) for record in records]
+    matrices = [matrix for matrix in matrices if len(matrix) > 0]
+    if not matrices:
+        raise ValueError("Need at least one non-empty training record to fit mini_latent.")
+
+    mean, components = fit_pca_encoder(np.vstack(matrices), latent_dim)
+    latents = [encode_frames(matrix, mean, components) for matrix in matrices]
+    weights = fit_transition([latent for latent in latents if len(latent) > 1])
+    return MiniLatentModel(
+        mean=mean,
+        components=components,
+        weights=weights,
+        image_size=image_size,
+    )
+
+
+def score_records_with_model(
+    records: list[ClipRecord],
+    model: MiniLatentModel,
+) -> dict[str, float]:
+    scores: dict[str, float] = {}
+    for record in records:
+        matrix = load_clip_matrix(Path(record.clip_dir), model.image_size)
+        latents = encode_frames(matrix, model.mean, model.components)
+        scores[record.clip_id] = transition_error(latents, model.weights)
+    return scores
+
+
 def score_records(
     records: list[ClipRecord],
     labels: list[int],
     latent_dim: int = 8,
     image_size: int = 32,
 ) -> dict[str, float]:
-    clip_matrices = {
-        record.clip_id: load_clip_matrix(Path(record.clip_dir), image_size) for record in records
-    }
-    normal_frames = [
-        clip_matrices[record.clip_id]
-        for record, label in zip(records, labels)
-        if label == 0 and len(clip_matrices[record.clip_id]) > 0
-    ]
-    if not normal_frames:
-        normal_frames = [matrix for matrix in clip_matrices.values() if len(matrix) > 0]
-    if not normal_frames:
-        return {record.clip_id: 0.0 for record in records}
-
-    mean, components = fit_pca_encoder(np.vstack(normal_frames), latent_dim)
-    encoded = {
-        clip_id: encode_frames(matrix, mean, components)
-        for clip_id, matrix in clip_matrices.items()
-    }
-    normal_latents = [
-        encoded[record.clip_id]
-        for record, label in zip(records, labels)
-        if label == 0 and len(encoded[record.clip_id]) > 1
-    ]
-    if not normal_latents:
-        normal_latents = [latents for latents in encoded.values() if len(latents) > 1]
-    weights = fit_transition(normal_latents)
-
-    return {
-        record.clip_id: transition_error(encoded[record.clip_id], weights) for record in records
-    }
+    normal_records = [record for record, label in zip(records, labels) if label == 0]
+    model = fit_model(normal_records or records, latent_dim=latent_dim, image_size=image_size)
+    return score_records_with_model(records, model)
 
 
 def score_manifest(
