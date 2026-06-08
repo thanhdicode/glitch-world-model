@@ -2,6 +2,19 @@
 
 This workspace starts with a small baseline pipeline for video game glitch detection. The first milestone is intentionally simple: turn gameplay videos or frame folders into clips, score each clip with frame-difference anomaly scores, evaluate against optional glitch labels, and plot the timeline.
 
+## Research roadmap
+
+This repo is currently a baseline research MVP for the topic "Latent World Models for Video Game Glitch Detection: A JEPA-based Approach." See the [research overview](docs/research/00_research_overview.md) for the project scope and hypothesis.
+
+`mini_latent` is the current lightweight latent-dynamics proxy. `lewm_latent` is reserved for future real LeWorldModel integration and is intentionally guarded until that work is explicitly scoped.
+
+Research planning docs:
+
+- [Literature matrix](docs/research/02_literature_matrix.md)
+- [Dataset and benchmark map](docs/research/04_dataset_benchmark_map.md)
+- [Experiment plan](docs/research/06_experiment_plan.md)
+- [Risks and limitations](docs/research/09_risks_and_limitations.md)
+
 ## Layout
 
 ```text
