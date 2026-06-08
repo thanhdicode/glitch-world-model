@@ -77,11 +77,19 @@ venv.bak/
 .idea/
 .qodo/
 
-# Project specific
-data/
-data/raw/
-data/processed/
-outputs/
+# Project data and generated outputs
+data/*
+!data/.gitkeep
+!data/raw/
+data/raw/*
+!data/raw/.gitkeep
+!data/processed/
+data/processed/*
+!data/processed/.gitkeep
+
+outputs/*
+!outputs/.gitkeep
+
 checkpoints/
 *.ckpt
 *.pt
@@ -97,8 +105,5 @@ paper/*.out
 paper/*.toc
 paper/*.synctex.gz
 
-# Keep external directory but ignore its contents if you are not tracking submodules? 
-# Actually, if 'external' contains code we want to track (like submodules), we shouldn't ignore it entirely.
-# Let's check what is in external/ first. For now, I won't ignore `external/`. I will just ignore `data/raw/` and `data/processed/`, and `outputs/`.
-!data/.gitkeep
-!outputs/.gitkeep
+# Keep external/ trackable for Git submodules or reference code.
+# Do not ignore external/ globally.

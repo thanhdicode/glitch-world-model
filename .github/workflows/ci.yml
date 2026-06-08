@@ -34,3 +34,6 @@ jobs:
 
       - name: Pytest with coverage
         run: python -m pytest --cov=glitch_detection --cov-report=term-missing
+
+      - name: Synthetic demo smoke test
+        run: python scripts/run_synthetic_demo.py

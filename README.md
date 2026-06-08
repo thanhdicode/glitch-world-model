@@ -39,7 +39,7 @@ external/          third-party references such as LeWorldModel and World of Bugs
 ## Install
 
 ```powershell
-python -m pip install -e .[dev]
+python -m pip install -e ".[dev]"
 ```
 
 Video input additionally requires OpenCV. If you only have frame folders, the default install is enough. Install video support with:
