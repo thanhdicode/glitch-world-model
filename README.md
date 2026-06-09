@@ -38,6 +38,16 @@ real run with the [Phase 6E Kaggle run log template](docs/research/30_phase6e_ka
 No Kaggle GPU result, neural AUROC/F1, or locked-test score may be claimed before real artifacts
 pass ingestion.
 
+The resumable Kaggle automation defaults to dry-run and stops at fingerprint-bound approval
+gates:
+
+```powershell
+python scripts\run_phase6e_kaggle_automation.py --dry-run
+```
+
+Do not pass `--live` during implementation verification. Live upload and kernel push require
+separate one-time approvals and remain outside the current verified run.
+
 Phase 0 verification commands:
 
 ```powershell

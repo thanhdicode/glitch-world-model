@@ -134,6 +134,24 @@ submitted from this environment yet.
 The local upload-package dry-run measured `5,572` manifest clips, `179,199` files, approximately
 `4.734 GiB`, and zero unresolved clip directories. This is a packaging audit, not a GPU run.
 
+## State-Machine Automation
+
+`scripts/run_phase6e_kaggle_automation.py` coordinates the Phase 6E launch flow with atomic state,
+state backup, retry classification, security scans, fingerprint-bound one-time approvals, and
+artifact validation before ingestion.
+
+Verified dry-run behavior:
+
+- completes safe local steps through `dataset_fingerprint`
+- writes state and `state.prev.json` under `outputs/kaggle_phase6e_automation/`
+- writes redacted logs under `outputs/kaggle_phase6e_automation/logs/`
+- creates `dataset_upload_approval.request.json`
+- stops at `dataset_upload_approval`
+- does not upload a dataset or push a GPU kernel
+
+Live dataset upload and kernel push are not part of the current verified run. Each action
+requires a separate approved record bound to its current fingerprint.
+
 ## Acceptance Gate Before Any Result Claim
 
 - Kaggle dry-run reports zero cross-split groups and the expected partition counts.
