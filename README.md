@@ -17,10 +17,13 @@ Research planning docs:
 - [TempGlitch integration plan](docs/research/11_tempglitch_integration_plan.md)
 - [Phase 6C protocol hardening](docs/research/25_phase6c_protocol_hardening_plan.md)
 - [Phase 6C protocol results](docs/research/26_phase6c_protocol_results.md)
+- [Phase 6D repeated grouped protocol](docs/research/27_phase6d_repeated_grouped_experiment_protocol.md)
+- [Phase 6D repeated grouped results](docs/research/28_phase6d_repeated_grouped_results.md)
 
-Current TempGlitch performance results are exploratory. Future benchmark runs use seeded
-random-stratified sampling, pair-suspect grouped splitting, validation-only configuration
-selection, one locked-test configuration, and grouped bootstrap confidence intervals.
+Phase 6D completed five pair-suspect grouped refit/selection/locked-test runs with zero
+cross-split groups. The selected pipeline achieved locked-test AUROC `0.573 +/- 0.118`; this
+supports the reproducible protocol, not latent-dynamics superiority. Results remain limited by
+the sequential fixed subset and prior exposure of the same 100 videos.
 
 Phase 0 verification commands:
 

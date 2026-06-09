@@ -77,6 +77,18 @@ Use this checklist before any result is copied into a paper draft, slide deck, o
 - [ ] Evaluate exactly one saved selected configuration on locked test.
 - [ ] Report source- or pair-level confidence intervals for the locked test result.
 
+## Phase 6D repeated grouped release gate
+
+- [ ] Record the fixed subset provenance and original sample mode.
+- [ ] Run every registered seed through pair-suspect grouped split validation.
+- [ ] Confirm zero cross-split groups for every seed.
+- [ ] Record train-normal sources and clips used by every fitted scorer.
+- [ ] Confirm all validation candidates exist before the selected test scorer is scored.
+- [ ] Confirm exactly one test score file and one locked-test configuration per seed.
+- [ ] Report per-seed grouped bootstrap intervals and mean plus population standard deviation
+  across seeds.
+- [ ] Describe repeated results as selected-pipeline performance, not per-scorer superiority.
+
 ## Figure/table provenance
 
 - [ ] Every table value points to a metrics file or script output.
