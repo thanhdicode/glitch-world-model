@@ -8,6 +8,7 @@ from glitch_detection.score_clips import available_scorers, run_scorer
 def test_available_scorers_contains_existing_baselines():
     assert "frame_diff" in available_scorers()
     assert "feature_distance" in available_scorers()
+    assert "video_autoencoder" in available_scorers()
 
 
 def test_unknown_scorer_raises(tmp_path: Path):

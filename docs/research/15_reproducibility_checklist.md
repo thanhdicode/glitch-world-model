@@ -15,7 +15,7 @@ Use this checklist before any result is copied into a paper draft, slide deck, o
 - [ ] Core/dev setup: `python -m pip install -e ".[dev]"`.
 - [ ] Research extras, only when needed: `python -m pip install -e ".[dev,research]"`.
 - [ ] Video extras, only when needed: `python -m pip install -e ".[dev,video]"`.
-- [ ] Avoid adding PyTorch/GPU stacks without a separate integration task.
+- [ ] GPU extras, only for Phase 6E training/scoring: `python -m pip install -e ".[gpu]"`.
 
 ## Seed control
 
@@ -88,6 +88,16 @@ Use this checklist before any result is copied into a paper draft, slide deck, o
 - [ ] Report per-seed grouped bootstrap intervals and mean plus population standard deviation
   across seeds.
 - [ ] Describe repeated results as selected-pipeline performance, not per-scorer superiority.
+
+## Phase 6E neural baseline release gate
+
+- [ ] Run `run_kaggle_video_autoencoder.py --dry-run` before GPU training.
+- [ ] Confirm the runner selects train-normal clips only and reports zero cross-split groups.
+- [ ] Confirm test is counted for audit but not materialized or scored during training.
+- [ ] Record PyTorch/CUDA versions, GPU model, seed, config, device, and epoch losses.
+- [ ] Keep `video_autoencoder.pt`, generated manifests, scores, and outputs out of git.
+- [ ] Select one neural configuration and aggregation using validation only.
+- [ ] Materialize and score locked test only after the validation decision is saved.
 
 ## Figure/table provenance
 

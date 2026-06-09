@@ -19,11 +19,16 @@ Research planning docs:
 - [Phase 6C protocol results](docs/research/26_phase6c_protocol_results.md)
 - [Phase 6D repeated grouped protocol](docs/research/27_phase6d_repeated_grouped_experiment_protocol.md)
 - [Phase 6D repeated grouped results](docs/research/28_phase6d_repeated_grouped_results.md)
+- [Phase 6E Kaggle video autoencoder protocol](docs/research/29_phase6e_kaggle_video_autoencoder_protocol.md)
 
 Phase 6D completed five pair-suspect grouped refit/selection/locked-test runs with zero
 cross-split groups. The selected pipeline achieved locked-test AUROC `0.573 +/- 0.118`; this
 supports the reproducible protocol, not latent-dynamics superiority. Results remain limited by
 the sequential fixed subset and prior exposure of the same 100 videos.
+
+Phase 6E adds the first gradient-trained neural baseline package: a compact Conv3D autoencoder
+that fits train-normal clips and scores validation clips. The package is ready for a real Kaggle
+GPU run, but no neural checkpoint or result is claimed yet.
 
 Phase 0 verification commands:
 
@@ -55,6 +60,12 @@ Video input additionally requires OpenCV. If you only have frame folders, the de
 
 ```powershell
 python -m pip install opencv-python
+```
+
+The optional Kaggle/GPU video-autoencoder baseline requires PyTorch:
+
+```powershell
+python -m pip install -e ".[gpu]"
 ```
 
 ## Run The Baseline
@@ -115,6 +126,16 @@ python -m glitch_detection.lewm_latent --manifest data/processed/my_experiment/m
 ```
 
 Expected next implementation step: load LeWM, encode each clip, predict next latent embeddings, and write latent prediction error scores.
+
+Audit the Phase 6E neural training partition without loading PyTorch or touching test:
+
+```powershell
+python scripts\run_kaggle_video_autoencoder.py --dry-run --manifest data\processed\tempglitch_phase3b\manifest.csv --split outputs\tempglitch_phase6d\seed_42\split.csv --output-root outputs\tempglitch_phase6e\seed_42
+```
+
+On Kaggle, run the same script without `--dry-run`, pass `--clips-root` for the uploaded
+processed clip tree, and use `--device cuda`. The runner trains only on train-normal clips and
+scores validation only; see the Phase 6E protocol before materializing locked test data.
 
 Create a compact Markdown report from an experiment:
 

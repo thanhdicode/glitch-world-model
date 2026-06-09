@@ -9,6 +9,7 @@ Use this checklist before reporting any experiment.
 - [ ] Install dependencies from a documented command.
 - [ ] Lock dependency versions when moving beyond MVP.
 - [ ] Record whether `opencv-python` is required.
+- [ ] For neural runs, record PyTorch/CUDA versions, GPU model, device mode, and epoch losses.
 
 ## Data
 
@@ -24,6 +25,7 @@ Use this checklist before reporting any experiment.
 - [ ] Record random seeds for generated datasets.
 - [ ] Record train/validation/test split seeds.
 - [ ] Record model initialization seeds for learned baselines.
+- [ ] Confirm a learned anomaly model fits train-normal records only.
 
 ## Commands and outputs
 
@@ -48,6 +50,8 @@ Use this checklist before reporting any experiment.
 - [ ] Run `python -m pytest` when dependencies are available.
 - [ ] If tests are skipped, document the missing dependencies.
 - [ ] Add or update focused tests for new scorer behavior.
+- [ ] Run the neural protocol dry-run before any GPU training.
+- [ ] Confirm the neural training runner does not materialize or score locked test.
 
 ## Future tooling
 

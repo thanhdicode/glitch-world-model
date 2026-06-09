@@ -4,7 +4,7 @@ import argparse
 from collections.abc import Callable
 from pathlib import Path
 
-from . import feature_distance, frame_diff, lewm_latent, mini_latent
+from . import feature_distance, frame_diff, lewm_latent, mini_latent, video_autoencoder
 
 ScorerFn = Callable[[Path, Path | None, Path], Path]
 
@@ -19,6 +19,7 @@ SCORERS: dict[str, ScorerFn] = {
     "feature_distance": feature_distance.score_manifest,
     "mini_latent": mini_latent.score_manifest,
     "lewm_latent": lewm_latent.score_manifest,
+    "video_autoencoder": video_autoencoder.score_manifest,
 }
 
 

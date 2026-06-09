@@ -42,6 +42,9 @@ data = [
   "datasets>=2.18",
   "dvc>=3.50",
 ]
+gpu = [
+  "torch>=2.2",
+]
 
 [tool.setuptools.packages.find]
 where = ["src"]
