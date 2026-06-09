@@ -25,10 +25,12 @@
 - Public benchmark evidence now includes the two-video smoke subset and a preliminary 30-video split experiment.
 - The repo now has a leakage-aware 30-video TempGlitch split experiment across all five public categories.
 - The repo now has a scaled 100-video TempGlitch experiment with category and failure analysis.
+- The repo now has Phase 6B video-level aggregation across six aggregation methods.
 - Thresholds are calibrated on validation and applied unchanged to test.
 - `feature_distance` and `mini_latent` fit on train-normal clips only.
 - Current 30-video results are weak and preliminary; test AUROC ranges from approximately `0.522` to `0.589`.
 - Current 100-video results remain weak; best global test AUROC is `0.504053`.
+- Current video-level results remain weak; best global test AUROC is `0.54`.
 - The verified public TempGlitch artifact currently exposes binary per-video labels and one public `train` split, not a verified official held-out split or finer temporal-span file.
 
 ## 3. What is enough for a short paper
@@ -136,4 +138,7 @@
   - GlitchBench is accessible but static-image only.
   - World of Bugs is promising but operationally heavier and not yet mapped into this repo's CSV interfaces.
 - Practical implication:
-  - The next step is Phase 6B: add video-level aggregation because the available public labels are per-video.
+  - Phase 6B is complete and confirms that matching the per-video label granularity does not
+    reveal a strong signal under the current methods.
+  - Do not start broad ablations yet; prioritize method improvement, better supervision, or the
+    short-paper reproducibility and failure-analysis framing.

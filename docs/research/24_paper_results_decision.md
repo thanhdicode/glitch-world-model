@@ -64,3 +64,37 @@ Do not run broad ablations until one of these is true:
 - temporal-span labels become available
 
 If none of those happens, the best paper strategy is short-paper reproducibility and failure analysis.
+
+## 9. Phase 6B video-level result
+
+Phase 6B evaluated `mean`, `max`, `median`, `p90`, `p95`, and `topk_mean` aggregation on the
+existing Phase 3B validation and test videos. Thresholds were selected only on validation
+videos and applied unchanged to test videos.
+
+- Best global test AUROC: `feature_distance` with `median`, `0.54`.
+- Best `mini_latent` test AUROC: `0.52` with `p90` or `p95`.
+- Best `frame_diff` test AUROC: `0.46` with `p90`.
+- Video-level F1 remains dominated by high recall and false positives.
+
+Decision: Phase 6B better matches the public label granularity, but it does not reveal a clear
+enough signal to justify broad Phase 7 ablations. Continue the short-paper reproducibility and
+failure-analysis path while prioritizing method improvement or better supervision.
+
+## 10. Claim status after Phase 6B
+
+Allowed:
+
+- The repo provides a leakage-aware TempGlitch split protocol.
+- The repo evaluates `frame_diff`, `feature_distance`, and `mini_latent` at clip and video level.
+- Thresholds are selected on validation and fixed on test.
+- Video-level aggregation better matches TempGlitch's public per-video labels.
+- Binary per-video labels limit temporal localization claims.
+
+Forbidden:
+
+- No state-of-the-art claim.
+- No real LeWorldModel claim.
+- No temporal IoU or mIoU claim.
+- No global `mini_latent` superiority claim.
+- No VLM superiority claim.
+- No dataset creation claim.

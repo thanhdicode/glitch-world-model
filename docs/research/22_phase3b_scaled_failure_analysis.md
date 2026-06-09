@@ -141,3 +141,18 @@ Forbidden:
 - No real LeWM integration claim.
 - No claim that `mini_latent` outperforms simple baselines globally.
 - No claim that the current metrics are full-paper-ready.
+
+## 12. Follow-up: Phase 6B Video-Level Aggregation
+
+Phase 3B clip-level results do not support a performance claim. Because the public TempGlitch
+labels are per-video, Phase 6B aggregates clip scores into source/video scores and calibrates
+thresholds on validation videos before fixed-threshold test evaluation.
+
+Phase 6B evaluated six aggregation methods for all three scorers. The best global test AUROC
+was `0.54` from `feature_distance` with median aggregation. The best `mini_latent` AUROC was
+`0.52` with `p90` or `p95` aggregation. These results remain near random and do not establish
+global `mini_latent` superiority.
+
+Broad ablations should not start on the basis of this result. Real LeWorldModel integration
+also remains optional until the evaluation protocol is stable and a stronger method signal or
+better supervision becomes available.
