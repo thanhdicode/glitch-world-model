@@ -21,6 +21,7 @@ SCORERS: dict[str, ScorerFn] = {
     "lewm_latent": lewm_latent.score_manifest,
     "video_autoencoder": video_autoencoder.score_manifest,
 }
+TRAIN_DEPENDENT_GENERIC_SCORERS = {"feature_distance", "mini_latent"}
 
 
 def available_scorers() -> list[str]:
@@ -32,10 +33,18 @@ def run_scorer(
     manifest_path: Path,
     labels_path: Path | None,
     output_path: Path,
+    *,
+    allow_evaluation_label_fitting: bool = False,
 ) -> Path:
     if scorer_name not in SCORERS:
         raise ValueError(
             f"Unknown scorer '{scorer_name}'. Available scorers: {', '.join(available_scorers())}"
+        )
+    if scorer_name in TRAIN_DEPENDENT_GENERIC_SCORERS and not allow_evaluation_label_fitting:
+        raise ValueError(
+            f"Generic {scorer_name} scoring fits on the supplied manifest and is not split-aware. "
+            "Use the split-aware experiment runners for research results, or explicitly allow "
+            "evaluation-label fitting for a demo."
         )
     return SCORERS[scorer_name](manifest_path, labels_path, output_path)
 
@@ -46,12 +55,23 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--manifest", required=True, type=Path, help="Path to manifest.csv.")
     parser.add_argument("--labels", type=Path, default=None, help="Optional labels CSV.")
     parser.add_argument("--output", required=True, type=Path, help="Output scores.csv path.")
+    parser.add_argument(
+        "--allow-evaluation-label-fitting",
+        action="store_true",
+        help="Unsafe for benchmark claims; permits train-dependent demo scorers.",
+    )
     return parser
 
 
 def main(argv: list[str] | None = None) -> None:
     args = build_parser().parse_args(argv)
-    output_path = run_scorer(args.scorer, args.manifest, args.labels, args.output)
+    output_path = run_scorer(
+        args.scorer,
+        args.manifest,
+        args.labels,
+        args.output,
+        allow_evaluation_label_fitting=args.allow_evaluation_label_fitting,
+    )
     print(f"Wrote scores: {output_path}")
 
 

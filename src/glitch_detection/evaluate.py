@@ -75,6 +75,8 @@ def evaluate_scores(
     labels_path: Path | None,
     output_path: Path,
     threshold: float | None = None,
+    *,
+    allow_fit_threshold: bool = False,
 ) -> dict[str, Any]:
     rows = read_scores(scores_path)
     intervals = read_labels(labels_path)
@@ -92,15 +94,23 @@ def evaluate_scores(
     scores = [float(row["score"]) for row in rows]
 
     if threshold is None:
+        if not allow_fit_threshold:
+            raise ValueError(
+                "Refusing to fit a threshold on evaluation rows by default. "
+                "Pass a frozen threshold or set allow_fit_threshold=True for validation/demo use."
+            )
         threshold, metrics = choose_best_f1_threshold(labels, scores)
+        threshold_source = "fitted_on_evaluation_rows"
     else:
         predictions = [1 if score >= threshold else 0 for score in scores]
         metrics = binary_metrics(labels, predictions)
+        threshold_source = "provided"
 
     result: dict[str, Any] = {
         "scores_path": str(scores_path),
         "labels_path": str(labels_path) if labels_path else None,
         "threshold": threshold,
+        "threshold_source": threshold_source,
         "auroc": auroc(labels, scores),
         "clip_count": len(rows),
         "positive_clip_count": sum(labels),
@@ -118,12 +128,23 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--labels", type=Path, default=None, help="Optional labels CSV.")
     parser.add_argument("--output", required=True, type=Path, help="Output metrics JSON path.")
     parser.add_argument("--threshold", type=float, default=None, help="Optional fixed threshold.")
+    parser.add_argument(
+        "--fit-threshold",
+        action="store_true",
+        help="Explicitly fit the threshold on these rows; use only for validation or demos.",
+    )
     return parser
 
 
 def main(argv: list[str] | None = None) -> None:
     args = build_parser().parse_args(argv)
-    result = evaluate_scores(args.scores, args.labels, args.output, args.threshold)
+    result = evaluate_scores(
+        args.scores,
+        args.labels,
+        args.output,
+        args.threshold,
+        allow_fit_threshold=args.fit_threshold,
+    )
     print(json.dumps(result, indent=2))
 
 

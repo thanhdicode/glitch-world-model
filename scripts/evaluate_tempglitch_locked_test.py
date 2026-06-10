@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import hashlib
 import json
 from pathlib import Path
 from typing import Any
@@ -12,6 +13,7 @@ from glitch_detection.statistics import bootstrap_metric_ci
 from glitch_detection.video_eval import write_json
 
 ROOT = Path(__file__).resolve().parents[1]
+LOCKED_TEST_AUTHORIZATION = "APPROVE LOCKED TEST SCORING"
 
 
 def format_metric(value: Any) -> str:
@@ -28,6 +30,32 @@ def read_video_rows(path: Path) -> list[dict[str, Any]]:
             f"{row.get('category', 'unknown')}/{infer_tempglitch_pair_id(row['source'])}"
         )
     return rows
+
+
+def validate_locked_test_release(
+    selected_config_path: Path,
+    validation_decision_path: Path,
+    approval_path: Path,
+) -> str:
+    if not selected_config_path.is_file():
+        raise FileNotFoundError(f"Missing selected configuration: {selected_config_path}")
+    if not validation_decision_path.is_file():
+        raise PermissionError(f"Missing validation decision: {validation_decision_path}")
+    decision = validation_decision_path.read_text(encoding="utf-8")
+    if "Locked test has not been scored yet." not in decision:
+        raise PermissionError(
+            "Validation decision must explicitly state: Locked test has not been scored yet."
+        )
+    if not approval_path.is_file():
+        raise PermissionError(f"Missing locked-test approval file: {approval_path}")
+
+    selected_sha256 = hashlib.sha256(selected_config_path.read_bytes()).hexdigest()
+    approval = json.loads(approval_path.read_text(encoding="utf-8"))
+    if approval.get("authorization") != LOCKED_TEST_AUTHORIZATION:
+        raise PermissionError("Locked-test approval authorization text is invalid.")
+    if approval.get("selected_config_sha256") != selected_sha256:
+        raise PermissionError("Locked-test approval does not match the selected config SHA-256.")
+    return selected_sha256
 
 
 def write_locked_metrics_markdown(payload: dict[str, Any], output_path: Path) -> Path:
@@ -64,6 +92,8 @@ def build_parser() -> argparse.ArgumentParser:
         default=ROOT / "outputs" / "tempglitch_phase3b_video_level",
     )
     parser.add_argument("--selected-config", type=Path, default=None)
+    parser.add_argument("--validation-decision", type=Path, default=None)
+    parser.add_argument("--approval-file", type=Path, default=None)
     parser.add_argument("--output-json", type=Path, default=None)
     parser.add_argument("--output-markdown", type=Path, default=None)
     parser.add_argument("--n-bootstrap", type=int, default=1000)
@@ -79,6 +109,13 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> None:
     args = build_parser().parse_args(argv)
     selected_path = args.selected_config or args.input_dir / "selected_protocol_config.json"
+    validation_decision_path = args.validation_decision or args.input_dir / "validation_decision.md"
+    approval_path = args.approval_file or args.input_dir / "locked_test_approval.json"
+    selected_sha256 = validate_locked_test_release(
+        selected_path,
+        validation_decision_path,
+        approval_path,
+    )
     selected = json.loads(selected_path.read_text(encoding="utf-8"))
     scorer = str(selected["scorer"])
     aggregation = str(selected["aggregation"])
@@ -104,6 +141,7 @@ def main(argv: list[str] | None = None) -> None:
         ),
     }
     result["test_rows_path"] = str(test_rows_path)
+    result["selected_config_sha256"] = selected_sha256
     output_json = args.output_json or args.input_dir / "final_test_metrics_with_ci.json"
     output_markdown = args.output_markdown or args.input_dir / "final_test_metrics_with_ci.md"
     write_json(result, output_json)

@@ -173,15 +173,27 @@ def score_manifest(
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Score clips with a mini latent transition model.")
     parser.add_argument("--manifest", required=True, type=Path, help="Path to manifest.csv.")
-    parser.add_argument("--labels", type=Path, default=None, help="Optional labels CSV.")
+    parser.add_argument(
+        "--labels", type=Path, default=None, help="Optional labels CSV for demo-only fitting."
+    )
     parser.add_argument("--output", required=True, type=Path, help="Output scores.csv path.")
     parser.add_argument("--latent-dim", type=int, default=8)
     parser.add_argument("--image-size", type=int, default=32)
+    parser.add_argument(
+        "--demo-allow-evaluation-label-fitting",
+        action="store_true",
+        help="Unsafe for benchmark claims; fit the model using labels from this manifest.",
+    )
     return parser
 
 
 def main(argv: list[str] | None = None) -> None:
     args = build_parser().parse_args(argv)
+    if not args.demo_allow_evaluation_label_fitting:
+        raise SystemExit(
+            "mini_latent CLI is demo-only because it fits on the supplied manifest. "
+            "Use a split-aware experiment runner or pass --demo-allow-evaluation-label-fitting."
+        )
     output_path = score_manifest(
         args.manifest,
         args.labels,

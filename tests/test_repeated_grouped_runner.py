@@ -58,8 +58,36 @@ def test_repeated_grouped_dry_run_writes_zero_leakage_audit(tmp_path: Path):
     assert summary["dataset"]["sample_mode_source"] == "declared-protocol"
     assert summary["seeds_completed"] == [42, 43]
     assert all(row["cross_split_group_count"] == 0 for row in summary["runs"])
-    assert (tmp_path / "outputs" / "seed_42" / "split_metadata.json").is_file()
-    assert (tmp_path / "outputs" / "seed_42" / "leakage_report.json").is_file()
+    assert (tmp_path / "outputs" / "dry_run" / "seed_42" / "split_metadata.json").is_file()
+    assert (tmp_path / "outputs" / "dry_run" / "seed_42" / "leakage_report.json").is_file()
+
+
+def test_repeated_grouped_dry_run_does_not_overwrite_full_run_summary(tmp_path: Path):
+    metadata_path, manifest_path, labels_path = _write_fixture(tmp_path)
+    output_root = tmp_path / "outputs"
+    full_summary_path = output_root / "phase6d_repeated_summary.json"
+    full_summary_path.parent.mkdir(parents=True)
+    full_summary_path.write_text('{"status": "full run complete"}\n', encoding="utf-8")
+
+    run_repeated_grouped_experiments(
+        metadata_path=metadata_path,
+        manifest_path=manifest_path,
+        labels_path=labels_path,
+        output_root=output_root,
+        seeds=[42],
+        scorers=["frame_diff"],
+        aggregations=["mean"],
+        n_bootstrap=10,
+        dry_run=True,
+    )
+
+    assert json.loads(full_summary_path.read_text(encoding="utf-8")) == {
+        "status": "full run complete"
+    }
+    dry_run_summary = json.loads(
+        (output_root / "dry_run" / "phase6d_repeated_summary.json").read_text(encoding="utf-8")
+    )
+    assert dry_run_summary["status"] == "dry-run only"
 
 
 def test_full_repeated_run_selects_before_testing_and_writes_one_test_score_file(tmp_path: Path):

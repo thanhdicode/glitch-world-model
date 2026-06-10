@@ -68,7 +68,7 @@ def main() -> None:
         fps=30.0,
     )
     score_manifest(manifest_path, scores_path)
-    metrics = evaluate_scores(scores_path, labels_path, metrics_path)
+    metrics = evaluate_scores(scores_path, labels_path, metrics_path, allow_fit_threshold=True)
     plot_scores(scores_path, plot_path)
 
     print(f"Normal image: {normal_image}")

@@ -203,9 +203,10 @@ def run_repeated_grouped_experiments(
     metadata_rows = read_tempglitch_metadata(metadata_path)
     manifest_records = read_manifest(manifest_path)
     runs: list[dict[str, Any]] = []
+    artifact_root = output_root / "dry_run" if dry_run else output_root
 
     for seed in seeds:
-        seed_dir = output_root / f"seed_{seed}"
+        seed_dir = artifact_root / f"seed_{seed}"
         split_records = assign_grouped_video_splits(metadata_rows, seed=seed)
         split_artifacts = _write_split_artifacts(seed_dir, split_records, seed)
         validation = split_artifacts["validation"]
@@ -339,6 +340,7 @@ def run_repeated_grouped_experiments(
             "confidence_level": 0.95,
         },
         "seeds_completed": [run["seed"] for run in runs],
+        "artifact_root": str(artifact_root),
         "runs": runs,
     }
     if not dry_run:
@@ -346,8 +348,8 @@ def run_repeated_grouped_experiments(
             "auroc": _metric_summary(runs, "auroc"),
             "f1": _metric_summary(runs, "f1"),
         }
-    write_json(payload, output_root / "phase6d_repeated_summary.json")
-    _write_repeated_summary(payload, output_root / "phase6d_repeated_summary.md")
+    write_json(payload, artifact_root / "phase6d_repeated_summary.json")
+    _write_repeated_summary(payload, artifact_root / "phase6d_repeated_summary.md")
     return payload
 
 
@@ -426,7 +428,7 @@ def main(argv: list[str] | None = None) -> None:
             f"Locked-test F1 mean +/- std: {_format_metric(f1['mean'])} +/- "
             f"{_format_metric(f1['population_std'])}"
         )
-    print(f"Output summary: {args.output_root / 'phase6d_repeated_summary.json'}")
+    print(f"Output summary: {summary['artifact_root']}/phase6d_repeated_summary.json")
 
 
 if __name__ == "__main__":

@@ -52,7 +52,9 @@ Yes, with an honest framing:
 
 ## 7. Recommended next phase
 
-Recommended next: Phase 6B, add video-level aggregation for per-video labels.
+Phase 6B video-level aggregation is complete. The next method-facing step is a guarded real
+LeWorldModel integration audit; the next paper-facing step is to consolidate Phase 6D/6E
+negative and diagnostic evidence without claiming superiority.
 
 Reason:
 
@@ -109,4 +111,13 @@ Forbidden:
 Phase 6C adds pair-suspect grouped splits, validation-only configuration selection, locked-test
 single-config evaluation, and pair-level bootstrap confidence intervals. The existing test slice
 was already exposed, so the current locked-test rehearsal is not a fresh final result. Repeated
-grouped refit/scoring remains `TBD`.
+grouped refit/scoring was completed in Phase 6D for seeds `42` through `46`. The selected
+pipeline achieved AUROC `0.573170 +/- 0.117582`, but all per-seed AUROC confidence intervals
+include `0.5`, so the result does not establish above-chance performance or method superiority.
+
+## 12. Phase 6E validation-only neural result
+
+Phase 6E completed a real Kaggle CUDA Conv3D autoencoder run fitted on `1,724` train-normal
+clips and scored `1,071` validation clips. Validation AUROC was `0.403865`. Locked test was not
+materialized or scored. This is engineering evidence only and does not support improvement,
+LeWorldModel, JEPA, or state-of-the-art claims.

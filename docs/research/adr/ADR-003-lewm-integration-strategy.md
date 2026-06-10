@@ -2,11 +2,12 @@
 
 ## Status
 
-Accepted
+Superseded by `ADR-004-mandatory-lewm-main-method.md`.
 
 ## Decision
 
-Keep `mini_latent` as the current proxy for latent-dynamics scoring. Implement real `lewm_latent` only after research docs, baseline reproducibility, and dataset strategy are stable.
+This was the original staged decision. It is retained for history only. The current strategy
+makes a verified real LeWM integration mandatory before the paper may use LeWM-based claims.
 
 ## Context
 

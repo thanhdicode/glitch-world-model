@@ -246,6 +246,20 @@ def read_split_csv(path: Path) -> list[SplitRecord]:
         ]
 
 
+def read_grouped_split_csv(path: Path) -> list[GroupedSplitRecord]:
+    with path.open("r", newline="", encoding="utf-8-sig") as handle:
+        return [
+            GroupedSplitRecord(
+                source=row["source"],
+                category=row["category"],
+                label=row["label"],
+                split=row["split"],
+                pair_id_heuristic=row["pair_id_heuristic"],
+            )
+            for row in csv.DictReader(handle)
+        ]
+
+
 def sources_for_split(records: list[SplitRecord], split: str) -> set[str]:
     return {record.source for record in records if record.split == split}
 

@@ -12,7 +12,12 @@ def calibrate_threshold(
     labels_path: Path,
     output_path: Path,
 ) -> dict[str, Any]:
-    calibration = evaluate_scores(validation_scores_path, labels_path, output_path)
+    calibration = evaluate_scores(
+        validation_scores_path,
+        labels_path,
+        output_path,
+        allow_fit_threshold=True,
+    )
     calibration["calibration_split"] = "validation"
     output_path.write_text(json.dumps(calibration, indent=2), encoding="utf-8")
     return calibration

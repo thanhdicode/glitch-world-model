@@ -33,6 +33,13 @@
 - Current video-level results remain weak; best global test AUROC is `0.54`.
 - Phase 6C found suspected pair leakage in the old split and test-driven aggregation comparison,
   so all current TempGlitch performance numbers are exploratory.
+- Phase 6D completed five pair-suspect grouped refit/selection/test rehearsals with zero
+  cross-split groups. Mean AUROC was `0.573170 +/- 0.117582`, but every per-seed AUROC
+  confidence interval includes `0.5`; this supports protocol reproducibility, not superiority.
+- Phase 6E completed a real Kaggle CUDA Conv3D validation-only engineering run. Validation
+  AUROC was `0.403865`; locked test remained unmaterialized and unscored.
+- Generic demo scoring and standalone evaluation now require explicit unsafe/threshold-fitting
+  opt-ins. Paper-facing experiments must use split-aware fitting and validation calibration.
 - The verified public TempGlitch artifact currently exposes binary per-video labels and one public `train` split, not a verified official held-out split or finer temporal-span file.
 
 ## 3. What is enough for a short paper
@@ -144,3 +151,5 @@
     reveal a strong signal under the current methods.
   - Do not start broad ablations yet; prioritize method improvement, better supervision, or the
     short-paper reproducibility and failure-analysis framing.
+  - Real LeWorldModel remains future work; the next method-facing step is a checkpoint and
+    preprocessing compatibility audit, not a LeWM performance claim.

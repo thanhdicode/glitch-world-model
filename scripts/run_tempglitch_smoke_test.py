@@ -103,8 +103,14 @@ def main() -> None:
         scores_path = args.outputs_dir / f"{experiment_name}_scores.csv"
         metrics_path = args.outputs_dir / f"{experiment_name}_metrics.json"
         report_path = args.outputs_dir / f"{experiment_name}_report.md"
-        run_scorer(scorer_name, combined_manifest_path, labels_path, scores_path)
-        evaluate_scores(scores_path, labels_path, metrics_path)
+        run_scorer(
+            scorer_name,
+            combined_manifest_path,
+            labels_path,
+            scores_path,
+            allow_evaluation_label_fitting=True,
+        )
+        evaluate_scores(scores_path, labels_path, metrics_path, allow_fit_threshold=True)
         report = build_report(
             name=experiment_name,
             manifest_path=combined_manifest_path,

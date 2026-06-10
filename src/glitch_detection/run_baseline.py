@@ -20,7 +20,16 @@ def run_baseline(
     data_dir: Path,
     outputs_dir: Path,
     scorer_name: str = "frame_diff",
+    demo_allow_evaluation_label_fitting: bool = False,
 ) -> dict[str, Path]:
+    if (
+        scorer_name in {"feature_distance", "mini_latent"}
+        and not demo_allow_evaluation_label_fitting
+    ):
+        raise ValueError(
+            "Train-dependent scorers in run_baseline are demo-only and fit on evaluation labels. "
+            "Use a split-aware runner, or set demo_allow_evaluation_label_fitting=True explicitly."
+        )
     processed_dir = data_dir / experiment_name
     scores_path = outputs_dir / f"{experiment_name}_scores.csv"
     metrics_path = outputs_dir / f"{experiment_name}_metrics.json"
@@ -34,8 +43,14 @@ def run_baseline(
         size=size,
         fps=fps,
     )
-    run_scorer(scorer_name, manifest_path, labels_path, scores_path)
-    evaluate_scores(scores_path, labels_path, metrics_path)
+    run_scorer(
+        scorer_name,
+        manifest_path,
+        labels_path,
+        scores_path,
+        allow_evaluation_label_fitting=demo_allow_evaluation_label_fitting,
+    )
+    evaluate_scores(scores_path, labels_path, metrics_path, allow_fit_threshold=True)
     plot_scores(scores_path, plot_path)
 
     return {
@@ -62,6 +77,11 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--data-dir", type=Path, default=Path("data/processed"))
     parser.add_argument("--outputs-dir", type=Path, default=Path("outputs"))
     parser.add_argument("--scorer", choices=available_scorers(), default="frame_diff")
+    parser.add_argument(
+        "--demo-allow-evaluation-label-fitting",
+        action="store_true",
+        help="Unsafe for benchmark claims; permits train-dependent scorers in this demo runner.",
+    )
     return parser
 
 
@@ -78,6 +98,7 @@ def main(argv: list[str] | None = None) -> None:
         data_dir=args.data_dir,
         outputs_dir=args.outputs_dir,
         scorer_name=args.scorer,
+        demo_allow_evaluation_label_fitting=args.demo_allow_evaluation_label_fitting,
     )
     for label, path in outputs.items():
         print(f"{label.capitalize()}: {path}")

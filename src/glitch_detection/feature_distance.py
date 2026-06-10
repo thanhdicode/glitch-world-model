@@ -92,14 +92,27 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--manifest", required=True, type=Path, help="Path to manifest.csv.")
     parser.add_argument(
-        "--labels", type=Path, default=None, help="Optional labels CSV for normal centroid fitting."
+        "--labels",
+        type=Path,
+        default=None,
+        help="Optional labels CSV for demo-only normal centroid fitting.",
     )
     parser.add_argument("--output", required=True, type=Path, help="Output scores.csv path.")
+    parser.add_argument(
+        "--demo-allow-evaluation-label-fitting",
+        action="store_true",
+        help="Unsafe for benchmark claims; fit the centroid using labels from this manifest.",
+    )
     return parser
 
 
 def main(argv: list[str] | None = None) -> None:
     args = build_parser().parse_args(argv)
+    if not args.demo_allow_evaluation_label_fitting:
+        raise SystemExit(
+            "feature_distance CLI is demo-only because it fits on the supplied manifest. "
+            "Use a split-aware experiment runner or pass --demo-allow-evaluation-label-fitting."
+        )
     output_path = score_manifest(args.manifest, args.labels, args.output)
     print(f"Wrote scores: {output_path}")
 

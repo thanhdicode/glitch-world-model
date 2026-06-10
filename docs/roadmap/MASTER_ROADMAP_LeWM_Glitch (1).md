@@ -1157,3 +1157,8 @@ Tạo `docs/research/15_sprint_calendar.md`:
 ---
 
 *Document này được tạo ngày 08/06/2026 dựa trên báo cáo phân tích chi tiết và toàn bộ codebase hiện tại của repo glitch-world-model. Cập nhật kết quả thực nghiệm vào `docs/research/12_experiment_results_log.md` sau mỗi lần chạy experiment.*
+# SUPERSEDED ROADMAP
+
+This historical roadmap is superseded by `MASTER_ROADMAP_LeWM_Glitch_v2.md`. In particular,
+real LeWM is no longer optional, and `mini_latent` is no longer an acceptable primary method
+for a LeWM-based paper claim.

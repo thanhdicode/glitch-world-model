@@ -125,7 +125,12 @@ def ingest_phase6e_kaggle_artifacts(
     if labels_path is not None:
         if not labels_path.is_file():
             raise FileNotFoundError(f"Missing validation labels: {labels_path}")
-        evaluate_scores(paths["validation_scores.csv"], labels_path, metrics_path)
+        evaluate_scores(
+            paths["validation_scores.csv"],
+            labels_path,
+            metrics_path,
+            allow_fit_threshold=True,
+        )
 
     summary: dict[str, Any] = {
         "status": "artifact validation complete",

@@ -10,6 +10,8 @@ This repo is currently a baseline research MVP for the topic "Latent World Model
 
 Research planning docs:
 
+- [Mandatory real-LeWM master roadmap](docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v2.md)
+- [Real LeWM integration audit](docs/research/36_lewm_integration_audit.md)
 - [Literature matrix](docs/research/02_literature_matrix.md)
 - [Dataset and benchmark map](docs/research/04_dataset_benchmark_map.md)
 - [Experiment plan](docs/research/06_experiment_plan.md)
@@ -98,8 +100,16 @@ latexmk -pdf -cd paper/main.tex
 ```
 
 Current status: Phase 6E is complete as a validation-only engineering result; real LeWM is not
-implemented. The next phase is the Phase 7A LeWM integration audit. Do not touch locked test
-without satisfying the documented release gate and receiving explicit authorization.
+implemented. The revised strategy makes verified real LeWM integration mandatory before any
+LeWM-based paper claim. The next gate is the LeWM runtime/checkpoint/data-contract audit. Do not
+touch locked test without satisfying the documented release gate and receiving explicit
+authorization.
+
+The reusable split-safe core is implemented in
+`src/glitch_detection/experiment_protocol.py`. It validates grouped splits, fits
+train-dependent scorers on train-normal clips, scores and calibrates validation, records
+provenance, and keeps test records unmaterialized unless explicitly requested. Test scoring
+still requires a separate explicit release approval.
 
 Phase 0 verification commands:
 
@@ -178,16 +188,21 @@ Run the full baseline on your own video or frame folder:
 python -m glitch_detection.run_baseline --input data/raw/my_frames --labels data/raw/my_labels.csv --name my_experiment --clip-length 16 --stride 8 --size 128 --scorer frame_diff
 ```
 
-Use the same runner with the feature-distance scorer:
+`run_baseline` is a demo/sanity-check runner. It fits thresholds on the same rows it evaluates.
+Train-dependent scorers are blocked unless the explicitly unsafe demo flag is supplied; do not
+use those outputs for benchmark claims. Research experiments must use the split-aware runners,
+which fit on train-normal, calibrate on validation, and apply frozen settings to test.
+
+Use the same runner with the feature-distance scorer for a demo only:
 
 ```powershell
-python -m glitch_detection.run_baseline --input data/raw/my_frames --labels data/raw/my_labels.csv --name my_feature_experiment --clip-length 16 --stride 8 --size 128 --scorer feature_distance
+python -m glitch_detection.run_baseline --input data/raw/my_frames --labels data/raw/my_labels.csv --name my_feature_experiment --clip-length 16 --stride 8 --size 128 --scorer feature_distance --demo-allow-evaluation-label-fitting
 ```
 
-Run the mini latent transition scorer:
+Run the mini latent transition scorer for a demo only:
 
 ```powershell
-python -m glitch_detection.run_baseline --input data/raw/my_frames --labels data/raw/my_labels.csv --name my_mini_latent_experiment --clip-length 16 --stride 8 --size 128 --scorer mini_latent
+python -m glitch_detection.run_baseline --input data/raw/my_frames --labels data/raw/my_labels.csv --name my_mini_latent_experiment --clip-length 16 --stride 8 --size 128 --scorer mini_latent --demo-allow-evaluation-label-fitting
 ```
 
 The LeWM scorer slot is registered but intentionally guarded until a checkpoint is available:
@@ -235,13 +250,20 @@ python -m glitch_detection.frame_diff --manifest data/processed/sample/manifest.
 Score clips with the lightweight feature-distance baseline:
 
 ```powershell
-python -m glitch_detection.feature_distance --manifest data/processed/sample/manifest.csv --labels data/raw/labels.csv --output outputs/sample_feature_scores.csv
+python -m glitch_detection.feature_distance --manifest data/processed/sample/manifest.csv --labels data/raw/labels.csv --output outputs/sample_feature_scores.csv --demo-allow-evaluation-label-fitting
 ```
 
-Evaluate with labels. Labels are optional CSV rows with `source,start_frame,end_frame,label`, where `label` is `1` for glitch:
+Fit a threshold on validation scores only. Labels are optional CSV rows with
+`source,start_frame,end_frame,label`, where `label` is `1` for glitch:
 
 ```powershell
-python -m glitch_detection.evaluate --scores outputs/sample_scores.csv --labels data/raw/labels.csv --output outputs/sample_metrics.json
+python -m glitch_detection.evaluate --scores outputs/validation_scores.csv --labels data/raw/validation_labels.csv --output outputs/validation_metrics.json --fit-threshold
+```
+
+For test evaluation, pass the frozen validation threshold explicitly:
+
+```powershell
+python -m glitch_detection.evaluate --scores outputs/test_scores.csv --labels data/raw/test_labels.csv --output outputs/test_metrics.json --threshold 0.123
 ```
 
 Plot scores:
