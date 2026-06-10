@@ -1,0 +1,8 @@
+stages:
+  research_release_validation:
+    cmd: python scripts/validate_research_release.py --ci
+    deps:
+      - AGENTS.md
+      - docs/research/16_claim_registry.md
+      - scripts/validate_research_release.py
+    always_changed: true

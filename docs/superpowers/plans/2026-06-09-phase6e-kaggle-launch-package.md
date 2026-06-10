@@ -68,4 +68,3 @@ checkpoints, scores, and reports under existing gitignored output paths.
 - [ ] Run `python -m ruff format --check .`.
 - [ ] Audit staged files for generated data, outputs, checkpoints, and secrets.
 - [ ] Commit and push the completed launch package.
-

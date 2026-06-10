@@ -1,0 +1,38 @@
+name: Paper
+
+on:
+  push:
+    paths:
+      - "paper/**"
+      - "scripts/make_paper_tables.py"
+      - ".github/workflows/paper.yml"
+  pull_request:
+    paths:
+      - "paper/**"
+      - "scripts/make_paper_tables.py"
+      - ".github/workflows/paper.yml"
+
+jobs:
+  paper-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Generate documented tables
+        run: python scripts/make_paper_tables.py
+
+      - name: Verify required paper files
+        run: test -f paper/main.tex && test -f paper/references.bib
+
+      - name: Compile when latexmk exists
+        shell: bash
+        run: |
+          if command -v latexmk >/dev/null 2>&1; then
+            latexmk -pdf -interaction=nonstopmode -halt-on-error -cd paper/main.tex
+          else
+            echo "latexmk unavailable; required paper files were verified."
+          fi

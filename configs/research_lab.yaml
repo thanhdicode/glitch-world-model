@@ -1,0 +1,16 @@
+project:
+  name: glitch-world-model
+  phase: phase6e_complete
+  next_phase: phase7a_lewm_integration_audit
+
+policy:
+  locked_test_enabled: false
+  kaggle_upload_enabled: false
+  gpu_training_enabled: false
+  commit_outputs: false
+  claim_registry: docs/research/16_claim_registry.md
+
+tracking:
+  backend: mlflow
+  uri: local
+  gitignored: true

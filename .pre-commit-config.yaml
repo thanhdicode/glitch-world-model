@@ -1,11 +1,12 @@
+exclude: ^(data/|outputs/|external/|docs/roadmap/)
+
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v5.0.0
     hooks:
       - id: trailing-whitespace
-        exclude: ^(data/|outputs/|external/)
+        exclude: ^docs/research/17_source_verification_log\.md$
       - id: end-of-file-fixer
-        exclude: ^(data/|outputs/|external/)
       - id: check-yaml
       - id: check-toml
       - id: check-json
@@ -13,8 +14,8 @@ repos:
       - id: detect-private-key
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.8.6
+    rev: v0.14.11
     hooks:
       - id: ruff
-        args: [--fix]
       - id: ruff-format
+        args: [--check]

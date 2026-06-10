@@ -53,6 +53,54 @@ python scripts\run_phase6e_kaggle_automation.py --dry-run
 Live upload and kernel push require separate one-time approvals. The June 10, 2026 run consumed
 fingerprint-bound approvals and completed artifact ingestion while keeping locked test untouched.
 
+## Research-Grade Workflow
+
+The repository is governed as a reproducible ML research lab. Start with [AGENTS.md](AGENTS.md),
+the [Codex task protocol](docs/workflows/codex_task_protocol.md), the
+[claim protocol](docs/workflows/research_claim_protocol.md), and the
+[experiment release gates](docs/workflows/experiment_release_gates.md).
+
+Install project development tools without adding GPU frameworks to the default environment:
+
+```powershell
+uv venv
+uv pip install -e ".[dev]"
+```
+
+Pip fallback:
+
+```powershell
+python -m pip install -e ".[dev]"
+```
+
+Install and run repository hooks:
+
+```powershell
+pre-commit install
+pre-commit run --all-files
+```
+
+Run the local research release gate:
+
+```powershell
+python -m pytest
+python -m ruff check .
+python -m ruff format --check .
+python scripts\validate_research_release.py --ci
+python scripts\check_claim_registry.py
+```
+
+Generate paper tables and compile the cautious paper scaffold when `latexmk` is available:
+
+```powershell
+python scripts\make_paper_tables.py
+latexmk -pdf -cd paper/main.tex
+```
+
+Current status: Phase 6E is complete as a validation-only engineering result; real LeWM is not
+implemented. The next phase is the Phase 7A LeWM integration audit. Do not touch locked test
+without satisfying the documented release gate and receiving explicit authorization.
+
 Phase 0 verification commands:
 
 ```powershell

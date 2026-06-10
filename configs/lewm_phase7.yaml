@@ -1,0 +1,21 @@
+phase: phase7a_lewm_integration_audit
+mode: audit_only
+
+implementation:
+  enabled: false
+  fine_tuning_enabled: false
+  checkpoint_loading_verified: false
+  inference_verified: false
+
+evaluation:
+  validation_only: true
+  locked_test_enabled: false
+
+required_audits:
+  - license
+  - upstream_commit
+  - checkpoint_provenance
+  - dependencies
+  - preprocessing
+  - tensor_interfaces
+  - scorer_contract

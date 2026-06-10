@@ -87,4 +87,3 @@ grouped split, rebase local clip paths for Kaggle, train once, and score validat
 - [ ] Run the Kaggle runner in dry-run mode against the local Phase 6D seed-42 inputs.
 - [ ] Audit `git status` and ensure no data, outputs, checkpoint, or cache artifact is staged.
 - [ ] Commit and push the completed phase.
-

@@ -115,4 +115,3 @@ It writes `artifact_validation_report.md` and `artifact_validation_summary.json`
 - Run orchestrator dry-run only against local Phase 6E inputs.
 - Run full pytest and ruff checks.
 - Verify no generated data, output, checkpoint, or credentials are staged.
-

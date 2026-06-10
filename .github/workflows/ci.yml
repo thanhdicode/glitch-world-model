@@ -32,8 +32,11 @@ jobs:
       - name: Ruff format check
         run: python -m ruff format --check .
 
-      - name: Pytest with coverage
-        run: python -m pytest --cov=glitch_detection --cov-report=term-missing
+      - name: Pytest
+        run: python -m pytest
 
-      - name: Synthetic demo smoke test
-        run: python scripts/run_synthetic_demo.py
+      - name: Research release validation
+        run: python scripts/validate_research_release.py --ci
+
+      - name: Claim registry validation
+        run: python scripts/check_claim_registry.py
