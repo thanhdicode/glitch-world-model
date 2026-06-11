@@ -51,6 +51,12 @@ Kaggle output artifacts, and installs only the minimal LeWM smoke dependencies. 
 package/request uses kernel slug `huynhdieuthanh/lewm-gate5-cuda-smoke-v4` and waits for fresh
 approval of fingerprint `e3a3ad6bcfd73c99ee295003041db7651e375a1d970b11bd3665a7393c87382a`.
 
+The approved v4 push installed the minimal runtime and reached the Lance loader, but failed before
+epoch 1 because `stable-worldmodel==0.1.1` attempted to create writable Lance connection state
+under read-only `/kaggle/input`. The v5 generator copies train and validation Lance directories
+to `/tmp/lewm_input` before training. V5 packaging is currently `BLOCKED_ON_DATASET` because the
+required local source root `outputs/gate5/source` is absent; no v5 fingerprint or approval exists.
+
 The reusable runner `scripts/run_kaggle_lewm.py` was first verified locally on synthetic data.
 On 2026-06-11, reduced real-gameplay CPU smokes also completed forward/backward and hash-matching
 resume from epoch 1 to epoch 2 for both the TempGlitch zero-action and WOB real-action paths.

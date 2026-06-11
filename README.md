@@ -140,7 +140,9 @@ training because the generated script looked for `/kaggle/src/lewm-runtime.txt`.
 v3 push was accepted by Kaggle, then failed before training because full LeWM environment
 dependency installation failed while building `box2d-py`. A v4 package now uses
 `huynhdieuthanh/lewm-gate5-cuda-smoke-v4` with minimal smoke dependencies and has a fresh request
-fingerprint, but another live attempt still requires explicit approval.
+fingerprint. Its approved run reached the Lance loader, then failed because `/kaggle/input` is
+read-only. The v5 generator copies the Lance datasets to `/tmp/lewm_input`; v5 packaging is
+blocked until the required local source root is restored.
 
 The reusable split-safe core is implemented in
 `src/glitch_detection/experiment_protocol.py`. It validates grouped splits, fits
@@ -249,9 +251,9 @@ isolated LeWM environment and compatible checkpoint/data contracts:
 python -m glitch_detection.lewm_latent --manifest data/processed/my_experiment/manifest.csv --labels data/raw/my_labels.csv --output outputs/my_experiment_lewm_scores.csv --checkpoint path/to/lewm.ckpt
 ```
 
-The next evidence step is to approve the v4 Gate 5 kernel fingerprint, then complete one
-CUDA train/resume smoke with locally validated artifacts. Gameplay-scale scoring and validation
-metrics remain later gates.
+The next evidence step is to restore the v5 source root, prepare a fingerprint-bound package and
+approval request, then complete one approved CUDA train/resume smoke with locally validated
+artifacts. Gameplay-scale scoring and validation metrics remain later gates.
 
 Audit the Phase 6E neural training partition without loading PyTorch or touching test:
 

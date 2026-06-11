@@ -1,7 +1,7 @@
 # Gate 5 Kaggle CUDA Smoke Results
 
 Status date: 2026-06-11
-Result: third approved submission executed and failed before training
+Result: fourth approved submission executed and failed before epoch 1
 
 ## Execution Record
 
@@ -51,10 +51,37 @@ The generator has therefore been updated again for the next package to clone the
 `/tmp/glitch-world-model` and install only the minimal smoke dependencies:
 `stable-worldmodel==0.1.1`, `stable-pretraining==0.1.7`, and `transformers==4.57.6`.
 
+## V4 Failure Analysis
+
+A fresh approval was created for fingerprint
+`e3a3ad6bcfd73c99ee295003041db7651e375a1d970b11bd3665a7393c87382a`. Dataset status was `ready`,
+the approval was consumed at `2026-06-11T05:34:30.433734+00:00`, and exactly one push was
+submitted for kernel `huynhdieuthanh/lewm-gate5-cuda-smoke-v4`. Kaggle accepted version 1, then
+the run reached `KernelWorkerStatus.ERROR`.
+
+V4 successfully cloned the repository, installed the minimal pinned dependencies, imported
+Torch, verified CUDA, and wrote `run_config.json` and `environment.json`. It failed before epoch
+1 when `stable-worldmodel==0.1.1` opened the Lance dataset directly under the read-only Kaggle
+input mount:
+
+```text
+OSError: [Errno 30] Read-only file system:
+'/kaggle/input/lewm-tempglitch-gate5-smoke'
+```
+
+`LanceDataset` uses `lancedb.connect`, which requires a writable dataset parent for its local
+connection metadata. V5 fixes this by copying the train and validation Lance directories from
+`/kaggle/input` to `/tmp/lewm_input` before either `train_lewm` call and passing only the writable
+`/tmp` paths to the loader.
+
+The v5 source fix is implemented and covered by focused tests. Package preparation is currently
+`BLOCKED_ON_DATASET` because the required local source root `outputs/gate5/source` is absent.
+Therefore the v5 kernel fingerprint remains `PENDING`; no v5 approval or live action exists.
+
 ## Evidence Outcome
 
-- CUDA run started: no verified evidence.
-- CUDA used: not established.
+- CUDA run started: v4 initialized the CUDA environment, but no epoch completed.
+- CUDA used for training: not established.
 - Training completed: not established.
 - Resume advanced: not established.
 - Expected artifacts downloaded: no; only error logs and partial ignored output were downloaded.
@@ -67,10 +94,6 @@ records, not training evidence.
 
 ## Next Action
 
-The v2 and v3 approvals are consumed and must not be reused. A new ignored v4 package/request has
-been prepared with kernel slug `huynhdieuthanh/lewm-gate5-cuda-smoke-v4`, minimal dependency
-installation, `/tmp` repository clone location, and fingerprint:
-
-`e3a3ad6bcfd73c99ee295003041db7651e375a1d970b11bd3665a7393c87382a`
-
-Any further live push requires a fresh explicit approval for that exact v4 fingerprint.
+The v2, v3, and v4 approvals are consumed and must not be reused. Restore the required v5 source
+root, prepare `huynhdieuthanh/lewm-gate5-cuda-smoke-v5`, generate its fingerprint-bound request,
+and obtain fresh explicit owner approval before any further live push.

@@ -19,6 +19,8 @@ local package. No downloaded Kaggle CUDA train/resume artifact set exists.
   `huynhdieuthanh/lewm-gate5-cuda-smoke-v2` version 1, then the run failed before training.
 - Third kernel approval: consumed at `2026-06-11T05:01:48.445275+00:00`; Kaggle accepted
   `huynhdieuthanh/lewm-gate5-cuda-smoke-v3` version 1, then the run failed before training.
+- Fourth kernel approval: consumed at `2026-06-11T05:34:30.433734+00:00`; Kaggle accepted
+  `huynhdieuthanh/lewm-gate5-cuda-smoke-v4` version 1, then the run failed before epoch 1.
 - Confirmed 409 preflight cause: the consumed package used the same Kaggle slug for dataset and
   kernel, `huynhdieuthanh/lewm-tempglitch-gate5-smoke`.
 - Corrected v2 ignored package prepared after the 409 incident:
@@ -46,6 +48,11 @@ local package. No downloaded Kaggle CUDA train/resume artifact set exists.
   `e3a3ad6bcfd73c99ee295003041db7651e375a1d970b11bd3665a7393c87382a`.
 - New v4 approval request root:
   `outputs/gate5/approvals/tempglitch_kernel_v4`.
+- v4 failure cause: `LanceDataset` attempted to create writable connection state under the
+  read-only `/kaggle/input/lewm-tempglitch-gate5-smoke` mount.
+- v5 source fix: copy train and validation Lance directories to `/tmp/lewm_input` and pass those
+  writable paths to both `train_lewm` calls.
+- v5 package/fingerprint: `PENDING`; required source root `outputs/gate5/source` is absent.
 - Locked test: not packaged, materialized, or scored.
 
 ## 409 Diagnosis Matrix
@@ -111,5 +118,5 @@ The strict validator now checks:
 - finite collapse diagnostics;
 - false locked-test flags in both protocol and training metadata.
 
-The package dry-run and focused validator fixtures pass locally. The v4 package/request are ready
-for a new human approval, but this is engineering evidence only; it does not upgrade Gate 5.
+The focused v5 generator tests pass locally. V5 package creation is `BLOCKED_ON_DATASET` until
+`outputs/gate5/source` is restored; this engineering evidence does not upgrade Gate 5.

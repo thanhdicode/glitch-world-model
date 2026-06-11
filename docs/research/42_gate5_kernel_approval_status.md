@@ -2,7 +2,7 @@
 
 Status date: 2026-06-11
 
-## Status: READY_FOR_V4_KERNEL_APPROVAL
+## Status: BLOCKED_ON_V5_DATASET_SOURCE
 
 The one-time kernel approval matched fingerprint
 `8c918c264e3a840e47ab11b540de38c2ce0520ca0688bb280637fff49d68d0a4`,
@@ -86,4 +86,16 @@ package/request has been prepared:
   `e3a3ad6bcfd73c99ee295003041db7651e375a1d970b11bd3665a7393c87382a`
 
 The request records are in ignored storage at `outputs/gate5/approvals/tempglitch_kernel_v4`.
-They are not approvals. Live push remains blocked until the exact v4 fingerprint is approved.
+The associated approval was later created and consumed exactly once as recorded below.
+
+## Consumed V4 Approval And V5 Status
+
+The v4 approval for fingerprint
+`e3a3ad6bcfd73c99ee295003041db7651e375a1d970b11bd3665a7393c87382a` was consumed at
+`2026-06-11T05:34:30.433734+00:00` for exactly one push. Kaggle accepted version 1, then the run
+failed before epoch 1 because `LanceDataset` attempted to write under read-only `/kaggle/input`.
+
+The v5 generator now copies the two Lance directories to writable `/tmp/lewm_input` before
+training. No v5 package or request has been generated because the required source root
+`outputs/gate5/source` is absent. V5 fingerprint and approval status are therefore `PENDING` and
+`BLOCKED_ON_DATASET`, respectively. No live push is authorized.

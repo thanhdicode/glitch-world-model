@@ -3,8 +3,8 @@
 Last updated: 2026-06-11
 Status owner: repository owner / technical program lead
 Canonical branch at update: `main`
-Evidence cutoff: commit `d50e3c7f0072219abdfd83eeec9622cf648a3351` plus the documented
-2026-06-11 Gate 5 409 diagnosis, v2/v3 pre-training failures, and v4 approval request
+Evidence cutoff: commit `344c137` plus the documented 2026-06-11 Gate 5 v1-v4 failures and v5
+`/tmp/lewm_input` source fix
 
 ## 0. How To Use This Playbook
 
@@ -99,10 +99,10 @@ The repository has not verified:
 - LeWM superiority, SIGReg benefit, temporal localization, or state of the art;
 - a neural locked-test result.
 
-The immediate blocker is Gate 5: obtain fresh exact approval for the v4 kernel fingerprint, run
-the CUDA smoke once, prove checkpoint resume, download the expected artifact set, and pass strict
-local validation. Until that happens, all positive LeWM language must remain at the
-integration-engineering level.
+The immediate blocker is Gate 5: restore the required local v5 source root, prepare and
+fingerprint the v5 package, obtain fresh exact approval, run the CUDA smoke once, prove checkpoint
+resume, download the expected artifact set, and pass strict local validation. Until that happens,
+all positive LeWM language must remain at the integration-engineering level.
 
 ## 3. Why This Project Exists
 
@@ -239,7 +239,7 @@ Status date: 2026-06-11.
 | 2 | passed | `37_lewm_runtime_checkpoint_report.md` | gameplay use | Checkpoint integration only. |
 | 3 | passed | frozen TempGlitch/WOB protocol artifacts summarized in report 40 | official TempGlitch pair IDs; replay action audit | Dataset protocol claim allowed with limitations. |
 | 4 | passed | real-data Lance loader proof in reports 38 and 40 | full-scale materialization | Reduced conversion claim allowed. |
-| 5 | partial | package, hardened validator, CPU train/resume smokes, ready private dataset, 409 diagnosis, v2 runtime-failure diagnosis, v3 dependency-failure diagnosis, v4 request | fresh v4 approval and validated Kaggle CUDA/resume artifact set | No LeWM GPU-training claim. |
+| 5 | partial | package, hardened validator, CPU train/resume smokes, ready private dataset, v1-v4 failure diagnoses, v5 `/tmp` copy fix | v5 source/package/fingerprint, fresh approval, and validated Kaggle CUDA/resume artifact set | No LeWM GPU-training claim. |
 | 6 | not run | none | gameplay-scale normal-only checkpoint and diagnostics | No gameplay-training claim. |
 | 7 | not run | none | LeWM validation scores/metrics/hashes | No LeWM detection claim or LeWM title. |
 | 8 | not run | none | same-split baseline comparison | No superiority claim. |
@@ -253,9 +253,12 @@ to the dataset slug. A second exact approval for the corrected v2 package was th
 one push; Kaggle accepted the kernel version, but it failed before training because the generated
 script looked for `/kaggle/src/lewm-runtime.txt`. A third exact approval for v3 was consumed for
 one push; Kaggle accepted the kernel version, but full LeWM environment dependency installation
-failed on `box2d-py` before training. A v4 package/request now exists with minimal smoke
-dependencies and a `/tmp` repository clone location, but Gate 5 remains partial with no CUDA
-artifact set. The Phase 6E Conv3D run is separate and must not be mistaken for LeWM Gate 5.
+failed on `box2d-py` before training. V4 installed minimal dependencies and reached the real Lance
+loader, then failed because `LanceDataset` attempted to write under read-only `/kaggle/input`.
+The v5 generator copies both Lance datasets to writable `/tmp/lewm_input`, but package generation
+is blocked because `outputs/gate5/source` is absent. Gate 5 remains partial with no CUDA
+train/resume artifact set. The Phase 6E Conv3D run is separate and must not be mistaken for LeWM
+Gate 5.
 
 ## 9. Gate Roadmap To FISAT 2026
 
@@ -885,15 +888,14 @@ granularity, negative results, and lessons for reproducible game-QA anomaly rese
 | Priority | Owner | Action | Files/commands | Acceptance criteria | Main risk |
 | --- | --- | --- | --- | --- | --- |
 | 1, complete | owner | Merge/push governance foundation | `main` at `0ceef40` | governance files are on `origin/main` | none |
-| 2 | owner | Approve v4 Gate 5 kernel fingerprint | reports 41-43, Section 23, Gate 5 workflow | exact approval exists for `e3a3ad6b...382a` | approval expiry |
+| 2 | Dataset + Kaggle operator | Restore v5 source and prepare package/request | reports 41-43, Section 23, Gate 5 workflow | exact v5 fingerprint request exists | missing local source |
 | 3 | Kaggle GPU Operator + owner | Complete Gate 5 CUDA smoke/resume | Section 23 and Gate 5 workflow | strict validator passes | quota/OOM/runtime failure |
 | 4 | Security Artifact Guard | Download and validate artifacts | `validate_lewm_kaggle_artifacts.py` | immutable report and hashes | partial/mismatched download |
 | 5 | LeWM Integration + ML Research Engineers | Open Gates 6-7 validation-only path | training/scoring modules and protocol | gameplay checkpoint and finite validation metrics | collapse/domain mismatch |
 | 6 | Locked Test Release Officer | Keep locked test closed | release workflow | no materialization/scoring before frozen decision | schedule pressure |
 
-Current recommended task: create the fresh approval artifact for v4 kernel fingerprint
-`e3a3ad6bcfd73c99ee295003041db7651e375a1d970b11bd3665a7393c87382a`, then perform exactly one
-approved kernel push and validate downloaded artifacts.
+Current recommended task: restore `outputs/gate5/source`, prepare and fingerprint the v5 kernel
+package, then obtain fresh owner approval before one live push and strict artifact validation.
 
 ## 29. Maintenance Rules For This Playbook
 
