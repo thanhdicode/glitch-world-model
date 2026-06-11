@@ -15,9 +15,10 @@ Status: implementation roadmap; all unexecuted experiments remain `experiment-pe
   execution. The second approved v2 push was accepted by Kaggle, then failed before training due
   to a generated-script dependency path issue. The third approved v3 push was accepted by Kaggle,
   then failed before training because full LeWM environment dependency installation failed on
-  `box2d-py`. V4 reached the Lance loader, then failed because `/kaggle/input` is read-only. The
-  v5 generator copies Lance data to `/tmp`, but package creation is blocked by a missing local
-  source root. Kaggle CUDA train/resume proof remains missing.
+  `box2d-py`. V4 reached the Lance loader, then failed because `/kaggle/input` is read-only. V5
+  copied Lance data to `/tmp` but failed on a fixed Kaggle mount-path assumption; offline v6 now
+  discovers the named Lance directories recursively and awaits exact approval. Kaggle CUDA
+  train/resume proof remains missing.
 - Gates 6-10: not run. Locked test remains closed.
 
 ## 1. Executive Decision
@@ -456,11 +457,12 @@ The project may call the method **LeWM-based** only when all are true:
 
 ## 12. Immediate Next Gate
 
-Gate 5 now requires restoration of the v5 local source, a newly fingerprinted and approved v5
-Kaggle CUDA train/resume smoke, and strict local artifact validation. The prior kernel-push
-approvals were consumed by the HTTP 409 attempt and v2-v4 failures, and do not authorize a retry.
-Dataset upload and kernel push remain separate fingerprint-bound approvals. No live action is
-authorized by this roadmap update.
+Gate 5 now requires exact approval for offline v6 fingerprint
+`358e2d77c60c3986be2e84f3c6044200ebfcc2a5fe8f68b0800273fc8c7b6910`, one Kaggle CUDA
+train/resume smoke, and strict local artifact validation. The prior kernel-push approvals were
+consumed by the HTTP 409 attempt and v2-v5 failures, and do not authorize a retry. Dataset upload
+and kernel push remain separate fingerprint-bound approvals. No live action is authorized by
+this roadmap update.
 
 After Gate 5, Gate 6 may open for normal-only gameplay training. Gate 7 remains the first point at
 which gameplay-scale LeWM surprise scores and validation metrics can support a LeWM method claim.

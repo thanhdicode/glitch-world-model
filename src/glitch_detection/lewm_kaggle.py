@@ -105,16 +105,25 @@ from pathlib import Path
 
 CONFIG = json.loads({payload!r})
 OUTPUT = Path("/kaggle/working")
-DATASET = Path("/kaggle/input") / CONFIG["dataset_slug"].split("/")[-1]
+INPUT_ROOT = Path("/kaggle/input")
 REPO = Path("/tmp/glitch-world-model")
 
 if not CONFIG["validation_only"]:
     raise RuntimeError("Locked-test execution is forbidden in this kernel.")
 
+def _find_lance_dataset(name):
+    matches = sorted(path for path in INPUT_ROOT.rglob(name) if path.is_dir())
+    if len(matches) != 1:
+        raise RuntimeError(
+            f"Expected exactly one Kaggle input directory named {{name!r}}, "
+            f"found {{len(matches)}}: {{matches}}"
+        )
+    return matches[0]
+
 _tmp_input = Path("/tmp/lewm_input")
 _tmp_input.mkdir(parents=True, exist_ok=True)
-_train_src = DATASET / CONFIG["train_dataset_name"]
-_val_src = DATASET / CONFIG["validation_dataset_name"]
+_train_src = _find_lance_dataset(CONFIG["train_dataset_name"])
+_val_src = _find_lance_dataset(CONFIG["validation_dataset_name"])
 _train_dst = _tmp_input / CONFIG["train_dataset_name"]
 _val_dst = _tmp_input / CONFIG["validation_dataset_name"]
 if not _train_dst.exists():

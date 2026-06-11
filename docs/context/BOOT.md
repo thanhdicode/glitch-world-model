@@ -1,7 +1,7 @@
 # BOOT.md - Fast Start Context For Agents
 
-Generated: 2026-06-11T06:17:37+00:00
-Commit: `0bec339afc854fa7f518c46c63867e691c16a362`
+Generated: 2026-06-11T06:32:55+00:00
+Commit: `54fa49f37b99dca85fcd9329c8924ede05776c21`
 
 ## Read Order
 1. `RULES.md`
@@ -25,8 +25,9 @@ context cache is stale. Use `docs/context/REPO_MAP.md` before broad repo searche
 
 ## Immediate Next Task
 - Complete or unblock Gate 5 Kaggle CUDA smoke/resume artifact.
-- Current known blocker: the required v5 source root `outputs/gate5/source` is absent, so the v5
-  package, fingerprint, and approval request are pending.
+- Current known blocker: v5 failed because its fixed Kaggle mount path did not contain the Lance
+  directories. The offline v6 package discovers each named Lance directory under
+  `/kaggle/input`; its exact fingerprint is awaiting approval.
 
 ## Safety
 - No Kaggle live action without a current fingerprint-bound approval.

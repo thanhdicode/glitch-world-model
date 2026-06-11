@@ -53,6 +53,10 @@ def test_kaggle_package_dry_run_is_validation_only(tmp_path: Path):
     assert 'git", "clone"' in kernel
     assert 'Path("/tmp/lewm_input")' in kernel
     assert "_shutil.copytree" in kernel
+    assert 'INPUT_ROOT = Path("/kaggle/input")' in kernel
+    assert "INPUT_ROOT.rglob(name)" in kernel
+    assert "Expected exactly one Kaggle input directory" in kernel
+    assert 'DATASET = Path("/kaggle/input")' not in kernel
     assert "/kaggle/input" not in kernel.split("train_lewm")[1]
     assert 'Path("/tmp/glitch-world-model")' in kernel
     assert "stable-worldmodel==0.1.1" in kernel

@@ -53,9 +53,10 @@ approval of fingerprint `e3a3ad6bcfd73c99ee295003041db7651e375a1d970b11bd3665a73
 
 The approved v4 push installed the minimal runtime and reached the Lance loader, but failed before
 epoch 1 because `stable-worldmodel==0.1.1` attempted to create writable Lance connection state
-under read-only `/kaggle/input`. The v5 generator copies train and validation Lance directories
-to `/tmp/lewm_input` before training. V5 packaging is currently `BLOCKED_ON_DATASET` because the
-required local source root `outputs/gate5/source` is absent; no v5 fingerprint or approval exists.
+under read-only `/kaggle/input`. V5 copied train and validation Lance directories to
+`/tmp/lewm_input`, but failed because Kaggle did not expose them under the fixed dataset-slug
+mount path. V6 resolves each uniquely named Lance directory recursively under `/kaggle/input`
+before copying it. V6 is prepared offline and remains unapproved.
 
 The reusable runner `scripts/run_kaggle_lewm.py` was first verified locally on synthetic data.
 On 2026-06-11, reduced real-gameplay CPU smokes also completed forward/backward and hash-matching

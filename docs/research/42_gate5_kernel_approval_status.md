@@ -2,7 +2,7 @@
 
 Status date: 2026-06-11
 
-## Status: BLOCKED_ON_V5_DATASET_SOURCE
+## Status: BLOCKED_ON_V6_APPROVAL
 
 The one-time kernel approval matched fingerprint
 `8c918c264e3a840e47ab11b540de38c2ce0520ca0688bb280637fff49d68d0a4`,
@@ -88,14 +88,32 @@ package/request has been prepared:
 The request records are in ignored storage at `outputs/gate5/approvals/tempglitch_kernel_v4`.
 The associated approval was later created and consumed exactly once as recorded below.
 
-## Consumed V4 Approval And V5 Status
+## Consumed V4 And V5 Approvals
 
 The v4 approval for fingerprint
 `e3a3ad6bcfd73c99ee295003041db7651e375a1d970b11bd3665a7393c87382a` was consumed at
 `2026-06-11T05:34:30.433734+00:00` for exactly one push. Kaggle accepted version 1, then the run
 failed before epoch 1 because `LanceDataset` attempted to write under read-only `/kaggle/input`.
 
-The v5 generator now copies the two Lance directories to writable `/tmp/lewm_input` before
-training. No v5 package or request has been generated because the required source root
-`outputs/gate5/source` is absent. V5 fingerprint and approval status are therefore `PENDING` and
-`BLOCKED_ON_DATASET`, respectively. No live push is authorized.
+The existing ignored Lance source was found at `outputs/gate5/packages/tempglitch/dataset`, so v5
+was prepared without rebuilding or uploading the dataset:
+
+- v5 kernel slug: `huynhdieuthanh/lewm-gate5-cuda-smoke-v5`
+- v5 kernel fingerprint:
+  `b98afd071bdf7ccc2bd1e4734689fdf09f67d0d44d4651369c3e1b112baaab79`
+- v5 kernel inventory SHA-256:
+  `5eff3b80c49281e1bd048203a892080f8c76c7f9343f6f13bbda76772f906a1c`
+- v5 kernel metadata SHA-256:
+  `85f7a4c8b75f90f902c4f1586209d89f3fb8d956184f7c563997ead7b64b54ba`
+- v5 kernel script SHA-256:
+  `dd83600815fa217348a68c4ec0b5f5236d23b05fead1329504369fd46b04d386`
+
+Preflight returned `approval_status: valid`, the remote dataset returned `ready`, and the v5
+approval was consumed at `2026-06-11T06:27:45.100446+00:00`. Exactly one push was accepted, then
+v5 failed because its fixed dataset-slug mount path did not contain
+`tempglitch_train.lance`.
+
+The offline v6 package now recursively discovers the two uniquely named Lance directories under
+`/kaggle/input` before copying them to `/tmp`. Its request fingerprint is
+`358e2d77c60c3986be2e84f3c6044200ebfcc2a5fe8f68b0800273fc8c7b6910`. Approval is missing, so no
+v6 live push is authorized.

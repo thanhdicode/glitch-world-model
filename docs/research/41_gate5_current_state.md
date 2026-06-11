@@ -52,7 +52,17 @@ local package. No downloaded Kaggle CUDA train/resume artifact set exists.
   read-only `/kaggle/input/lewm-tempglitch-gate5-smoke` mount.
 - v5 source fix: copy train and validation Lance directories to `/tmp/lewm_input` and pass those
   writable paths to both `train_lewm` calls.
-- v5 package/fingerprint: `PENDING`; required source root `outputs/gate5/source` is absent.
+- v5 source root: restored from the existing ignored package parent
+  `outputs/gate5/packages/tempglitch/dataset`.
+- v5 kernel fingerprint:
+  `b98afd071bdf7ccc2bd1e4734689fdf09f67d0d44d4651369c3e1b112baaab79`.
+- v5 approval: consumed at `2026-06-11T06:27:45.100446+00:00`; exactly one push was accepted.
+- v5 failure cause: Kaggle did not expose either named Lance directory under the fixed
+  `/kaggle/input/lewm-tempglitch-gate5-smoke` path.
+- v6 offline fix: discover each named Lance directory recursively under `/kaggle/input` before
+  copying it to `/tmp/lewm_input`.
+- v6 request fingerprint:
+  `358e2d77c60c3986be2e84f3c6044200ebfcc2a5fe8f68b0800273fc8c7b6910`; approval is missing.
 - Locked test: not packaged, materialized, or scored.
 
 ## 409 Diagnosis Matrix
@@ -118,5 +128,6 @@ The strict validator now checks:
 - finite collapse diagnostics;
 - false locked-test flags in both protocol and training metadata.
 
-The focused v5 generator tests pass locally. V5 package creation is `BLOCKED_ON_DATASET` until
-`outputs/gate5/source` is restored; this engineering evidence does not upgrade Gate 5.
+The focused generator tests pass locally. V5 produced only an error log, and strict validation
+failed because all nine required artifacts were missing. The offline v6 package is ready but
+unapproved; this engineering evidence does not upgrade Gate 5.

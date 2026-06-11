@@ -1,7 +1,7 @@
 # Gate 5 Kaggle CUDA Smoke Results
 
 Status date: 2026-06-11
-Result: fourth approved submission executed and failed before epoch 1
+Result: fifth approved submission executed and failed before training
 
 ## Execution Record
 
@@ -74,13 +74,31 @@ connection metadata. V5 fixes this by copying the train and validation Lance dir
 `/kaggle/input` to `/tmp/lewm_input` before either `train_lewm` call and passing only the writable
 `/tmp` paths to the loader.
 
-The v5 source fix is implemented and covered by focused tests. Package preparation is currently
-`BLOCKED_ON_DATASET` because the required local source root `outputs/gate5/source` is absent.
-Therefore the v5 kernel fingerprint remains `PENDING`; no v5 approval or live action exists.
+## V5 Failure Analysis
+
+The existing ignored Lance source was found under
+`outputs/gate5/packages/tempglitch/dataset`. V5 was prepared with fingerprint
+`b98afd071bdf7ccc2bd1e4734689fdf09f67d0d44d4651369c3e1b112baaab79`; preflight was valid, the
+dataset was ready, and the approval was consumed at `2026-06-11T06:27:45.100446+00:00`.
+Exactly one v5 push was accepted.
+
+V5 failed immediately because the runtime did not expose the Lance directories at the fixed
+dataset-slug mount path:
+
+```text
+FileNotFoundError: [Errno 2] No such file or directory:
+'/kaggle/input/lewm-tempglitch-gate5-smoke/tempglitch_train.lance'
+```
+
+The Kaggle dataset API still listed all eight expected Lance files. The next offline package
+therefore discovers each uniquely named Lance directory recursively under `/kaggle/input` and
+then copies it to `/tmp/lewm_input`. V6 fingerprint is
+`358e2d77c60c3986be2e84f3c6044200ebfcc2a5fe8f68b0800273fc8c7b6910`; it is not approved.
 
 ## Evidence Outcome
 
-- CUDA run started: v4 initialized the CUDA environment, but no epoch completed.
+- CUDA run started: v4 initialized the CUDA environment, but no epoch completed; v5 failed before
+  CUDA initialization.
 - CUDA used for training: not established.
 - Training completed: not established.
 - Resume advanced: not established.
@@ -94,6 +112,6 @@ records, not training evidence.
 
 ## Next Action
 
-The v2, v3, and v4 approvals are consumed and must not be reused. Restore the required v5 source
-root, prepare `huynhdieuthanh/lewm-gate5-cuda-smoke-v5`, generate its fingerprint-bound request,
-and obtain fresh explicit owner approval before any further live push.
+The v2-v5 approvals are consumed and must not be reused. Obtain fresh explicit owner approval for
+v6 fingerprint `358e2d77c60c3986be2e84f3c6044200ebfcc2a5fe8f68b0800273fc8c7b6910` before any further live
+push. Do not retry v5.
