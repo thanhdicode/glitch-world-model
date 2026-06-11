@@ -98,6 +98,7 @@ def render_validation_kernel(config: LeWMKaggleConfig) -> str:
     return f'''"""Generated validation-only LeWM Kaggle entrypoint."""
 import json
 import platform
+import shutil as _shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -110,6 +111,16 @@ REPO = Path("/tmp/glitch-world-model")
 if not CONFIG["validation_only"]:
     raise RuntimeError("Locked-test execution is forbidden in this kernel.")
 
+_tmp_input = Path("/tmp/lewm_input")
+_tmp_input.mkdir(parents=True, exist_ok=True)
+_train_src = DATASET / CONFIG["train_dataset_name"]
+_val_src = DATASET / CONFIG["validation_dataset_name"]
+_train_dst = _tmp_input / CONFIG["train_dataset_name"]
+_val_dst = _tmp_input / CONFIG["validation_dataset_name"]
+if not _train_dst.exists():
+    _shutil.copytree(str(_train_src), str(_train_dst))
+if not _val_dst.exists():
+    _shutil.copytree(str(_val_src), str(_val_dst))
 subprocess.check_call([
     "git", "clone", "--depth", "1", "--branch", "main",
     "https://github.com/thanhdicode/glitch-world-model.git", str(REPO)
@@ -145,15 +156,15 @@ train_config = LeWMTrainConfig(
     max_validation_steps=CONFIG["max_validation_steps"],
 )
 first = train_lewm(
-    DATASET / CONFIG["train_dataset_name"],
-    DATASET / CONFIG["validation_dataset_name"],
+    _train_dst,
+    _val_dst,
     OUTPUT,
     train_config,
     device="cuda",
 )
 result = train_lewm(
-    DATASET / CONFIG["train_dataset_name"],
-    DATASET / CONFIG["validation_dataset_name"],
+    _train_dst,
+    _val_dst,
     OUTPUT,
     train_config,
     device="cuda",

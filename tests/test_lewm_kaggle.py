@@ -51,6 +51,9 @@ def test_kaggle_package_dry_run_is_validation_only(tmp_path: Path):
     kernel = render_validation_kernel(_config())
     assert "Locked-test execution is forbidden" in kernel
     assert 'git", "clone"' in kernel
+    assert 'Path("/tmp/lewm_input")' in kernel
+    assert "_shutil.copytree" in kernel
+    assert "/kaggle/input" not in kernel.split("train_lewm")[1]
     assert 'Path("/tmp/glitch-world-model")' in kernel
     assert "stable-worldmodel==0.1.1" in kernel
     assert "stable-worldmodel[env,train]" not in kernel
