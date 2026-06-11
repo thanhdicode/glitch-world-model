@@ -16,10 +16,14 @@ fingerprints, and requires fresh fingerprint-bound approvals before any live act
 No locked-test dataset is included. No live upload, kernel push, or GPU training was performed
 during Phase 1-4 implementation.
 
-The reusable runner `scripts/run_kaggle_lewm.py` was verified locally on CPU with a reduced
-synthetic smoke configuration. It completed a real LeWM forward/backward step, saved checkpoint
-and weights artifacts, and resumed from epoch 1 to epoch 2 only when config and dataset hashes
-matched. This does not establish Kaggle CUDA training or gameplay performance.
+The reusable runner `scripts/run_kaggle_lewm.py` was first verified locally on synthetic data.
+On 2026-06-11, reduced real-gameplay CPU smokes also completed forward/backward and hash-matching
+resume from epoch 1 to epoch 2 for both the TempGlitch zero-action and WOB real-action paths.
+This does not establish Kaggle CUDA training or gameplay glitch-detection performance.
+
+The generated Gate 5 kernel now fails closed without CUDA, trains once, resumes once with the same
+config/data hashes, and requires the resumed epoch to advance. Downloaded artifacts must pass
+`scripts/validate_lewm_kaggle_artifacts.py`.
 
 ## Quota Policy
 

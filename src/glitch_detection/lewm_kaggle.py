@@ -17,8 +17,6 @@ REQUIRED_OUTPUTS = (
     "loss_history.json",
     "collapse_diagnostics.json",
     "checkpoint.sha256",
-    "validation_scores.csv",
-    "validation_metrics.json",
     "protocol_audit.json",
     "resume_metadata.json",
 )
@@ -36,6 +34,9 @@ class LeWMKaggleConfig:
     max_epochs: int = 1
     image_size: int = 112
     sigreg_projections: int = 128
+    max_train_steps: int = 2
+    max_validation_steps: int = 2
+    prove_resume: bool = True
     accelerator: str = "NvidiaTeslaT4"
     validation_only: bool = True
 
@@ -48,6 +49,8 @@ class LeWMKaggleConfig:
             )
         if self.batch_size < 1 or self.max_epochs < 1:
             raise ValueError("LeWM Kaggle batch_size and max_epochs must be positive.")
+        if self.max_train_steps < 1 or self.max_validation_steps < 1:
+            raise ValueError("LeWM Kaggle smoke step limits must be positive.")
 
 
 def quota_allocation(total_hours: float) -> dict[str, float]:
@@ -86,6 +89,9 @@ sys.path.insert(0, str(ROOT / "src"))
 import torch
 from glitch_detection.lewm_training import LeWMTrainConfig, train_lewm
 
+if not torch.cuda.is_available():
+    raise RuntimeError("Gate 5 LeWM smoke requires CUDA.")
+
 (OUTPUT / "run_config.json").write_text(json.dumps(CONFIG, indent=2) + "\\n")
 (OUTPUT / "environment.json").write_text(json.dumps({{
     "python": sys.version,
@@ -94,18 +100,36 @@ from glitch_detection.lewm_training import LeWMTrainConfig, train_lewm
     "cuda_available": torch.cuda.is_available(),
 }}, indent=2) + "\\n")
 
+train_config = LeWMTrainConfig(
+    image_size=CONFIG["image_size"],
+    batch_size=CONFIG["batch_size"],
+    epochs=CONFIG["max_epochs"],
+    sigreg_projections=CONFIG["sigreg_projections"],
+    max_train_steps=CONFIG["max_train_steps"],
+    max_validation_steps=CONFIG["max_validation_steps"],
+)
+first = train_lewm(
+    DATASET / CONFIG["train_dataset_name"],
+    DATASET / CONFIG["validation_dataset_name"],
+    OUTPUT,
+    train_config,
+    device="cuda",
+)
 result = train_lewm(
     DATASET / CONFIG["train_dataset_name"],
     DATASET / CONFIG["validation_dataset_name"],
     OUTPUT,
-    LeWMTrainConfig(
-        image_size=CONFIG["image_size"],
-        batch_size=CONFIG["batch_size"],
-        epochs=CONFIG["max_epochs"],
-        sigreg_projections=CONFIG["sigreg_projections"],
-    ),
+    train_config,
     device="cuda",
-)
+    resume=True,
+) if CONFIG["prove_resume"] else first
+if CONFIG["prove_resume"] and result["completed_epoch"] <= first["completed_epoch"]:
+    raise RuntimeError("LeWM resume proof did not advance the completed epoch.")
+(OUTPUT / "dataset_metadata.json").write_text(json.dumps({{
+    "dataset_id": CONFIG["dataset_id"],
+    "action_mode": CONFIG["action_mode"],
+    "dataset_hashes": result["dataset_hashes"],
+}}, indent=2) + "\\n")
 (OUTPUT / "protocol_audit.json").write_text(json.dumps({{
     "validation_only": True,
     "locked_test_materialized": False,
@@ -113,8 +137,10 @@ result = train_lewm(
 }}, indent=2) + "\\n")
 (OUTPUT / "resume_metadata.json").write_text(json.dumps({{
     "resume_supported": True,
+    "resume_proved": result["completed_epoch"] > first["completed_epoch"],
     "config_hash": result["config_hash"],
     "dataset_hashes": result["dataset_hashes"],
+    "initial_completed_epoch": first["completed_epoch"],
     "completed_epoch": result["completed_epoch"],
 }}, indent=2) + "\\n")
 '''
@@ -226,4 +252,43 @@ def request_package_approvals(package_root: Path, approvals_root: Path) -> dict[
         "dataset_upload_approval": dataset_request,
         "kernel_push_approval": kernel_request,
         "live_actions_performed": False,
+    }
+
+
+def validate_lewm_smoke_artifacts(root: Path) -> dict[str, Any]:
+    missing = [name for name in REQUIRED_OUTPUTS if not (root / name).is_file()]
+    if missing:
+        raise FileNotFoundError(f"Missing LeWM smoke artifacts: {', '.join(missing)}")
+    environment = json.loads((root / "environment.json").read_text(encoding="utf-8-sig"))
+    training = json.loads((root / "training_metadata.json").read_text(encoding="utf-8-sig"))
+    dataset = json.loads((root / "dataset_metadata.json").read_text(encoding="utf-8-sig"))
+    protocol = json.loads((root / "protocol_audit.json").read_text(encoding="utf-8-sig"))
+    resume = json.loads((root / "resume_metadata.json").read_text(encoding="utf-8-sig"))
+    checkpoint_hash = (root / "checkpoint.sha256").read_text(encoding="utf-8-sig").strip()
+    if environment.get("cuda_available") is not True or training.get("device") != "cuda":
+        raise ValueError("LeWM Gate 5 artifacts do not prove CUDA execution.")
+    if resume.get("resume_proved") is not True:
+        raise ValueError("LeWM Gate 5 artifacts do not prove checkpoint resume.")
+    if resume.get("completed_epoch", 0) <= resume.get("initial_completed_epoch", 0):
+        raise ValueError("LeWM resume metadata did not advance the completed epoch.")
+    if resume.get("config_hash") != training.get("config_hash"):
+        raise ValueError("LeWM resume/training config hashes differ.")
+    if resume.get("dataset_hashes") != training.get("dataset_hashes"):
+        raise ValueError("LeWM resume/training dataset hashes differ.")
+    if dataset.get("dataset_hashes") != training.get("dataset_hashes"):
+        raise ValueError("LeWM dataset/training hashes differ.")
+    if checkpoint_hash != training.get("checkpoint_sha256"):
+        raise ValueError("LeWM checkpoint SHA-256 does not match training metadata.")
+    if protocol.get("locked_test_materialized") or protocol.get("locked_test_scored"):
+        raise ValueError("LeWM Gate 5 artifacts indicate locked-test access.")
+    return {
+        "status": "gate5_cuda_resume_verified",
+        "device": training["device"],
+        "initial_completed_epoch": resume["initial_completed_epoch"],
+        "completed_epoch": resume["completed_epoch"],
+        "config_hash": training["config_hash"],
+        "dataset_hashes": training["dataset_hashes"],
+        "checkpoint_sha256": checkpoint_hash,
+        "locked_test_materialized": False,
+        "locked_test_scored": False,
     }

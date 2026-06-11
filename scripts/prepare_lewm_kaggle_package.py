@@ -19,6 +19,8 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--validation-dataset-name", required=True)
     parser.add_argument("--batch-size", type=int, default=4)
     parser.add_argument("--max-epochs", type=int, default=1)
+    parser.add_argument("--max-train-steps", type=int, default=2)
+    parser.add_argument("--max-validation-steps", type=int, default=2)
     parser.add_argument("--dry-run", action="store_true")
     return parser
 
@@ -34,6 +36,8 @@ def main(argv: list[str] | None = None) -> None:
         validation_dataset_name=args.validation_dataset_name,
         batch_size=args.batch_size,
         max_epochs=args.max_epochs,
+        max_train_steps=args.max_train_steps,
+        max_validation_steps=args.max_validation_steps,
     )
     summary = prepare_lewm_kaggle_package(
         args.source_root,
