@@ -29,6 +29,16 @@ returned `Expecting value: line 1 column 1 (char 0)` and no remote `lewm-gate6-p
 appeared in `kernels list --mine` or `kernels status`. This is preserved as a submission-stage
 failure with no same-fingerprint retry.
 
+A secret-safe diagnostic confirmed Kaggle CLI 2.2.1 on Python 3.14.4, authenticated read access,
+dataset status `ready`, valid v5 metadata, an existing entry script, and a 447,813-byte package.
+One private CPU-only, dataset-free canary was then pushed through the absolute Kaggle executable.
+It returned the same JSON parse error and did not appear remotely after exact-slug list/status
+checks. The canary was not retried.
+
+This isolates the current blocker to the Kaggle kernel write path rather than Gate 6 source,
+dataset attachment, package size, or GPU allocation. Per protocol, no v6 package or live Gate 6
+attempt was made after the failed canary.
+
 No Gate 6 checkpoint, loss, encoding result, or gameplay performance metric exists.
 
 Locked test remains unmaterialized and unscored.

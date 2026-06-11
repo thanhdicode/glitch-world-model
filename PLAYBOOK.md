@@ -98,11 +98,11 @@ The repository has not verified:
 - LeWM superiority, SIGReg benefit, temporal localization, or state of the art;
 - a neural locked-test result.
 
-Gate 5 passed strict CUDA/resume artifact validation. Gate 6 data audit/materialization passed,
-but the first live pilot failed before epoch 1 because the bundled package was not importable.
-The immediate task is the approval-pending corrected Gate 6 package:
-audit and materialize a normal-only, source/pair-disjoint pilot dataset before approving any
-gameplay training. Positive LeWM language remains limited to integration and CUDA engineering.
+Gate 5 passed strict CUDA/resume artifact validation. Gate 6 data audit/materialization passed.
+The v3 pilot failed before epoch 1 because the bundled package was not importable; v5 and a
+minimal CPU/no-dataset canary both failed before remote kernel creation with the same Kaggle JSON
+parse error. The immediate task is restoring a functioning Kaggle kernel write path. Positive
+LeWM language remains limited to integration and CUDA engineering.
 
 ## 3. Why This Project Exists
 
@@ -240,7 +240,7 @@ Status date: 2026-06-11.
 | 3 | passed | frozen TempGlitch/WOB protocol artifacts summarized in report 40 | official TempGlitch pair IDs; replay action audit | Dataset protocol claim allowed with limitations. |
 | 4 | passed | real-data Lance loader proof in reports 38 and 40 | full-scale materialization | Reduced conversion claim allowed. |
 | 5 | passed | v6 T4 run, CUDA device, epoch 1 to 2 resume, matching hashes, finite artifacts, locked-test false | none | Kaggle CUDA engineering smoke claim allowed. |
-| 6 | prepared | frozen pilot config and normal-only protocol plan | audited pilot source, gameplay checkpoint, reload and encoding proof | No gameplay-training claim yet. |
+| 6 | blocked | audited normal-only pilot source; v3 runtime failure; v5 and canary submission failures | functioning Kaggle write path, gameplay checkpoint, reload and encoding proof | No gameplay-training claim yet. |
 | 7 | not run | none | LeWM validation scores/metrics/hashes | No LeWM detection claim or LeWM title. |
 | 8 | not run | none | same-split baseline comparison | No superiority claim. |
 | 9 | not run | none | controlled ablations | No SIGReg/action/aggregation effect claim. |
@@ -895,9 +895,8 @@ granularity, negative results, and lessons for reproducible game-QA anomaly rese
 | 5 | ML Research Engineers | Open Gate 7 validation scoring | scoring modules and protocol | finite validation scores and metrics | scorer mismatch |
 | 6 | Locked Test Release Officer | Keep locked test closed | release workflow | no materialization/scoring before frozen decision | schedule pressure |
 
-Current recommended task: audit and materialize the Gate 6 normal-only, source/pair-disjoint
-pilot data defined in `configs/lewm_gate6_pilot.yaml`, then prepare a new fingerprint-bound
-validation-only package.
+Current recommended task: restore and verify the Kaggle kernel write path with a future minimal
+canary. Only after that succeeds, prepare a fresh fingerprint-bound Gate 6 package.
 
 ## 29. Maintenance Rules For This Playbook
 

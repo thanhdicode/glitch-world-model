@@ -15,7 +15,8 @@ Current LeWM gate status:
 
 - Gates 1-5 passed at their documented engineering/smoke level.
 - Gate 5 passed strict Kaggle CUDA train/resume artifact validation.
-- Gate 6 data passed audit and materialization; the first live pilot failed before training.
+- Gate 6 data passed audit and materialization; live training is blocked by a reproduced Kaggle
+  kernel submission failure.
 - Gates 7-10 have not run.
 - Locked test remains closed.
 - No LeWM glitch-detection performance, superiority, or neural locked-test claim is supported.
@@ -257,8 +258,8 @@ isolated LeWM environment and compatible checkpoint/data contracts:
 python -m glitch_detection.lewm_latent --manifest data/processed/my_experiment/manifest.csv --labels data/raw/my_labels.csv --output outputs/my_experiment_lewm_scores.csv --checkpoint path/to/lewm.ckpt
 ```
 
-The next evidence step is to revalidate and approve the corrected Gate 6 v5 fingerprint, then
-submit exactly one CUDA pilot and strictly validate its downloaded artifacts. Gate 7 scoring and
+The next evidence step is to restore a functioning Kaggle kernel write path, then prepare a fresh
+Gate 6 package/fingerprint and submit exactly one CUDA pilot. Gate 7 scoring and
 validation metrics remain blocked until that pilot produces a valid checkpoint.
 
 Audit the Phase 6E neural training partition without loading PyTorch or touching test:

@@ -13,8 +13,8 @@ Status: implementation roadmap; all unexecuted experiments remain `experiment-pe
 - Gate 5: passed. The approved v6 T4 run completed CUDA training, advanced resume from epoch 1 to
   epoch 2, and passed strict local validation with matching hashes, finite diagnostics, and false
   locked-test flags.
-- Gate 6: prepared but not run. The normal-only pilot config and protocol are frozen; source audit
-  and materialization remain.
+- Gate 6: blocked. The normal-only pilot data is materialized, but a minimal CPU/no-dataset
+  canary reproduced the current Kaggle kernel submission failure.
 - Gates 7-10: not run. Locked test remains closed.
 
 ## 1. Executive Decision
@@ -453,10 +453,10 @@ The project may call the method **LeWM-based** only when all are true:
 
 ## 12. Immediate Next Gate
 
-Gate 5 passed on v6. Gate 6 data audit/materialization passed, but its first live pilot failed
-before epoch 1 on a package import error. A corrected package is prepared offline and awaits a
-fresh approval/run. Gate 7 infrastructure exists, but gameplay surprise scores and metrics remain
-blocked until Gate 6 strictly passes.
+Gate 5 passed on v6. Gate 6 data audit/materialization passed, but v3 failed before epoch 1 and
+v5 failed before remote resource creation. A minimal CPU/no-dataset canary reproduced the same
+submission failure, so no v6 package was prepared. Gate 7 infrastructure exists, but gameplay
+surprise scores and metrics remain blocked until Gate 6 strictly passes.
 
 ## 13. Codex Master Prompt To Implement Phase 1-4
 

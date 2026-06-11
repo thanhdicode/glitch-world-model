@@ -1,10 +1,10 @@
 # NEXT_ACTION.md
 
-Last updated: 2026-06-11T16:00:34+00:00
-Commit: `a741dce5d334905830e6f385670d76429d7d5648`
+Last updated: 2026-06-11T16:42:31+00:00
+Commit: `7d33d911b4fb59f6239416254f162e152b0470ef`
 
 ## Current Priority
-Approve and run the corrected Gate 6 v5 normal-only LeWM pilot.
+Restore a functioning Kaggle kernel submission path before preparing Gate 6 v6.
 
 ## Success Criteria
 - Frozen TempGlitch source/pair-disjoint split audit.
@@ -15,6 +15,6 @@ Approve and run the corrected Gate 6 v5 normal-only LeWM pilot.
 - Checkpoint reload plus normal and non-locked glitch validation encoding.
 
 ## Current Known Blocker
-Gate 6 data is ready, but v3 failed before training on an import-path error. V5 fixes the source
-bundle and is approval-pending. Do not push it without revalidating the exact fingerprint, and do
-not run Gate 7 experiments before Gate 6 passes.
+Gate 6 data is ready, but a minimal CPU/no-dataset canary reproduced the v5 JSON parse failure and
+did not create a remote kernel. Do not prepare or push v6 until Kaggle kernel writes work again,
+and do not run Gate 7 experiments before Gate 6 passes.
