@@ -3,7 +3,11 @@ from __future__ import annotations
 import argparse
 import json
 import subprocess
+import sys
 from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "src"))
 
 from glitch_detection.lewm_gpu_profile_kaggle import (
     LeWMGPUProfileKaggleConfig,
@@ -19,7 +23,7 @@ def _git(root: Path, *args: str) -> str:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Prepare private LeWM GPU profile package.")
-    parser.add_argument("--repo-root", type=Path, default=Path.cwd())
+    parser.add_argument("--repo-root", type=Path, default=ROOT)
     parser.add_argument("--source-root", required=True, type=Path)
     parser.add_argument("--output-root", required=True, type=Path)
     parser.add_argument("--dataset-slug", required=True)

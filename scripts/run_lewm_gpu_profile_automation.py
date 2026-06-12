@@ -2,7 +2,11 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "src"))
 
 from glitch_detection.lewm_gpu_profile_automation import (
     ProfileAutomationConfig,
@@ -15,7 +19,7 @@ def main() -> None:
     mode = parser.add_mutually_exclusive_group(required=True)
     mode.add_argument("--dry-run", action="store_true")
     mode.add_argument("--live", action="store_true")
-    parser.add_argument("--repo-root", type=Path, default=Path.cwd())
+    parser.add_argument("--repo-root", type=Path, default=ROOT)
     parser.add_argument("--lance-root", required=True, type=Path)
     parser.add_argument("--source-audit", required=True, type=Path)
     parser.add_argument("--run-root", required=True, type=Path)
