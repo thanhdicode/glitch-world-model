@@ -156,18 +156,39 @@ if CONFIG["dataset_visibility"] != "private" or CONFIG["kernel_visibility"] != "
 if INPUT_METADATA["optimizer_updates"] != 500 or INPUT_METADATA["validation_batches"] != 8:
     raise RuntimeError("Profile contract changed.")
 
-def find_one(name):
+def find_one_file(name):
     matches = sorted(path for path in INPUT.rglob(name) if path.is_file())
     if len(matches) != 1:
         raise RuntimeError(f"Expected exactly one {{name}}, found {{matches}}")
     return matches[0]
+
+def find_one_dir(name):
+    matches = sorted(path for path in INPUT.rglob(name) if path.is_dir())
+    leaves = [
+        path for path in matches
+        if not any(other != path and str(other).startswith(str(path) + "/") for other in matches)
+    ]
+    if len(leaves) != 1:
+        raise RuntimeError(f"Expected exactly one directory {{name}}, found {{leaves}}")
+    return leaves[0]
+
+def materialize(archive_name, directory_name, destination):
+    directories = sorted(path for path in INPUT.rglob(directory_name) if path.is_dir())
+    if directories:
+        shutil.copytree(find_one_dir(directory_name), destination)
+        return
+    shutil.unpack_archive(str(find_one_file(archive_name)), str(destination.parent))
 
 if os.environ.get("LEWM_PROFILE_BOOTSTRAP_ONLY") == "1":
     print("LEWM_PROFILE_BOOTSTRAP_OK")
     raise SystemExit(0)
 CODE.mkdir(parents=True, exist_ok=True)
 LOCAL.mkdir(parents=True, exist_ok=True)
-shutil.unpack_archive(str(find_one("project_snapshot.zip")), str(CODE))
+snapshot_dirs = sorted(path for path in INPUT.rglob("project_snapshot") if path.is_dir())
+if snapshot_dirs:
+    shutil.copytree(find_one_dir("project_snapshot"), CODE, dirs_exist_ok=True)
+else:
+    shutil.unpack_archive(str(find_one_file("project_snapshot.zip")), str(CODE))
 subprocess.check_call([
     sys.executable, "-m", "pip", "install", "--no-cache-dir",
     "stable-worldmodel==0.1.1", "stable-pretraining==0.1.7", "transformers==4.57.6",
@@ -179,8 +200,8 @@ if not torch.cuda.is_available():
     raise RuntimeError("LeWM GPU profile requires CUDA.")
 train = LOCAL / "{TRAIN_DATASET_NAME}"
 validation = LOCAL / "{VALIDATION_DATASET_NAME}"
-shutil.unpack_archive(str(find_one("train-normal.lance.zip")), str(LOCAL))
-shutil.unpack_archive(str(find_one("validation-normal.lance.zip")), str(LOCAL))
+materialize("train-normal.lance.zip", "{TRAIN_DATASET_NAME}", train)
+materialize("validation-normal.lance.zip", "{VALIDATION_DATASET_NAME}", validation)
 preflight = {{
     **INPUT_METADATA,
     "python": sys.version,

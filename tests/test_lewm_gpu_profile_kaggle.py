@@ -72,6 +72,8 @@ def test_generated_kernel_is_immutable_and_fail_closed():
     assert 'git", "clone"' not in kernel
     assert "LEWM_PROFILE_BOOTSTRAP_ONLY" in kernel
     assert "run_lewm_gpu_profile" in kernel
+    assert "find_one_dir" in kernel
+    assert "materialize" in kernel
     assert "validation_buggy" not in kernel
 
 
