@@ -4,6 +4,7 @@ import pytest
 
 from glitch_detection.lewm_lance_eval import (
     canonical_rows_from_samples,
+    runtime_provenance,
     select_calibration_episodes,
     validate_manifest_rows,
     validate_score_alignment,
@@ -30,6 +31,14 @@ def test_select_calibration_episodes_is_deterministic_and_grouped():
     assert selected == select_calibration_episodes(reversed(episodes), count=2, seed=42)
     assert len(selected) == 2
     assert len(set(selected)) == 2
+
+
+def test_runtime_provenance_records_git_and_python_environment():
+    provenance = runtime_provenance(include_lewm=False)
+
+    assert len(provenance["git_sha"]) == 40
+    assert provenance["python_version"]
+    assert provenance["platform"]
 
 
 def test_canonical_rows_assign_calibration_by_episode_and_buggy_to_evaluation():

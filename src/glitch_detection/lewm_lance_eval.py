@@ -2,8 +2,12 @@ from __future__ import annotations
 
 import csv
 import hashlib
+import importlib.metadata
 import json
 import math
+import platform
+import subprocess
+import sys
 from collections.abc import Iterable, Sequence
 from pathlib import Path
 from typing import Any
@@ -47,6 +51,38 @@ METADATA_KEYS = (
     "split",
     "action_mode",
 )
+
+
+def runtime_provenance(*, include_lewm: bool) -> dict[str, str]:
+    repo_root = Path(__file__).resolve().parents[2]
+    completed = subprocess.run(
+        ["git", "rev-parse", "HEAD"],
+        cwd=repo_root,
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    provenance = {
+        "git_sha": completed.stdout.strip(),
+        "python_version": sys.version.split()[0],
+        "platform": platform.platform(),
+        "numpy_version": importlib.metadata.version("numpy"),
+    }
+    if include_lewm:
+        try:
+            import torch
+        except ImportError as exc:
+            raise RuntimeError("LeWM provenance requires PyTorch.") from exc
+        provenance["torch_version"] = torch.__version__
+        for distribution, key in (
+            ("stable-worldmodel", "stable_worldmodel_version"),
+            ("pylance", "lance_version"),
+        ):
+            try:
+                provenance[key] = importlib.metadata.version(distribution)
+            except importlib.metadata.PackageNotFoundError:
+                provenance[key] = "unknown"
+    return provenance
 
 
 def select_calibration_episodes(
@@ -353,6 +389,7 @@ def run_gate7_scoring(
         "device": device,
         "batch_size": batch_size,
         "seed": seed,
+        "environment": runtime_provenance(include_lewm=True),
         "locked_test_materialized": False,
         "locked_test_scored": False,
     }

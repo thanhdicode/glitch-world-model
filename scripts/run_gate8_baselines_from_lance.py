@@ -18,6 +18,7 @@ from glitch_detection.lewm_lance_eval import (
     NORMAL_DATASET_NAME,
     _lance_dataset,
     read_csv_rows,
+    runtime_provenance,
     validate_manifest_rows,
     write_csv_rows,
 )
@@ -197,6 +198,7 @@ def run_gate8_baselines(
         "frame_diff_definition": "mean adjacent-frame absolute grayscale difference",
         "batch_size": batch_size,
         "git_sha": _git_sha(),
+        "environment": runtime_provenance(include_lewm=True),
         "locked_test_materialized": False,
         "locked_test_scored": False,
     }

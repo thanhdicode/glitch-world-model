@@ -12,6 +12,7 @@ from glitch_detection.evaluate import auroc, average_precision, binary_metrics
 from glitch_detection.lewm_adapter import sha256_file
 from glitch_detection.lewm_lance_eval import (
     read_csv_rows,
+    runtime_provenance,
     validate_manifest_rows,
     validate_score_alignment,
     write_csv_rows,
@@ -182,6 +183,7 @@ def run_gate9(
             "manifest_sha256": sha256_file(manifest_path),
             "lewm_scores_sha256": sha256_file(lewm_scores_path),
             "baseline_scores_sha256": sha256_file(baseline_scores_path),
+            "environment": runtime_provenance(include_lewm=False),
         }
     )
     output_dir.mkdir(parents=True, exist_ok=True)
