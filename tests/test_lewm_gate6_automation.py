@@ -77,6 +77,42 @@ def test_forbidden_status_for_new_dataset_falls_back_to_create(tmp_path: Path):
     assert "--public" in runner.commands[-1]
 
 
+def test_dataset_ready_falls_back_from_status_403_to_required_files(tmp_path: Path):
+    required_files = "\n".join(
+        [
+            "tempglitch_train_zero_action.lance.zip",
+            "tempglitch_validation_zero_action.lance.zip",
+            "tempglitch_nonlocked_buggy_encoding.lance.zip",
+        ]
+    )
+
+    class ReadyFilesRunner(FakeRunner):
+        def run(self, step: str, command: list[str], log_path: Path) -> CommandResult:
+            self.commands.append(command)
+            if step == "dataset_ready":
+                raise AutomationCommandError(
+                    "Command failed",
+                    stderr="403 Client Error: Forbidden",
+                )
+            if step == "dataset_ready_files":
+                return CommandResult(
+                    returncode=0,
+                    stdout=required_files,
+                    stderr="",
+                    attempts=1,
+                )
+            raise AssertionError(f"Unexpected readiness fallback: {step}")
+
+    handlers = Gate6AutomationHandlers(
+        _config(tmp_path),
+        command_runner=ReadyFilesRunner([]),
+    )
+
+    result = handlers.dataset_ready(AutomationState())
+
+    assert result["dataset_ready_source"] == "files"
+
+
 def test_kernel_push_uses_python_module_invocation_and_public_metadata(tmp_path: Path):
     runner = FakeRunner([CommandResult(returncode=0, stdout="pushed", stderr="", attempts=1)])
     config = _config(tmp_path)

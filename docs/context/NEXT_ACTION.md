@@ -1,10 +1,10 @@
 # NEXT_ACTION.md
 
-Last updated: 2026-06-12T04:51:50+00:00
-Commit: `230e8d138ad391521a771dcaf46e8f480b1dc0e5`
+Last updated: 2026-06-12T05:15:10+00:00
+Commit: `acb5e4c72e65cbc150593501c13bbda682c0b396`
 
 ## Current Priority
-Repair Gate 6 as a single-file embedded-source kernel and run one fresh strict validation.
+Repair Gate 6 duplicate nested Lance mount discovery and run one changed kernel fingerprint.
 
 ## Success Criteria
 - Frozen TempGlitch source/pair-disjoint split audit.
@@ -15,6 +15,7 @@ Repair Gate 6 as a single-file embedded-source kernel and run one fresh strict v
 - Checkpoint reload plus normal and non-locked glitch validation encoding.
 
 ## Current Known Blocker
-Gate 6 data is ready. Canary A proved the write path, but v6 failed because an auxiliary source
-ZIP was unavailable at runtime. Do not run Gate 7 experiments before a single-file Gate 6 package
-passes strict artifact validation.
+Gate 6 v7 readiness reconciliation passed and kernel version 1 was pushed exactly once. It failed
+after dependency installation because each Lance input was discovered at both the dataset root
+and a nested same-name directory. Do not run Gate 7 before changed-fingerprint Gate 6 artifacts
+pass strict validation.

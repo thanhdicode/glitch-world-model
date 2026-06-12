@@ -353,15 +353,79 @@ class Gate6AutomationHandlers:
 
     def dataset_ready(self, _state: AutomationState) -> dict[str, Any]:
         deadline = time.monotonic() + self.config.poll_timeout_seconds
-        while time.monotonic() < deadline:
-            result = self._run(
-                "dataset_ready",
-                self._kaggle("datasets", "status", self.config.dataset_slug),
+        short_slug = self.config.dataset_slug.split("/", 1)[-1]
+
+        def _ready_from_files() -> bool:
+            try:
+                result = self._run(
+                    "dataset_ready_files",
+                    self._kaggle("datasets", "files", self.config.dataset_slug),
+                )
+            except AutomationCommandError:
+                return False
+            text = result.stdout.lower()
+            required = (
+                "tempglitch_train_zero_action.lance.zip",
+                "tempglitch_validation_zero_action.lance.zip",
+                "tempglitch_nonlocked_buggy_encoding.lance.zip",
             )
-            if self._status(result.stdout) == "ready":
-                return {}
+            return all(name.lower() in text for name in required)
+
+        def _ready_from_list() -> bool:
+            try:
+                result = self._run(
+                    "dataset_ready_list",
+                    self._kaggle("datasets", "list", "--mine", "-s", short_slug),
+                )
+            except AutomationCommandError:
+                return False
+            return short_slug.lower() in result.stdout.lower()
+
+        def _ready_from_metadata() -> bool:
+            metadata_dir = self.config.run_root / "dataset_metadata_check"
+            metadata_dir.mkdir(parents=True, exist_ok=True)
+            try:
+                self._run(
+                    "dataset_ready_metadata",
+                    self._kaggle(
+                        "datasets",
+                        "metadata",
+                        self.config.dataset_slug,
+                        "-p",
+                        str(metadata_dir),
+                    ),
+                )
+            except AutomationCommandError:
+                return False
+            return (metadata_dir / "dataset-metadata.json").is_file()
+
+        while time.monotonic() < deadline:
+            try:
+                result = self._run(
+                    "dataset_ready",
+                    self._kaggle("datasets", "status", self.config.dataset_slug),
+                )
+                if self._status(result.stdout) == "ready":
+                    return {"dataset_ready_source": "status"}
+            except AutomationCommandError:
+                # Kaggle may return 403 for status even when the dataset is visible/usable.
+                pass
+
+            if _ready_from_files():
+                return {"dataset_ready_source": "files"}
+
+            if _ready_from_metadata():
+                return {"dataset_ready_source": "metadata"}
+
+            if _ready_from_list():
+                return {"dataset_ready_source": "list"}
+
             time.sleep(self.config.poll_interval_seconds)
-        raise AutomationBlockedError("Gate 6 dataset readiness polling timed out.")
+
+        raise AutomationBlockedError(
+            "Gate 6 dataset readiness polling timed out. "
+            "Tried status, files, metadata, and list reconciliation."
+        )
 
     def kernel_package_generate(self, state: AutomationState) -> dict[str, Any]:
         validation = self._package_validation()

@@ -45,6 +45,7 @@ class AutomationState:
     pushed_kernel_fingerprints: list[str] = field(default_factory=list)
     dataset_uploaded_fingerprint: str | None = None
     dataset_uploaded_inventory_sha256: str | None = None
+    dataset_ready_source: str | None = None
     execution_mode: str | None = None
 
 
