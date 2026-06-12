@@ -15,7 +15,7 @@ from collections.abc import Callable
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 
 def _utc_now() -> str:
@@ -63,70 +63,6 @@ class StateStore:
             self.previous_path.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(self.path, self.previous_path)
         _write_json_atomic(self.path, asdict(state))
-
-
-class ApprovalStore:
-    def __init__(self, root: Path) -> None:
-        self.root = root
-
-    def _request_path(self, step: str) -> Path:
-        return self.root / f"{step}.request.json"
-
-    def _approved_path(self, step: str) -> Path:
-        return self.root / f"{step}.approved.json"
-
-    def request(self, step: str, fingerprint: str) -> dict[str, Any]:
-        payload = {
-            "step": step,
-            "fingerprint": fingerprint,
-            "requested_at": _utc_now(),
-            "one_time_use": True,
-        }
-        _write_json_atomic(self._request_path(step), payload)
-        return payload
-
-    def approve(self, step: str, fingerprint: str) -> dict[str, Any]:
-        request_path = self._request_path(step)
-        if not request_path.is_file():
-            raise FileNotFoundError(f"Missing approval request: {request_path}")
-        request = json.loads(request_path.read_text(encoding="utf-8-sig"))
-        if request.get("fingerprint") != fingerprint:
-            raise ValueError("Approval request fingerprint does not match current fingerprint.")
-        payload = {
-            **request,
-            "approved_at": _utc_now(),
-            "consumed_at": None,
-            "one_time_use": True,
-        }
-        _write_json_atomic(self._approved_path(step), payload)
-        return payload
-
-    def _read_approved(self, step: str) -> dict[str, Any] | None:
-        path = self._approved_path(step)
-        if not path.is_file():
-            return None
-        return json.loads(path.read_text(encoding="utf-8-sig"))
-
-    def is_approved(self, step: str, fingerprint: str) -> bool:
-        approved = self._read_approved(step)
-        return bool(
-            approved
-            and approved.get("fingerprint") == fingerprint
-            and approved.get("one_time_use") is True
-            and approved.get("consumed_at") is None
-        )
-
-    def consume(self, step: str, fingerprint: str) -> dict[str, Any]:
-        approved = self._read_approved(step)
-        if approved is None:
-            raise FileNotFoundError(f"Missing approved record for step: {step}")
-        if approved.get("fingerprint") != fingerprint:
-            raise ValueError("Approved fingerprint does not match current fingerprint.")
-        if approved.get("consumed_at") is not None:
-            raise ValueError(f"Approval for {step} has already been consumed.")
-        approved["consumed_at"] = _utc_now()
-        _write_json_atomic(self._approved_path(step), approved)
-        return approved
 
 
 class FingerprintBuilder:
@@ -181,6 +117,52 @@ class SecurityViolation(RuntimeError):
     """Raised when a package, command, or log violates credential/artifact rules."""
 
 
+KaggleVisibility = Literal["private", "public"]
+KaggleActionName = Literal["dataset_create_or_version", "kernel_push"]
+
+
+@dataclass(frozen=True)
+class PublicReleaseSpec:
+    visibility: KaggleVisibility
+    license_name: str
+    redistribution_allowed: bool
+    locked_test_materialized: bool = False
+    locked_test_scored: bool = False
+
+
+@dataclass(frozen=True)
+class KaggleAction:
+    action: KaggleActionName
+    fingerprint: str
+    visibility: KaggleVisibility
+    locked_test_materialized: bool
+    locked_test_scored: bool
+    redistribution_allowed: bool
+
+
+class KaggleExecutionPolicy:
+    def authorize(self, action: KaggleAction) -> dict[str, Any]:
+        if action.locked_test_materialized or action.locked_test_scored:
+            raise SecurityViolation(
+                "Kaggle standing authorization does not include locked test access."
+            )
+        if (
+            action.action == "dataset_create_or_version"
+            and action.visibility == "public"
+            and not action.redistribution_allowed
+        ):
+            raise SecurityViolation(
+                "Public Kaggle dataset publication requires redistribution permission."
+            )
+        return {
+            "authorized": True,
+            "authorization": "standing",
+            "action": action.action,
+            "fingerprint": action.fingerprint,
+            "visibility": action.visibility,
+        }
+
+
 class SecurityGuard:
     FORBIDDEN_EXACT_NAMES = {
         "kaggle.json",
@@ -208,6 +190,9 @@ class SecurityGuard:
         r"\s*[:=]\s*[\"']?([^\s\"']+)"
     )
     SENSITIVE_ENV_NAME = re.compile(r"(?i)(KAGGLE|TOKEN|KEY|SECRET|PASSWORD)")
+    LOCKED_TEST_PATH_PATTERN = re.compile(
+        r"(?i)(^|[/_.-])locked([_-]?test)?([/_.-]|$)"
+    )
 
     def __init__(self, environment: dict[str, str] | None = None) -> None:
         source = dict(os.environ) if environment is None else environment
@@ -284,6 +269,39 @@ class SecurityGuard:
                 continue
             if self._contains_sensitive_content(text):
                 raise SecurityViolation(f"Tracked file contains token-like credential: {relative}")
+
+    def scan_public_release(
+        self,
+        root: Path,
+        *,
+        package_kind: str,
+        spec: PublicReleaseSpec,
+    ) -> dict[str, Any]:
+        self.scan_package(root, package_kind=package_kind)
+        if spec.locked_test_materialized or spec.locked_test_scored:
+            raise SecurityViolation("Public release indicates locked test access.")
+        for path in root.rglob("*"):
+            if path.is_file() and self.LOCKED_TEST_PATH_PATTERN.search(
+                path.relative_to(root).as_posix()
+            ):
+                raise SecurityViolation(
+                    f"Public release contains a locked-test path: {path.relative_to(root)}"
+                )
+        if spec.visibility == "public":
+            if not spec.license_name.strip():
+                raise SecurityViolation("Public release requires a recorded license.")
+            if not spec.redistribution_allowed:
+                raise SecurityViolation(
+                    "Public release requires recorded redistribution permission."
+                )
+        return {
+            "visibility": spec.visibility,
+            "license": spec.license_name,
+            "redistribution_allowed": spec.redistribution_allowed,
+            "inventory_sha256": FingerprintBuilder.inventory_sha256(root),
+            "locked_test_materialized": False,
+            "locked_test_scored": False,
+        }
 
     def scan_command(self, command: str) -> None:
         if self._contains_sensitive_content(command):

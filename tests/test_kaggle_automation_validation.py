@@ -15,7 +15,9 @@ from glitch_detection.kaggle_automation import (
     CommandRunner,
     DefaultPhase6EHandlers,
     PackageValidator,
+    PublicReleaseSpec,
     SecurityGuard,
+    SecurityViolation,
     is_transient_error,
 )
 
@@ -96,6 +98,52 @@ def test_command_runner_blocks_gpu_quota_without_retry(tmp_path: Path):
     with pytest.raises(AutomationBlockedError, match="GPU quota exhausted"):
         runner.run("kernel_push_once", ["kaggle", "kernels", "push"], tmp_path / "run.log")
     assert len(calls) == 1
+
+
+def test_public_release_scan_requires_license_and_redistribution(tmp_path: Path):
+    root = tmp_path / "dataset"
+    root.mkdir()
+    (root / "manifest.csv").write_text("source\nclip-a\n", encoding="utf-8")
+
+    with pytest.raises(SecurityViolation, match="license"):
+        SecurityGuard().scan_public_release(
+            root,
+            package_kind="dataset",
+            spec=PublicReleaseSpec(
+                visibility="public",
+                license_name="",
+                redistribution_allowed=True,
+            ),
+        )
+
+    with pytest.raises(SecurityViolation, match="redistribution"):
+        SecurityGuard().scan_public_release(
+            root,
+            package_kind="dataset",
+            spec=PublicReleaseSpec(
+                visibility="public",
+                license_name="MIT",
+                redistribution_allowed=False,
+            ),
+        )
+
+
+def test_public_release_scan_rejects_locked_test_path(tmp_path: Path):
+    root = tmp_path / "dataset"
+    path = root / "locked_test" / "manifest.csv"
+    path.parent.mkdir(parents=True)
+    path.write_text("source\nclip-a\n", encoding="utf-8")
+
+    with pytest.raises(SecurityViolation, match="locked-test path"):
+        SecurityGuard().scan_public_release(
+            root,
+            package_kind="dataset",
+            spec=PublicReleaseSpec(
+                visibility="public",
+                license_name="MIT",
+                redistribution_allowed=True,
+            ),
+        )
 
 
 def test_default_executor_enables_utf8_environment(monkeypatch: pytest.MonkeyPatch):

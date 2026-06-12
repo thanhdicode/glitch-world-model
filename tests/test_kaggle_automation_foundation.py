@@ -4,9 +4,11 @@ from pathlib import Path
 import pytest
 
 from glitch_detection.kaggle_automation import (
-    ApprovalStore,
     AutomationState,
     FingerprintBuilder,
+    KaggleAction,
+    KaggleExecutionPolicy,
+    PublicReleaseSpec,
     SecurityGuard,
     SecurityViolation,
     StateStore,
@@ -24,22 +26,51 @@ def test_state_store_writes_atomic_backup(tmp_path: Path):
     assert not (tmp_path / "state.json.tmp").exists()
 
 
-def test_approval_is_fingerprint_bound_and_one_time(tmp_path: Path):
-    store = ApprovalStore(tmp_path / "approvals")
-    request = store.request("dataset_upload_approval", "fingerprint-a")
-    approved = store.approve("dataset_upload_approval", "fingerprint-a")
+def test_execution_policy_authorizes_public_nonlocked_kaggle_actions():
+    result = KaggleExecutionPolicy().authorize(
+        KaggleAction(
+            action="kernel_push",
+            fingerprint="kernel-fp",
+            visibility="public",
+            locked_test_materialized=False,
+            locked_test_scored=False,
+            redistribution_allowed=True,
+        )
+    )
 
-    assert request["fingerprint"] == "fingerprint-a"
-    assert approved["one_time_use"] is True
-    assert approved["consumed_at"] is None
-    assert store.is_approved("dataset_upload_approval", "fingerprint-a") is True
-    assert store.is_approved("dataset_upload_approval", "fingerprint-b") is False
+    assert result["authorized"] is True
+    assert result["authorization"] == "standing"
+    assert result["fingerprint"] == "kernel-fp"
 
-    consumed = store.consume("dataset_upload_approval", "fingerprint-a")
-    assert consumed["consumed_at"] is not None
-    assert store.is_approved("dataset_upload_approval", "fingerprint-a") is False
-    with pytest.raises(ValueError, match="consumed"):
-        store.consume("dataset_upload_approval", "fingerprint-a")
+
+@pytest.mark.parametrize("flag", ["locked_test_materialized", "locked_test_scored"])
+def test_execution_policy_rejects_locked_test_without_separate_release(flag: str):
+    values = {
+        "action": "kernel_push",
+        "fingerprint": "kernel-fp",
+        "visibility": "public",
+        "locked_test_materialized": False,
+        "locked_test_scored": False,
+        "redistribution_allowed": True,
+    }
+    values[flag] = True
+
+    with pytest.raises(SecurityViolation, match="locked test"):
+        KaggleExecutionPolicy().authorize(KaggleAction(**values))
+
+
+def test_execution_policy_rejects_public_dataset_without_redistribution_permission():
+    with pytest.raises(SecurityViolation, match="redistribution"):
+        KaggleExecutionPolicy().authorize(
+            KaggleAction(
+                action="dataset_create_or_version",
+                fingerprint="dataset-fp",
+                visibility="public",
+                locked_test_materialized=False,
+                locked_test_scored=False,
+                redistribution_allowed=False,
+            )
+        )
 
 
 def test_fingerprint_contains_required_components(tmp_path: Path):
