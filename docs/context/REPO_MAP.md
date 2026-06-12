@@ -1,7 +1,7 @@
 # REPO_MAP.md
 
-Generated: 2026-06-12T06:48:03+00:00
-Commit: `f22e1be92fed098752069616deb7ed2b26b8fcc1`
+Generated: 2026-06-12T06:49:07+00:00
+Commit: `51e154a29a1a842054e2d5860a5837d08554c807`
 Generator: `scripts/update_context_cache.py`
 
 ## Top-Level Map
@@ -299,6 +299,9 @@ Generator: `scripts/update_context_cache.py`
 | `docs/research/45_gate6_lewm_normal_training_plan.md` | 45 gate6 lewm normal training plan |
 | `docs/research/46_gate6_lewm_training_pilot_results.md` | 46 gate6 lewm training pilot results |
 | `docs/research/47_gate7_lewm_surprise_scoring_results.md` | 47 gate7 lewm surprise scoring results |
+| `docs/research/48_gate8_same_manifest_baseline_comparison.md` | 48 gate8 same manifest baseline comparison |
+| `docs/research/49_gate9_minimal_ablation_results.md` | 49 gate9 minimal ablation results |
+| `docs/research/50_results_claim_boundary.md` | 50 results claim boundary |
 | `docs/research/60_paper_claim_audit.md` | 60 paper claim audit |
 | `docs/research/61_reproducibility_checklist.md` | 61 reproducibility checklist |
 | `docs/research/62_artifact_manifest.md` | 62 artifact manifest |
@@ -320,6 +323,3 @@ Generator: `scripts/update_context_cache.py`
 | `docs/superpowers/specs/2026-06-09-phase6e-kaggle-automation-design.md` | 2026-06-09-phase6e-kaggle-automation-design |
 | `docs/superpowers/specs/2026-06-09-phase6e-kaggle-video-autoencoder-design.md` | 2026-06-09-phase6e-kaggle-video-autoencoder-design |
 | `docs/superpowers/specs/2026-06-12-kaggle-standing-authorization-gate6-repair-design.md` | 2026-06-12-kaggle-standing-authorization-gate6-repair-design |
-| `docs/workflows/00_environment_audit.md` | 00 environment audit |
-| `docs/workflows/01_global_research_tooling_plan.md` | 01 global research tooling plan |
-| `docs/workflows/agent_governance_sources.md` | agent governance sources |
