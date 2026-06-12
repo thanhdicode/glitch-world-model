@@ -1,7 +1,7 @@
 # BOOT.md - Fast Start Context For Agents
 
-Generated: 2026-06-12T05:58:16+00:00
-Commit: `4136018352ccde09a642d1f188cdb7b47c3e4195`
+Generated: 2026-06-12T06:48:03+00:00
+Commit: `f22e1be92fed098752069616deb7ed2b26b8fcc1`
 
 ## Read Order
 1. `RULES.md`
@@ -20,15 +20,16 @@ context cache is stale. Use `docs/context/REPO_MAP.md` before broad repo searche
 - Gate 5 passed strict Kaggle CUDA/resume artifact validation.
 - Gate 6 v8 completed normal-only CUDA training and passed strict checkpoint/reload/encoding
   validation with locked-test flags false.
-- Gate 7 infrastructure exists and may now score validation; experiments have not run.
-- Gates 8-10 have not run.
+- Gates 7-9 completed a validation-only, non-locked, window-level pilot on one canonical Lance
+  manifest.
+- Gate 10 is closed.
 - Locked test is closed.
-- LeWM integration engineering exists.
-- LeWM gameplay evaluation is not established.
+- LeWM gameplay evaluation exists only as a one-buggy-episode pilot.
 
 ## Immediate Next Task
-- Freeze Gate 6 v8 checkpoint/config provenance and run Gate 7 validation-only scoring.
-- Keep locked test closed until the later frozen-decision release gate.
+- Broaden non-locked buggy validation coverage before considering any stronger performance claim.
+- Investigate why normal-P95 calibration produced zero LeWM recall while keeping locked test
+  closed.
 
 ## Safety
 - Non-locked-test Kaggle actions use standing Kaggle authorization after security, license,
@@ -37,8 +38,8 @@ context cache is stale. Use `docs/context/REPO_MAP.md` before broad repo searche
 - Locked-test materialization or scoring requires a separate direct user command.
 - No locked-test materialization or scoring.
 - No data, output, checkpoint, Lance dataset, cache, `.env`, token, or `kaggle.json` commits.
-- No LeWM detection, superiority, SIGReg benefit, temporal localization, SOTA, or neural
-  locked-test claim before the documented gates pass.
+- No broad LeWM superiority, SIGReg benefit, temporal localization, SOTA, or neural locked-test
+  claim from the one-buggy-episode pilot.
 
 ## Required Checks
 ```powershell

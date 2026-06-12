@@ -1,10 +1,10 @@
 # MASTER ROADMAP V2 — Mandatory Real LeWM Main Method
 
-Date: June 11, 2026
+Date: June 12, 2026
 Target deadline: July 20, 2026
 Status: implementation roadmap; all unexecuted experiments remain `experiment-pending`.
 
-## Implementation Status — June 11, 2026
+## Implementation Status - June 12, 2026
 
 - Gate 1: passed.
 - Gate 2: passed for strict official checkpoint loading and finite non-gameplay CPU inference.
@@ -13,9 +13,12 @@ Status: implementation roadmap; all unexecuted experiments remain `experiment-pe
 - Gate 5: passed. The approved v6 T4 run completed CUDA training, advanced resume from epoch 1 to
   epoch 2, and passed strict local validation with matching hashes, finite diagnostics, and false
   locked-test flags.
-- Gate 6: blocked. The normal-only pilot data is materialized, but a minimal CPU/no-dataset
-  canary reproduced the current Kaggle kernel submission failure.
-- Gates 7-10: not run. Locked test remains closed.
+- Gate 6: passed through the strict v8 normal-only CUDA checkpoint/reload/encoding validator.
+- Gate 7: passed with 10,081 finite real LeWM window scores.
+- Gate 8: passed with two baselines on the identical canonical Lance manifest.
+- Gate 9: passed as a limited one-buggy-episode window-level pilot; LeWM max ranking was strongest
+  by AUROC/AUPRC, but grouped normal-P95 LeWM F1 was zero.
+- Gate 10: closed. Locked test remains unmaterialized and unscored.
 
 ## 1. Executive Decision
 
@@ -453,10 +456,9 @@ The project may call the method **LeWM-based** only when all are true:
 
 ## 12. Immediate Next Gate
 
-Gate 5 passed on v6. Gate 6 data audit/materialization passed, but v3 failed before epoch 1 and
-v5 failed before remote resource creation. A minimal CPU/no-dataset canary reproduced the same
-submission failure, so no v6 package was prepared. Gate 7 infrastructure exists, but gameplay
-surprise scores and metrics remain blocked until Gate 6 strictly passes.
+Gates 6-8 passed and Gate 9 completed as a limited non-locked pilot. The next evidence task is
+to broaden non-locked buggy validation beyond one episode and investigate why grouped
+normal-P95 calibration produced zero LeWM recall. Gate 10 remains closed.
 
 ## 13. Codex Master Prompt To Implement Phase 1-4
 

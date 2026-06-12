@@ -9,17 +9,20 @@ This repo is currently a baseline research MVP for the topic "Latent World Model
 `mini_latent` remains the lightweight latent-dynamics proxy. LeWM integration engineering now
 includes strict checkpoint loading, finite non-gameplay CPU inference, real-data conversion,
 reduced CPU smokes, a strictly validated Kaggle CUDA train/resume smoke, and a strictly validated
-normal-only TempGlitch training pilot. This is not glitch-detection performance evidence.
+normal-only TempGlitch training pilot plus a limited non-locked window-level evaluation.
 
 Current LeWM gate status:
 
-- Gates 1-6 passed at their documented engineering/training level.
+- Gates 1-8 passed at their documented engineering/evaluation level.
 - Gate 5 passed strict Kaggle CUDA train/resume artifact validation.
 - Gate 6 v8 completed normal-only CUDA training, checkpoint reload, and finite normal/non-locked
   buggy validation encoding; strict validation returned `gate6_passed`.
-- Gate 7 infrastructure is ready but scoring and metrics have not run; Gates 8-10 have not run.
+- Gate 7 produced 10,081 real LeWM window scores; Gate 8 used the identical manifest for two
+  baselines; Gate 9 reported AUROC/AUPRC and grouped normal-P95 F1.
+- Gate 9 remains a one-buggy-episode pilot; Gate 10 has not run.
 - Locked test remains closed.
-- No LeWM glitch-detection performance, superiority, or neural locked-test claim is supported.
+- Only exact qualified pilot metrics are supported; broad superiority, temporal localization,
+  SIGReg benefit, and neural locked-test claims remain unsupported.
 
 Research planning docs:
 
@@ -49,6 +52,10 @@ Research planning docs:
 - [Gate 5 CUDA validation](docs/research/44_gate5_cuda_smoke_validation.md)
 - [Gate 6 normal-only training plan](docs/research/45_gate6_lewm_normal_training_plan.md)
 - [Gate 6 pilot results](docs/research/46_gate6_lewm_training_pilot_results.md)
+- [Gate 7 LeWM scoring results](docs/research/47_gate7_lewm_surprise_scoring_results.md)
+- [Gate 8 same-manifest comparison](docs/research/48_gate8_same_manifest_baseline_comparison.md)
+- [Gate 9 pilot results](docs/research/49_gate9_minimal_ablation_results.md)
+- [Gate 7-9 claim boundary](docs/research/50_results_claim_boundary.md)
 
 Phase 6D completed five pair-suspect grouped refit/selection/locked-test runs with zero
 cross-split groups. The selected pipeline achieved locked-test AUROC `0.573 +/- 0.118`; this

@@ -11,15 +11,15 @@ requires deep context.
 
 Current verified status:
 
-- Gates 1-6 passed; Gate 6 includes strict Kaggle CUDA normal-only training, checkpoint reload,
-  and validation encoding artifact validation.
-- Gate 7 infrastructure is ready but scoring and metrics have not run; Gates 8-10 have not run.
+- Gates 1-8 passed; Gate 9 completed as a limited validation-only window-level pilot.
+- Gate 7 produced 10,081 real frozen-checkpoint scores; Gate 8 scored two baselines on the exact
+  same canonical Lance manifest.
 - Locked test is closed.
-- LeWM integration engineering exists; LeWM gameplay evaluation is not yet established.
+- LeWM gameplay evaluation exists only for one non-locked buggy episode with correlated windows.
 
-Safe claims include bounded normal-only gameplay training engineering on CUDA. Do not claim LeWM
-glitch-detection performance, superiority, state of the art, temporal localization, or a neural
-locked-test result before later gates pass.
+Safe claims include bounded normal-only CUDA training and the exact qualified Gate 7-9 pilot
+metrics. Do not claim broad LeWM glitch-detection performance, superiority, state of the art,
+temporal localization, SIGReg benefit, or a neural locked-test result.
 
 ## Agent Operating Mode
 

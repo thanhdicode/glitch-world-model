@@ -1,47 +1,58 @@
 # LAST_HANDOFF.md
 
-Last completed task: Gate 6 v8 strict pass and context synchronization
-Commit: current task commit recorded in Git history
+Last completed task: Gate 7-9 non-locked LeWM evaluation pilot
+Commit: evaluation code `f22e1be92fed098752069616deb7ed2b26b8fcc1`
 Date: 2026-06-12
 
 ## What Changed
-- Verified `origin/main` at `b0eedbf` and Kaggle kernel
-  `huynhdieuthanh/lewm-gate6-pilot-v8` at `COMPLETE`.
-- Verified strict validator status `gate6_passed`, device `cuda`, completed epoch `1`, and
-  checkpoint SHA-256
-  `300cefe9622ab43acd79bc2202ac90a214cbc4ae9921ed3434573fc9198ff252`.
-- Verified finite normal and non-locked buggy validation encoding.
-- Verified normal-only training/validation and false locked-test materialization/scoring flags.
-- Registered the narrow Gate 6 training-engineering claim and kept performance claims closed.
+
+- Built a canonical 10,081-window manifest from Gate 6 validation-normal and non-locked buggy
+  Lance datasets.
+- Generated finite MSE/L2 transition scores from the frozen Gate 6 v8 best weights.
+- Scored frame-difference and train-normal-fitted feature-distance baselines on the exact same
+  ordered `window_id` rows.
+- Evaluated AUROC/AUPRC and grouped normal-P95 F1 for six LeWM aggregations and two baselines.
+- Updated evidence reports, claim boundaries, roadmap, playbook, README, and context generation.
 
 ## Checks Passed
-- Strict Gate 6 artifact revalidation returned `gate6_passed`.
-- `python -m pytest -x -q`: 252 passed.
-- Ruff check and format check passed.
-- Research release, claim registry, doctor, context cache, and all pre-commit hooks passed.
+
+- Gate 7 artifact validation: 10,081 ordered finite score rows and matching hashes.
+- Gate 8 artifact validation: 10,081 same-manifest finite baseline rows.
+- Gate 9 artifact validation: eight finite metric rows with calibration-only thresholds.
+- Research release, claim registry, and context cache validators passed before final full-suite
+  verification.
 
 ## Safety Status
-- Gate 6 passed as bounded normal-only gameplay training engineering.
-- Gate 7 experiments were not run.
+
+- All evaluation used validation-only, non-locked Lance datasets.
 - Locked test was not materialized or scored.
-- No output, data, Lance dataset, checkpoint, Kaggle artifact, or credential was added to Git.
-- Gate 10 remains closed.
+- Kaggle fallback was unnecessary because local CPU scoring succeeded.
+- No data, outputs, Lance datasets, checkpoints, caches, or credentials are tracked.
 
 ## Gate Status After Task
-- Gates 1-6 passed.
-- Gate 7 ready but not run; Gates 8-10 not run.
-- Locked test closed.
+
+- Gates 1-8 passed.
+- Gate 9 passed as a limited one-buggy-episode window-level pilot.
+- Gate 10 remains closed.
 
 ## Open Blockers
-- Gate 7 needs frozen-checkpoint validation scores and metrics.
+
+- Evaluation contains one buggy episode and correlated windows.
+- Every LeWM grouped normal-P95 threshold produced zero recall and F1 despite finite AUROC/AUPRC.
+- Broad LeWM superiority, SIGReg benefit, temporal localization, and locked-test claims remain
+  unsupported.
 
 ## Next Recommended Task
-- Freeze v8 checkpoint/config provenance and run Gate 7 validation-only scoring.
-- Keep Gate 7 validation-only and preserve the locked-test boundary.
+
+- Broaden non-locked buggy validation coverage and investigate robust validation-only threshold
+  calibration before any Gate 10 decision.
 
 ## Files Likely Relevant Next
+
 - `docs/research/47_gate7_lewm_surprise_scoring_results.md`
-- `src/glitch_detection/lewm_surprise.py`
-- `scripts/score_lewm_validation.py`
-- `scripts/build_gate7_validation_manifest.py`
-- `scripts/evaluate_lewm_validation.py`
+- `docs/research/48_gate8_same_manifest_baseline_comparison.md`
+- `docs/research/49_gate9_minimal_ablation_results.md`
+- `docs/research/50_results_claim_boundary.md`
+- `scripts/run_gate7_lance_scoring.py`
+- `scripts/run_gate8_baselines_from_lance.py`
+- `scripts/run_gate9_ablations.py`

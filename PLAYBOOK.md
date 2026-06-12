@@ -1,10 +1,10 @@
 # PLAYBOOK.md - LeWM-Glitch Research Operating Bible
 
-Last updated: 2026-06-11
+Last updated: 2026-06-12
 Status owner: repository owner / technical program lead
 Canonical branch at update: `main`
-Evidence cutoff: commit `67ea096` plus the strictly validated 2026-06-11 Gate 5 v6 CUDA/resume
-artifact set
+Evidence cutoff: Gate 7-9 artifacts generated from commit
+`f22e1be92fed098752069616deb7ed2b26b8fcc1`
 
 ## 0. How To Use This Playbook
 
@@ -62,12 +62,11 @@ under 200 lines without hiding safety rules.
 | Current venue format | Springer LNICST, anonymized English PDF |
 | Regular paper length | 12-15 pages, excluding appendices, references, acknowledgements |
 | Main research method | LeWM/JEPA latent prediction surprise |
-| Current gate state | Gates 1-6 passed; Gate 7 infrastructure ready but not run; Gates 8-10 not run |
+| Current gate state | Gates 1-8 passed; Gate 9 passed as a limited non-locked window pilot; Gate 10 closed |
 | Locked test | Closed, unmaterialized, unscored for the LeWM path |
 
-LeWM integration engineering exists. The repo has strict checkpoint loading, finite
-non-gameplay CPU inference, real-data conversion, and reduced CPU forward/backward/resume
-smokes. LeWM gameplay-scale evaluation does not yet exist.
+LeWM integration engineering and a limited gameplay evaluation exist. The current evaluation is
+validation-only, window-level, and contains one non-locked buggy episode.
 
 ## 2. One-Page Executive Summary
 
@@ -94,15 +93,15 @@ trains with prediction loss plus SIGReg. The repository has already verified:
 
 The repository has not verified:
 
-- gameplay validation `scores.csv` and metrics from a LeWM checkpoint;
+- broad multi-episode LeWM glitch-detection performance;
 - LeWM superiority, SIGReg benefit, temporal localization, or state of the art;
 - a neural locked-test result.
 
 Gate 5 passed strict CUDA/resume artifact validation. Gate 6 v8 then completed the bounded
 normal-only TempGlitch pilot on CUDA, verified checkpoint reload and finite validation encoding,
-and passed the strict validator with locked-test flags false. The immediate task is Gate 7
-validation scoring from the frozen v8 checkpoint. Positive LeWM language remains limited to
-training engineering until scoring and metrics exist.
+and passed the strict validator with locked-test flags false. Gates 7-9 then produced 10,081
+real frozen-checkpoint scores, same-manifest baselines, and validation-only pilot metrics. The
+next evidence task is broader non-locked buggy validation, not locked-test release.
 
 ## 3. Why This Project Exists
 
@@ -205,8 +204,9 @@ described as components of the audited method, but their gameplay detection bene
 | CPU forward/backward/resume smoke | paper-safe, engineering | local metadata and hash-matching resume | "Reduced CPU engineering smokes complete." |
 | Gates 1-6 passed | paper-safe, governance | gate reports and validators | State the exact engineering scope. |
 | Gate 5 CUDA/resume smoke | paper-safe, engineering | strict v6 artifact validation | State that this is bounded engineering evidence. |
-| LeWM glitch-detection performance | paper-unsafe | Gate 7 scores and metrics | Do not say. |
-| LeWM beats baselines | paper-unsafe | Gate 8 comparison on identical splits | Do not say. |
+| Exact Gate 7-9 window-pilot metrics | paper-safe, tightly qualified | reports 47-50 and hashed artifacts | State one buggy episode, correlated windows, and failed LeWM P95 F1. |
+| Broad LeWM glitch-detection performance | paper-unsafe | multi-episode comparable evidence | Do not say. |
+| LeWM beats baselines generally | paper-unsafe | broader comparison on independent episodes | Do not say. |
 | SIGReg improves detection | paper-unsafe | Gate 9 controlled ablation | Do not say. |
 | JEPA superiority | paper-unsafe | protocol-compatible comparative evidence | Do not say. |
 | State of the art | paper-unsafe | broad comparable benchmark evidence | Do not say. |
@@ -217,7 +217,7 @@ described as components of the audited method, but their gameplay detection bene
 
 ### Do Not Say
 
-- "LeWM detects gameplay glitches" before Gate 7.
+- "LeWM detects gameplay glitches" as a general conclusion from the one-episode pilot.
 - "SIGReg improves anomaly detection" before a controlled Gate 9 ablation.
 - "Locked-test performance" for validation-only or previously exposed evidence.
 - "Temporal localization" when labels cover only whole videos.
@@ -232,7 +232,7 @@ described as components of the audited method, but their gameplay detection bene
 
 ## 8. Current Verified Status
 
-Status date: 2026-06-11.
+Status date: 2026-06-12.
 
 | Gate | Status | Evidence | Missing | Paper claim impact |
 | --- | --- | --- | --- | --- |
@@ -241,11 +241,11 @@ Status date: 2026-06-11.
 | 3 | passed | frozen TempGlitch/WOB protocol artifacts summarized in report 40 | official TempGlitch pair IDs; replay action audit | Dataset protocol claim allowed with limitations. |
 | 4 | passed | real-data Lance loader proof in reports 38 and 40 | full-scale materialization | Reduced conversion claim allowed. |
 | 5 | passed | v6 T4 run, CUDA device, epoch 1 to 2 resume, matching hashes, finite artifacts, locked-test false | none | Kaggle CUDA engineering smoke claim allowed. |
-| 6 | blocked | audited normal-only pilot source; v3 runtime failure; v5 and canary submission failures | functioning Kaggle write path, gameplay checkpoint, reload and encoding proof | No gameplay-training claim yet. |
-| 7 | not run | none | LeWM validation scores/metrics/hashes | No LeWM detection claim or LeWM title. |
-| 8 | not run | none | same-split baseline comparison | No superiority claim. |
-| 9 | not run | none | controlled ablations | No SIGReg/action/aggregation effect claim. |
-| 10 | not run | closed-gate implementation only | frozen decision and explicit one-time approval | No neural locked-test claim. |
+| 6 | passed | v8 T4 normal-only pilot, strict reload/encoding validation | full training scale | Bounded gameplay-training engineering claim allowed. |
+| 7 | passed | 10,081 finite real LeWM window scores and hashes | broader buggy validation | Exact validation scoring claim allowed. |
+| 8 | passed | two baselines on the identical canonical manifest | broader baseline suite | Exact same-manifest comparison allowed. |
+| 9 | passed pilot | AUROC/AUPRC and grouped-normal-P95 F1 for eight scorers | multi-episode evidence and working LeWM calibration | Only the qualified one-episode pilot result is allowed. |
+| 10 | closed | no materialization or scoring | frozen decision and explicit direct user command | No neural locked-test claim. |
 
 The LeWM TempGlitch private dataset is ready and matched the local approved Lance inventory by
 name and size. One exact fingerprint-approved kernel push on 2026-06-11 returned HTTP 409 before
@@ -487,7 +487,7 @@ metrics.
 | VideoMAE + Mahalanobis | frozen video representation baseline | future-work | normal feature statistics | no claim yet |
 | TimeSformer + Mahalanobis | frozen/supervised reference | future-work | protocol-dependent | no claim yet |
 | Qwen/LLaVA-style VLM | semantic fallback | future-work | prompt/runtime dependent | no temporal claim without spans |
-| LeWM surprise | mandatory main method | Gate 6 normal-only CUDA pilot passed | train-normal | no performance claim before Gate 7 |
+| LeWM surprise | mandatory main method | Gate 7-9 non-locked pilot complete | train-normal | exact pilot metrics only; no broad claim |
 
 All comparisons must use identical split records. Advanced baselines should wait until Gate 7
 unless a task explicitly scopes them as independent engineering work.
@@ -766,25 +766,25 @@ FISAT 2026 currently requires an English anonymized PDF in Springer LNICST forma
 Confy+. The current `paper/main.tex` uses IEEEtran and is provisional. Migrate format before the
 PDF freeze and add descriptive text/alt text for figures and tables.
 
-The serious LeWM paper starts after Gate 7. Before Gate 7, the safe paper is a reproducibility,
-engineering, protocol, or negative-results study without a LeWM performance contribution.
+The serious LeWM paper may now cite the exact Gate 7-9 pilot, but the strongest defensible framing
+remains reproducibility, protocol, calibration failure, and negative/limited results.
 
 ### 30-Second Pitch
 
 Game glitches often appear as impossible transitions rather than strange single frames. This
 project builds a reproducible, leakage-aware pipeline to test whether a JEPA-style latent world
 model trained on normal gameplay assigns higher surprise to glitches. We have verified the
-runtime, checkpoint, real-data conversion, and CPU training path; gameplay-scale LeWM evaluation
-is the next unresolved gate.
+runtime, checkpoint, real-data conversion, CUDA training, and a one-buggy-episode evaluation.
+Broader non-locked validation and threshold calibration are the next unresolved evidence gaps.
 
 ### One-Minute Pitch
 
 Manual game QA misses rare temporal failures. We frame glitch detection as normal-dynamics
 modeling: encode gameplay, predict the next latent representation, and score prediction error.
 The repository preserves shared CSV/JSON interfaces across simple visual baselines, a lightweight
-latent proxy, Conv3D, and the planned LeWM method. Current evidence proves checkpoint-level LeWM
-integration and real-data engineering, not detection performance. A gated protocol separates
-validation selection from a one-time locked test and keeps negative results visible.
+latent proxy, Conv3D, and LeWM. Current evidence includes a tightly qualified one-buggy-episode
+window-level pilot, not broad detection performance. A gated protocol separates validation
+evidence from a one-time locked test and keeps the failed LeWM P95 operating point visible.
 
 ### Three-Minute Defense Outline
 
@@ -799,7 +799,7 @@ validation selection from a one-time locked test and keeps negative results visi
 ### Safe English Wording
 
 - "We verify checkpoint-level integration and data-contract feasibility."
-- "The current LeWM gameplay evaluation remains pending."
+- "The current LeWM gameplay evaluation is a one-buggy-episode window-level pilot."
 - "Validation evidence does not support a superiority claim."
 - "Binary video labels do not support temporal localization."
 
@@ -815,7 +815,7 @@ granularity, negative results, and lessons for reproducible game-QA anomaly rese
 | Why zero-action? | TempGlitch lacks verified actions; zeros preserve an explicit MVP adapter. | action-mode metadata | do not call it original action-conditioned LeWM |
 | Why WOB? | It provides controlled episodes and recorded actions. | report 40 and replay audit | retain synchronization caveat |
 | Why TempGlitch? | It directly targets temporal gameplay glitches and has public binary video data. | source/protocol records | limit to binary detection |
-| Why no locked test? | Validation configuration and LeWM evidence are not frozen yet. | gate table | say the gate is intentionally closed |
+| Why no locked test? | The validation pilot is too narrow and LeWM P95 calibration failed. | reports 49-50 | say Gate 10 is intentionally closed |
 | Is this SOTA? | No. The project does not claim SOTA. | broad comparisons would be required | state limitation |
 | Did you train on glitches? | The target protocol is train-normal only. | split/training audit | no claim if audit missing |
 | Is SIGReg proven useful? | Not in this project yet. | Gate 9 ablation | describe only as a method component |
@@ -890,11 +890,12 @@ granularity, negative results, and lessons for reproducible game-QA anomaly rese
 | 2, complete | Kaggle GPU Operator | Complete Gate 5 CUDA smoke/resume | reports 41-44 | strict validator passes | none |
 | 3, complete | Dataset protocol engineer | Audit Gate 6 normal-only pilot source | reports 40 and 45, frozen split | normal-only source/pair-disjoint Lance inventories | none |
 | 4, complete | LeWM Integration + ML Research Engineers | Run standing-authorized Gate 6 pilot | config and reports 45-46 | gameplay checkpoint, reload, finite diagnostics, validation encoding | none |
-| 5 | ML Research Engineers | Run Gate 7 validation scoring | scoring modules and protocol | finite validation scores and metrics | scorer mismatch |
-| 6 | Locked Test Release Officer | Keep locked test closed | release workflow | no materialization/scoring before frozen decision | schedule pressure |
+| 5, complete | ML Research Engineers | Run Gates 7-9 non-locked evaluation | reports 47-50 | finite same-manifest scores and pilot metrics | none |
+| 6 | Dataset/ML Research Engineers | Broaden non-locked buggy validation and repair threshold calibration | Gate 7-9 scripts and protocol | multiple buggy episodes and robust calibration evidence | label/domain limits |
+| 7 | Locked Test Release Officer | Keep locked test closed | release workflow | no materialization/scoring before frozen decision | schedule pressure |
 
-Current recommended task: freeze the Gate 6 v8 checkpoint/config provenance and run Gate 7
-validation-only surprise scoring. Keep locked test closed.
+Current recommended task: broaden non-locked buggy validation coverage and investigate the
+zero-recall normal-P95 LeWM threshold. Keep locked test closed.
 
 ## 29. Maintenance Rules For This Playbook
 

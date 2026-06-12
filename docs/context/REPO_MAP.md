@@ -1,7 +1,7 @@
 # REPO_MAP.md
 
-Generated: 2026-06-12T05:58:16+00:00
-Commit: `4136018352ccde09a642d1f188cdb7b47c3e4195`
+Generated: 2026-06-12T06:48:03+00:00
+Commit: `f22e1be92fed098752069616deb7ed2b26b8fcc1`
 Generator: `scripts/update_context_cache.py`
 
 ## Top-Level Map
@@ -57,7 +57,10 @@ Generator: `scripts/update_context_cache.py`
 | `scripts/prepare_phase6e_kaggle_dataset.py` | _require_file, _estimate_directory, _upload_readme, prepare_phase6e_kaggle_dataset, build_parser, main | Python module. |
 | `scripts/repair_kaggle_kernel_write_path.py` | discover_kaggle_executables, safe_file_status, create_canary_package, build_submission_variants, _run, _diagnostics, _canary_slug, _check_remote, _run_variant, build_parser, main | Python module. |
 | `scripts/run_dynamics_experiments.py` | main | Python module. |
+| `scripts/run_gate7_lance_scoring.py` | _validate_inputs, build_parser, main | Python module. |
 | `scripts/run_gate7_lewm_evaluation.py` | main | Python module. |
+| `scripts/run_gate8_baselines_from_lance.py` | baseline_values, fit_feature_centroid, validate_baseline_alignment, _git_sha, _loader, _fit_train_centroid, _batch_strings, _validate_batch_metadata, _score_target, _validate_fingerprints, run_gate8_baselines, build_parser | Python module. |
+| `scripts/run_gate9_ablations.py` | validate_gate9_alignment, aggregate_lewm_rows, _evaluate_scorer, evaluate_gate9_rows, run_gate9, build_parser, main | Python module. |
 | `scripts/run_glitchbench_subset_experiments.py` | main | Python module. |
 | `scripts/run_hard_dynamics_experiments.py` | main | Python module. |
 | `scripts/run_kaggle_lewm.py` | build_parser, main | Python module. |
@@ -96,6 +99,7 @@ Generator: `scripts/update_context_cache.py`
 | `src/glitch_detection/lewm_gate6.py` | Gate6KaggleConfig, build_source_archive, render_gate6_kernel, prepare_gate6_kaggle_package, _load_json, _finite_numbers, validate_gate6_kaggle_package, validate_gate6_artifacts | Python module. |
 | `src/glitch_detection/lewm_gate6_automation.py` | _write_json, Gate6AutomationConfig, Gate6AutomationHandlers | Python module. |
 | `src/glitch_detection/lewm_kaggle.py` | LeWMKaggleConfig, validate_kaggle_slug, quota_allocation, render_validation_kernel, prepare_lewm_kaggle_package, _read_json, _sha256_json, validate_lewm_kaggle_package, _kernel_fingerprint_payload, validate_kernel_push_preflight, build_package_audit, _validate_finite_numbers | Python module. |
+| `src/glitch_detection/lewm_lance_eval.py` | runtime_provenance, select_calibration_episodes, canonical_rows_from_samples, validate_manifest_rows, validate_score_alignment, write_csv_rows, read_csv_rows, _lance_dataset, _metadata_samples, build_canonical_manifest, _score_dataset, run_gate7_scoring | Python module. |
 | `src/glitch_detection/lewm_latent.py` | LeWMUnavailableError, resolve_checkpoint, resolve_config, _require_torch, _list_frames, _load_pixels, score_record, score_manifest, build_parser, main | Python module. |
 | `src/glitch_detection/lewm_protocol.py` | LeWMSplitRecord, _hash_fraction, assign_hashed_group_splits, audit_lewm_splits, write_lewm_split | Python module. |
 | `src/glitch_detection/lewm_surprise.py` | aggregate_scores, score_direction_check, score_record_series, score_record, _resolve_device, score_manifest, registered_score_manifest | Python module. |
@@ -147,7 +151,10 @@ Generator: `scripts/update_context_cache.py`
 | `scripts/prepare_phase6e_kaggle_dataset.py` | CLI/helper script. | Gate 5 |
 | `scripts/repair_kaggle_kernel_write_path.py` | CLI/helper script. | Gate 5 |
 | `scripts/run_dynamics_experiments.py` | CLI/helper script. | general |
+| `scripts/run_gate7_lance_scoring.py` | CLI/helper script. | general |
 | `scripts/run_gate7_lewm_evaluation.py` | CLI/helper script. | Gate 5 |
+| `scripts/run_gate8_baselines_from_lance.py` | CLI/helper script. | general |
+| `scripts/run_gate9_ablations.py` | CLI/helper script. | general |
 | `scripts/run_glitchbench_subset_experiments.py` | CLI/helper script. | general |
 | `scripts/run_hard_dynamics_experiments.py` | CLI/helper script. | general |
 | `scripts/run_kaggle_lewm.py` | CLI/helper script. | Gate 5 |
@@ -186,7 +193,10 @@ Generator: `scripts/update_context_cache.py`
 | `tests/test_feature_distance.py` | feature_distance |
 | `tests/test_frame_diff.py` | frame_diff |
 | `tests/test_gate6_data.py` | gate6_data |
+| `tests/test_gate7_lance_scoring.py` | gate7_lance_scoring |
 | `tests/test_gate7_manifest.py` | gate7_manifest |
+| `tests/test_gate8_baselines.py` | gate8_baselines |
+| `tests/test_gate9_ablations.py` | gate9_ablations |
 | `tests/test_imports.py` | imports |
 | `tests/test_ingest_phase6e_kaggle_artifacts.py` | ingest_phase6e_kaggle_artifacts |
 | `tests/test_kaggle_automation_foundation.py` | kaggle_automation_foundation |
@@ -201,6 +211,7 @@ Generator: `scripts/update_context_cache.py`
 | `tests/test_lewm_gate6.py` | lewm_gate6 |
 | `tests/test_lewm_gate6_automation.py` | lewm_gate6_automation |
 | `tests/test_lewm_kaggle.py` | lewm_kaggle |
+| `tests/test_lewm_lance_eval.py` | lewm_lance_eval |
 | `tests/test_lewm_latent.py` | lewm_latent |
 | `tests/test_lewm_protocol.py` | lewm_protocol |
 | `tests/test_lewm_surprise.py` | lewm_surprise |
@@ -240,6 +251,7 @@ Generator: `scripts/update_context_cache.py`
 | `docs/context/README.md` | README |
 | `docs/context/REPO_MAP.md` | REPO MAP |
 | `docs/context/TASK_ROUTER.md` | TASK ROUTER |
+| `docs/plans/2026-06-12-gate7-to-gate9-lewm-evaluation.md` | 2026-06-12-gate7-to-gate9-lewm-evaluation |
 | `docs/research/00_research_overview.md` | 00 research overview |
 | `docs/research/01_problem_statement.md` | 01 problem statement |
 | `docs/research/02_literature_matrix.md` | 02 literature matrix |
@@ -311,4 +323,3 @@ Generator: `scripts/update_context_cache.py`
 | `docs/workflows/00_environment_audit.md` | 00 environment audit |
 | `docs/workflows/01_global_research_tooling_plan.md` | 01 global research tooling plan |
 | `docs/workflows/agent_governance_sources.md` | agent governance sources |
-| `docs/workflows/agent_task_template.md` | agent task template |

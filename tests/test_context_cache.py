@@ -93,6 +93,24 @@ def test_boot_line_limit_and_gate5_router(tmp_path: Path):
     assert "Gate 5 Kaggle" in router
 
 
+def test_generated_context_records_gate7_to_gate9_pilot_without_opening_gate10(
+    tmp_path: Path,
+):
+    _init_repo(tmp_path)
+    _write_minimal_repo(tmp_path)
+    update_context_cache(tmp_path, refresh_boot=True)
+
+    boot = (tmp_path / CONTEXT_DIR / "BOOT.md").read_text(encoding="utf-8")
+    state = (tmp_path / CONTEXT_DIR / "PROJECT_STATE.md").read_text(encoding="utf-8")
+
+    assert "Gates 7-9 completed" in boot
+    assert "| 7 | passed" in state
+    assert "| 8 | passed" in state
+    assert "| 9 | passed pilot" in state
+    assert "| 10 | closed" in state
+    assert "Locked test is closed" in boot
+
+
 def test_repo_map_includes_key_modules_and_ignores_outputs(tmp_path: Path):
     _init_repo(tmp_path)
     _write_minimal_repo(tmp_path)

@@ -1,20 +1,18 @@
 # NEXT_ACTION.md
 
-Last updated: 2026-06-12T05:58:16+00:00
-Commit: `4136018352ccde09a642d1f188cdb7b47c3e4195`
+Last updated: 2026-06-12T06:48:03+00:00
+Commit: `f22e1be92fed098752069616deb7ed2b26b8fcc1`
 
 ## Current Priority
-Freeze Gate 6 v8 provenance and run Gate 7 validation-only surprise scoring.
+Preserve the Gate 7-9 pilot and broaden non-locked buggy validation coverage before Gate 10.
 
 ## Success Criteria
-- Frozen TempGlitch source/pair-disjoint split audit.
-- Normal-only train and normal-only validation Lance inventories.
-- False locked-test materialization/scoring flags.
-- Fingerprinted validation-only Gate 6 package with standing authorization audit.
-- Finite training/validation losses and non-collapsed diagnostics after the pilot.
-- Checkpoint reload plus normal and non-locked glitch validation encoding.
+- Preserve the canonical manifest and Gate 7-9 artifact hashes.
+- Keep threshold fitting grouped, normal-only, and validation-only.
+- Add multiple non-locked buggy episodes before making a broader detection claim.
+- Keep locked-test materialization/scoring false.
 
 ## Current Known Blocker
-Gate 6 v8 passed strict CUDA validation with normal-only training, checkpoint reload, finite
-normal/non-locked buggy validation encoding, and false locked-test flags. Gate 7 may now run on
-validation only. No LeWM detection metric exists yet.
+The Gate 7-9 pilot has only one non-locked buggy episode. LeWM max aggregation reached finite
+window-level AUROC/AUPRC, but the grouped normal-P95 threshold yielded zero recall and F1 for
+every LeWM aggregation. This evidence is diagnostic and does not justify opening locked test.
