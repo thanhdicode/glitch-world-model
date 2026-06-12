@@ -21,7 +21,7 @@ REQUIRED_PATHS = (
     ".github/copilot-instructions.md",
     ".codex/skills",
     "docs/workflows/agent_task_template.md",
-    "docs/workflows/kaggle_live_approval.md",
+    "docs/workflows/kaggle_automation_policy.md",
     "docs/workflows/locked_test_release.md",
     "docs/workflows/artifact_policy.md",
     "docs/workflows/experiment_tracking.md",

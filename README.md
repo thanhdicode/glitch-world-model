@@ -15,8 +15,8 @@ Current LeWM gate status:
 
 - Gates 1-5 passed at their documented engineering/smoke level.
 - Gate 5 passed strict Kaggle CUDA train/resume artifact validation.
-- Gate 6 data passed audit and materialization; live training is blocked by a reproduced Kaggle
-  kernel submission failure.
+- Gate 6 data passed audit and materialization; v6 was accepted remotely and failed because an
+  auxiliary source ZIP was unavailable beside the Kaggle script.
 - Gates 7-10 have not run.
 - Locked test remains closed.
 - No LeWM glitch-detection performance, superiority, or neural locked-test claim is supported.
@@ -71,15 +71,15 @@ The verified run is recorded in the
 No locked-test neural score may be claimed before a validation decision is saved and the
 locked-test release gate is explicitly opened.
 
-The resumable Kaggle automation defaults to dry-run and stops at fingerprint-bound approval
-gates:
+The resumable Kaggle automation defaults to dry-run. Non-locked-test live actions use repository
+standing authorization after security, license, protocol, package, and idempotency checks:
 
 ```powershell
 python scripts\run_phase6e_kaggle_automation.py --dry-run
 ```
 
-Live upload and kernel push require separate one-time approvals. The June 10, 2026 run consumed
-fingerprint-bound approvals and completed artifact ingestion while keeping locked test untouched.
+Fingerprints remain audit and idempotency records. Locked-test access still requires a separate
+direct user command. Historical June 2026 runs used the former approval workflow.
 
 ## Research-Grade Workflow
 
@@ -134,11 +134,11 @@ latexmk -pdf -cd paper/main.tex
 
 Current status: Phase 6E is complete as a validation-only Conv3D engineering result. The separate
 LeWM path has passed Gates 1-5, including strict validation of a Kaggle CUDA train/resume smoke.
-Gate 6 now has audited normal-only gameplay data, but its first live pilot failed before epoch 1
-on a package import error. A corrected package is approval-pending; no gameplay checkpoint or
-glitch metric exists. Gate 7 infrastructure exists but experiments remain closed. Do not touch
-locked test without a
-frozen validation decision, the documented release gate, and explicit authorization.
+Gate 6 now has audited normal-only gameplay data, but v6 failed before training because Kaggle did
+not provide the auxiliary source ZIP assumed by the generated script. A single-file repair is
+pending; no gameplay checkpoint or glitch metric exists. Gate 7 infrastructure exists but
+experiments remain closed. Do not touch locked test without a frozen validation decision, the
+documented release gate, and a separate direct user command.
 
 The June 11, 2026 Gate 5 TempGlitch dataset upload is ready. The first approved kernel push
 returned HTTP `409 Conflict` before a run was established; the local cause was a kernel slug that
@@ -258,9 +258,9 @@ isolated LeWM environment and compatible checkpoint/data contracts:
 python -m glitch_detection.lewm_latent --manifest data/processed/my_experiment/manifest.csv --labels data/raw/my_labels.csv --output outputs/my_experiment_lewm_scores.csv --checkpoint path/to/lewm.ckpt
 ```
 
-The next evidence step is to restore a functioning Kaggle kernel write path, then prepare a fresh
-Gate 6 package/fingerprint and submit exactly one CUDA pilot. Gate 7 scoring and
-validation metrics remain blocked until that pilot produces a valid checkpoint.
+The next evidence step is to generate a single-file Gate 6 package, pass offline bootstrap and
+public-release validation, then submit one fresh fingerprint. Gate 7 scoring and validation
+metrics remain blocked until strict Gate 6 artifacts pass.
 
 Audit the Phase 6E neural training partition without loading PyTorch or touching test:
 

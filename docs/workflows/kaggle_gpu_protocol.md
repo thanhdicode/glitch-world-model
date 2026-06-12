@@ -3,10 +3,12 @@
 1. Keep `kaggle.json` outside the repository and never print credentials.
 2. Dry-run data/package/protocol checks locally.
 3. Scan the upload package for credentials and prohibited files.
-4. Require a fingerprint-bound approval before private dataset upload.
-5. Require a separate fingerprint-bound approval before each GPU kernel push.
+4. Use standing authorization for non-locked-test dataset and kernel actions after validation.
+5. Record content fingerprints as audit and idempotency keys.
 6. Poll without duplicate pushes; download only required artifacts.
 7. Validate artifacts locally before making claims.
-8. Never touch locked test unless its release gate is explicitly opened.
+8. Public release additionally requires a license, redistribution permission, and locked-test scan.
+9. Never touch locked test without a separate direct user command.
 
-No Kaggle upload, kernel push, or GPU training is authorized by documentation changes alone.
+Remote deletion, credential publication, unlicensed public data, and validator bypass are not
+authorized.

@@ -1,7 +1,7 @@
 # BOOT.md - Fast Start Context For Agents
 
-Generated: 2026-06-11T16:42:31+00:00
-Commit: `7d33d911b4fb59f6239416254f162e152b0470ef`
+Generated: 2026-06-12T04:27:34+00:00
+Commit: `ea8c45ae6e1616b3f513d9cde7e6eee53a50be64`
 
 ## Read Order
 1. `RULES.md`
@@ -18,20 +18,22 @@ context cache is stale. Use `docs/context/REPO_MAP.md` before broad repo searche
 ## Current Status
 - Gates 1-4 passed at engineering/smoke level.
 - Gate 5 passed strict Kaggle CUDA/resume artifact validation.
-- Gate 6 data passed audit/materialization; v3 failed before training, v5 failed during
-  submission, and a minimal CPU/no-dataset canary reproduced the submission failure.
+- Gate 6 data passed audit/materialization; v3 failed before training, Canary A restored the
+  write path, and v6 failed at runtime on an unavailable auxiliary source ZIP.
 - Gate 7 infrastructure exists but experiments have not run; Gates 8-10 have not run.
 - Locked test is closed.
 - LeWM integration engineering exists.
 - LeWM gameplay evaluation is not established.
 
 ## Immediate Next Task
-- Restore a functioning Kaggle kernel write path before preparing any fresh Gate 6 package.
+- Repair Gate 6 as a single-file embedded-source kernel and validate it strictly.
 - Do not run Gate 7 experiments until Gate 6 strictly passes.
 
 ## Safety
-- No Kaggle live action without a current fingerprint-bound approval.
-- Dataset upload and kernel push require separate approvals.
+- Non-locked-test Kaggle actions use standing Kaggle authorization after security, license,
+  protocol, and package validation.
+- Fingerprints are audit/idempotency records, not approval artifacts.
+- Locked-test materialization or scoring requires a separate direct user command.
 - No locked-test materialization or scoring.
 - No data, output, checkpoint, Lance dataset, cache, `.env`, token, or `kaggle.json` commits.
 - No LeWM detection, superiority, SIGReg benefit, temporal localization, SOTA, or neural

@@ -12,8 +12,8 @@ requires deep context.
 Current verified status:
 
 - Gates 1-5 passed; Gate 5 includes strict Kaggle CUDA train/resume artifact validation.
-- Gate 6 normal-only data is materialized; the first live pilot failed before training and the
-  next corrected package is approval-pending.
+- Gate 6 normal-only data is materialized; v6 was accepted remotely and failed at runtime because
+  its auxiliary source ZIP was unavailable beside the Kaggle script.
 - Gates 7-10 have not run.
 - Locked test is closed.
 - LeWM integration engineering exists; LeWM gameplay evaluation is not yet established.
@@ -71,11 +71,13 @@ Open `PLAYBOOK.md` only for roadmap, paper, claim, gate-status, or ambiguous tas
 
 ## Safety Gates
 
-- Do not run new GPU training, Kaggle live actions, or locked-test scoring without explicit,
-  action-specific approval.
-- Dataset upload and kernel push require separate fingerprint-bound approvals.
+- Non-locked-test Kaggle actions use repository standing authorization after security, license,
+  protocol, package, and idempotency checks.
+- Fingerprints are mandatory audit records and idempotency keys, not approval artifacts.
 - Locked test requires a frozen validation decision naming exactly one configuration and claim
-  scope.
+  scope plus a separate direct user command.
+- Remote resource deletion, credential publication, unlicensed public data, and validator bypass
+  remain prohibited.
 - Never print or commit credentials, tokens, private keys, `.env`, or `kaggle.json`.
 - Never commit raw data, processed data, outputs, Lance datasets, checkpoints, or caches.
 

@@ -5,7 +5,9 @@ layer.
 
 ## 1. Non-Negotiable Safety Rules
 
-- Do not run Kaggle live actions, GPU training, or locked-test scoring without explicit approval.
+- Kaggle live actions and GPU training operate under repository standing authorization after
+  required security, license, protocol, and package validation.
+- Locked-test materialization or scoring requires a separate direct user command.
 - Do not weaken gates, validators, or locked tests to make a task pass.
 - Do not execute unreviewed scripts from reference repositories or skill marketplaces.
 
@@ -35,9 +37,14 @@ layer.
 ## 5. Kaggle And GPU Rules
 
 - Default every workflow to dry-run and validation-only.
-- Dataset upload and kernel push require separate, current, fingerprint-bound approvals.
+- Kaggle dataset upload/version, kernel push/version, GPU execution, polling, artifact download,
+  and validated public publication operate under repository standing authorization.
+- Kaggle fingerprints remain mandatory audit and idempotency records; no request, approved, or
+  consumed approval artifact is required.
+- Remote deletion, credential publication, unlicensed public data, and validator bypass remain
+  prohibited.
 - Validate downloaded artifacts locally before updating any claim.
-- Approval consumption is not proof of successful training.
+- A successful push, remote status, or audit record is not proof of successful training.
 
 ## 6. Artifact And Credential Hygiene
 

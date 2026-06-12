@@ -1,20 +1,20 @@
 # NEXT_ACTION.md
 
-Last updated: 2026-06-11T16:42:31+00:00
-Commit: `7d33d911b4fb59f6239416254f162e152b0470ef`
+Last updated: 2026-06-12T04:27:34+00:00
+Commit: `ea8c45ae6e1616b3f513d9cde7e6eee53a50be64`
 
 ## Current Priority
-Restore a functioning Kaggle kernel submission path before preparing Gate 6 v6.
+Repair Gate 6 as a single-file embedded-source kernel and run one fresh strict validation.
 
 ## Success Criteria
 - Frozen TempGlitch source/pair-disjoint split audit.
 - Normal-only train and normal-only validation Lance inventories.
 - False locked-test materialization/scoring flags.
-- Fingerprint-bound validation-only Gate 6 package.
-- Finite training/validation losses and non-collapsed diagnostics after an approved pilot.
+- Fingerprinted validation-only Gate 6 package with standing authorization audit.
+- Finite training/validation losses and non-collapsed diagnostics after the pilot.
 - Checkpoint reload plus normal and non-locked glitch validation encoding.
 
 ## Current Known Blocker
-Gate 6 data is ready, but a minimal CPU/no-dataset canary reproduced the v5 JSON parse failure and
-did not create a remote kernel. Do not prepare or push v6 until Kaggle kernel writes work again,
-and do not run Gate 7 experiments before Gate 6 passes.
+Gate 6 data is ready. Canary A proved the write path, but v6 failed because an auxiliary source
+ZIP was unavailable at runtime. Do not run Gate 7 experiments before a single-file Gate 6 package
+passes strict artifact validation.

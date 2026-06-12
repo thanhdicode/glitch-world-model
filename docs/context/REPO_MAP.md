@@ -1,7 +1,7 @@
 # REPO_MAP.md
 
-Generated: 2026-06-11T16:42:31+00:00
-Commit: `7d33d911b4fb59f6239416254f162e152b0470ef`
+Generated: 2026-06-12T04:27:34+00:00
+Commit: `ea8c45ae6e1616b3f513d9cde7e6eee53a50be64`
 Generator: `scripts/update_context_cache.py`
 
 ## Top-Level Map
@@ -41,6 +41,7 @@ Generator: `scripts/update_context_cache.py`
 | `scripts/create_dynamics_test_dataset.py` | draw_scene, main | Python module. |
 | `scripts/create_hard_dynamics_dataset.py` | draw_scene, main | Python module. |
 | `scripts/create_test_dataset.py` | draw_frame, main | Python module. |
+| `scripts/diagnose_kaggle_submission.py` | _default_executor, parse_kaggle_username, collect_package_diagnostics, run_redacted_command, _kaggle_executable, build_parser, main | Python module. |
 | `scripts/doctor.py` | module_available, check_gitignored, collect_report, print_report, core_requirements_satisfied, main | Python module. |
 | `scripts/download_glitchbench_subset.py` | fetch_rows, download_image, save_resized, main | Python module. |
 | `scripts/download_tempglitch.py` | build_parser, main | Python module. |
@@ -128,6 +129,7 @@ Generator: `scripts/update_context_cache.py`
 | `scripts/create_dynamics_test_dataset.py` | CLI/helper script. | general |
 | `scripts/create_hard_dynamics_dataset.py` | CLI/helper script. | general |
 | `scripts/create_test_dataset.py` | CLI/helper script. | general |
+| `scripts/diagnose_kaggle_submission.py` | CLI/helper script. | Gate 5 |
 | `scripts/doctor.py` | CLI/helper script. | general |
 | `scripts/download_glitchbench_subset.py` | CLI/helper script. | general |
 | `scripts/download_tempglitch.py` | CLI/helper script. | general |
@@ -187,6 +189,7 @@ Generator: `scripts/update_context_cache.py`
 | `tests/test_kaggle_automation_foundation.py` | kaggle_automation_foundation |
 | `tests/test_kaggle_automation_orchestrator.py` | kaggle_automation_orchestrator |
 | `tests/test_kaggle_automation_validation.py` | kaggle_automation_validation |
+| `tests/test_kaggle_submission_diagnostics.py` | kaggle_submission_diagnostics |
 | `tests/test_kaggle_video_autoencoder_runner.py` | kaggle_video_autoencoder_runner |
 | `tests/test_leakage_aware_scorers.py` | leakage_aware_scorers |
 | `tests/test_lewm_adapter.py` | lewm_adapter |
@@ -282,6 +285,7 @@ Generator: `scripts/update_context_cache.py`
 | `docs/research/60_paper_claim_audit.md` | 60 paper claim audit |
 | `docs/research/61_reproducibility_checklist.md` | 61 reproducibility checklist |
 | `docs/research/62_artifact_manifest.md` | 62 artifact manifest |
+| `docs/research/63_full_repo_audit_and_gate6_root_cause.md` | 63 full repo audit and gate6 root cause |
 | `docs/research/adr/ADR-001-topic-scope.md` | ADR-001-topic-scope |
 | `docs/research/adr/ADR-002-dataset-strategy.md` | ADR-002-dataset-strategy |
 | `docs/research/adr/ADR-003-lewm-integration-strategy.md` | ADR-003-lewm-integration-strategy |
@@ -294,13 +298,12 @@ Generator: `scripts/update_context_cache.py`
 | `docs/superpowers/plans/2026-06-09-phase6e-kaggle-launch-package.md` | 2026-06-09-phase6e-kaggle-launch-package |
 | `docs/superpowers/plans/2026-06-09-phase6e-kaggle-video-autoencoder.md` | 2026-06-09-phase6e-kaggle-video-autoencoder |
 | `docs/superpowers/plans/2026-06-10-research-grade-lab.md` | 2026-06-10-research-grade-lab |
+| `docs/superpowers/plans/2026-06-12-kaggle-standing-authorization-gate6-repair.md` | 2026-06-12-kaggle-standing-authorization-gate6-repair |
 | `docs/superpowers/specs/2026-06-09-phase6e-kaggle-automation-design.md` | 2026-06-09-phase6e-kaggle-automation-design |
 | `docs/superpowers/specs/2026-06-09-phase6e-kaggle-video-autoencoder-design.md` | 2026-06-09-phase6e-kaggle-video-autoencoder-design |
+| `docs/superpowers/specs/2026-06-12-kaggle-standing-authorization-gate6-repair-design.md` | 2026-06-12-kaggle-standing-authorization-gate6-repair-design |
 | `docs/workflows/00_environment_audit.md` | 00 environment audit |
 | `docs/workflows/01_global_research_tooling_plan.md` | 01 global research tooling plan |
 | `docs/workflows/agent_governance_sources.md` | agent governance sources |
 | `docs/workflows/agent_task_template.md` | agent task template |
 | `docs/workflows/artifact_policy.md` | artifact policy |
-| `docs/workflows/codex_task_protocol.md` | codex task protocol |
-| `docs/workflows/codex_workflow.md` | codex workflow |
-| `docs/workflows/dvc_mlflow_plan.md` | dvc mlflow plan |

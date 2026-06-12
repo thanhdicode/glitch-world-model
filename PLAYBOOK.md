@@ -42,11 +42,12 @@ under 200 lines without hiding safety rules.
 
 ### When In Doubt
 
-1. Stop before any external side effect, GPU run, upload, or locked-test access.
+1. Stop before locked-test access or any external side effect that fails repository policy.
 2. Find the artifact or primary source that supports the proposed statement.
 3. Use the weaker claim when evidence levels differ.
 4. Keep locked test closed.
-5. Ask for explicit approval when a documented gate requires it.
+5. Use standing authorization for validated non-locked-test Kaggle actions; require a separate
+   direct user command for locked test.
 
 ## 1. Project Identity
 
@@ -99,9 +100,10 @@ The repository has not verified:
 - a neural locked-test result.
 
 Gate 5 passed strict CUDA/resume artifact validation. Gate 6 data audit/materialization passed.
-The v3 pilot failed before epoch 1 because the bundled package was not importable; v5 and a
-minimal CPU/no-dataset canary both failed before remote kernel creation with the same Kaggle JSON
-parse error. The immediate task is restoring a functioning Kaggle kernel write path. Positive
+The v3 pilot failed before epoch 1 because the bundled package was not importable. A later Canary
+A restored the Python-module Kaggle write path. Gate 6 v6 was accepted remotely, then failed
+because `/kaggle/src/glitch_detection_src.zip` was unavailable beside the configured script.
+The immediate task is a single-file Gate 6 kernel and strict remote artifact validation. Positive
 LeWM language remains limited to integration and CUDA engineering.
 
 ## 3. Why This Project Exists
@@ -224,8 +226,9 @@ described as components of the audited method, but their gameplay detection bene
 
 ### Do Not Do
 
-- Run Kaggle live actions without exact fingerprint-bound approvals.
+- Run a Kaggle action that fails security, license, protocol, package, or idempotency policy.
 - Materialize or score locked test.
+- Delete remote Kaggle resources or publish credentials, private data, or unlicensed data.
 - Fit thresholds, covariance, normalization, or model choices on test.
 - Commit data, outputs, Lance datasets, checkpoints, tracker stores, or credentials.
 
@@ -556,17 +559,19 @@ A lower evidence level cannot silently upgrade a claim.
 
 ## 17. Kaggle GPU Operating Protocol
 
-Documentation never authorizes live execution.
+Repository standing authorization covers validated non-locked-test Kaggle execution.
 
 1. Prepare and security-scan the dataset package.
 2. Compute the dataset inventory fingerprint.
-3. Request a one-time dataset-upload approval for that exact fingerprint.
-4. After upload identity is known, finalize and fingerprint the kernel.
-5. Request a separate one-time kernel-push approval.
-6. Push once, poll without duplicate submissions, and download only expected outputs.
-7. Validate downloaded artifacts locally.
+3. Validate license, redistribution permission, visibility, and false locked-test flags.
+4. Create or version the dataset under standing authorization.
+5. Finalize and fingerprint the kernel against the remote dataset identity.
+6. Push once per fingerprint, poll without duplicate submissions, and download expected outputs.
+7. Validate downloaded artifacts locally before updating a gate or claim.
 
-Changing package contents invalidates the corresponding approval.
+Changing package contents creates a new fingerprint. A runtime failure cannot be retried until a
+relevant package change produces a new fingerprint. Locked-test access remains outside standing
+authorization and requires a separate direct user command.
 
 ### Gate 5 Artifact Contract
 
@@ -862,7 +867,7 @@ granularity, negative results, and lessons for reproducible game-QA anomaly rese
 ### Done For Gate 10
 
 - Exactly one validation-selected configuration is frozen.
-- Explicit fingerprint-bound approval exists.
+- A separate direct user command authorizes the frozen locked-test decision.
 - Locked test is scored once.
 - Frozen threshold is applied unchanged.
 - Scores and metrics are hashed.
@@ -891,12 +896,12 @@ granularity, negative results, and lessons for reproducible game-QA anomaly rese
 | 1, complete | owner | Merge/push governance foundation | `main` at `0ceef40` | governance files are on `origin/main` | none |
 | 2, complete | Kaggle GPU Operator | Complete Gate 5 CUDA smoke/resume | reports 41-44 | strict validator passes | none |
 | 3 | Dataset protocol engineer | Audit Gate 6 normal-only pilot source | reports 40 and 45, frozen split | normal-only source/pair-disjoint Lance inventories | leakage or missing videos |
-| 4 | LeWM Integration + ML Research Engineers | Run approved Gate 6 pilot | config and reports 45-46 | gameplay checkpoint, reload, finite diagnostics, validation encoding | collapse/domain mismatch |
+| 4 | LeWM Integration + ML Research Engineers | Run standing-authorized Gate 6 pilot | config and reports 45-46 | gameplay checkpoint, reload, finite diagnostics, validation encoding | collapse/domain mismatch |
 | 5 | ML Research Engineers | Open Gate 7 validation scoring | scoring modules and protocol | finite validation scores and metrics | scorer mismatch |
 | 6 | Locked Test Release Officer | Keep locked test closed | release workflow | no materialization/scoring before frozen decision | schedule pressure |
 
-Current recommended task: restore and verify the Kaggle kernel write path with a future minimal
-canary. Only after that succeeds, prepare a fresh fingerprint-bound Gate 6 package.
+Current recommended task: embed Gate 6 source in a single-file kernel, pass offline bootstrap and
+public-release checks, then run one fresh fingerprint through strict remote artifact validation.
 
 ## 29. Maintenance Rules For This Playbook
 
