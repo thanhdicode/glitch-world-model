@@ -175,7 +175,7 @@ def find_one_dir(name):
 def materialize(archive_name, directory_name, destination):
     directories = sorted(path for path in INPUT.rglob(directory_name) if path.is_dir())
     if directories:
-        shutil.copytree(find_one_dir(directory_name), destination)
+        shutil.copytree(find_one_dir(directory_name), destination, dirs_exist_ok=True)
         return
     shutil.unpack_archive(str(find_one_file(archive_name)), str(destination.parent))
 

@@ -74,6 +74,7 @@ def test_generated_kernel_is_immutable_and_fail_closed():
     assert "run_lewm_gpu_profile" in kernel
     assert "find_one_dir" in kernel
     assert "materialize" in kernel
+    assert "dirs_exist_ok=True" in kernel
     assert "validation_buggy" not in kernel
 
 
