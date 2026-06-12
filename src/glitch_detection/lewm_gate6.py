@@ -110,21 +110,54 @@ SOURCE_ARCHIVE_B64 = {source_archive_b64!r}
 if not CONFIG["validation_only"]:
     raise RuntimeError("Locked-test execution is forbidden in this kernel.")
 
+def _select_lance_candidate(candidates):
+    \"\"\"Return the deepest-leaf candidate from a list of Paths with the same name.
+
+    If Kaggle mounts a dataset at both the root and a nested same-name directory
+    (e.g. /kaggle/input/ds/name  AND  /kaggle/input/ds/name/name), we keep
+    only the deepest entry because the shallower one is the parent mount point.
+    Raises RuntimeError when multiple *unrelated* same-name leaves remain.
+    \"\"\"
+    if not candidates:
+        return None
+    # Remove any candidate that is an ancestor of another candidate.
+    filtered = [
+        c for c in candidates
+        if not any(other != c and str(other).startswith(str(c) + "/") for other in candidates)
+    ]
+    if len(filtered) == 1:
+        return filtered[0]
+    raise RuntimeError(
+        f"Multiple unrelated Lance candidates found; cannot select one: {{filtered}}"
+    )
+
 def materialize_dataset(name, destination_root):
     directories = sorted(path for path in INPUT_ROOT.rglob(name) if path.is_dir())
     archives = sorted(path for path in INPUT_ROOT.rglob(name + ".zip") if path.is_file())
-    if len(directories) + len(archives) != 1:
-        raise RuntimeError(
-            f"Expected exactly one input directory/archive named {{name}}, "
-            f"found directories={{directories}}, archives={{archives}}"
-        )
     destination = destination_root / name
     if directories:
-        shutil.copytree(directories[0], destination)
+        selected = _select_lance_candidate(directories)
+        shutil.copytree(selected, destination)
+    elif archives:
+        selected_archive = archives[0]
+        extract_tmp = destination_root / (name + "_extract_tmp")
+        extract_tmp.mkdir(parents=True, exist_ok=True)
+        shutil.unpack_archive(str(selected_archive), str(extract_tmp))
+        # Find the extracted directory matching the expected name.
+        extracted_dirs = sorted(path for path in extract_tmp.rglob(name) if path.is_dir())
+        if not extracted_dirs:
+            raise RuntimeError(
+                f"Archive {{selected_archive}} did not produce a directory named {{name}}"
+            )
+        selected_extracted = _select_lance_candidate(extracted_dirs)
+        shutil.copytree(selected_extracted, destination)
+        shutil.rmtree(extract_tmp)
     else:
-        shutil.unpack_archive(str(archives[0]), str(destination_root))
+        raise RuntimeError(
+            f"No input directory or archive named {{name}} found under {{INPUT_ROOT}}"
+        )
     if not destination.is_dir():
-        raise RuntimeError(f"Archive did not produce expected Lance directory: {{destination}}")
+        raise RuntimeError(f"materialize_dataset did not produce expected Lance directory: {{destination}}")
     return destination
 
 CODE_ROOT = Path(os.environ.get("GATE6_CODE_ROOT", "/tmp/gate6_code"))

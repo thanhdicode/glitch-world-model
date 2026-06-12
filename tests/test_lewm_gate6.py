@@ -218,3 +218,64 @@ def test_gate6_validator_rejects_buggy_training(tmp_path: Path):
 
     with pytest.raises(ValueError, match="not normal-only"):
         validate_gate6_artifacts(tmp_path)
+
+
+# ---------------------------------------------------------------------------
+# Regression tests: nested Kaggle Lance mount fix
+# ---------------------------------------------------------------------------
+
+
+def test_generated_kernel_does_not_contain_old_len_guard():
+    """The old brittle guard must be absent from the generated kernel."""
+    kernel = render_gate6_kernel(_config(), "c291cmNl")
+    assert "len(directories) + len(archives) != 1" not in kernel
+
+
+def test_generated_kernel_contains_select_lance_candidate():
+    """The new helper function must be present in the generated kernel."""
+    kernel = render_gate6_kernel(_config(), "c291cmNl")
+    assert "_select_lance_candidate" in kernel
+
+
+def test_generated_kernel_handles_nested_same_name_candidates():
+    """_select_lance_candidate logic must strip ancestor entries, keeping deepest leaf."""
+    kernel = render_gate6_kernel(_config(), "c291cmNl")
+    # The ancestor-stripping logic must be present.
+    assert "startswith(str(c) +" in kernel or 'str(other).startswith(str(c) + "/"' in kernel
+
+
+def test_generated_kernel_materializes_into_tmp_gate6_input():
+    """/tmp/gate6_input must be the destination, never /kaggle/input."""
+    kernel = render_gate6_kernel(_config(), "c291cmNl")
+    assert "/tmp/gate6_input" in kernel
+    # Datasets must not be read directly from the Kaggle input mount.
+    assert "copytree(INPUT_ROOT" not in kernel
+    assert "shutil.copytree(INPUT_ROOT" not in kernel
+
+
+def test_generated_kernel_still_embeds_source_archive():
+    """SOURCE_ARCHIVE_B64 must still be present (self-contained kernel requirement)."""
+    kernel = render_gate6_kernel(_config(), "c291cmNl")
+    assert "SOURCE_ARCHIVE_B64" in kernel
+    assert "base64.b64decode" in kernel
+
+
+def test_gate6_package_validator_still_allows_only_metadata_and_code(tmp_path: Path):
+    """Package validation must still reject any auxiliary file in the kernel directory."""
+    source = tmp_path / "source"
+    source.mkdir()
+    for name in ("train.lance", "validation.lance", "buggy.lance"):
+        dataset = source / name
+        dataset.mkdir()
+        (dataset / "data.bin").write_bytes(b"lance")
+    package = tmp_path / "package"
+    prepare_gate6_kaggle_package(source, package, _config(), dry_run=False)
+
+    # Baseline: should pass.
+    result = validate_gate6_kaggle_package(package)
+    assert result["locked_test_materialized"] is False
+
+    # Adding a spurious file must be rejected.
+    (package / "kernel" / "extra.zip").write_bytes(b"extra")
+    with pytest.raises(ValueError, match="auxiliary files"):
+        validate_gate6_kaggle_package(package)
