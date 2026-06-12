@@ -9,7 +9,6 @@ import time
 from collections.abc import Callable
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
-from itertools import cycle
 from pathlib import Path
 from typing import Any
 
@@ -328,13 +327,18 @@ def run_lewm_gpu_profile(
     log_path = output_root / "profile.log"
     log_path.write_text("", encoding="utf-8")
     memory_samples: list[int] = []
-    train_batches = cycle(train_loader)
+    train_batches = iter(train_loader)
     torch.cuda.reset_peak_memory_stats()
     wall_started = time.perf_counter()
     training_started_at = _utc_now()
 
     def train_step(_update: int) -> dict[str, float]:
-        batch = next(train_batches)
+        nonlocal train_batches
+        try:
+            batch = next(train_batches)
+        except StopIteration:
+            train_batches = iter(train_loader)
+            batch = next(train_batches)
         model.train(True)
         pixels = _preprocess_pixels(torch, batch["pixels"], config.image_size, device)
         actions = torch.nan_to_num(batch["action"].to(device), 0.0)
