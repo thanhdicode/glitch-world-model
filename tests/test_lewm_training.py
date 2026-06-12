@@ -21,3 +21,23 @@ def test_training_config_rejects_non_patch_aligned_image_size():
 
 def test_identical_dataset_override_is_disabled_by_default():
     assert LeWMTrainConfig().allow_identical_datasets_for_smoke is False
+
+
+def test_research_training_config_exposes_runtime_controls():
+    config = LeWMTrainConfig(
+        run_kind="research",
+        num_workers=2,
+        pin_memory=True,
+        mixed_precision=True,
+        early_stopping_patience=5,
+        gradient_clip_norm=1.0,
+    )
+
+    assert config.run_kind == "research"
+    assert config.early_stopping_patience == 5
+    assert config.mixed_precision is True
+
+
+def test_training_config_rejects_invalid_early_stopping():
+    with pytest.raises(ValueError, match="patience"):
+        LeWMTrainConfig(early_stopping_patience=0)

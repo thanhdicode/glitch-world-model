@@ -14,11 +14,14 @@ Current verified status:
 - Gates 1-8 passed; Gate 9 completed as a limited validation-only window-level pilot.
 - Gate 7 produced 10,081 real frozen-checkpoint scores; Gate 8 scored two baselines on the exact
   same canonical Lance manifest.
+- A separate research MVP source is ready with 36 train-normal, 14 validation-normal, and 22
+  validation-buggy episodes across all five categories.
 - Locked test is closed.
 - LeWM gameplay evaluation exists only for one non-locked buggy episode with correlated windows.
 
 Safe claims include bounded normal-only CUDA training and the exact qualified Gate 7-9 pilot
-metrics. Do not claim broad LeWM glitch-detection performance, superiority, state of the art,
+metrics and research-source readiness. The new GPU profile and main multi-seed training remain
+pending. Do not claim broad LeWM glitch-detection performance, superiority, state of the art,
 temporal localization, SIGReg benefit, or a neural locked-test result.
 
 ## Agent Operating Mode

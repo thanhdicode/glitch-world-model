@@ -1,7 +1,7 @@
 # BOOT.md - Fast Start Context For Agents
 
-Generated: 2026-06-12T06:49:07+00:00
-Commit: `51e154a29a1a842054e2d5860a5837d08554c807`
+Generated: 2026-06-12T07:25:09+00:00
+Commit: `c5e7ca997e6355e002afb1c3356d3789deb3efe0`
 
 ## Read Order
 1. `RULES.md`
@@ -22,14 +22,15 @@ context cache is stale. Use `docs/context/REPO_MAP.md` before broad repo searche
   validation with locked-test flags false.
 - Gates 7-9 completed a validation-only, non-locked, window-level pilot on one canonical Lance
   manifest.
+- A separate non-locked research MVP source is ready with 36 train-normal, 14 validation-normal,
+  and 22 validation-buggy episodes across all five categories.
 - Gate 10 is closed.
 - Locked test is closed.
 - LeWM gameplay evaluation exists only as a one-buggy-episode pilot.
 
 ## Immediate Next Task
-- Broaden non-locked buggy validation coverage before considering any stronger performance claim.
-- Investigate why normal-P95 calibration produced zero LeWM recall while keeping locked test
-  closed.
+- Run the predeclared 500-update Kaggle GPU throughput/VRAM profile on the research MVP source.
+- Freeze the feasible main-run schedule before any multi-seed training.
 
 ## Safety
 - Non-locked-test Kaggle actions use standing Kaggle authorization after security, license,

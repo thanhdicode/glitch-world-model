@@ -1,18 +1,18 @@
 # NEXT_ACTION.md
 
-Last updated: 2026-06-12T06:49:07+00:00
-Commit: `51e154a29a1a842054e2d5860a5837d08554c807`
+Last updated: 2026-06-12T07:25:09+00:00
+Commit: `c5e7ca997e6355e002afb1c3356d3789deb3efe0`
 
 ## Current Priority
-Preserve the Gate 7-9 pilot and broaden non-locked buggy validation coverage before Gate 10.
+Run the research MVP GPU profile, then freeze a feasible multi-seed training schedule.
 
 ## Success Criteria
-- Preserve the canonical manifest and Gate 7-9 artifact hashes.
-- Keep threshold fitting grouped, normal-only, and validation-only.
-- Add multiple non-locked buggy episodes before making a broader detection claim.
+- Preserve the Gate 7-9 pilot and the new 36/14/22 research source fingerprints.
+- Measure throughput and VRAM for 500 updates without treating the profile as performance evidence.
+- Freeze normal-only checkpoint selection, three seeds, and episode-level evaluation.
 - Keep locked-test materialization/scoring false.
 
 ## Current Known Blocker
-The Gate 7-9 pilot has only one non-locked buggy episode. LeWM max aggregation reached finite
-window-level AUROC/AUPRC, but the grouped normal-P95 threshold yielded zero recall and F1 for
-every LeWM aggregation. This evidence is diagnostic and does not justify opening locked test.
+The broader non-locked source is ready, but GPU throughput, memory, and convergence behavior have
+not been measured. The 500-update profile must complete before freezing the main-run batch size,
+evaluation interval, and wall-clock budget. This does not justify opening locked test.

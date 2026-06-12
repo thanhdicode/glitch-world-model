@@ -36,6 +36,13 @@ class LeWMTrainConfig:
     max_train_steps: int | None = None
     max_validation_steps: int | None = None
     allow_identical_datasets_for_smoke: bool = False
+    run_kind: str = "engineering_smoke"
+    num_workers: int = 0
+    pin_memory: bool = False
+    mixed_precision: bool = False
+    early_stopping_patience: int | None = None
+    early_stopping_min_delta: float = 0.0
+    gradient_clip_norm: float | None = None
 
     def __post_init__(self) -> None:
         if self.image_size < 28 or self.image_size % 14:
@@ -44,6 +51,16 @@ class LeWMTrainConfig:
             raise ValueError("LeWM history_size, batch_size, and epochs must be positive.")
         if self.sigreg_projections < 1:
             raise ValueError("LeWM sigreg_projections must be positive.")
+        if self.run_kind not in {"engineering_smoke", "research"}:
+            raise ValueError("LeWM run_kind must be engineering_smoke or research.")
+        if self.num_workers < 0:
+            raise ValueError("LeWM num_workers cannot be negative.")
+        if self.early_stopping_patience is not None and self.early_stopping_patience < 1:
+            raise ValueError("LeWM early_stopping_patience must be positive when set.")
+        if self.early_stopping_min_delta < 0:
+            raise ValueError("LeWM early_stopping_min_delta cannot be negative.")
+        if self.gradient_clip_norm is not None and self.gradient_clip_norm <= 0:
+            raise ValueError("LeWM gradient_clip_norm must be positive when set.")
 
 
 def _require_runtime() -> tuple[Any, Any]:
@@ -159,6 +176,7 @@ def _run_epoch(
     *,
     optimizer: Any | None,
     max_steps: int | None,
+    scaler: Any | None = None,
 ) -> tuple[list[dict[str, float]], Any]:
     torch, _ = _require_runtime()
     training = optimizer is not None
@@ -170,21 +188,37 @@ def _run_epoch(
             break
         pixels = _preprocess_pixels(torch, batch["pixels"], config.image_size, device)
         actions = torch.nan_to_num(batch["action"].to(device), 0.0)
+        use_amp = config.mixed_precision and device.type == "cuda"
         with torch.set_grad_enabled(training):
-            output = model.encode({"pixels": pixels, "action": actions})
-            embeddings = output["emb"]
-            predicted = model.predict(
-                embeddings[:, : config.history_size],
-                output["act_emb"][:, : config.history_size],
-            )
-            target = embeddings[:, 1 : config.history_size + 1]
-            prediction_loss = (predicted - target).pow(2).mean()
-            sigreg_loss = _sigreg(torch, embeddings, config.sigreg_projections)
-            loss = prediction_loss + config.sigreg_weight * sigreg_loss
+            with torch.autocast(device_type=device.type, enabled=use_amp):
+                output = model.encode({"pixels": pixels, "action": actions})
+                embeddings = output["emb"]
+                predicted = model.predict(
+                    embeddings[:, : config.history_size],
+                    output["act_emb"][:, : config.history_size],
+                )
+                target = embeddings[:, 1 : config.history_size + 1]
+                prediction_loss = (predicted - target).pow(2).mean()
+                sigreg_loss = _sigreg(torch, embeddings, config.sigreg_projections)
+                loss = prediction_loss + config.sigreg_weight * sigreg_loss
             if training:
                 optimizer.zero_grad(set_to_none=True)
-                loss.backward()
-                optimizer.step()
+                if scaler is not None and scaler.is_enabled():
+                    scaler.scale(loss).backward()
+                    if config.gradient_clip_norm is not None:
+                        scaler.unscale_(optimizer)
+                        torch.nn.utils.clip_grad_norm_(
+                            model.parameters(), config.gradient_clip_norm
+                        )
+                    scaler.step(optimizer)
+                    scaler.update()
+                else:
+                    loss.backward()
+                    if config.gradient_clip_norm is not None:
+                        torch.nn.utils.clip_grad_norm_(
+                            model.parameters(), config.gradient_clip_norm
+                        )
+                    optimizer.step()
         last_embeddings = embeddings.detach()
         history.append(
             {
@@ -250,6 +284,7 @@ def train_lewm(
     best_metadata_path = output_root / "best_checkpoint_metadata.json"
     best_validation_loss = float("inf")
     best_epoch = 0
+    epochs_without_improvement = 0
     if best_metadata_path.is_file():
         best_metadata = json.loads(best_metadata_path.read_text(encoding="utf-8"))
         best_validation_loss = float(best_metadata["validation_loss"])
@@ -266,17 +301,32 @@ def train_lewm(
         model.load_state_dict(checkpoint["model"], strict=True)
         optimizer.load_state_dict(checkpoint["optimizer"])
         start_epoch = int(checkpoint["epoch"])
+        epochs_without_improvement = int(checkpoint.get("epochs_without_improvement", 0))
         if loss_history_path.is_file():
             loss_history = json.loads(loss_history_path.read_text(encoding="utf-8"))
 
     generator = torch.Generator().manual_seed(config.seed)
     train_loader = torch.utils.data.DataLoader(
-        train_dataset, batch_size=config.batch_size, shuffle=True, generator=generator
+        train_dataset,
+        batch_size=config.batch_size,
+        shuffle=True,
+        generator=generator,
+        num_workers=config.num_workers,
+        pin_memory=config.pin_memory,
     )
     validation_loader = torch.utils.data.DataLoader(
-        validation_dataset, batch_size=config.batch_size, shuffle=False
+        validation_dataset,
+        batch_size=config.batch_size,
+        shuffle=False,
+        num_workers=config.num_workers,
+        pin_memory=config.pin_memory,
+    )
+    scaler = torch.amp.GradScaler(
+        "cuda", enabled=config.mixed_precision and resolved_device.type == "cuda"
     )
     final_embeddings = None
+    completed_epoch = start_epoch
+    stopped_early = False
     for epoch in range(start_epoch, start_epoch + config.epochs):
         train_losses, _ = _run_epoch(
             model,
@@ -285,6 +335,7 @@ def train_lewm(
             resolved_device,
             optimizer=optimizer,
             max_steps=config.max_train_steps,
+            scaler=scaler,
         )
         validation_losses, final_embeddings = _run_epoch(
             model,
@@ -294,15 +345,18 @@ def train_lewm(
             optimizer=None,
             max_steps=config.max_validation_steps,
         )
+        completed_epoch = epoch + 1
         loss_history.append(
             {"epoch": epoch + 1, "train": train_losses, "validation": validation_losses}
         )
         mean_validation_loss = float(
             np.mean([row["loss"] for row in validation_losses], dtype=np.float64)
         )
-        if mean_validation_loss <= best_validation_loss:
+        improved = mean_validation_loss < (best_validation_loss - config.early_stopping_min_delta)
+        if improved:
             best_validation_loss = mean_validation_loss
             best_epoch = epoch + 1
+            epochs_without_improvement = 0
             torch.save(model.state_dict(), best_weights_path)
             best_metadata_path.write_text(
                 json.dumps(
@@ -316,6 +370,8 @@ def train_lewm(
                 + "\n",
                 encoding="utf-8",
             )
+        else:
+            epochs_without_improvement += 1
         torch.save(
             {
                 "epoch": epoch + 1,
@@ -323,9 +379,16 @@ def train_lewm(
                 "optimizer": optimizer.state_dict(),
                 "config_hash": config_hash,
                 "dataset_hashes": dataset_hashes,
+                "epochs_without_improvement": epochs_without_improvement,
             },
             checkpoint_path,
         )
+        if (
+            config.early_stopping_patience is not None
+            and epochs_without_improvement >= config.early_stopping_patience
+        ):
+            stopped_early = True
+            break
 
     weights_path = output_root / "weights.pt"
     torch.save(model.state_dict(), weights_path)
@@ -343,14 +406,20 @@ def train_lewm(
         json.dumps(diagnostics, indent=2) + "\n", encoding="utf-8"
     )
     metadata = {
-        "status": "training_smoke_complete",
+        "status": (
+            "research_run_complete_unvalidated"
+            if config.run_kind == "research"
+            else "training_smoke_complete"
+        ),
         "device": str(resolved_device),
         "config": asdict(config),
         "config_hash": config_hash,
         "dataset_hashes": dataset_hashes,
         "action_dim": action_dim,
         "start_epoch": start_epoch,
-        "completed_epoch": start_epoch + config.epochs,
+        "completed_epoch": completed_epoch,
+        "stopped_early": stopped_early,
+        "epochs_without_improvement": epochs_without_improvement,
         "checkpoint_sha256": sha256_file(checkpoint_path),
         "weights_sha256": sha256_file(weights_path),
         "locked_test_materialized": False,

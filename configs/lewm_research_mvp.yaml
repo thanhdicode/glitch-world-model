@@ -1,0 +1,81 @@
+phase: lewm_research_mvp
+status: source_ready_gpu_profile_pending
+validation_only: true
+locked_test_enabled: false
+
+research_question:
+  primary: Does normal-only latent transition surprise rank non-locked buggy gameplay episodes above normal episodes?
+  novelty_candidate: Calibration-aware latent surprise for lightweight gameplay glitch detection.
+
+dataset:
+  name: TempGlitch
+  revision: 1d46a63c31ebfe3b675b51a2231d547da372eff9
+  local_scope:
+    train_normal_episodes: 36
+    validation_normal_episodes: 14
+    validation_buggy_episodes: 22
+    categories: 5
+    train_windows: 34844
+    validation_normal_windows: 12825
+    validation_buggy_windows: 17724
+    train_lance_sha256: e6c48a35eef32edf43a6c78db37c52adcbbe656f47b2e453e1917365355f3aa1
+    validation_normal_lance_sha256: bb89e66c6afa5d3af7728be8efd0bacbf49cfedca6704fd27cc6178f27e556e6
+    validation_buggy_lance_sha256: 02c2417579bb25cd683738106d0603c5ed7a70fb6f3271716f9c23b95bae10f1
+  action_mode: zero_action
+  split_unit:
+    - source
+    - pair
+    - episode
+  locked_test_materialized: false
+
+training:
+  model: LeWM tiny
+  image_size: 112
+  history_size: 3
+  batch_size_initial: 8
+  checkpoint_selection: minimum validation-normal prediction loss
+  seeds:
+    - 42
+    - 43
+    - 44
+  profile_run:
+    optimizer_steps: 500
+    evidence_class: engineering-profile-only
+  main_run:
+    target_optimizer_updates: 15000
+    early_stopping_patience_evaluations: 5
+    require_full_validation_normal_scoring: true
+    require_resume: true
+  ablations:
+    - sigreg_weight_zero_vs_default
+    - zero_action_vs_real_action_on_world_of_bugs
+    - mse_vs_l2_vs_cosine_surprise
+    - mean_vs_max_vs_top2_transition_aggregation
+
+evaluation:
+  primary_unit: episode
+  window_metrics: diagnostic_only
+  primary_metrics:
+    - AUROC
+    - AUPRC
+  secondary_metrics:
+    - F1_at_normal_calibrated_threshold
+    - FPR_at_95_TPR
+  uncertainty:
+    method: grouped_episode_bootstrap
+    confidence_level: 0.95
+  baselines:
+    - frame_difference
+    - feature_distance
+    - Conv3D_autoencoder
+    - frozen_video_representation
+
+claim_policy:
+  allowed_before_run:
+    - research protocol and source audit only
+  forbidden:
+    - state_of_the_art
+    - broad_superiority
+    - temporal_localization
+    - locked_test_performance
+    - sigreg_benefit
