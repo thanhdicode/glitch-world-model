@@ -94,6 +94,10 @@ def test_kaggle_kernel_can_render_update_based_research_run():
         evaluation_interval_updates=500,
         checkpoint_interval_updates=500,
         prove_resume=False,
+        max_train_steps=None,
+        max_validation_steps=None,
+        pin_memory=True,
+        early_stopping_patience=5,
     )
 
     kernel = render_validation_kernel(config)
@@ -101,6 +105,10 @@ def test_kaggle_kernel_can_render_update_based_research_run():
     assert 'target_optimizer_updates=CONFIG["target_optimizer_updates"]' in kernel
     assert 'mixed_precision=CONFIG["mixed_precision"]' in kernel
     assert '"target_optimizer_updates": 15000' in kernel
+    assert '"max_train_steps": null' in kernel
+    assert '"max_validation_steps": null' in kernel
+    assert '"pin_memory": true' in kernel
+    assert '"early_stopping_patience": 5' in kernel
     assert 'CONFIG["target_optimizer_updates"] is None else first' in kernel
 
 

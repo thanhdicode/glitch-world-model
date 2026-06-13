@@ -49,8 +49,8 @@ class LeWMKaggleConfig:
     max_epochs: int = 1
     image_size: int = 112
     sigreg_projections: int = 128
-    max_train_steps: int = 2
-    max_validation_steps: int = 2
+    max_train_steps: int | None = 2
+    max_validation_steps: int | None = 2
     seed: int = 42
     num_workers: int = 0
     pin_memory: bool = False
@@ -77,7 +77,9 @@ class LeWMKaggleConfig:
             )
         if self.batch_size < 1 or self.max_epochs < 1:
             raise ValueError("LeWM Kaggle batch_size and max_epochs must be positive.")
-        if self.max_train_steps < 1 or self.max_validation_steps < 1:
+        if self.max_train_steps is not None and self.max_train_steps < 1:
+            raise ValueError("LeWM Kaggle smoke step limits must be positive.")
+        if self.max_validation_steps is not None and self.max_validation_steps < 1:
             raise ValueError("LeWM Kaggle smoke step limits must be positive.")
         if self.num_workers < 0:
             raise ValueError("LeWM Kaggle num_workers cannot be negative.")

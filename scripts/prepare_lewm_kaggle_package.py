@@ -37,6 +37,11 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main(argv: list[str] | None = None) -> None:
     args = build_parser().parse_args(argv)
+    max_train_steps = args.max_train_steps
+    max_validation_steps = args.max_validation_steps
+    if args.target_optimizer_updates is not None:
+        max_train_steps = None
+        max_validation_steps = None
     config = LeWMKaggleConfig(
         dataset_slug=args.dataset_slug,
         kernel_slug=args.kernel_slug,
@@ -46,8 +51,8 @@ def main(argv: list[str] | None = None) -> None:
         validation_dataset_name=args.validation_dataset_name,
         batch_size=args.batch_size,
         max_epochs=args.max_epochs,
-        max_train_steps=args.max_train_steps,
-        max_validation_steps=args.max_validation_steps,
+        max_train_steps=max_train_steps,
+        max_validation_steps=max_validation_steps,
         seed=args.seed,
         num_workers=args.num_workers,
         pin_memory=args.pin_memory,
