@@ -3,63 +3,71 @@
 \usepackage{graphicx}
 \usepackage{url}
 
-\title{A Reproducible Latent-Surprise Study for Video Game Glitch Detection}
+\title{Latent World Models for Video Game Glitch Detection: A Leakage-Aware Evaluation Protocol}
 \author{\IEEEauthorblockN{Anonymous for Review}}
 
 \begin{document}
 \maketitle
 
 \begin{abstract}
-We study reproducible video game glitch detection using visual-change, feature-distance,
-lightweight latent-dynamics, and learned reconstruction baselines. Pair-suspect grouped
-evaluation reduces obvious leakage. A five-seed selected-pipeline study provides diagnostic
-locked-test evidence, while a real CUDA Conv3D autoencoder run is reported on validation only.
-The Conv3D result is negative (AUROC 0.403865) and is retained as engineering evidence rather
-than a performance claim. Real LeWorldModel and JEPA integration remain future work.
+We study whether latent world-model prediction errors can support video game glitch detection
+under leakage-aware evaluation. The current manuscript scaffold documents the protocol, data
+splits, safety gates, and planned R3--R5 experiments. It intentionally contains placeholders for
+unfinished LeWM training, multi-seed validation, episode-level metrics, and ablations. No locked
+test result or performance conclusion is reported before artifact validation.
 \end{abstract}
 
 \section{Introduction}
-Gameplay glitches are temporally varied and expensive to label. This work asks whether
-latent-surprise signals can support a reproducible binary clip-level detection pipeline without
-overstating temporal localization or model capability.
+Video game glitches are visually diverse, temporally sparse, and expensive to annotate. A
+latent-surprise detector is attractive because glitches may violate learned normal gameplay
+dynamics. This paper evaluates that hypothesis only through predeclared non-locked validation
+experiments and strict artifact checks.
 
 \section{Related Work}
-We position the study against gameplay glitch benchmarks, video anomaly detection, and
-joint-embedding predictive architectures \cite{tempglitch,glitchbench,lewm,ijepa,vjepa}.
+We position the study against gameplay glitch benchmarks, video anomaly detection, latent world
+models, and joint-embedding predictive architectures \cite{tempglitch,glitchbench,lewm,ijepa,vjepa}.
 
-\section{Problem Formulation}
-Given a gameplay clip, a scorer emits one anomaly value. Current public labels support binary
-clip/video-level analysis, not verified temporal localization.
+\section{Protocol}
+The protocol trains or calibrates only on allowed train-normal data. Checkpoint selection and early
+stopping use validation-normal prediction loss only. Validation-buggy episodes are reserved for
+post-training evaluation. The locked test remains closed until a separate frozen validation
+decision and explicit user command.
+
+\section{Data}
+The research MVP source contains train-normal, validation-normal, and validation-buggy TempGlitch
+Lance datasets with frozen hashes recorded in the repository. R3 seed 42 uses only:
+\begin{itemize}
+  \item train-normal: \texttt{tempglitch\_train\_normal\_all\_local.lance}
+  \item validation-normal: \texttt{tempglitch\_validation\_normal\_all\_local.lance}
+\end{itemize}
+No validation-buggy or locked-test path is used during training, fitting, checkpoint selection, or
+early stopping.
 
 \section{Method}
-Verified scorers are frame difference, feature distance, the \texttt{mini\_latent} proxy, and a
-compact Conv3D video autoencoder. The proxy is not LeWM or JEPA. Scorers retain a common CSV
-interface and train-dependent methods fit train-normal clips only.
+The LeWM path trains a JEPA-style latent world model on normal gameplay and later evaluates latent
+prediction surprise at episode level. Baselines and ablations are predeclared in the roadmap, but
+their results are not inserted until their artifacts validate.
 
-\section{Experimental Setup}
-We use pair-suspect grouped splits with zero observed cross-split groups. Phase 6D performs
-validation selection before one locked-test score per seed. Phase 6E trains on train-normal and
-scores validation only; its locked test remains untouched.
+\section{R3 Seed 42 Training}
+TODO_R3_SEED42_RESULT
 
-\section{Results}
-\input{tables/phase6d_results.tex}
-\input{tables/phase6e_validation_metrics.tex}
-The Phase 6D estimate is diagnostic because confidence intervals are wide and the subset had
-prior exposure. Phase 6E AUROC is below chance and does not support improvement.
-% Update only after a validation-frozen LeWM configuration passes its explicit release gates.
+\section{R4 Multi-Seed Training}
+TODO_R4_MULTI_SEED_RESULT
 
-\section{Discussion}
-The experiments support the reproducibility framework more strongly than the latent-surprise
-performance hypothesis. The high Phase 6E recall accompanies low precision and weak ranking.
+\section{R5 Episode-Level Evaluation}
+TODO_R5_EPISODE_EVAL_TABLE
+
+\section{Ablations}
+TODO_ABLATION_RESULT
 
 \section{Limitations}
-The subset is small, pair IDs are heuristic, labels are binary, and prior subset inspection
-limits locked-test interpretation. No state-of-the-art, temporal-localization, LeWM, JEPA,
-SIGReg, or neural locked-test claim is made.
+This scaffold makes no claim of state of the art, superiority over baselines, temporal
+localization, SIGReg benefit, or locked-test performance. Negative or failed infrastructure results
+remain part of the record.
 
 \section{Conclusion}
-The repository provides a cautious, reproducible lab for testing gameplay glitch detectors.
-The next phase is a LeWM integration audit, not a LeWM result.
+The project is prepared for a compatible cloud GPU R3 seed 42 run. Scientific conclusions require
+validated artifacts from the predeclared R3--R5 sequence.
 
 \bibliographystyle{IEEEtran}
 \bibliography{references}

@@ -1,29 +1,32 @@
 # LAST_HANDOFF.md
 
-Last completed task: R3 seed 42 cloud preflight stopped after second consecutive P100 assignment
+Last completed task: R3 seed 42 provider-agnostic cloud runner prepared
 Commit: pending
 Date: 2026-06-13
 
 ## What Changed
 
-- Added and launched a one-update R3 seed 42 cloud preflight kernel:
-  `huynhdieuthanh/lewm-r3-seed42-preflight-b91df90`.
-- The preflight wrote `cuda_runtime_guard.json` and `preflight_failed.json`, then stopped before
-  training because Kaggle assigned `Tesla P100-PCIE-16GB` with compute capability `sm_60`.
-- This is the second consecutive R3 seed 42 Kaggle assignment to unsupported P100, after
-  `huynhdieuthanh/lewm-r3-seed42-eb395860`.
-- Recorded the stop decision in `docs/research/53_r3_seed42_live_run_record.md`.
-- Updated the Kaggle GPU protocol to require compute capability `sm_70` or newer for R3 seed runs.
+- Kept Kaggle stopped for R3 after two consecutive unsupported P100 assignments.
+- Added a provider-agnostic R3 seed 42 cloud runner under `cloud/r3_seed42/`.
+- Added `scripts/validate_cloud_gpu_runtime.py` to write `cloud_runtime_preflight.json` and require
+  CUDA `sm_70+` plus at least 14 GB VRAM.
+- Added `scripts/validate_lewm_r3_seed_artifacts.py` as the post-run R3 seed 42 validation gate.
+- Added progress logging every 100 update-based LeWM optimizer updates.
+- Added honest paper placeholders and cloud execution records for T4 x2 or stronger GPU execution.
 
 ## Checks Passed
 
-- `python -m pytest tests/test_lewm_kaggle.py tests/test_lewm_training.py tests/test_run_kaggle_lewm.py tests/test_lewm_research_mvp_config.py -q`
-- `python scripts/validate_research_release.py --ci`
-- `python scripts/check_claim_registry.py`
+- Pending final focused checks before commit:
+  - `python -m pytest tests/test_lewm_kaggle.py tests/test_lewm_training.py tests/test_run_kaggle_lewm.py tests/test_lewm_research_mvp_config.py -q`
+  - `python scripts/validate_research_release.py --ci`
+  - `python scripts/check_claim_registry.py`
+  - `python scripts/validate_context_cache.py`
 
 ## Safety Status
 
-- The failed R3 preflight was non-locked and validation-only.
+- Kaggle remains blocked for R3; no new Kaggle retry was launched after the P100 stop decision.
+- No non-Kaggle GPU shell was available in this Codex session, so T4 x2 execution is prepared but
+  not launched.
 - No successful R3 seed 42 training result was produced.
 - Locked test remains closed, unmaterialized, and unscored.
 - Seed 43/44 were not launched.
@@ -33,25 +36,26 @@ Date: 2026-06-13
 
 - Roadmap v3 R1 engineering GPU profile remains complete.
 - R2 main-run schedule exists, but R3 seed 42 is not passed.
-- The active R3 blocker is compatible GPU access: T4 or newer is required for the current PyTorch
-  build; P100 is unsupported.
+- The active R3 blocker is direct shell/provider access to a compatible GPU VM. The selected target
+  is T4 x2, which satisfies the `sm_70+` guard if provisioned with a CUDA-compatible PyTorch build.
 
 ## Open Blockers
 
-- Do not relaunch R3 seed 42 on Kaggle while it is assigning P100. Use a compatible T4-or-newer
-  accelerator first.
+- Provide a RunPod/Colab/A100/H100/T4 shell with the Lance datasets mounted at `LEWM_DATA_ROOT`.
 - Seed 43/44 remain blocked until seed 42 produces valid non-locked R3 artifacts.
 
 ## Next Recommended Task
 
-- Obtain a compatible `sm_70+` accelerator, rerun the one-update R3 seed 42 cloud preflight, and
-  launch the full 15,000-update run only if that preflight passes.
+- On the T4 x2 machine, run `bash cloud/r3_seed42/setup_runtime.sh`, then
+  `bash cloud/r3_seed42/preflight.sh`; launch `bash cloud/r3_seed42/run_seed42_full.sh` only if
+  `preflight_passed.json` is written.
 
 ## Files Likely Relevant Next
 
-- `src/glitch_detection/lewm_kaggle.py`
-- `scripts/prepare_lewm_kaggle_package.py`
-- `tests/test_lewm_kaggle.py`
+- `cloud/r3_seed42/README.md`
+- `scripts/validate_cloud_gpu_runtime.py`
+- `scripts/validate_lewm_r3_seed_artifacts.py`
+- `src/glitch_detection/lewm_training.py`
+- `docs/research/54_r3_seed42_alternative_gpu_execution_plan.md`
+- `docs/research/55_r3_seed42_cloud_run_record.md`
 - `docs/research/53_r3_seed42_live_run_record.md`
-- `docs/research/52_r3_seed42_failed_p100_cuda_incompatibility.md`
-- `docs/workflows/kaggle_gpu_protocol.md`
