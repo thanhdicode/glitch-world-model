@@ -1,34 +1,35 @@
 # LAST_HANDOFF.md
 
-Last completed task: F1 failure triage and failure knowledge base
+Last completed task: F2 offline Kaggle parity gate
 Commit: pending
 Date: 2026-06-13
 
 ## What Changed
-- Added fixed failure buckets, allowed actions, and strict OOM identification.
-- Enriched GPU-profile retry history with `bucket` and `allowed_action`.
-- Added an append-only registry seeded with packaging, decode, and DataLoader spawn incidents.
+- Added an offline parity CLI that renders and bootstraps the exact live kernel.
+- Added guarded multiprocessing-spawn and UTF-8 decode probes.
+- Added a fail-closed parity receipt tied to Git SHA and local research MVP Lance inputs.
 
 ## Checks Passed
-- Focused F1 tests passed; full required validators pending before commit.
+- Focused parity tests passed; full required validators pending before commit.
+- Local parity receipt passed with `training_performed=false`.
 
 ## Safety Status
 - Infrastructure-only milestone; no training or live Kaggle launch performed.
 - Locked test remains closed, unmaterialized, and unscored.
-- No data, output, checkpoint, or credential is tracked.
+- Validation-buggy was not used.
 
 ## Gate Status After Task
-- F1 implementation complete pending full validation.
+- F1 and F2 implementation complete pending F2 full validation.
 - Research gates and scientific claim status are unchanged.
 
 ## Open Blockers
-- F2-F5 infrastructure hardening remains.
+- F3-F5 infrastructure hardening remains.
 
 ## Next Recommended Task
-- Implement the offline Kaggle parity gate.
+- Enforce the live launch contract using a matching parity receipt.
 
 ## Files Likely Relevant Next
-- `src/glitch_detection/failure_triage.py`
-- `src/glitch_detection/lewm_gpu_profile_kaggle.py`
 - `scripts/run_kaggle_parity_check.py`
-- `tests/test_kaggle_parity.py`
+- `scripts/run_lewm_gpu_profile_automation.py`
+- `src/glitch_detection/lewm_gpu_profile_automation.py`
+- `tests/test_lewm_gpu_profile_automation.py`
