@@ -399,6 +399,17 @@ def _train_lewm_by_updates(
             raise LeWMTrainingError(f"Non-finite update metrics at update {update}.")
         updates_completed = update
         training_history.append({"update": update, **metrics})
+        if update == 1 or update % 100 == 0:
+            print(
+                (
+                    "lewm_update "
+                    f"update={update} "
+                    f"loss={metrics['loss']:.8f} "
+                    f"prediction_loss={metrics['prediction_loss']:.8f} "
+                    f"sigreg_loss={metrics['sigreg_loss']:.8f}"
+                ),
+                flush=True,
+            )
         should_evaluate = update % config.evaluation_interval_updates == 0
         should_checkpoint = update % config.checkpoint_interval_updates == 0
         if should_evaluate:
@@ -531,6 +542,7 @@ def _train_lewm_by_updates(
         "best_update": best_update,
         "best_validation_loss": best_validation_loss,
         "stopped_early": stopped_early,
+        "stopped_early_reason": ("early_stopping_patience" if stopped_early else None),
         "evaluations_without_improvement": evaluations_without_improvement,
         "started_at": started_at,
         "ended_at": ended_at,
@@ -545,6 +557,7 @@ def _train_lewm_by_updates(
             "scheduler": {"present": False, "reload_verified": True},
             "reloaded_global_step": updates_completed,
         },
+        "validation_buggy_used_for_fit_select": False,
         "locked_test_materialized": False,
         "locked_test_scored": False,
     }
