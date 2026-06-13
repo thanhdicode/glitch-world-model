@@ -1,32 +1,23 @@
 # LAST_HANDOFF.md
 
-Last completed task: Kaggle LeWM runner seed wiring and CodeGraph setup
+Last completed task: Claude GitHub master prompt and research roadmap v3
 Commit: pending
 Date: 2026-06-13
 
 ## What Changed
 
-- Added a `--seed` argument to the validation-only Kaggle LeWM runner.
-- Wired the parsed seed into `LeWMTrainConfig.seed`.
-- Added focused runner tests that stub training and inspect the constructed config.
-- Installed and initialized CodeGraph for fast agent code navigation.
-- Added `.codegraph/` to `.gitignore`; the local index remains untracked.
-- Enabled the full CodeGraph MCP tool set in the user's global Codex configuration.
-- No training semantics changed beyond seed wiring.
+- Added a token-efficient master prompt for Claude/strong GitHub coding agents.
+- Added Roadmap v3 with the critical path from exact 500-update profile through paper submission.
+- Synchronized Claude, Copilot, AGENTS, PLAYBOOK, context-cache generation, and claim registry.
+- Recorded the engineering causes of prior profile delays and anti-stall execution rules.
 - No Kaggle, GPU, locked-test, or paper-claim action was performed.
 
 ## Checks Passed
 
-- `python -m pytest tests/test_run_kaggle_lewm.py` passed.
-- `python -m pytest tests/test_lewm_training.py` passed.
-- `python -m pytest` passed with 277 tests.
-- `python -m ruff check .` passed.
-- `python -m ruff format --check .` passed.
 - `python scripts/validate_research_release.py --ci` passed.
-- `python scripts/check_claim_registry.py` passed with 58 claim IDs and no errors.
-- `python scripts/doctor.py` and `python scripts/validate_context_cache.py` passed.
-- `pre-commit run --all-files` passed.
-- CodeGraph `explore`, `node`, `impact`, and `affected` queries passed.
+- `python scripts/check_claim_registry.py` passed with 59 claims including the new protocol claim.
+- `python -m pytest` passed with 277 tests.
+- Ruff, doctor, context validation, and pre-commit passed.
 
 ## Safety Status
 
@@ -34,9 +25,8 @@ Date: 2026-06-13
 - No live Kaggle action was performed.
 - No long GPU job was run.
 - No secret material was printed or committed.
-- CodeGraph telemetry is disabled.
-- CodeGraph index/cache files remain ignored and untracked.
-- No performance or paper-facing claim was added.
+- No model-performance claim was added.
+- Roadmap v3 is a protocol artifact, not experiment evidence.
 
 ## Gate Status After Task
 
@@ -53,12 +43,12 @@ Date: 2026-06-13
 
 ## Next Recommended Task
 
-- Use the new seed CLI to prepare separate non-locked profile/main-run invocations for seeds
-  42, 43, and 44, starting with the predeclared 500-update GPU profile only.
+- Execute Roadmap v3 Stages R0-R1: implement and strictly validate the exact 500-update
+  non-locked Kaggle GPU profile.
 
 ## Files Likely Relevant Next
 
-- `scripts/run_kaggle_lewm.py`
-- `configs/lewm_research_mvp.yaml`
-- `docs/plans/2026-06-12-lewm-research-grade-experiment.md`
+- `docs/agents/CLAUDE_OPUS_GITHUB_MASTER_PROMPT.md`
+- `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v3.md`
+- `docs/superpowers/plans/2026-06-13-lewm-500-update-kaggle-gpu-profile.md`
 - `src/glitch_detection/lewm_training.py`

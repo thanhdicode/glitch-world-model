@@ -1,7 +1,7 @@
 # REPO_MAP.md
 
-Generated: 2026-06-12T07:25:53+00:00
-Commit: `2d21aa6e9e35f9f9c5b65250e1e1e24df15a7f88`
+Generated: 2026-06-13T05:21:01+00:00
+Commit: `e3ba66b0ddec63899e883d0aad9ccde2f785d7f7`
 Generator: `scripts/update_context_cache.py`
 
 ## Top-Level Map
@@ -235,6 +235,7 @@ Generator: `scripts/update_context_cache.py`
 | `tests/test_repeated_grouped_runner.py` | repeated_grouped_runner |
 | `tests/test_research_release_tools.py` | research_release_tools |
 | `tests/test_run_baseline.py` | run_baseline |
+| `tests/test_run_kaggle_lewm.py` | run_kaggle_lewm |
 | `tests/test_score_clips.py` | score_clips |
 | `tests/test_splits.py` | splits |
 | `tests/test_statistics.py` | statistics |
@@ -247,6 +248,7 @@ Generator: `scripts/update_context_cache.py`
 ## Docs
 | Doc | Purpose |
 |---|---|
+| `docs/agents/CLAUDE_OPUS_GITHUB_MASTER_PROMPT.md` | CLAUDE OPUS GITHUB MASTER PROMPT |
 | `docs/context/BOOT.md` | BOOT |
 | `docs/context/CONTEXT_POLICY.md` | CONTEXT POLICY |
 | `docs/context/LAST_HANDOFF.md` | LAST HANDOFF |
@@ -319,11 +321,10 @@ Generator: `scripts/update_context_cache.py`
 | `docs/research/adr/ADR-004-mandatory-lewm-main-method.md` | ADR-004-mandatory-lewm-main-method |
 | `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch (1).md` | MASTER ROADMAP LeWM Glitch (1) |
 | `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v2.md` | MASTER ROADMAP LeWM Glitch v2 |
+| `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v3.md` | MASTER ROADMAP LeWM Glitch v3 |
 | `docs/superpowers/plans/2026-06-06-baseline-glitch-pipeline.md` | 2026-06-06-baseline-glitch-pipeline |
 | `docs/superpowers/plans/2026-06-09-phase6d-repeated-grouped-run.md` | 2026-06-09-phase6d-repeated-grouped-run |
 | `docs/superpowers/plans/2026-06-09-phase6e-kaggle-automation.md` | 2026-06-09-phase6e-kaggle-automation |
 | `docs/superpowers/plans/2026-06-09-phase6e-kaggle-launch-package.md` | 2026-06-09-phase6e-kaggle-launch-package |
 | `docs/superpowers/plans/2026-06-09-phase6e-kaggle-video-autoencoder.md` | 2026-06-09-phase6e-kaggle-video-autoencoder |
 | `docs/superpowers/plans/2026-06-10-research-grade-lab.md` | 2026-06-10-research-grade-lab |
-| `docs/superpowers/plans/2026-06-12-kaggle-standing-authorization-gate6-repair.md` | 2026-06-12-kaggle-standing-authorization-gate6-repair |
-| `docs/superpowers/specs/2026-06-09-phase6e-kaggle-automation-design.md` | 2026-06-09-phase6e-kaggle-automation-design |

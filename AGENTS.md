@@ -9,6 +9,9 @@ For routine tasks, use the fast context cache before opening the long playbook. 
 context, roadmap, evidence policy, skills, and next actions, read `PLAYBOOK.md` when the task
 requires deep context.
 
+The current execution roadmap is `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v3.md`. Older roadmap
+files are historical inputs, not the current next-action authority.
+
 Current verified status:
 
 - Gates 1-8 passed; Gate 9 completed as a limited validation-only window-level pilot.

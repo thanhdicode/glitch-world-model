@@ -96,6 +96,7 @@ Commit: `{meta.commit}`
 
 Only open `PLAYBOOK.md` for roadmap, paper, claim, gate-status, or ambiguous tasks, or when the
 context cache is stale. Use `docs/context/REPO_MAP.md` before broad repo searches.
+The current execution roadmap is `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v3.md`.
 
 ## Current Status
 - Gates 1-4 passed at engineering/smoke level.
@@ -209,18 +210,21 @@ Last updated: {meta.generated_at}
 Commit: `{meta.commit}`
 
 ## Current Priority
-Run the research MVP GPU profile, then freeze a feasible multi-seed training schedule.
+Implement and validate Roadmap v3 Stages R0-R1: the exact 500-update research MVP GPU profile.
 
 ## Success Criteria
 - Preserve the Gate 7-9 pilot and the new 36/14/22 research source fingerprints.
+- Make the profile package idempotent and validate all required metadata, logs, reload state,
+  retry evidence, and artifact hashes.
 - Measure throughput and VRAM for 500 updates without treating the profile as performance evidence.
 - Freeze normal-only checkpoint selection, three seeds, and episode-level evaluation.
 - Keep locked-test materialization/scoring false.
 
 ## Current Known Blocker
 The broader non-locked source is ready, but GPU throughput, memory, and convergence behavior have
-not been measured. The 500-update profile must complete before freezing the main-run batch size,
-evaluation interval, and wall-clock budget. This does not justify opening locked test.
+not been measured. The exact update-based profile harness and its strict artifacts must pass before
+freezing the main-run batch size, evaluation interval, and wall-clock budget. This does not justify
+opening locked test.
 """
 
 
@@ -304,6 +308,7 @@ Do not read the whole repo for routine tasks. Start with the fast context files,
 
 `PLAYBOOK.md` is the long-form operating bible. Open it for roadmap, paper, claim, gate-status,
 safety ambiguity, or stale-cache resolution. Do not auto-load it for every small code edit.
+Use `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v3.md` as the current execution roadmap.
 
 ## Cache Maintenance
 
@@ -329,7 +334,9 @@ def build_task_router() -> str:
 
 | Task type | Read first | Then inspect | Do not open by default |
 |---|---|---|---|
+| GPU profile / main training | `BOOT.md`, `NEXT_ACTION.md`, `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v3.md`, profile plan/spec | `src/glitch_detection/lewm_training.py`, Kaggle package/validator modules, focused tests | locked test, old roadmap drafts, unrelated outputs |
 | Gate 5 Kaggle | `BOOT.md`, `PROJECT_STATE.md`, `NEXT_ACTION.md`, `docs/workflows/kaggle_automation_policy.md` | `src/glitch_detection/lewm_kaggle.py`, `src/glitch_detection/lewm_training.py`, `scripts/prepare_lewm_kaggle_package.py`, `scripts/validate_lewm_kaggle_artifacts.py`, `tests/test_lewm_kaggle.py` | `paper/`, old roadmap drafts, `outputs/` |
+| Roadmap / long-horizon agent | `BOOT.md`, `PROJECT_STATE.md`, `NEXT_ACTION.md`, `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v3.md` | `PLAYBOOK.md`, claim registry, relevant gate reports | old roadmap drafts, outputs, raw data |
 | Context cache | `BOOT.md`, `CONTEXT_POLICY.md`, this file | `scripts/update_context_cache.py`, `scripts/validate_context_cache.py`, `tests/test_context_cache.py`, `scripts/doctor.py`, `scripts/validate_research_release.py` | `outputs/`, `data/`, `external/` |
 | Paper writing | `BOOT.md`, claim registry, `PLAYBOOK.md` paper sections | `paper/`, `docs/research/`, `docs/workflows/paper_claim_rules.md` | `outputs/`, raw data |
 | Dataset protocol | `BOOT.md`, `docs/research/40_gate3_gate4_real_dataset_protocol.md` | `src/glitch_detection/lewm_data.py`, protocol modules, related tests | `paper/`, Kaggle packages |

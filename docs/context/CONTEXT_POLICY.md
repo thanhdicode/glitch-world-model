@@ -9,6 +9,7 @@ Do not read the whole repo for routine tasks. Start with the fast context files,
 
 `PLAYBOOK.md` is the long-form operating bible. Open it for roadmap, paper, claim, gate-status,
 safety ambiguity, or stale-cache resolution. Do not auto-load it for every small code edit.
+Use `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v3.md` as the current execution roadmap.
 
 ## Cache Maintenance
 

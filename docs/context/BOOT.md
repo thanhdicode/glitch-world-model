@@ -1,7 +1,7 @@
 # BOOT.md - Fast Start Context For Agents
 
-Generated: 2026-06-12T07:25:53+00:00
-Commit: `2d21aa6e9e35f9f9c5b65250e1e1e24df15a7f88`
+Generated: 2026-06-13T05:21:01+00:00
+Commit: `e3ba66b0ddec63899e883d0aad9ccde2f785d7f7`
 
 ## Read Order
 1. `RULES.md`
@@ -14,6 +14,7 @@ Commit: `2d21aa6e9e35f9f9c5b65250e1e1e24df15a7f88`
 
 Only open `PLAYBOOK.md` for roadmap, paper, claim, gate-status, or ambiguous tasks, or when the
 context cache is stale. Use `docs/context/REPO_MAP.md` before broad repo searches.
+The current execution roadmap is `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v3.md`.
 
 ## Current Status
 - Gates 1-4 passed at engineering/smoke level.
