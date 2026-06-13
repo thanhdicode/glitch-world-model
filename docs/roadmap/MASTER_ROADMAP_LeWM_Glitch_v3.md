@@ -384,6 +384,18 @@ The project has experienced avoidable delay for identifiable engineering reasons
 Roadmap v3 addresses these by separating package freeze, profile, schedule freeze, multi-seed
 training, evaluation, and paper gates.
 
+### Kaggle Parity Gate Infrastructure
+
+Before any future GPU profile/live launch, agents must run the offline Kaggle parity gate:
+`scripts/run_kaggle_parity_check.py`. The generated receipt must match the current Git SHA and be
+passed into the live launcher. The live launcher fails closed when the receipt is missing/stale,
+when the profile implementation tree is dirty, or when the run-root already exists.
+
+All profile failures must be classified through `src/glitch_detection/failure_triage.py` and
+recorded in retry history with `bucket` and `allowed_action`. Only `cuda_oom` may advance the
+approved `8 -> 6 -> 4 -> 2` ladder; DataLoader spawn, decode, packaging idempotency, unknown, and
+platform-session failures are stop-and-fix or bounded retry according to the failure registry.
+
 ## 17. Definition Of Done
 
 The project is ready for a genuine paper submission when:

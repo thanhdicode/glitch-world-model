@@ -91,6 +91,8 @@ def test_boot_line_limit_and_gate5_router(tmp_path: Path):
 
     assert len(boot_lines) <= 200
     assert "Gate 5 Kaggle" in router
+    assert "GPU live launch / profile" in router
+    assert "failure_modes_registry.md" in router
 
 
 def test_generated_context_records_gate7_to_gate9_pilot_without_opening_gate10(

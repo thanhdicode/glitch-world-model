@@ -1,34 +1,35 @@
 # LAST_HANDOFF.md
 
-Last completed task: F4 Kaggle-like environment and optional runtime pins
+Last completed task: F5 governance for profile/live infrastructure
 Commit: pending
 Date: 2026-06-13
 
 ## What Changed
-- Added a Linux-like devcontainer for infrastructure checks.
-- Added optional Kaggle profile/parity runtime pins separate from default CI dependencies.
-- Documented known local-vs-Kaggle differences and their guard tests.
+- Updated agent governance to require failure registry, parity gate, live contract, and failure triage.
+- Added a generated context route for GPU live launch/profile work.
+- Recorded the Kaggle Parity Gate as Roadmap v3 root-cause mitigation.
+- Refreshed the context cache from `scripts/update_context_cache.py`.
 
 ## Checks Passed
-- Focused runtime/environment tests passed; full required validators pending before commit.
+- Context cache generation and validation passed; full required validators pending before commit.
 
 ## Safety Status
 - Infrastructure-only milestone; no training or live Kaggle launch performed.
 - Locked test remains closed, unmaterialized, and unscored.
-- Default install remains lightweight and does not require Torch/GPU.
+- No data, output, checkpoint, or credential is tracked.
 
 ## Gate Status After Task
-- F1-F4 implementation complete pending F4 full validation.
+- F1-F5 implementation complete pending final full validation.
 - Research gates and scientific claim status are unchanged.
 
 ## Open Blockers
-- F5 governance updates remain.
+- R1 live GPU profile still requires a fresh parity receipt on the final SHA and available Kaggle GPU slot.
 
 ## Next Recommended Task
-- Update agent governance so every GPU profile/live path uses failure triage, parity, and live contract.
+- Return to R1 only after parity passes on the final SHA; then launch through the live contract.
 
 ## Files Likely Relevant Next
-- `AGENTS.md`
-- `docs/agents/CLAUDE_OPUS_GITHUB_MASTER_PROMPT.md`
-- `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v3.md`
-- `scripts/update_context_cache.py`
+- `docs/workflows/failure_modes_registry.md`
+- `scripts/run_kaggle_parity_check.py`
+- `scripts/run_lewm_gpu_profile_automation.py`
+- `src/glitch_detection/failure_triage.py`

@@ -68,6 +68,16 @@ The milestone is not complete until the repository can:
 - reject locked-test and validation-buggy access;
 - pass focused tests and the full release checks.
 
+GPU PROFILE / LIVE LAUNCH GOVERNANCE
+- Before any GPU profile live action, read `docs/workflows/failure_modes_registry.md`.
+- Run `scripts/run_kaggle_parity_check.py` and pass its matching `parity_receipt.json` to the live
+  launcher.
+- The live launcher must fail closed if the working tree is dirty, the receipt is missing/stale, or
+  the run-root already exists.
+- Classify every failure with `glitch_detection.failure_triage`; only `cuda_oom` may advance the
+  approved OOM ladder. Decode, DataLoader spawn, packaging idempotency, and unknown failures are
+  stop-and-fix.
+
 EXECUTION DISCIPLINE
 - Begin with a short evidence-based plan, then implement immediately.
 - Use focused tests during iteration. Run the full suite once before completion, not after every

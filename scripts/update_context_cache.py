@@ -334,6 +334,7 @@ def build_task_router() -> str:
 
 | Task type | Read first | Then inspect | Do not open by default |
 |---|---|---|---|
+| GPU live launch / profile | `BOOT.md`, `NEXT_ACTION.md`, `docs/workflows/failure_modes_registry.md`, `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v3.md`, profile plan/spec | `scripts/run_kaggle_parity_check.py`, `scripts/run_lewm_gpu_profile_automation.py`, `src/glitch_detection/failure_triage.py`, Kaggle package/validator modules, focused tests | locked test, old roadmap drafts, unrelated outputs |
 | GPU profile / main training | `BOOT.md`, `NEXT_ACTION.md`, `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v3.md`, profile plan/spec | `src/glitch_detection/lewm_training.py`, Kaggle package/validator modules, focused tests | locked test, old roadmap drafts, unrelated outputs |
 | Gate 5 Kaggle | `BOOT.md`, `PROJECT_STATE.md`, `NEXT_ACTION.md`, `docs/workflows/kaggle_automation_policy.md` | `src/glitch_detection/lewm_kaggle.py`, `src/glitch_detection/lewm_training.py`, `scripts/prepare_lewm_kaggle_package.py`, `scripts/validate_lewm_kaggle_artifacts.py`, `tests/test_lewm_kaggle.py` | `paper/`, old roadmap drafts, `outputs/` |
 | Roadmap / long-horizon agent | `BOOT.md`, `PROJECT_STATE.md`, `NEXT_ACTION.md`, `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v3.md` | `PLAYBOOK.md`, claim registry, relevant gate reports | old roadmap drafts, outputs, raw data |

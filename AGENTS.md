@@ -78,6 +78,10 @@ Open `PLAYBOOK.md` only for roadmap, paper, claim, gate-status, or ambiguous tas
 
 - Non-locked-test Kaggle actions use repository standing authorization after security, license,
   protocol, package, and idempotency checks.
+- GPU profile/live launch must read `docs/workflows/failure_modes_registry.md`, pass
+  `scripts/run_kaggle_parity_check.py`, provide a matching parity receipt to the live launcher, and
+  classify every failure through `src/glitch_detection/failure_triage.py`; only `cuda_oom` may
+  advance the batch-size ladder.
 - Fingerprints are mandatory audit records and idempotency keys, not approval artifacts.
 - Locked test requires a frozen validation decision naming exactly one configuration and claim
   scope plus a separate direct user command.
