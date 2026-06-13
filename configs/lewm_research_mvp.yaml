@@ -1,5 +1,5 @@
 phase: lewm_research_mvp
-status: source_ready_gpu_profile_pending
+status: r2_frozen_main_run_schedule
 validation_only: true
 locked_test_enabled: false
 
@@ -32,7 +32,11 @@ training:
   model: LeWM tiny
   image_size: 112
   history_size: 3
-  batch_size_initial: 8
+  batch_size: 8
+  amp: true
+  num_workers: 0
+  pin_memory: true
+  gradient_clip_norm: null
   checkpoint_selection: minimum validation-normal prediction loss
   seeds:
     - 42
@@ -41,11 +45,22 @@ training:
   profile_run:
     optimizer_steps: 500
     evidence_class: engineering-profile-only
+    git_sha: ff372c9ec50edbd517024e92ef058cafadfd4abc
+    fingerprint: 694390b59b874dfc11e16c6ed7774d847c944485f09b655fd3c019b200a2596d
+    throughput_updates_per_second: 13.063160536094955
+    peak_vram_bytes: 512040448
+    average_vram_bytes: 313221003.264
   main_run:
     target_optimizer_updates: 15000
+    evaluation_interval_updates: 500
+    checkpoint_interval_updates: 500
     early_stopping_patience_evaluations: 5
     require_full_validation_normal_scoring: true
     require_resume: true
+    seed_order:
+      - 42
+      - 43
+      - 44
   ablations:
     - sigreg_weight_zero_vs_default
     - zero_action_vs_real_action_on_world_of_bugs
@@ -69,6 +84,14 @@ evaluation:
     - feature_distance
     - Conv3D_autoencoder
     - frozen_video_representation
+  optional_frozen_video_representation:
+    enabled: true
+    candidates:
+      - videomae-small
+      - timesformer-small
+    fail_closed_if_dependency_missing: true
+    blocks_lewm_critical_path: false
+    output_on_skip: skip_artifact
 
 claim_policy:
   allowed_before_run:
