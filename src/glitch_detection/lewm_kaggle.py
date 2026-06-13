@@ -61,6 +61,7 @@ class LeWMKaggleConfig:
     evaluation_interval_updates: int | None = None
     checkpoint_interval_updates: int | None = None
     prove_resume: bool = True
+    preflight_only: bool = False
     accelerator: str = "NvidiaTeslaT4"
     validation_only: bool = True
 
@@ -93,6 +94,12 @@ class LeWMKaggleConfig:
             self.evaluation_interval_updates is None or self.checkpoint_interval_updates is None
         ):
             raise ValueError("LeWM Kaggle update-based training requires update intervals.")
+        if self.preflight_only and (
+            self.target_optimizer_updates != 1
+            or self.evaluation_interval_updates != 1
+            or self.checkpoint_interval_updates != 1
+        ):
+            raise ValueError("LeWM Kaggle preflight must run exactly one update.")
 
 
 def validate_kaggle_slug(slug: str, *, label: str) -> None:
@@ -117,9 +124,7 @@ def quota_allocation(total_hours: float) -> dict[str, float]:
     }
 
 
-def supports_cuda_compute_capability(
-    major: int, minor: int = 0, *, minimum_major: int = 7
-) -> bool:
+def supports_cuda_compute_capability(major: int, minor: int = 0, *, minimum_major: int = 7) -> bool:
     del minor
     return major >= minimum_major
 
@@ -141,6 +146,16 @@ REPO = Path("/tmp/glitch-world-model")
 
 if not CONFIG["validation_only"]:
     raise RuntimeError("Locked-test execution is forbidden in this kernel.")
+
+def _write_preflight_failed(reason, details=None):
+    if CONFIG["preflight_only"]:
+        (OUTPUT / "preflight_failed.json").write_text(json.dumps({{
+            "status": "failed",
+            "reason": reason,
+            "details": details or {{}},
+            "locked_test_materialized": False,
+            "locked_test_scored": False,
+        }}, indent=2) + "\\n", encoding="utf-8")
 
 def _find_lance_dataset(name):
     matches = sorted(path for path in INPUT_ROOT.rglob(name) if path.is_dir())
@@ -173,6 +188,8 @@ subprocess.check_call([
 ])
 sys.path.insert(0, str(REPO / "src"))
 
+(OUTPUT / "run_config.json").write_text(json.dumps(CONFIG, indent=2) + "\\n")
+
 import torch
 
 def _cuda_runtime_guard():
@@ -204,10 +221,12 @@ def _cuda_runtime_guard():
 
 cuda_guard = _cuda_runtime_guard()
 if not cuda_guard["cuda_available"]:
+    _write_preflight_failed("cuda_unavailable", cuda_guard)
     raise RuntimeError("Gate 5 LeWM smoke requires CUDA.")
 if not cuda_guard["supported"]:
     capability = cuda_guard["compute_capability"] or ["unknown", "unknown"]
     gpu_name = cuda_guard["gpu_name"] or "unknown GPU"
+    _write_preflight_failed("unsupported_cuda_compute_capability", cuda_guard)
     raise RuntimeError(
         "Unsupported GPU for current PyTorch build: "
         f"requires sm_70+, got sm_{{capability[0]}}{{capability[1]}}/{{gpu_name}}"
@@ -215,7 +234,6 @@ if not cuda_guard["supported"]:
 
 from glitch_detection.lewm_training import LeWMTrainConfig, train_lewm
 
-(OUTPUT / "run_config.json").write_text(json.dumps(CONFIG, indent=2) + "\\n")
 (OUTPUT / "environment.json").write_text(json.dumps({{
     "python": sys.version,
     "platform": platform.platform(),
@@ -243,21 +261,25 @@ train_config = LeWMTrainConfig(
     evaluation_interval_updates=CONFIG["evaluation_interval_updates"],
     checkpoint_interval_updates=CONFIG["checkpoint_interval_updates"],
 )
-first = train_lewm(
-    _train_dst,
-    _val_dst,
-    OUTPUT,
-    train_config,
-    device="cuda",
-)
-result = train_lewm(
-    _train_dst,
-    _val_dst,
-    OUTPUT,
-    train_config,
-    device="cuda",
-    resume=True,
-) if CONFIG["prove_resume"] and CONFIG["target_optimizer_updates"] is None else first
+try:
+    first = train_lewm(
+        _train_dst,
+        _val_dst,
+        OUTPUT,
+        train_config,
+        device="cuda",
+    )
+    result = train_lewm(
+        _train_dst,
+        _val_dst,
+        OUTPUT,
+        train_config,
+        device="cuda",
+        resume=True,
+    ) if CONFIG["prove_resume"] and CONFIG["target_optimizer_updates"] is None else first
+except Exception as exc:
+    _write_preflight_failed(type(exc).__name__, {{"message": str(exc), "cuda": cuda_guard}})
+    raise
 if (
     CONFIG["prove_resume"]
     and CONFIG["target_optimizer_updates"] is None
@@ -288,6 +310,28 @@ if (
     "updates_completed": result.get("updates_completed"),
     "target_optimizer_updates": result.get("target_optimizer_updates"),
 }}, indent=2) + "\\n")
+if CONFIG["preflight_only"]:
+    (OUTPUT / "preflight_passed.json").write_text(json.dumps({{
+        "status": "passed",
+        "torch": cuda_guard["torch"],
+        "cuda_available": cuda_guard["cuda_available"],
+        "gpu_name": cuda_guard["gpu_name"],
+        "compute_capability": cuda_guard["compute_capability"],
+        "minimum_compute_capability": [7, 0],
+        "updates_completed": result["updates_completed"],
+        "target_optimizer_updates": result["target_optimizer_updates"],
+        "checkpoint_reload_verified": (
+            result["checkpoint_reload"]["weights_reload_verified"]
+            and result["checkpoint_reload"]["optimizer_reload_verified"]
+            and result["checkpoint_reload"]["scheduler"]["reload_verified"]
+            and result["checkpoint_reload"]["reloaded_global_step"] == 1
+        ),
+        "train_normal_readable": True,
+        "validation_normal_readable": True,
+        "validation_buggy_used_for_fit_select": False,
+        "locked_test_materialized": False,
+        "locked_test_scored": False,
+    }}, indent=2) + "\\n", encoding="utf-8")
 '''
 
 

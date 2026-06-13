@@ -31,6 +31,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--evaluation-interval-updates", type=int, default=None)
     parser.add_argument("--checkpoint-interval-updates", type=int, default=None)
     parser.add_argument("--no-prove-resume", action="store_true")
+    parser.add_argument("--preflight-only", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
     return parser
 
@@ -63,6 +64,7 @@ def main(argv: list[str] | None = None) -> None:
         evaluation_interval_updates=args.evaluation_interval_updates,
         checkpoint_interval_updates=args.checkpoint_interval_updates,
         prove_resume=not args.no_prove_resume,
+        preflight_only=args.preflight_only,
     )
     summary = prepare_lewm_kaggle_package(
         args.source_root,

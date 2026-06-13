@@ -120,6 +120,53 @@ def test_kaggle_kernel_can_render_update_based_research_run():
     assert 'CONFIG["target_optimizer_updates"] is None else first' in kernel
 
 
+def test_kaggle_kernel_can_render_one_update_preflight_run():
+    config = LeWMKaggleConfig(
+        dataset_slug="huynhdieuthanh/lewm-r3-seed42-private",
+        kernel_slug="huynhdieuthanh/lewm-r3-seed42-preflight-ab40d21",
+        dataset_id="tempglitch-lewm-r3",
+        action_mode="zero_action",
+        train_dataset_name="tempglitch_train_normal_all_local.lance",
+        validation_dataset_name="tempglitch_validation_normal_all_local.lance",
+        batch_size=8,
+        seed=42,
+        pin_memory=True,
+        mixed_precision=True,
+        target_optimizer_updates=1,
+        evaluation_interval_updates=1,
+        checkpoint_interval_updates=1,
+        prove_resume=False,
+        preflight_only=True,
+        max_train_steps=None,
+        max_validation_steps=None,
+    )
+
+    kernel = render_validation_kernel(config)
+
+    assert '"preflight_only": true' in kernel
+    assert '"target_optimizer_updates": 1' in kernel
+    assert "preflight_passed.json" in kernel
+    assert "preflight_failed.json" in kernel
+    assert "unsupported_cuda_compute_capability" in kernel
+    assert '"validation_buggy_used_for_fit_select": False' in kernel
+
+
+def test_kaggle_preflight_requires_one_update():
+    with pytest.raises(ValueError, match="preflight must run exactly one update"):
+        LeWMKaggleConfig(
+            dataset_slug="huynhdieuthanh/lewm-r3-seed42-private",
+            kernel_slug="huynhdieuthanh/lewm-r3-seed42-preflight-bad",
+            dataset_id="tempglitch-lewm-r3",
+            action_mode="zero_action",
+            train_dataset_name="train.lance",
+            validation_dataset_name="validation.lance",
+            target_optimizer_updates=2,
+            evaluation_interval_updates=1,
+            checkpoint_interval_updates=1,
+            preflight_only=True,
+        )
+
+
 def test_kaggle_package_builds_dataset_and_kernel_audit_without_approval_files(
     tmp_path: Path,
 ):
