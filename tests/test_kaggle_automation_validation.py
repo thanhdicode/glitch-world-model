@@ -101,6 +101,37 @@ def test_command_runner_blocks_gpu_quota_without_retry(tmp_path: Path):
     assert len(calls) == 1
 
 
+def test_default_executor_rejects_kaggle_semantic_error_with_zero_exit(
+    monkeypatch: pytest.MonkeyPatch,
+):
+    def run(command: list[str], **kwargs: object) -> SimpleNamespace:
+        return SimpleNamespace(
+            returncode=0,
+            stdout="Kernel push error: Maximum batch GPU session count of 2 reached.",
+            stderr="",
+        )
+
+    monkeypatch.setattr("glitch_detection.kaggle_automation.subprocess.run", run)
+
+    with pytest.raises(AutomationCommandError, match="reported an error"):
+        CommandRunner._default_executor(["python", "-c", "kaggle", "kernels", "push"])
+
+
+def test_command_runner_blocks_maximum_batch_gpu_sessions_without_retry(tmp_path: Path):
+    calls = 0
+
+    def executor(command: list[str]) -> SimpleNamespace:
+        nonlocal calls
+        calls += 1
+        raise AutomationCommandError("Maximum batch GPU session count of 2 reached.")
+
+    runner = CommandRunner(executor=executor, max_attempts=3, sleep=lambda _seconds: None)
+
+    with pytest.raises(AutomationBlockedError, match="Maximum batch GPU session count"):
+        runner.run("kernel_push", ["kaggle", "kernels", "push"], tmp_path / "run.log")
+    assert calls == 1
+
+
 def test_public_release_scan_requires_license_and_redistribution(tmp_path: Path):
     root = tmp_path / "dataset"
     root.mkdir()

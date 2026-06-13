@@ -335,9 +335,11 @@ TRANSIENT_PATTERNS = (
 )
 GPU_BLOCK_PATTERNS = (
     re.compile(r"(?i)gpu quota"),
+    re.compile(r"(?i)maximum batch gpu session count"),
     re.compile(r"(?i)accelerator unavailable"),
     re.compile(r"(?i)no accelerator"),
 )
+KAGGLE_SEMANTIC_ERROR_PATTERN = re.compile(r"(?im)^\s*(?:kernel|dataset) push error:")
 
 
 def is_transient_error(message: str) -> bool:
@@ -400,6 +402,12 @@ class CommandRunner:
         if completed.returncode:
             raise AutomationCommandError(
                 f"Command failed with exit code {completed.returncode}: {' '.join(command)}",
+                stdout=completed.stdout,
+                stderr=completed.stderr,
+            )
+        if KAGGLE_SEMANTIC_ERROR_PATTERN.search(completed.stdout or ""):
+            raise AutomationCommandError(
+                f"Command reported an error despite exit code zero: {' '.join(command)}",
                 stdout=completed.stdout,
                 stderr=completed.stderr,
             )
