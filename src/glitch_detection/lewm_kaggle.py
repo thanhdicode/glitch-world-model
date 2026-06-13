@@ -51,6 +51,15 @@ class LeWMKaggleConfig:
     sigreg_projections: int = 128
     max_train_steps: int = 2
     max_validation_steps: int = 2
+    seed: int = 42
+    num_workers: int = 0
+    pin_memory: bool = False
+    mixed_precision: bool = False
+    early_stopping_patience: int | None = None
+    early_stopping_min_delta: float = 0.0
+    target_optimizer_updates: int | None = None
+    evaluation_interval_updates: int | None = None
+    checkpoint_interval_updates: int | None = None
     prove_resume: bool = True
     accelerator: str = "NvidiaTeslaT4"
     validation_only: bool = True
@@ -70,6 +79,18 @@ class LeWMKaggleConfig:
             raise ValueError("LeWM Kaggle batch_size and max_epochs must be positive.")
         if self.max_train_steps < 1 or self.max_validation_steps < 1:
             raise ValueError("LeWM Kaggle smoke step limits must be positive.")
+        if self.num_workers < 0:
+            raise ValueError("LeWM Kaggle num_workers cannot be negative.")
+        if self.early_stopping_patience is not None and self.early_stopping_patience < 1:
+            raise ValueError("LeWM Kaggle early_stopping_patience must be positive.")
+        if self.early_stopping_min_delta < 0:
+            raise ValueError("LeWM Kaggle early_stopping_min_delta cannot be negative.")
+        if self.target_optimizer_updates is not None and self.target_optimizer_updates < 1:
+            raise ValueError("LeWM Kaggle target_optimizer_updates must be positive.")
+        if self.target_optimizer_updates is not None and (
+            self.evaluation_interval_updates is None or self.checkpoint_interval_updates is None
+        ):
+            raise ValueError("LeWM Kaggle update-based training requires update intervals.")
 
 
 def validate_kaggle_slug(slug: str, *, label: str) -> None:
@@ -161,9 +182,19 @@ train_config = LeWMTrainConfig(
     image_size=CONFIG["image_size"],
     batch_size=CONFIG["batch_size"],
     epochs=CONFIG["max_epochs"],
+    seed=CONFIG["seed"],
     sigreg_projections=CONFIG["sigreg_projections"],
     max_train_steps=CONFIG["max_train_steps"],
     max_validation_steps=CONFIG["max_validation_steps"],
+    run_kind="research" if CONFIG["target_optimizer_updates"] is not None else "engineering_smoke",
+    num_workers=CONFIG["num_workers"],
+    pin_memory=CONFIG["pin_memory"],
+    mixed_precision=CONFIG["mixed_precision"],
+    early_stopping_patience=CONFIG["early_stopping_patience"],
+    early_stopping_min_delta=CONFIG["early_stopping_min_delta"],
+    target_optimizer_updates=CONFIG["target_optimizer_updates"],
+    evaluation_interval_updates=CONFIG["evaluation_interval_updates"],
+    checkpoint_interval_updates=CONFIG["checkpoint_interval_updates"],
 )
 first = train_lewm(
     _train_dst,
@@ -179,8 +210,12 @@ result = train_lewm(
     train_config,
     device="cuda",
     resume=True,
-) if CONFIG["prove_resume"] else first
-if CONFIG["prove_resume"] and result["completed_epoch"] <= first["completed_epoch"]:
+) if CONFIG["prove_resume"] and CONFIG["target_optimizer_updates"] is None else first
+if (
+    CONFIG["prove_resume"]
+    and CONFIG["target_optimizer_updates"] is None
+    and result["completed_epoch"] <= first["completed_epoch"]
+):
     raise RuntimeError("LeWM resume proof did not advance the completed epoch.")
 (OUTPUT / "dataset_metadata.json").write_text(json.dumps({{
     "dataset_id": CONFIG["dataset_id"],
@@ -194,11 +229,17 @@ if CONFIG["prove_resume"] and result["completed_epoch"] <= first["completed_epoc
 }}, indent=2) + "\\n")
 (OUTPUT / "resume_metadata.json").write_text(json.dumps({{
     "resume_supported": True,
-    "resume_proved": result["completed_epoch"] > first["completed_epoch"],
+    "resume_proved": (
+        result.get("completed_epoch", 0) > first.get("completed_epoch", 0)
+        if CONFIG["target_optimizer_updates"] is None
+        else result["checkpoint_reload"]["reloaded_global_step"] == result["updates_completed"]
+    ),
     "config_hash": result["config_hash"],
     "dataset_hashes": result["dataset_hashes"],
-    "initial_completed_epoch": first["completed_epoch"],
-    "completed_epoch": result["completed_epoch"],
+    "initial_completed_epoch": first.get("completed_epoch"),
+    "completed_epoch": result.get("completed_epoch"),
+    "updates_completed": result.get("updates_completed"),
+    "target_optimizer_updates": result.get("target_optimizer_updates"),
 }}, indent=2) + "\\n")
 '''
 

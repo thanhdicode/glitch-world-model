@@ -79,6 +79,31 @@ def test_kaggle_package_dry_run_is_validation_only(tmp_path: Path):
     assert "Gate 5 LeWM smoke requires CUDA" in kernel
 
 
+def test_kaggle_kernel_can_render_update_based_research_run():
+    config = LeWMKaggleConfig(
+        dataset_slug="huynhdieuthanh/lewm-research-mvp-seed42",
+        kernel_slug="huynhdieuthanh/lewm-r3-seed42",
+        dataset_id="tempglitch-lewm-r3",
+        action_mode="zero_action",
+        train_dataset_name="tempglitch_train_normal_all_local.lance",
+        validation_dataset_name="tempglitch_validation_normal_all_local.lance",
+        batch_size=8,
+        seed=42,
+        mixed_precision=True,
+        target_optimizer_updates=15000,
+        evaluation_interval_updates=500,
+        checkpoint_interval_updates=500,
+        prove_resume=False,
+    )
+
+    kernel = render_validation_kernel(config)
+
+    assert 'target_optimizer_updates=CONFIG["target_optimizer_updates"]' in kernel
+    assert 'mixed_precision=CONFIG["mixed_precision"]' in kernel
+    assert '"target_optimizer_updates": 15000' in kernel
+    assert 'CONFIG["target_optimizer_updates"] is None else first' in kernel
+
+
 def test_kaggle_package_builds_dataset_and_kernel_audit_without_approval_files(
     tmp_path: Path,
 ):
