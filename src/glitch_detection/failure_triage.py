@@ -6,6 +6,7 @@ from enum import StrEnum
 
 class FailureBucket(StrEnum):
     CUDA_OOM = "cuda_oom"
+    GPU_COMPUTE_CAPABILITY = "gpu_compute_capability"
     DATALOADER_SPAWN = "dataloader_spawn"
     ENVIRONMENT_DECODE = "environment_decode"
     PACKAGING_IDEMPOTENCY = "packaging_idempotency"
@@ -17,6 +18,13 @@ _SIGNATURES = (
     (
         FailureBucket.CUDA_OOM,
         re.compile(r"(?i)(cuda out of memory|out of memory|cublas_status_alloc_failed)"),
+    ),
+    (
+        FailureBucket.GPU_COMPUTE_CAPABILITY,
+        re.compile(
+            r"(?i)(compute capability|sm_60|no kernel image is available for execution|"
+            r"not compatible with the current pytorch installation|tesla p100)"
+        ),
     ),
     (
         FailureBucket.DATALOADER_SPAWN,

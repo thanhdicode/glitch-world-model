@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import sys
 from dataclasses import asdict, replace
 from importlib import util
 from pathlib import Path
@@ -101,3 +102,33 @@ def test_kaggle_lewm_runner_passes_update_based_training_controls(tmp_path, monk
             checkpoint_interval_updates=500,
         )
     )
+
+
+def test_kaggle_lewm_runner_rejects_incompatible_sm60_before_training(tmp_path, monkeypatch):
+    runner = _load_runner()
+
+    class _FakeCuda:
+        @staticmethod
+        def is_available():
+            return True
+
+        @staticmethod
+        def get_device_capability(index=0):
+            return (6, 0)
+
+        @staticmethod
+        def get_device_name(index=0):
+            return "Tesla P100-PCIE-16GB"
+
+    class _FakeTorch:
+        cuda = _FakeCuda()
+
+    monkeypatch.setitem(sys.modules, "torch", _FakeTorch())
+
+    def fail_train(*args, **kwargs):
+        raise AssertionError("train_lewm should not run for incompatible GPUs")
+
+    monkeypatch.setattr(runner, "train_lewm", fail_train)
+
+    with pytest.raises(RuntimeError, match="Incompatible GPU sm_60; need sm_70\\+"):
+        runner.main([*_required_args(tmp_path), "--device", "cuda"])

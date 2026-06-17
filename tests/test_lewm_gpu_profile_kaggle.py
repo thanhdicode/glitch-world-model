@@ -83,6 +83,11 @@ def test_generated_kernel_is_immutable_and_fail_closed():
     assert "shutil.rmtree(CODE)" in kernel
     assert "shutil.rmtree(LOCAL)" in kernel
     assert "Project snapshot is stale: missing validator_report artifact contract" in kernel
+    assert (
+        "Incompatible GPU sm_{major}{minor}; need sm_70+ for this PyTorch CUDA runtime." in kernel
+    )
+    assert "Assigned GPU: {gpu_name}" in kernel
+    assert '"minimum_compute_capability": [7, 0]' in kernel
     assert "validation_buggy" not in kernel
 
 

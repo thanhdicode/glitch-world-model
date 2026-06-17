@@ -12,6 +12,12 @@ from glitch_detection.failure_triage import (
     ("message", "bucket"),
     [
         (
+            "Tesla P100-PCIE-16GB with CUDA capability sm_60 is not compatible with the "
+            "current PyTorch installation. torch.AcceleratorError: CUDA error: no kernel "
+            "image is available for execution on the device",
+            FailureBucket.GPU_COMPUTE_CAPABILITY,
+        ),
+        (
             "RuntimeError: An attempt has been made to start a new process before the current "
             "process has finished its bootstrapping phase",
             FailureBucket.DATALOADER_SPAWN,
@@ -33,7 +39,25 @@ def test_classify_known_failure_signatures(message: str, bucket: FailureBucket):
     assert classify_failure(message) is bucket
 
 
+def test_compute_capability_failure_requires_stop_and_fix():
+    bucket = classify_failure(
+        "Tesla P100-PCIE-16GB with CUDA capability sm_60 is not compatible with the current "
+        "PyTorch installation. CUDA error: no kernel image is available for execution on "
+        "the device"
+    )
+    assert bucket is FailureBucket.GPU_COMPUTE_CAPABILITY
+    assert allowed_action(bucket) == "stop_and_fix"
+
+
 def test_only_cuda_oom_may_advance_oom_ladder():
+    assert classify_failure("torch.cuda.OutOfMemoryError: CUDA out of memory") is (
+        FailureBucket.CUDA_OOM
+    )
+    assert allowed_action(FailureBucket.CUDA_OOM) == "oom_ladder_step"
+    assert classify_failure("503 ServiceUnavailable: request timed out") is (
+        FailureBucket.INFRA_KAGGLE_TRANSIENT
+    )
+    assert allowed_action(FailureBucket.INFRA_KAGGLE_TRANSIENT) == "bounded_retry"
     assert allowed_action(FailureBucket.DATALOADER_SPAWN) == "stop_and_fix"
     for bucket in FailureBucket:
         assert is_oom(bucket) is (bucket is FailureBucket.CUDA_OOM)

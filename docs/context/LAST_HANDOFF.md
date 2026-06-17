@@ -1,33 +1,40 @@
 # LAST_HANDOFF.md
 
-Last completed task: R3 seed 42 provider-agnostic cloud runner prepared
+Last completed task: GPU compute-capability failure bucket and fail-fast launch guards added
 Commit: pending
-Date: 2026-06-13
+Date: 2026-06-17
 
 ## What Changed
 
-- Kept Kaggle stopped for R3 after two consecutive unsupported P100 assignments.
-- Added a provider-agnostic R3 seed 42 cloud runner under `cloud/r3_seed42/`.
-- Added `scripts/validate_cloud_gpu_runtime.py` to write `cloud_runtime_preflight.json` and require
-  CUDA `sm_70+` plus at least 14 GB VRAM.
-- Added `scripts/validate_lewm_r3_seed_artifacts.py` as the post-run R3 seed 42 validation gate.
-- Added progress logging every 100 update-based LeWM optimizer updates.
-- Added honest paper placeholders and cloud execution records for T4 x2 or stronger GPU execution.
+- Added `gpu_compute_capability` to `src/glitch_detection/failure_triage.py` for P100/`sm_60` /
+  `no kernel image` / unsupported PyTorch CUDA-arch failures.
+- Kept `gpu_compute_capability` on `stop_and_fix`; only `cuda_oom` still advances the approved
+  `8 -> 6 -> 4 -> 2` ladder.
+- Added regression coverage in `tests/test_failure_triage.py` for compute-capability,
+  `cuda_oom`, and transient-timeout routing.
+- Added a direct `sm_70+` fail-fast guard to `scripts/run_kaggle_lewm.py` so direct launches stop
+  before entering training on unsupported GPUs.
+- Added the same `sm_70+` fail-fast guard to the rendered kernel in
+  `src/glitch_detection/lewm_gpu_profile_kaggle.py`, including GPU name and `sm_xy` in the error.
+- Appended the new failure bucket to `docs/workflows/failure_modes_registry.md`.
 
 ## Checks Passed
 
-- Pending final focused checks before commit:
-  - `python -m pytest tests/test_lewm_kaggle.py tests/test_lewm_training.py tests/test_run_kaggle_lewm.py tests/test_lewm_research_mvp_config.py -q`
+- `python -m pytest -q tests -k "failure or gpu or kaggle or cloud"`
+- `python -m pytest -q`
+- `python -m ruff check .`
+- `python -m ruff format --check .`
+- `python scripts/check_claim_registry.py`
+- Pending final repository validators before completion:
   - `python scripts/validate_research_release.py --ci`
-  - `python scripts/check_claim_registry.py`
+  - `python scripts/doctor.py`
   - `python scripts/validate_context_cache.py`
 
 ## Safety Status
 
-- Kaggle remains blocked for R3; no new Kaggle retry was launched after the P100 stop decision.
-- No non-Kaggle GPU shell was available in this Codex session, so T4 x2 execution is prepared but
-  not launched.
-- No successful R3 seed 42 training result was produced.
+- Kaggle live remains untouched in this task; no relaunch was attempted.
+- The compute-capability failure is now explicitly treated as infrastructure/runtime
+  incompatibility, not OOM, not model failure, and not data failure.
 - Locked test remains closed, unmaterialized, and unscored.
 - Seed 43/44 were not launched.
 - No data, output, checkpoint, or credential is tracked.
@@ -35,27 +42,27 @@ Date: 2026-06-13
 ## Gate Status After Task
 
 - Roadmap v3 R1 engineering GPU profile remains complete.
-- R2 main-run schedule exists, but R3 seed 42 is not passed.
-- The active R3 blocker is direct shell/provider access to a compatible GPU VM. The selected target
-  is T4 x2, which satisfies the `sm_70+` guard if provisioned with a CUDA-compatible PyTorch build.
+- R2 main-run schedule remains frozen.
+- R3 seed 42 is still not passed; this task only hardens classification and fail-fast runtime
+  guards around the known P100 incompatibility.
 
 ## Open Blockers
 
-- Provide a RunPod/Colab/A100/H100/T4 shell with the Lance datasets mounted at `LEWM_DATA_ROOT`.
+- Provide a cloud shell on T4 or newer with the Lance datasets mounted at `LEWM_DATA_ROOT`.
 - Seed 43/44 remain blocked until seed 42 produces valid non-locked R3 artifacts.
 
 ## Next Recommended Task
 
-- On the T4 x2 machine, run `bash cloud/r3_seed42/setup_runtime.sh`, then
-  `bash cloud/r3_seed42/preflight.sh`; launch `bash cloud/r3_seed42/run_seed42_full.sh` only if
-  `preflight_passed.json` is written.
+- Run R3 seed 42 on a cloud T4+ target. On that machine, execute
+  `bash cloud/r3_seed42/setup_runtime.sh`, then `bash cloud/r3_seed42/preflight.sh`; launch
+  `bash cloud/r3_seed42/run_seed42_full.sh` only if `preflight_passed.json` is written.
 
 ## Files Likely Relevant Next
 
-- `cloud/r3_seed42/README.md`
+- `src/glitch_detection/failure_triage.py`
+- `scripts/run_kaggle_lewm.py`
+- `src/glitch_detection/lewm_gpu_profile_kaggle.py`
 - `scripts/validate_cloud_gpu_runtime.py`
-- `scripts/validate_lewm_r3_seed_artifacts.py`
-- `src/glitch_detection/lewm_training.py`
+- `cloud/r3_seed42/preflight.sh`
+- `cloud/r3_seed42/run_seed42_full.sh`
 - `docs/research/54_r3_seed42_alternative_gpu_execution_plan.md`
-- `docs/research/55_r3_seed42_cloud_run_record.md`
-- `docs/research/53_r3_seed42_live_run_record.md`

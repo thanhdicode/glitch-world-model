@@ -8,6 +8,7 @@ Every new failure requires one appended row and one regression test. This table 
 | 2026-06-13 | environment_decode | `UnicodeDecodeError: 'charmap' codec can't decode byte 0x8f` | Windows subprocess pipe used the default cp1252 decoder | `02e65a6` | `test_default_executor_replaces_non_utf8_subprocess_output` |
 | 2026-06-13 | dataloader_spawn | `attempt ... before the current process has finished its bootstrapping phase` | Rendered kernel called training at top level with DataLoader workers | `3ef825a` | `test_generated_kernel_is_immutable_and_fail_closed` |
 | 2026-06-13 | artifact_contract | `Missing LeWM GPU profile artifacts: validator_report.json` | Kaggle reused a stale `/tmp/glitch-world-model` source tree, so the remote run emitted the previous artifact contract | `ff372c9` | `test_generated_kernel_is_immutable_and_fail_closed`, `test_successful_kernel_with_invalid_artifacts_is_recorded_as_failed` |
+| 2026-06-17 | gpu_compute_capability | `P100 sm_60 / no kernel image / unsupported PyTorch CUDA arch` | Kaggle assigned GPU below sm_70 for PyTorch cu128 runtime | `TBD` | `test_compute_capability_failure_requires_stop_and_fix` |
 
 Only `cuda_oom` may advance the approved batch-size ladder. Transient Kaggle infrastructure
 failures receive bounded retry. Every other bucket requires stop-and-fix.

@@ -7,6 +7,23 @@ from pathlib import Path
 from glitch_detection.lewm_training import LeWMTrainConfig, train_lewm
 
 
+def _guard_cuda_runtime(device: str) -> None:
+    if device not in {"auto", "cuda"}:
+        return
+    try:
+        import torch
+    except Exception:
+        return
+    if not torch.cuda.is_available():
+        return
+    major, minor = torch.cuda.get_device_capability()
+    if major < 7:
+        raise RuntimeError(
+            f"Incompatible GPU sm_{major}{minor}; need sm_70+ for this PyTorch CUDA runtime. "
+            f"Assigned GPU: {torch.cuda.get_device_name(0)}"
+        )
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Run validation-only real-LeWM training.")
     parser.add_argument("--train-dataset", required=True, type=Path)
@@ -42,6 +59,7 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main(argv: list[str] | None = None) -> None:
     args = build_parser().parse_args(argv)
+    _guard_cuda_runtime(args.device)
     config = LeWMTrainConfig(
         image_size=args.image_size,
         batch_size=args.batch_size,

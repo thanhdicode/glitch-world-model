@@ -15,7 +15,7 @@ from .lewm_gpu_profile import (
     build_dataset_manifest,
     build_profile_fingerprint,
 )
-from .lewm_kaggle import validate_kaggle_slug
+from .lewm_kaggle import supports_cuda_compute_capability, validate_kaggle_slug
 
 TRAIN_DATASET_NAME = "tempglitch_train_normal_all_local.lance"
 VALIDATION_DATASET_NAME = "tempglitch_validation_normal_all_local.lance"
@@ -206,10 +206,22 @@ import torch
 from glitch_detection.lewm_gpu_profile import LeWMGPUProfileConfig, run_lewm_gpu_profile
 if not torch.cuda.is_available():
     raise RuntimeError("LeWM GPU profile requires CUDA.")
+
+def ensure_supported_cuda_runtime():
+    major, minor = torch.cuda.get_device_capability(0)
+    gpu_name = torch.cuda.get_device_name(0)
+    if not {supports_cuda_compute_capability.__name__}(major, minor):
+        raise RuntimeError(
+            f"Incompatible GPU sm_{{major}}{{minor}}; need sm_70+ for this PyTorch CUDA runtime. "
+            f"Assigned GPU: {{gpu_name}}"
+        )
+    return gpu_name, [major, minor]
+
 train = LOCAL / "{TRAIN_DATASET_NAME}"
 validation = LOCAL / "{VALIDATION_DATASET_NAME}"
 materialize("train-normal.lance.zip", "{TRAIN_DATASET_NAME}", train)
 materialize("validation-normal.lance.zip", "{VALIDATION_DATASET_NAME}", validation)
+gpu_name, compute_capability = ensure_supported_cuda_runtime()
 preflight = {{
     **INPUT_METADATA,
     "python": sys.version,
@@ -217,6 +229,9 @@ preflight = {{
     "pytorch": torch.__version__,
     "cuda_version": torch.version.cuda,
     "kaggle_runtime": True,
+    "gpu_name": gpu_name,
+    "compute_capability": compute_capability,
+    "minimum_compute_capability": [7, 0],
 }}
 (OUTPUT / "preflight_metadata.json").write_text(json.dumps(preflight, indent=2) + "\\n")
 
