@@ -1,23 +1,27 @@
 # LAST_HANDOFF.md
 
-Last completed task: WOB controlled planning and post-R5 repository alignment
+Last completed task: WOB-P0 dataset/materialization audit plus metadata-only manifest-preview freeze
 Commit: current task commit
 Date: 2026-06-18
 
 ## What Changed
 
-- Reconciled top-level status docs after the completed non-locked TempGlitch R5 phase.
-- Updated `AGENTS.md`, `README.md`, `PLAYBOOK.md`, the roadmap, and paper scaffold so they no
-  longer describe R5 as pending.
-- Regenerated the context cache after the post-R5 alignment pass.
-- Added `docs/research/70_wob_controlled_expansion_plan.md` to freeze the WOB planning scope,
-  staged execution path, claim boundaries, and go/no-go conditions.
-- Added a planning/governance claim entry for the post-R5 WOB-controlled-planning phase.
-- Removed the stale untracked local status report that described an older HEAD and a pre-R5 state.
+- Added dedicated `WOB-P0` tooling:
+  - `scripts/run_wob_p0_materialization_audit.py`
+  - `src/glitch_detection/wob_p0_audit.py`
+  - `tests/test_wob_p0_audit.py`
+- Executed the WOB-P0 audit in dry-run, non-locked-only mode with manifest-preview writing
+  enabled.
+- Froze a metadata-only non-locked manifest preview with SHA256
+  `fffbd08be4c5ade02487784b762805ecbfb1d89f962988986ee075854807e54f`.
+- Added `docs/research/71_wob_p0_dataset_materialization_audit.md` to record the exact blocker:
+  the local attached WOB root satisfies 10 of 120 non-locked rows expected by the frozen split.
+- Updated the WOB planning/context docs so they no longer describe WOB as merely `READY_TO_PLAN`.
 
 ## Checks Passed
 
 - `python scripts/update_context_cache.py --refresh-boot`
+- `python -m pytest -q tests/test_wob_p0_audit.py tests/test_wob_protocol.py tests/test_dataset_protocols.py`
 - `python -m pytest -q`
 - `python -m ruff check .`
 - `python -m ruff format --check .`
@@ -32,7 +36,7 @@ Date: 2026-06-18
   launched in this task.
 - No broad LeWM superiority, state-of-the-art, temporal-localization, SIGReg-benefit, WOB-result,
   cross-game, or locked-test claim was added.
-- Only documentation, planning, and governance surfaces were changed.
+- Only audit tooling, tests, and documentation/planning surfaces were changed.
 - Locked test remains closed, unmaterialized, and unscored.
 
 ## Gate Status After Task
@@ -44,26 +48,27 @@ Date: 2026-06-18
   passes.
 - R4 bundle: artifact-backed rerun after local SHA256 verification.
 - R5: COMPLETED_NONLOCKED with provenance-bound episode-level outputs.
-- WOB expansion: READY_TO_PLAN / NOT_STARTED; planning is now frozen in report 70.
+- WOB expansion: `BLOCKED_MISSING_INPUTS / WOB-P0_COMPLETE`; report 71 documents the exact local
+  materialization gap.
 - Locked test: UNTOUCHED / NOT_MATERIALIZED / NOT_SCORED.
 
 ## Open Blockers
 
-- WOB remains unopened pending a frozen manifest/materialization pass, explicit execution command,
-  and compute budget/runtime decision.
+- WOB remains unopened for training/evaluation pending the missing non-locked tar inputs, a clean
+  rerun of `WOB-P0`, an explicit execution command, and a compute budget/runtime decision.
 - Seed42 local archive provenance remains separate from the local extracted artifact root used in
   R5, so keep any seed42 wording traceable to the extracted-root hashes already recorded.
 
 ## Next Recommended Task
 
-- Execute `WOB-P0` dataset/materialization audit plus manifest freeze when explicitly authorized.
-  Keep WOB and locked test closed until a separate execution command is given.
+- Provide the missing non-locked WOB tar tree, rerun `WOB-P0`, and only then consider a separate
+  `WOB-P1` execution command. Keep WOB and locked test closed in the meantime.
 
 ## Files Likely Relevant Next
 
 - `docs/research/70_wob_controlled_expansion_plan.md`
+- `docs/research/71_wob_p0_dataset_materialization_audit.md`
 - `docs/research/69_r5_tempglitch_identical_episode_results.md`
-- `docs/research/68_r5_tempglitch_and_wob_expansion_plan.md`
-- `docs/research/67_r3_r4_multiseed_status.md`
+- `scripts/run_wob_p0_materialization_audit.py`
+- `src/glitch_detection/wob_p0_audit.py`
 - `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v3.md`
-- `paper/main.tex`

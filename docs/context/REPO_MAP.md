@@ -1,7 +1,7 @@
 # REPO_MAP.md
 
-Generated: 2026-06-17T17:11:33+00:00
-Commit: `2f10ead75e2e80ea47f8b09d7d8b1a6cecca011e`
+Generated: 2026-06-17T17:44:16+00:00
+Commit: `f40b7caece82e196c848947011fc973a04eb33d7`
 Generator: `scripts/update_context_cache.py`
 
 ## Top-Level Map
@@ -360,7 +360,7 @@ Generator: `scripts/update_context_cache.py`
 | `docs/research/68_r5_identical_episode_eval_plan.md` | 68 r5 identical episode eval plan |
 | `docs/research/68_r5_tempglitch_and_wob_expansion_plan.md` | 68 r5 tempglitch and wob expansion plan |
 | `docs/research/69_r5_tempglitch_identical_episode_results.md` | 69 r5 tempglitch identical episode results |
+| `docs/research/70_wob_controlled_expansion_plan.md` | 70 wob controlled expansion plan |
 | `docs/research/adr/ADR-001-topic-scope.md` | ADR-001-topic-scope |
 | `docs/research/adr/ADR-002-dataset-strategy.md` | ADR-002-dataset-strategy |
 | `docs/research/adr/ADR-003-lewm-integration-strategy.md` | ADR-003-lewm-integration-strategy |
-| `docs/research/adr/ADR-004-mandatory-lewm-main-method.md` | ADR-004-mandatory-lewm-main-method |

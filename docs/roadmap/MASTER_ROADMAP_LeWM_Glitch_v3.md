@@ -43,8 +43,9 @@ As of Git commit `cce03b6`:
   per-seed validator passes.
 - R5 completed for the non-locked TempGlitch identical-episode family and is recorded in the
   dedicated R5 results note.
-- The current operational phase is WOB controlled planning; World of Bugs execution has not
-  started.
+- The current operational phase is `WOB-P0` follow-through: the audit and metadata-only manifest
+  preview are complete, but local WOB execution remains blocked on missing non-locked source tar
+  inputs.
 - Locked test is closed, unmaterialized, and unscored.
 
 ## 3. Research Questions
@@ -116,9 +117,9 @@ Conditional expansion after the R5 checkpoint:
 
 Only R7 may propose locked-test release. It still requires a separate direct user command.
 
-Current post-R5 operational rule: finish WOB controlled planning and repo alignment before any WOB
-training or evaluation is considered. R6/R7/R8 remain the core TempGlitch roadmap stages, and WOB
-stays a separately authorized expansion branch.
+Current post-R5 operational rule: finish `WOB-P0`, provide the missing non-locked WOB inputs, and
+rerun the audit before any WOB training or evaluation is considered. R6/R7/R8 remain the core
+TempGlitch roadmap stages, and WOB stays a separately authorized expansion branch.
 
 ## 6. Stage R0 - Protocol And Package Freeze
 
@@ -332,6 +333,7 @@ locked-test discipline.
 ### WOB Claim Safety
 
 - No WOB result claim before WOB artifacts exist.
+- `WOB-P0` completion supports only audit/materialization-readiness wording, not WOB execution.
 - No action-conditioning claim on TempGlitch.
 - Preserve the WOB action-semantics caveat until stronger synchronization evidence exists.
 - WOB locked test remains closed unless separately authorized.

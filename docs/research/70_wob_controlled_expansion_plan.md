@@ -2,7 +2,8 @@
 
 Date: 2026-06-18
 
-Status: planning-only; no WOB execution is authorized by this document
+Status: planning-only; see `71_wob_p0_dataset_materialization_audit.md` for the completed
+`WOB-P0` audit and current blocked status
 
 ## 1. Current Evidence Baseline
 
@@ -15,7 +16,11 @@ Status: planning-only; no WOB execution is authorized by this document
   baselines, while F1/calibration remained mixed because `frame_diff` had the strongest observed
   F1 row.
 - Locked test remains closed, unmaterialized, and unscored.
-- World of Bugs has not started and remains `READY_TO_PLAN / NOT_STARTED`.
+- World of Bugs training/evaluation have not started.
+- `WOB-P0` has now completed as a dataset/materialization audit and metadata-only manifest preview
+  freeze.
+- Current `WOB-P0` outcome is `BLOCKED_MISSING_INPUTS` because the local attached WOB root
+  satisfies only 10 of the 120 non-locked rows expected by the frozen split metadata.
 
 ## 2. Why WOB Comes Next
 
@@ -117,7 +122,8 @@ Safe before WOB execution:
 
 - WOB is planned as a controlled expansion after the completed TempGlitch R5 checkpoint.
 - The repository already has frozen WOB protocol evidence and reduced loader compatibility.
-- WOB remains unopened and planning-only.
+- WOB remains unopened for training/evaluation.
+- `WOB-P0` is complete but blocked on missing non-locked source tar inputs.
 
 Unsafe before WOB execution:
 
@@ -148,3 +154,9 @@ Next prompt theme:
 The next execution-oriented phase should audit the frozen WOB inputs, confirm the materialization
 path, freeze the first non-locked WOB manifest, and stop before training unless explicitly
 authorized to continue.
+
+Update after execution of that prompt:
+
+- `WOB-P0` completed in [71_wob_p0_dataset_materialization_audit.md](71_wob_p0_dataset_materialization_audit.md).
+- The current blocker is missing non-locked WOB tar inputs under the local attached root, so
+  `WOB-P1` should not start until those inputs are provided and the audit is re-run successfully.
