@@ -1,7 +1,11 @@
 import json
+import sys
 from pathlib import Path
 
-import tomllib
+if sys.version_info >= (3, 11):
+    import tomllib
+else:
+    import tomli as tomllib  # type: ignore[no-redef]
 
 
 def test_kaggle_runtime_pins_are_optional_and_parseable():

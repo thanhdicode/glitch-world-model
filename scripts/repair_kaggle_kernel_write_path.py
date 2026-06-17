@@ -7,7 +7,7 @@ import stat
 import subprocess
 import sys
 import time
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -215,7 +215,7 @@ def _diagnostics(args: argparse.Namespace) -> dict[str, Any]:
             ),
         }
     payload = {
-        "timestamp_utc": datetime.now(UTC).isoformat(),
+        "timestamp_utc": datetime.now(timezone.utc).isoformat(),
         "os": platform.platform(),
         "shell": os.environ.get("COMSPEC") or os.environ.get("SHELL"),
         "python_executable": sys.executable,
@@ -237,7 +237,7 @@ def _diagnostics(args: argparse.Namespace) -> dict[str, Any]:
 
 
 def _canary_slug(variant: str) -> str:
-    timestamp = datetime.now(UTC).strftime("%Y%m%d-%H%M%S")
+    timestamp = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
     return f"huynhdieuthanh/lewm-submit-canary-{variant.lower()}-{timestamp}"
 
 
