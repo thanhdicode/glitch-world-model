@@ -41,7 +41,8 @@ As of Git commit `cce03b6`:
 - The exact 500-update GPU profile completed as engineering evidence only.
 - R4 rerun seed43 and seed44 are now artifact-backed after local SHA256 verification and
   per-seed validator passes.
-- R5 has not started.
+- R5 completed for the non-locked TempGlitch identical-episode family and is recorded in the
+  dedicated R5 results note.
 - World of Bugs is a controlled post-R5 real-action expansion track and has not started.
 - Locked test is closed, unmaterialized, and unscored.
 

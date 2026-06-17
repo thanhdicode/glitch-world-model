@@ -2,7 +2,7 @@
 
 Date: 2026-06-17
 
-Status: planning-only; do not execute R5 or WOB without an explicit command
+Status: R5 complete for TempGlitch non-locked identical-episode evaluation; WOB still planning-only
 
 ## 1. Current Verified State
 
@@ -13,7 +13,8 @@ Status: planning-only; do not execute R5 or WOB without an explicit command
 - The exact 500-update LeWM GPU profile completed as engineering evidence only.
 - R4 rerun seed43 and seed44 are artifact-backed after local SHA256 verification and per-seed
   validator passes.
-- R5 identical-episode evaluation has not started.
+- R5 identical-episode evaluation completed and wrote provenance-bound outputs under
+  `outputs/r5_tempglitch_identical_episode/`.
 - World of Bugs expansion has not started.
 - Locked test remains closed, unmaterialized, and unscored.
 
@@ -90,11 +91,12 @@ World of Bugs opens only after all of the following are true:
 Safe now:
 
 - R4 seed43/44 rerun artifacts are local SHA256-verified and pass per-seed validators.
-- R5 and WOB remain planning-only.
+- R5 is complete for the non-locked TempGlitch family, with hash-traceable manifest, score,
+  comparison, metrics, and provenance files.
+- WOB remains unopened and planning-only.
 
 Forbidden now:
 
-- Any R5 metric claim.
 - Any WOB result claim.
 - Broad LeWM glitch-detection, superiority, SOTA, SIGReg-benefit, temporal-localization, or
   locked-test claim.
@@ -114,15 +116,14 @@ python scripts/freeze_wob_protocol.py --help
 
 Observed implementation gap:
 
-- There is no single dedicated R5 orchestration command on `main` that freezes one identical
-  episode manifest, runs LeWM plus all selected baselines, and emits one provenance-bound result
-  bundle.
-- There is no dedicated WOB training/evaluation orchestration family on `main`; only the protocol,
-  reduced conversion, and planning-level components are present.
+- The TempGlitch R5 orchestration gap is now closed by
+  `scripts/run_r5_tempglitch_identical_episode_evaluation.py`.
+- There is still no dedicated WOB training/evaluation orchestration family on `main`; only the
+  protocol, reduced conversion, and planning-level components are present.
 
-Required next work before execution:
+Required next work before WOB execution:
 
-1. Freeze the exact TempGlitch R5 manifest and output layout.
-2. Decide whether Conv3D and frozen video representation are in or out for the first R5 run.
-3. Define the exact score-merging and metric-reporting sequence.
-4. If one-command orchestration is desired, implementation required.
+1. Decide whether the first WOB pass should mirror the current TempGlitch R5 family exactly or
+   narrow the seed/config set.
+2. Confirm compute budget and runtime path for a controlled WOB run family.
+3. Freeze the WOB manifest, score-merging, and metric-reporting sequence.

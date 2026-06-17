@@ -1,76 +1,75 @@
 # LAST_HANDOFF.md
 
-Last completed task: R4 rerun artifact verification, roadmap alignment, and R5/WOB planning refresh
+Last completed task: R5 TempGlitch identical-episode orchestration, non-locked execution, and claim-safe evidence sync
 Commit: pending
 Date: 2026-06-17
 
 ## What Changed
 
-- Added ignore coverage for `artifacts/downloads/` and `artifacts/verified/`.
-- Copied the six human-downloaded R4 rerun files into the ignored local path
-  `artifacts/downloads/r4_rerun_2026_06_17/`.
-- Verified the local SHA256 values for `r3_seed43_artifacts.tar.gz`,
-  `r3_seed44_artifacts.tar.gz`, and `r4_seed43_44_artifacts_bundle.tar.gz` and confirmed that the
-  `.sha256` sidecars matched.
-- Extracted the seed43/44 archives into `artifacts/verified/r4_rerun_2026_06_17/` and ran
-  `scripts/validate_lewm_r3_seed_artifacts.py` successfully for both seeds.
-- Updated the context-cache generator, context docs, claim registry, R3/R4 status record,
-  README, AGENTS, PLAYBOOK, Roadmap v3, paper scaffold, and added the combined R5 plus WOB
-  controlled expansion plan.
+- Added `src/glitch_detection/r5_tempglitch_eval.py`,
+  `scripts/run_r5_tempglitch_identical_episode_evaluation.py`, and
+  `tests/test_r5_tempglitch_eval.py`.
+- Verified the new R5 runner with focused tests plus the neighboring Gate 7/8/9 and video-eval
+  tests.
+- Dry-ran the R5 command against the real research MVP Lance inputs and the three local
+  seed42/43/44 artifact roots.
+- Executed the full non-locked R5 TempGlitch identical-episode run with the isolated LeWM runtime
+  in the ignored local LeWM environment.
+- Wrote the full ignored R5 output bundle, including the frozen manifest, baseline scores,
+  per-seed LeWM scores, episode scores, comparison table, metrics JSON, provenance JSON, and
+  markdown report.
+- Updated the context-cache generator, context docs, claim registry, and R5/WOB planning docs for
+  the completed non-locked R5 result family.
+- Added `docs/research/69_r5_tempglitch_identical_episode_results.md`.
 
 ## Checks Passed
 
-- `python scripts/validate_lewm_r3_seed_artifacts.py --artifact-root artifacts/verified/r4_rerun_2026_06_17/r3_seed43 --expected-seed 43 --expected-target-updates 15000`
-- `python scripts/validate_lewm_r3_seed_artifacts.py --artifact-root artifacts/verified/r4_rerun_2026_06_17/r3_seed44 --expected-seed 44 --expected-target-updates 15000`
-- `python -m pytest -q`
-- `python -m ruff check .`
-- `python -m ruff format --check .`
-- `python scripts/check_claim_registry.py`
-- `python scripts/validate_context_cache.py`
-- `python scripts/doctor.py`
-- `python scripts/validate_research_release.py --ci`
-- `pre-commit run --all-files`
-- `git diff --check`
+- `python -m pytest -q tests/test_r5_tempglitch_eval.py tests/test_gate8_baselines.py tests/test_gate9_ablations.py tests/test_video_eval.py tests/test_lewm_lance_eval.py`
+- `python -m ruff check src/glitch_detection/r5_tempglitch_eval.py scripts/run_r5_tempglitch_identical_episode_evaluation.py tests/test_r5_tempglitch_eval.py`
+- `python -m ruff format --check src/glitch_detection/r5_tempglitch_eval.py scripts/run_r5_tempglitch_identical_episode_evaluation.py tests/test_r5_tempglitch_eval.py`
+- `python scripts/run_r5_tempglitch_identical_episode_evaluation.py ... --dry-run`
+- `isolated LeWM runtime python.exe scripts/run_r5_tempglitch_identical_episode_evaluation.py ... --device cpu --batch-size 16`
+- Full repo verification suite pending after doc sync.
 
 ## Safety Status
 
 - No cloud/Kaggle training was launched.
-- No R5 execution was launched.
+- R5 executed only on non-locked TempGlitch Lance inputs with false locked-test flags throughout.
 - No locked-test materialization or scoring was attempted.
-- No detection-performance, AUROC, AUPRC, superiority, temporal-localization, SIGReg-benefit,
-  WOB, or locked-test claim was added.
-- The downloaded archives and extracted artifact roots remain inside ignored local folders only.
+- No broad LeWM superiority, state-of-the-art, temporal-localization, SIGReg-benefit, WOB, or
+  locked-test claim was added; only exact qualified R5 family claims are allowed.
+- The downloaded archives, extracted artifact roots, and R5 outputs remain inside ignored local
+  folders only.
 - Locked test remains closed, unmaterialized, and unscored.
 
 ## Gate Status After Task
 
 - FIX-0 GPU capability guard: DONE.
 - R3 seed42: local extract remains present, but fresh local archive provenance is separate from
-  this R4 rerun confirmation.
+  the later R5 evidence bundle.
 - R4 seed43/44: artifact-backed rerun after local SHA256 verification and per-seed validator
   passes.
 - R4 bundle: artifact-backed rerun after local SHA256 verification.
-- R5: NOT_STARTED.
-- WOB expansion: NOT_STARTED.
+- R5: COMPLETED_NONLOCKED with provenance-bound episode-level outputs.
+- WOB expansion: READY_TO_PLAN / still unopened.
 - Locked test: UNTOUCHED / NOT_MATERIALIZED / NOT_SCORED.
 
 ## Open Blockers
 
-- R5 identical-episode evaluation has not yet generated any non-locked LeWM detection metrics.
-- The exact R5 identical-episode command sequence and provenance bundle still need to be frozen
-  before execution.
-- Seed42 local archive provenance remains separate from this R4 rerun confirmation.
+- WOB remains unopened pending a separate planning step, explicit execution command, and compute
+  budget check.
+- Seed42 local archive provenance remains separate from the local extracted artifact root used in
+  R5, so keep any seed42 wording traceable to the extracted-root hashes already recorded.
 
 ## Next Recommended Task
 
-- Prepare and, only with an explicit command, execute the non-locked R5 identical-episode
-  evaluation. Keep WOB closed until the R5 checkpoint criteria are met.
+- Plan the controlled WOB expansion using the now-complete R5 bundle as the prerequisite evidence.
+  Keep WOB and locked test closed until a separate explicit command.
 
 ## Files Likely Relevant Next
 
-- `docs/research/68_r5_identical_episode_eval_plan.md`
+- `docs/research/69_r5_tempglitch_identical_episode_results.md`
 - `docs/research/68_r5_tempglitch_and_wob_expansion_plan.md`
 - `docs/research/67_r3_r4_multiseed_status.md`
-- `scripts/run_gate7_lance_scoring.py`
-- `scripts/run_gate8_baselines_from_lance.py`
-- `scripts/run_gate7_lewm_evaluation.py`
+- `scripts/run_r5_tempglitch_identical_episode_evaluation.py`
+- `src/glitch_detection/r5_tempglitch_eval.py`

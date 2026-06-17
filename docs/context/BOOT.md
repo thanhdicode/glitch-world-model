@@ -1,7 +1,7 @@
 # BOOT.md - Fast Start Context For Agents
 
-Generated: 2026-06-17T14:21:35+00:00
-Commit: `cce03b696d2fffd1f8c31b4d047f50573b1818b6`
+Generated: 2026-06-17T16:35:45+00:00
+Commit: `d1cf3ac444b0d7a87a404bedd78c6f0ed03b6e27`
 
 ## Read Order
 1. `RULES.md`
@@ -27,17 +27,19 @@ The current execution roadmap is `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v3.md`
   and 22 validation-buggy episodes across all five categories.
 - The exact 500-update research-MVP GPU profile completed as engineering evidence only.
 - R4 rerun seed43/44 training artifacts are local SHA256-verified and pass per-seed validators.
-- R5 identical-episode evaluation has not started.
-- Controlled World of Bugs expansion is planned only after the TempGlitch R5 checkpoint and has
-  not started.
+- R5 identical-episode evaluation completed on the non-locked research MVP and wrote
+  provenance-bound episode-level outputs.
+- Controlled World of Bugs expansion remains unopened after R5 and is ready only for a separate
+  planning step.
 - Gate 10 is closed.
 - Locked test is closed.
-- LeWM gameplay evaluation exists only as a one-buggy-episode pilot.
+- LeWM gameplay evaluation now exists for the non-locked TempGlitch research MVP only; locked
+  test and WOB remain unopened.
 
 ## Immediate Next Task
-- Prepare the non-locked R5 identical-episode evaluation inputs, commands, and provenance plan.
-- Keep World of Bugs closed until the R5 checkpoint criteria are met.
-- Do not execute R5 or touch locked test without an explicit user command.
+- Preserve the completed non-locked R5 evidence bundle and keep its hashes synchronized in docs.
+- Keep World of Bugs closed until a separate post-R5 planning step confirms budget and scope.
+- Do not touch locked test.
 
 ## Safety
 - Non-locked-test Kaggle actions use standing Kaggle authorization after security, license,
@@ -47,7 +49,7 @@ The current execution roadmap is `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v3.md`
 - No locked-test materialization or scoring.
 - No data, output, checkpoint, Lance dataset, cache, `.env`, token, or `kaggle.json` commits.
 - No broad LeWM superiority, SIGReg benefit, temporal localization, SOTA, or neural locked-test
-  claim from the one-buggy-episode pilot.
+  claim from the current non-locked evidence bundle.
 
 ## Required Checks
 ```powershell

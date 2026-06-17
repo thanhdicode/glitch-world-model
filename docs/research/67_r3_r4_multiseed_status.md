@@ -11,9 +11,10 @@ and 44. The downloaded local archives are now present under ignored paths, their
 files match the computed SHA256 values, and both extracted seed roots pass
 `scripts/validate_lewm_r3_seed_artifacts.py`.
 
-This confirms that the R4 rerun seed43/44 training artifacts are artifact-backed. It does not
-create any R5 detection metric, AUROC, AUPRC, superiority, temporal-localization, SIGReg-benefit,
-WOB, or locked-test claim.
+This confirms that the R4 rerun seed43/44 training artifacts are artifact-backed. The later R5
+episode-level evidence is recorded separately in
+`docs/research/69_r5_tempglitch_identical_episode_results.md`; this note remains focused on the
+multi-seed training artifact status.
 
 ## Local Archive Verification
 
@@ -67,8 +68,8 @@ Both commands passed locally with:
 | R4 seed43 | ARTIFACT_BACKED_RERUN |
 | R4 seed44 | ARTIFACT_BACKED_RERUN |
 | R4 bundle | ARTIFACT_BACKED_RERUN |
-| R5 | NOT_STARTED |
-| WOB expansion | NOT_STARTED |
+| R5 | COMPLETED_NONLOCKED / REPORTED_SEPARATELY |
+| WOB expansion | READY_TO_PLAN / NOT_STARTED |
 | Locked test | UNTOUCHED / NOT_MATERIALIZED / NOT_SCORED |
 
 ## Safe Claims
@@ -80,17 +81,15 @@ Both commands passed locally with:
   frozen non-locked protocol.
 - Validation-buggy data was not used for fit or selection in the validated rerun artifacts.
 - Locked test remained unmaterialized and unscored.
-- R5 has not started.
+- R5 is recorded separately in the dedicated results note.
 
 ## Unsafe Claims
 
-- R5 identical-episode evaluation has started.
 - LeWM detects glitches, outperforms baselines, or is state of the art.
 - SIGReg benefit, temporal localization, WOB expansion, or neural locked-test performance.
 - R4 rerun training artifacts imply AUROC, AUPRC, or paper-grade detection performance.
 
 ## Next Action
 
-Prepare the R5 identical-episode evaluation on the non-locked research MVP. Do not execute R5 or
-touch locked test without an explicit command. World of Bugs remains a controlled post-R5
-expansion track and is not yet open.
+Use the completed R5 bundle as the prerequisite evidence for a controlled WOB planning pass. Do
+not open WOB or touch locked test without a separate explicit command.
