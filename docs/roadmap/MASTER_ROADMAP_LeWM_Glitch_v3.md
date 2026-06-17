@@ -43,7 +43,8 @@ As of Git commit `cce03b6`:
   per-seed validator passes.
 - R5 completed for the non-locked TempGlitch identical-episode family and is recorded in the
   dedicated R5 results note.
-- World of Bugs is a controlled post-R5 real-action expansion track and has not started.
+- The current operational phase is WOB controlled planning; World of Bugs execution has not
+  started.
 - Locked test is closed, unmaterialized, and unscored.
 
 ## 3. Research Questions
@@ -114,6 +115,10 @@ Conditional expansion after the R5 checkpoint:
 ```
 
 Only R7 may propose locked-test release. It still requires a separate direct user command.
+
+Current post-R5 operational rule: finish WOB controlled planning and repo alignment before any WOB
+training or evaluation is considered. R6/R7/R8 remain the core TempGlitch roadmap stages, and WOB
+stays a separately authorized expansion branch.
 
 ## 6. Stage R0 - Protocol And Package Freeze
 

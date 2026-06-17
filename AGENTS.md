@@ -21,17 +21,20 @@ Current verified status:
   validation-buggy episodes across all five categories.
 - The exact 500-update non-locked GPU profile completed as engineering evidence only.
 - R4 rerun seed43/44 training artifacts are local SHA256-verified and pass per-seed validators.
+- R5 TempGlitch non-locked identical-episode evaluation completed and produced
+  provenance-bound episode-level outputs under the frozen validation-only protocol.
+- The next phase is WOB controlled planning; WOB execution is not yet authorized.
+- Controlled World of Bugs expansion is `READY_TO_PLAN / NOT_STARTED`.
 - Locked test is closed.
-- LeWM gameplay evaluation exists only for one non-locked buggy episode with correlated windows.
-- R5 identical-episode evaluation has not started.
-- Controlled World of Bugs expansion is planned only after the TempGlitch R5 checkpoint and has
-  not started.
+- LeWM gameplay evaluation now includes the earlier one-buggy-episode window pilot plus the
+  completed non-locked TempGlitch R5 identical-episode family.
 
 Safe claims include bounded normal-only CUDA training and the exact qualified Gate 7-9 pilot
-metrics, research-source readiness, the validated 500-update GPU profile, and artifact-backed R4
-rerun seed43/44 training evidence. Do not claim broad LeWM glitch-detection performance,
-superiority, state of the art, temporal localization, SIGReg benefit, WOB evidence, or a neural
-locked-test result.
+metrics, research-source readiness, the validated 500-update GPU profile, artifact-backed R4
+rerun seed43/44 training evidence, and the exact qualified R5 TempGlitch family results. Do not
+claim broad LeWM glitch-detection performance, superiority, state of the art, temporal
+localization, SIGReg benefit, WOB evidence, cross-game generalization, or a neural locked-test
+result.
 
 ## Agent Operating Mode
 

@@ -105,4 +105,3 @@ Still forbidden:
 - `locked_test_materialized = false`
 - `locked_test_scored = false`
 - `validation_buggy_used_for_fit_select = false`
-

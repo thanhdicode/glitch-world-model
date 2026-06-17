@@ -127,3 +127,4 @@ Required next work before WOB execution:
    narrow the seed/config set.
 2. Confirm compute budget and runtime path for a controlled WOB run family.
 3. Freeze the WOB manifest, score-merging, and metric-reporting sequence.
+4. Receive a separate explicit human command before any WOB training or evaluation is launched.

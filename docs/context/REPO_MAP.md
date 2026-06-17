@@ -1,7 +1,7 @@
 # REPO_MAP.md
 
-Generated: 2026-06-17T16:35:45+00:00
-Commit: `d1cf3ac444b0d7a87a404bedd78c6f0ed03b6e27`
+Generated: 2026-06-17T17:11:33+00:00
+Commit: `2f10ead75e2e80ea47f8b09d7d8b1a6cecca011e`
 Generator: `scripts/update_context_cache.py`
 
 ## Top-Level Map
@@ -75,6 +75,7 @@ Generator: `scripts/update_context_cache.py`
 | `scripts/run_lewm_gpu_profile_automation.py` | main | Python module. |
 | `scripts/run_lewm_scoring.py` | build_parser, _git_commit, main | Python module. |
 | `scripts/run_phase6e_kaggle_automation.py` | build_parser, build_config, main | Python module. |
+| `scripts/run_r5_tempglitch_identical_episode_evaluation.py` | main | Python module. |
 | `scripts/run_synthetic_demo.py` | write_synthetic_frames, write_synthetic_labels, main | Python module. |
 | `scripts/run_tempglitch_repeated_grouped_splits.py` | _require_file, _clear_score_files, _write_split_artifacts, _write_partitions, _format_metric, _write_locked_summary, _metric_summary, _write_repeated_summary, run_repeated_grouped_experiments, build_parser, main | Python module. |
 | `scripts/run_tempglitch_smoke_test.py` | build_parser, main | Python module. |
@@ -128,6 +129,7 @@ Generator: `scripts/update_context_cache.py`
 | `src/glitch_detection/pairs.py` | _row_value, infer_tempglitch_pair_id, group_sources_by_pair, pair_leakage_report | Python module. |
 | `src/glitch_detection/plot_scores.py` | read_score_series, plot_scores, build_parser, main | Python module. |
 | `src/glitch_detection/preprocess.py` | list_frame_files, resize_and_save_frame, preprocess_frames, extract_video_frames, preprocess_input, build_parser, main | Python module. |
+| `src/glitch_detection/r5_tempglitch_eval.py` | _read_json, _load_script_module, _write_json, _write_sha256, _percentile, _aggregate, _float_text, _fpr_at_95_tpr, refuse_locked_test_path, parse_seed_artifact_roots, resolve_seed_artifact, planned_output_paths | Python module. |
 | `src/glitch_detection/repeated_eval.py` | FittedScorer, train_normal_records, fit_scorer_for_split, score_fitted_scorer, clip_score_rows, write_clip_scores_csv, split_rows_as_dicts, source_labels_for_split, build_video_rows | Python module. |
 | `src/glitch_detection/run_baseline.py` | run_baseline, build_parser, main | Python module. |
 | `src/glitch_detection/score_clips.py` | _frame_diff_scorer, available_scorers, run_scorer, build_parser, main | Python module. |
@@ -185,6 +187,7 @@ Generator: `scripts/update_context_cache.py`
 | `scripts/run_lewm_gpu_profile_automation.py` | CLI/helper script. | Gate 5 |
 | `scripts/run_lewm_scoring.py` | CLI/helper script. | Gate 5 |
 | `scripts/run_phase6e_kaggle_automation.py` | CLI/helper script. | Gate 5 |
+| `scripts/run_r5_tempglitch_identical_episode_evaluation.py` | CLI/helper script. | general |
 | `scripts/run_synthetic_demo.py` | CLI/helper script. | general |
 | `scripts/run_tempglitch_repeated_grouped_splits.py` | CLI/helper script. | general |
 | `scripts/run_tempglitch_smoke_test.py` | CLI/helper script. | general |
@@ -263,6 +266,7 @@ Generator: `scripts/update_context_cache.py`
 | `tests/test_preprocess.py` | preprocess |
 | `tests/test_protocol_splits.py` | protocol_splits |
 | `tests/test_r3_seed_runner.py` | r3_seed_runner |
+| `tests/test_r5_tempglitch_eval.py` | r5_tempglitch_eval |
 | `tests/test_repeated_eval.py` | repeated_eval |
 | `tests/test_repeated_grouped_runner.py` | repeated_grouped_runner |
 | `tests/test_research_release_tools.py` | research_release_tools |
@@ -355,8 +359,8 @@ Generator: `scripts/update_context_cache.py`
 | `docs/research/67_r3_r4_multiseed_status.md` | 67 r3 r4 multiseed status |
 | `docs/research/68_r5_identical_episode_eval_plan.md` | 68 r5 identical episode eval plan |
 | `docs/research/68_r5_tempglitch_and_wob_expansion_plan.md` | 68 r5 tempglitch and wob expansion plan |
+| `docs/research/69_r5_tempglitch_identical_episode_results.md` | 69 r5 tempglitch identical episode results |
 | `docs/research/adr/ADR-001-topic-scope.md` | ADR-001-topic-scope |
 | `docs/research/adr/ADR-002-dataset-strategy.md` | ADR-002-dataset-strategy |
 | `docs/research/adr/ADR-003-lewm-integration-strategy.md` | ADR-003-lewm-integration-strategy |
 | `docs/research/adr/ADR-004-mandatory-lewm-main-method.md` | ADR-004-mandatory-lewm-main-method |
-| `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch (1).md` | MASTER ROADMAP LeWM Glitch (1) |
