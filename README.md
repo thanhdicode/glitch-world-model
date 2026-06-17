@@ -19,6 +19,9 @@ Current LeWM gate status:
   buggy validation encoding; strict validation returned `gate6_passed`.
 - Gate 7 produced 10,081 real LeWM window scores; Gate 8 used the identical manifest for two
   baselines; Gate 9 reported AUROC/AUPRC and grouped normal-P95 F1.
+- The exact 500-update research-MVP GPU profile completed as engineering evidence only.
+- R4 rerun seed43/44 archives are locally SHA256-verified and pass per-seed artifact validators.
+- R5 identical-episode evaluation has not started.
 - Gate 9 remains a one-buggy-episode pilot; Gate 10 has not run.
 - Locked test remains closed.
 - Only exact qualified pilot metrics are supported; broad superiority, temporal localization,
@@ -29,7 +32,7 @@ Research planning docs:
 - [Project Playbook](PLAYBOOK.md)
 - [Fast agent boot context](docs/context/BOOT.md)
 - [Context cache policy](docs/context/CONTEXT_POLICY.md)
-- [Mandatory real-LeWM master roadmap](docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v2.md)
+- [Current execution roadmap](docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v3.md)
 - [Real LeWM integration audit](docs/research/36_lewm_integration_audit.md)
 - [Literature matrix](docs/research/02_literature_matrix.md)
 - [Dataset and benchmark map](docs/research/04_dataset_benchmark_map.md)
@@ -56,6 +59,8 @@ Research planning docs:
 - [Gate 8 same-manifest comparison](docs/research/48_gate8_same_manifest_baseline_comparison.md)
 - [Gate 9 pilot results](docs/research/49_gate9_minimal_ablation_results.md)
 - [Gate 7-9 claim boundary](docs/research/50_results_claim_boundary.md)
+- [R3/R4 multiseed status](docs/research/67_r3_r4_multiseed_status.md)
+- [R5 identical-episode evaluation plan](docs/research/68_r5_identical_episode_eval_plan.md)
 
 Phase 6D completed five pair-suspect grouped refit/selection/locked-test runs with zero
 cross-split groups. The selected pipeline achieved locked-test AUROC `0.573 +/- 0.118`; this
@@ -140,13 +145,12 @@ latexmk -pdf -cd paper/main.tex
 ```
 
 Current status: Phase 6E is complete as a validation-only Conv3D engineering result. The separate
-LeWM path has passed Gates 1-5, including strict validation of a Kaggle CUDA train/resume smoke.
-Gate 6 v8 completed the bounded normal-only gameplay pilot on a Tesla T4 and passed strict
-artifact validation. The verified checkpoint SHA-256 is
-`300cefe9622ab43acd79bc2202ac90a214cbc4ae9921ed3434573fc9198ff252`. Gate 7
-validation scoring may now proceed, but no LeWM glitch metric exists yet. Do not touch locked test
-without a frozen validation decision, the documented release gate, and a separate direct user
-command.
+LeWM path has passed Gates 1-9 at their documented engineering or pilot scope. Gate 6 v8
+completed the bounded normal-only gameplay pilot on a Tesla T4 and passed strict artifact
+validation. The research-MVP GPU profile is complete as engineering evidence only, and the R4
+rerun seed43/44 archives are now locally SHA256-verified and validator-backed. The next phase is
+R5 identical-episode evaluation preparation; no R5 detection metrics or locked-test results exist
+yet.
 
 The June 11, 2026 Gate 5 TempGlitch dataset upload is ready. The first approved kernel push
 returned HTTP `409 Conflict` before a run was established; the local cause was a kernel slug that
@@ -266,9 +270,10 @@ isolated LeWM environment and compatible checkpoint/data contracts:
 python -m glitch_detection.lewm_latent --manifest data/processed/my_experiment/manifest.csv --labels data/raw/my_labels.csv --output outputs/my_experiment_lewm_scores.csv --checkpoint path/to/lewm.ckpt
 ```
 
-The next evidence step is Gate 7 validation-only scoring from the frozen Gate 6 v8 checkpoint.
-Gate 7 must emit provenance-bound finite scores and metrics before any detection-performance
-claim or baseline comparison.
+The next evidence step is R5 identical-episode evaluation on the non-locked research MVP using the
+artifact-backed R4 rerun checkpoints and the frozen evaluation protocol. R5 must emit
+provenance-bound finite scores and metrics before any detection-performance or baseline-comparison
+claim.
 
 Audit the Phase 6E neural training partition without loading PyTorch or touching test:
 

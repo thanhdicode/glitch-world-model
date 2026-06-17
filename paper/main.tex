@@ -13,8 +13,9 @@
 We study whether latent world-model prediction errors can support video game glitch detection
 under leakage-aware evaluation. The current manuscript scaffold documents the protocol, data
 splits, safety gates, and planned R3--R5 experiments. It intentionally contains placeholders for
-unfinished LeWM training, multi-seed validation, episode-level metrics, and ablations. No locked
-test result or performance conclusion is reported before artifact validation.
+R3 archival clarification, unresolved R5 episode-level metrics, and ablations. No locked-test
+result or performance conclusion is reported before artifact-backed training and evaluation
+validation.
 \end{abstract}
 
 \section{Introduction}
@@ -52,7 +53,9 @@ their results are not inserted until their artifacts validate.
 TODO_R3_SEED42_RESULT
 
 \section{R4 Multi-Seed Training}
-TODO_R4_MULTI_SEED_RESULT
+Artifact-backed R4 rerun archives for seeds 43 and 44 were locally SHA256-verified and both
+per-seed artifact validators passed. Detection metrics remain pending until R5 identical-episode
+evaluation.
 
 \section{R5 Episode-Level Evaluation}
 TODO_R5_EPISODE_EVAL_TABLE
@@ -66,8 +69,9 @@ localization, SIGReg benefit, or locked-test performance. Negative or failed inf
 remain part of the record.
 
 \section{Conclusion}
-The project is prepared for a compatible cloud GPU R3 seed 42 run. Scientific conclusions require
-validated artifacts from the predeclared R3--R5 sequence.
+The project now has artifact-backed R4 rerun training archives for seeds 43 and 44. Scientific
+conclusions still require validated R5 identical-episode evaluation artifacts from the predeclared
+non-locked sequence.
 
 \bibliographystyle{IEEEtran}
 \bibliography{references}

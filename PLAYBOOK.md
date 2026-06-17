@@ -1,6 +1,6 @@
 # PLAYBOOK.md - LeWM-Glitch Research Operating Bible
 
-Last updated: 2026-06-12
+Last updated: 2026-06-17
 Status owner: repository owner / technical program lead
 Canonical branch at update: `main`
 Evidence cutoff: Gate 7-9 artifacts generated from commit
@@ -891,13 +891,14 @@ granularity, negative results, and lessons for reproducible game-QA anomaly rese
 | 3, complete | Dataset protocol engineer | Audit Gate 6 normal-only pilot source | reports 40 and 45, frozen split | normal-only source/pair-disjoint Lance inventories | none |
 | 4, complete | LeWM Integration + ML Research Engineers | Run standing-authorized Gate 6 pilot | config and reports 45-46 | gameplay checkpoint, reload, finite diagnostics, validation encoding | none |
 | 5, complete | ML Research Engineers | Run Gates 7-9 non-locked evaluation | reports 47-50 | finite same-manifest scores and pilot metrics | none |
-| 6 | Kaggle GPU + ML Research Engineers | Implement and validate the exact 500-update non-locked GPU profile | Roadmap v3 R0-R1, profile package and validator | strict profile artifacts pass; resource envelope recorded | packaging/runtime failure |
-| 7 | ML Research Engineers | Freeze and execute the three-seed main protocol | Roadmap v3 R2-R6 | validated episode-level multi-seed evidence, baselines, and ablations | weak signal/calibration |
-| 8 | Locked Test Release Officer | Keep locked test closed pending a frozen validation decision and separate direct command | release workflow | no materialization/scoring before frozen decision | schedule pressure |
+| 6, complete | Kaggle GPU + ML Research Engineers | Validate the exact 500-update non-locked GPU profile | Roadmap v3 R0-R1, profile package and validator | strict profile artifacts pass; resource envelope recorded | none |
+| 7, complete | ML Research Engineers | Confirm artifact-backed R4 rerun seed43/44 training archives | report 67, local SHA256 verification, per-seed validator outputs | local hashes match and both validators pass | none |
+| 8 | ML Research Engineers | Prepare R5 identical-episode evaluation on the non-locked research MVP | Roadmap v3 R5, reports 67-68, scoring and evaluation scripts | frozen inputs, provenance plan, no locked-test access, no R5 execution before explicit command | missing orchestration or provenance drift |
+| 9 | Locked Test Release Officer | Keep locked test closed pending a frozen validation decision and separate direct command | release workflow | no materialization/scoring before frozen decision | schedule pressure |
 
-Current recommended task: execute Roadmap v3 Stages R0-R1 by implementing and validating the
-exact 500-update non-locked Kaggle GPU profile before freezing the main multi-seed schedule.
-Keep locked test closed.
+Current recommended task: prepare the R5 identical-episode evaluation from the artifact-backed R4
+rerun checkpoints and the frozen non-locked protocol. Do not execute R5 or touch locked test
+without an explicit command.
 
 ## 29. Maintenance Rules For This Playbook
 

@@ -1,7 +1,7 @@
 # BOOT.md - Fast Start Context For Agents
 
-Generated: 2026-06-13T07:29:53+00:00
-Commit: `6fd89289199352a780b2adb331ffe50203183a29`
+Generated: 2026-06-17T14:03:13+00:00
+Commit: `ab179b49f503823e7f3dc05264cbeb7026200ffa`
 
 ## Read Order
 1. `RULES.md`
@@ -25,13 +25,16 @@ The current execution roadmap is `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v3.md`
   manifest.
 - A separate non-locked research MVP source is ready with 36 train-normal, 14 validation-normal,
   and 22 validation-buggy episodes across all five categories.
+- The exact 500-update research-MVP GPU profile completed as engineering evidence only.
+- R4 rerun seed43/44 training artifacts are local SHA256-verified and pass per-seed validators.
+- R5 identical-episode evaluation has not started.
 - Gate 10 is closed.
 - Locked test is closed.
 - LeWM gameplay evaluation exists only as a one-buggy-episode pilot.
 
 ## Immediate Next Task
-- Run the predeclared 500-update Kaggle GPU throughput/VRAM profile on the research MVP source.
-- Freeze the feasible main-run schedule before any multi-seed training.
+- Prepare the non-locked R5 identical-episode evaluation inputs, commands, and provenance plan.
+- Do not execute R5 or touch locked test without an explicit user command.
 
 ## Safety
 - Non-locked-test Kaggle actions use standing Kaggle authorization after security, license,

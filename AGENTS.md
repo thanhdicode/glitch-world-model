@@ -19,13 +19,17 @@ Current verified status:
   same canonical Lance manifest.
 - A separate research MVP source is ready with 36 train-normal, 14 validation-normal, and 22
   validation-buggy episodes across all five categories.
+- The exact 500-update non-locked GPU profile completed as engineering evidence only.
+- R4 rerun seed43/44 training artifacts are local SHA256-verified and pass per-seed validators.
 - Locked test is closed.
 - LeWM gameplay evaluation exists only for one non-locked buggy episode with correlated windows.
+- R5 identical-episode evaluation has not started.
 
 Safe claims include bounded normal-only CUDA training and the exact qualified Gate 7-9 pilot
-metrics and research-source readiness. The new GPU profile and main multi-seed training remain
-pending. Do not claim broad LeWM glitch-detection performance, superiority, state of the art,
-temporal localization, SIGReg benefit, or a neural locked-test result.
+metrics, research-source readiness, the validated 500-update GPU profile, and artifact-backed R4
+rerun seed43/44 training evidence. Do not claim broad LeWM glitch-detection performance,
+superiority, state of the art, temporal localization, SIGReg benefit, or a neural locked-test
+result.
 
 ## Agent Operating Mode
 

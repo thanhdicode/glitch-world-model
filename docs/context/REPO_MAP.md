@@ -1,7 +1,7 @@
 # REPO_MAP.md
 
-Generated: 2026-06-13T07:29:53+00:00
-Commit: `6fd89289199352a780b2adb331ffe50203183a29`
+Generated: 2026-06-17T14:03:13+00:00
+Commit: `ab179b49f503823e7f3dc05264cbeb7026200ffa`
 Generator: `scripts/update_context_cache.py`
 
 ## Top-Level Map
@@ -15,6 +15,7 @@ Generator: `scripts/update_context_cache.py`
 | `PLAYBOOK.md/` | Tracked repository path. |
 | `README.md/` | Tracked repository path. |
 | `RULES.md/` | Tracked repository path. |
+| `cloud/` | Tracked repository path. |
 | `configs/` | Experiment and runtime configuration. |
 | `docs/` | Research evidence, workflows, context cache, and roadmap. |
 | `dvc.yaml/` | Tracked repository path. |
@@ -52,10 +53,12 @@ Generator: `scripts/update_context_cache.py`
 | `scripts/ingest_phase6e_kaggle_artifacts.py` | _read_json, _validate_required_artifacts, _read_and_validate_scores, _write_report, ingest_phase6e_kaggle_artifacts, build_parser, main | Python module. |
 | `scripts/inspect_lewm_dataset.py` | build_parser, main | Python module. |
 | `scripts/make_paper_tables.py` | write_tables, main | Python module. |
+| `scripts/plan_frozen_video_representation_baseline.py` | build_parser, main | Python module. |
 | `scripts/plot_lewm_surprise_timeline.py` | plot_scores, main | Python module. |
 | `scripts/prepare_lewm_gate6_package.py` | build_parser, main | Python module. |
 | `scripts/prepare_lewm_gpu_profile_package.py` | _git, main | Python module. |
 | `scripts/prepare_lewm_kaggle_package.py` | build_parser, main | Python module. |
+| `scripts/prepare_lewm_r3_seed_run.py` | canonical_sha256, git_sha, prepare_seed_run, build_parser, main | Python module. |
 | `scripts/prepare_phase6e_kaggle_dataset.py` | _require_file, _estimate_directory, _upload_readme, prepare_phase6e_kaggle_dataset, build_parser, main | Python module. |
 | `scripts/repair_kaggle_kernel_write_path.py` | discover_kaggle_executables, safe_file_status, create_canary_package, build_submission_variants, _run, _diagnostics, _canary_slug, _check_remote, _run_variant, build_parser, main | Python module. |
 | `scripts/run_dynamics_experiments.py` | main | Python module. |
@@ -65,7 +68,7 @@ Generator: `scripts/update_context_cache.py`
 | `scripts/run_gate9_ablations.py` | validate_gate9_alignment, aggregate_lewm_rows, _evaluate_scorer, evaluate_gate9_rows, run_gate9, build_parser, main | Python module. |
 | `scripts/run_glitchbench_subset_experiments.py` | main | Python module. |
 | `scripts/run_hard_dynamics_experiments.py` | main | Python module. |
-| `scripts/run_kaggle_lewm.py` | build_parser, main | Python module. |
+| `scripts/run_kaggle_lewm.py` | _guard_cuda_runtime, build_parser, main | Python module. |
 | `scripts/run_kaggle_parity_check.py` | run_utf8_subprocess, kernel_entrypoint_is_guarded, _spawn_probe_source, run_kaggle_parity_check, build_parser, main | Python module. |
 | `scripts/run_kaggle_video_autoencoder.py` | _require_file, _read_grouped_split, _validate_clip_dirs, _write_json, run_kaggle_video_autoencoder, build_parser, main | Python module. |
 | `scripts/run_lewm_gate6_automation.py` | build_parser, main | Python module. |
@@ -82,10 +85,13 @@ Generator: `scripts/update_context_cache.py`
 | `scripts/smoke_lewm_checkpoint.py` | build_parser, main | Python module. |
 | `scripts/summarize_all_experiments.py` | read_json, fmt, row_for, main | Python module. |
 | `scripts/update_context_cache.py` | CacheMetadata, git_sha, metadata, read_optional, has_gate5_conflict_record, build_boot, build_project_state, build_next_action, build_last_handoff_template, build_context_readme, build_context_policy, build_task_router | Python module. |
+| `scripts/validate_cloud_gpu_runtime.py` | _output_root, inspect_runtime, main | Python module. |
 | `scripts/validate_context_cache.py` | main | Python module. |
 | `scripts/validate_lewm_gate6_artifacts.py` | main | Python module. |
 | `scripts/validate_lewm_gpu_profile_artifacts.py` | main | Python module. |
 | `scripts/validate_lewm_kaggle_artifacts.py` | main | Python module. |
+| `scripts/validate_lewm_r3_seed_artifacts.py` | _read_json, _assert, _finite_numbers, validate_artifacts, main | Python module. |
+| `scripts/validate_lewm_research_mvp_config.py` | _require, validate_research_mvp_config, build_parser, main | Python module. |
 | `scripts/validate_research_release.py` | git_tracked_files, validate_tracked_files, validate_required_paths, validate_playbook_structure, validate_release, working_tree_errors, build_parser, main | Python module. |
 | `src/glitch_detection/__init__.py` | - | Glitch detection research pipeline. |
 | `src/glitch_detection/analysis.py` | _split_metadata, load_scores_with_labels, prediction_rows, _group_rows, binary_metrics_by_group, top_errors, _percentile, score_distribution_summary, write_json, write_rows_csv, write_markdown_table, _format_markdown_value | Python module. |
@@ -98,6 +104,7 @@ Generator: `scripts/update_context_cache.py`
 | `src/glitch_detection/failure_triage.py` | FailureBucket, classify_failure, allowed_action, is_oom | Python module. |
 | `src/glitch_detection/feature_distance.py` | list_clip_frames, clip_feature, fit_centroid, score_records_with_centroid, score_records, score_manifest, build_parser, main | Python module. |
 | `src/glitch_detection/frame_diff.py` | load_grayscale_frame, list_clip_frames, score_clip, score_manifest, build_parser, main | Python module. |
+| `src/glitch_detection/frozen_video_representation.py` | FrozenVideoRepresentationConfig, dependency_status, plan_frozen_video_representation_baseline | Python module. |
 | `src/glitch_detection/gate6_data.py` | read_rows_by_source, sha256_file, select_tempglitch_rows, audit_gate6_source, write_audit | Python module. |
 | `src/glitch_detection/kaggle_automation.py` | _utc_now, _write_json_atomic, AutomationState, StateStore, FingerprintBuilder, SecurityViolation, PublicReleaseSpec, KaggleAction, KaggleExecutionPolicy, SecurityGuard, is_transient_error, _gpu_block_reason | Python module. |
 | `src/glitch_detection/lewm_adapter.py` | LeWMIntegrationError, ActionMode, sha256_file, LeWMCheckpointSpec, LeWMAdapter | Python module. |
@@ -107,13 +114,13 @@ Generator: `scripts/update_context_cache.py`
 | `src/glitch_detection/lewm_gpu_profile.py` | _utc_now, _write_json, canonical_sha256, LeWMGPUProfileConfig, build_dataset_manifest, build_profile_fingerprint, run_exact_updates, build_checkpoint_payload, verify_reloaded_checkpoint, environment_snapshot, _contains_forbidden, write_artifact_manifest | Python module. |
 | `src/glitch_detection/lewm_gpu_profile_automation.py` | _write_json, enrich_failure, ProfileAutomationConfig, validate_live_launch_contract, ProfileAttemptRunner, run_profile_attempt_ladder | Python module. |
 | `src/glitch_detection/lewm_gpu_profile_kaggle.py` | _zip_info, build_permitted_project_snapshot, _bytes_sha256, LeWMGPUProfileKaggleConfig, _git_tracked, _archive_directory, render_profile_kernel, prepare_profile_kaggle_package, validate_profile_kaggle_package | Python module. |
-| `src/glitch_detection/lewm_kaggle.py` | LeWMKaggleConfig, validate_kaggle_slug, quota_allocation, render_validation_kernel, prepare_lewm_kaggle_package, _read_json, _sha256_json, validate_lewm_kaggle_package, _kernel_fingerprint_payload, validate_kernel_push_preflight, build_package_audit, _validate_finite_numbers | Python module. |
+| `src/glitch_detection/lewm_kaggle.py` | LeWMKaggleConfig, validate_kaggle_slug, quota_allocation, supports_cuda_compute_capability, render_validation_kernel, prepare_lewm_kaggle_package, _read_json, _sha256_json, validate_lewm_kaggle_package, _kernel_fingerprint_payload, validate_kernel_push_preflight, build_package_audit | Python module. |
 | `src/glitch_detection/lewm_lance_eval.py` | runtime_provenance, select_calibration_episodes, canonical_rows_from_samples, validate_manifest_rows, validate_score_alignment, write_csv_rows, read_csv_rows, _lance_dataset, _metadata_samples, build_canonical_manifest, _score_dataset, run_gate7_scoring | Python module. |
 | `src/glitch_detection/lewm_latent.py` | LeWMUnavailableError, resolve_checkpoint, resolve_config, _require_torch, _list_frames, _load_pixels, score_record, score_manifest, build_parser, main | Python module. |
 | `src/glitch_detection/lewm_protocol.py` | LeWMSplitRecord, _hash_fraction, assign_hashed_group_splits, audit_lewm_splits, write_lewm_split | Python module. |
 | `src/glitch_detection/lewm_research.py` | LeWMResearchProtocol, _read_csv_by_source, _sha256_file, audit_local_research_source, write_research_audit | Python module. |
 | `src/glitch_detection/lewm_surprise.py` | aggregate_scores, score_direction_check, score_record_series, score_record, _resolve_device, score_manifest, registered_score_manifest | Python module. |
-| `src/glitch_detection/lewm_training.py` | LeWMTrainingError, LeWMTrainConfig, _require_runtime, _config_hash, build_model_config, _preprocess_pixels, _sigreg, _dataset, _run_epoch, train_lewm, score_lance_probe | Python module. |
+| `src/glitch_detection/lewm_training.py` | LeWMTrainingError, LeWMTrainConfig, _require_runtime, _config_hash, build_model_config, _preprocess_pixels, _sigreg, _dataset, _run_epoch, _utc_now, _train_update_step, _train_lewm_by_updates | Python module. |
 | `src/glitch_detection/manifest.py` | ClipRecord, LabelInterval, write_manifest, read_manifest, read_labels, clip_has_glitch | Python module. |
 | `src/glitch_detection/mini_latent.py` | MiniLatentModel, list_clip_frames, load_frame_vector, load_clip_matrix, fit_pca_encoder, encode_frames, fit_transition, transition_error, fit_model, score_records_with_model, score_records, score_manifest | Python module. |
 | `src/glitch_detection/model_selection.py` | select_validation_config, evaluate_locked_test | Python module. |
@@ -156,10 +163,12 @@ Generator: `scripts/update_context_cache.py`
 | `scripts/ingest_phase6e_kaggle_artifacts.py` | CLI/helper script. | Gate 5 |
 | `scripts/inspect_lewm_dataset.py` | CLI/helper script. | Gate 5 |
 | `scripts/make_paper_tables.py` | CLI/helper script. | general |
+| `scripts/plan_frozen_video_representation_baseline.py` | CLI/helper script. | general |
 | `scripts/plot_lewm_surprise_timeline.py` | CLI/helper script. | Gate 5 |
 | `scripts/prepare_lewm_gate6_package.py` | CLI/helper script. | Gate 5 |
 | `scripts/prepare_lewm_gpu_profile_package.py` | CLI/helper script. | Gate 5 |
 | `scripts/prepare_lewm_kaggle_package.py` | CLI/helper script. | Gate 5 |
+| `scripts/prepare_lewm_r3_seed_run.py` | CLI/helper script. | Gate 5 |
 | `scripts/prepare_phase6e_kaggle_dataset.py` | CLI/helper script. | Gate 5 |
 | `scripts/repair_kaggle_kernel_write_path.py` | CLI/helper script. | Gate 5 |
 | `scripts/run_dynamics_experiments.py` | CLI/helper script. | general |
@@ -186,10 +195,13 @@ Generator: `scripts/update_context_cache.py`
 | `scripts/smoke_lewm_checkpoint.py` | CLI/helper script. | Gate 5 |
 | `scripts/summarize_all_experiments.py` | CLI/helper script. | general |
 | `scripts/update_context_cache.py` | CLI/helper script. | general |
+| `scripts/validate_cloud_gpu_runtime.py` | CLI/helper script. | general |
 | `scripts/validate_context_cache.py` | CLI/helper script. | general |
 | `scripts/validate_lewm_gate6_artifacts.py` | CLI/helper script. | Gate 5 |
 | `scripts/validate_lewm_gpu_profile_artifacts.py` | CLI/helper script. | Gate 5 |
 | `scripts/validate_lewm_kaggle_artifacts.py` | CLI/helper script. | Gate 5 |
+| `scripts/validate_lewm_r3_seed_artifacts.py` | CLI/helper script. | Gate 5 |
+| `scripts/validate_lewm_research_mvp_config.py` | CLI/helper script. | Gate 5 |
 | `scripts/validate_research_release.py` | CLI/helper script. | general |
 
 ## Tests
@@ -236,6 +248,7 @@ Generator: `scripts/update_context_cache.py`
 | `tests/test_lewm_latent.py` | lewm_latent |
 | `tests/test_lewm_protocol.py` | lewm_protocol |
 | `tests/test_lewm_research.py` | lewm_research |
+| `tests/test_lewm_research_mvp_config.py` | lewm_research_mvp_config |
 | `tests/test_lewm_surprise.py` | lewm_surprise |
 | `tests/test_lewm_training.py` | lewm_training |
 | `tests/test_locked_test_gate.py` | locked_test_gate |
@@ -249,6 +262,7 @@ Generator: `scripts/update_context_cache.py`
 | `tests/test_prepare_phase6e_kaggle_dataset.py` | prepare_phase6e_kaggle_dataset |
 | `tests/test_preprocess.py` | preprocess |
 | `tests/test_protocol_splits.py` | protocol_splits |
+| `tests/test_r3_seed_runner.py` | r3_seed_runner |
 | `tests/test_repeated_eval.py` | repeated_eval |
 | `tests/test_repeated_grouped_runner.py` | repeated_grouped_runner |
 | `tests/test_research_release_tools.py` | research_release_tools |
@@ -327,12 +341,18 @@ Generator: `scripts/update_context_cache.py`
 | `docs/research/48_gate8_same_manifest_baseline_comparison.md` | 48 gate8 same manifest baseline comparison |
 | `docs/research/49_gate9_minimal_ablation_results.md` | 49 gate9 minimal ablation results |
 | `docs/research/50_results_claim_boundary.md` | 50 results claim boundary |
+| `docs/research/52_r3_seed42_failed_p100_cuda_incompatibility.md` | 52 r3 seed42 failed p100 cuda incompatibility |
+| `docs/research/53_r3_seed42_live_run_record.md` | 53 r3 seed42 live run record |
+| `docs/research/54_r3_seed42_alternative_gpu_execution_plan.md` | 54 r3 seed42 alternative gpu execution plan |
+| `docs/research/55_r3_seed42_cloud_run_record.md` | 55 r3 seed42 cloud run record |
 | `docs/research/60_paper_claim_audit.md` | 60 paper claim audit |
 | `docs/research/61_reproducibility_checklist.md` | 61 reproducibility checklist |
 | `docs/research/62_artifact_manifest.md` | 62 artifact manifest |
 | `docs/research/63_full_repo_audit_and_gate6_root_cause.md` | 63 full repo audit and gate6 root cause |
 | `docs/research/64_kaggle_kernel_write_path_repair.md` | 64 kaggle kernel write path repair |
 | `docs/research/65_lewm_research_mvp_source_audit.md` | 65 lewm research mvp source audit |
+| `docs/research/66_lewm_gpu_profile_results.md` | 66 lewm gpu profile results |
+| `docs/research/67_r3_r4_multiseed_status.md` | 67 r3 r4 multiseed status |
 | `docs/research/adr/ADR-001-topic-scope.md` | ADR-001-topic-scope |
 | `docs/research/adr/ADR-002-dataset-strategy.md` | ADR-002-dataset-strategy |
 | `docs/research/adr/ADR-003-lewm-integration-strategy.md` | ADR-003-lewm-integration-strategy |
@@ -340,9 +360,3 @@ Generator: `scripts/update_context_cache.py`
 | `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch (1).md` | MASTER ROADMAP LeWM Glitch (1) |
 | `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v2.md` | MASTER ROADMAP LeWM Glitch v2 |
 | `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v3.md` | MASTER ROADMAP LeWM Glitch v3 |
-| `docs/superpowers/plans/2026-06-06-baseline-glitch-pipeline.md` | 2026-06-06-baseline-glitch-pipeline |
-| `docs/superpowers/plans/2026-06-09-phase6d-repeated-grouped-run.md` | 2026-06-09-phase6d-repeated-grouped-run |
-| `docs/superpowers/plans/2026-06-09-phase6e-kaggle-automation.md` | 2026-06-09-phase6e-kaggle-automation |
-| `docs/superpowers/plans/2026-06-09-phase6e-kaggle-launch-package.md` | 2026-06-09-phase6e-kaggle-launch-package |
-| `docs/superpowers/plans/2026-06-09-phase6e-kaggle-video-autoencoder.md` | 2026-06-09-phase6e-kaggle-video-autoencoder |
-| `docs/superpowers/plans/2026-06-10-research-grade-lab.md` | 2026-06-10-research-grade-lab |
