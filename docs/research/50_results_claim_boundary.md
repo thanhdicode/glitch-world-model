@@ -28,3 +28,19 @@ within episodes and do not provide independent sample evidence.
 - Any locked-test or final benchmark performance claim.
 
 Gate 10 remains closed. Locked test was neither materialized nor scored.
+
+## R3/R4 Training Artifact Boundary
+
+Status date: 2026-06-17
+
+R3/R4 checkpoint-training records are not detection metrics. They can support only bounded
+training, checkpoint/reload, leakage-flag, early-stopping, and artifact-integrity statements that
+are directly backed by recovered files or clearly scoped live logs.
+
+No AUROC, AUPRC, F1, FPR-at-TPR, baseline-comparison, superiority, temporal-localization,
+SIGReg-benefit, WOB-expansion, or locked-test claim is allowed until R5 produces identical-episode
+validation scores and metrics under the frozen non-locked protocol.
+
+Early-stopped training is valid only as training-gate evidence. It is not detection-performance
+evidence, and it must be reported as early-stopped rather than as completion of all 15,000 target
+optimizer updates.

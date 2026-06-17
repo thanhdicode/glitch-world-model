@@ -92,8 +92,15 @@ data/processed/*
 
 outputs/*
 !outputs/.gitkeep
+artifacts/kaggle_kernel_output/
+artifacts/kaggle_kernel_pull/
+artifacts/kaggle_uploads/
+lewm_outputs/
+lewm_data/
+/kaggle/
 
 checkpoints/
+*.tar.gz
 *.lance/
 *.ckpt
 *.pt

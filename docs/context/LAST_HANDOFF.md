@@ -1,68 +1,77 @@
 # LAST_HANDOFF.md
 
-Last completed task: GPU compute-capability failure bucket and fail-fast launch guards added
+Last completed task: R3/R4 multi-seed evidence audit and claim-boundary refresh
 Commit: pending
 Date: 2026-06-17
 
 ## What Changed
 
-- Added `gpu_compute_capability` to `src/glitch_detection/failure_triage.py` for P100/`sm_60` /
-  `no kernel image` / unsupported PyTorch CUDA-arch failures.
-- Kept `gpu_compute_capability` on `stop_and_fix`; only `cuda_oom` still advances the approved
-  `8 -> 6 -> 4 -> 2` ladder.
-- Added regression coverage in `tests/test_failure_triage.py` for compute-capability,
-  `cuda_oom`, and transient-timeout routing.
-- Added a direct `sm_70+` fail-fast guard to `scripts/run_kaggle_lewm.py` so direct launches stop
-  before entering training on unsupported GPUs.
-- Added the same `sm_70+` fail-fast guard to the rendered kernel in
-  `src/glitch_detection/lewm_gpu_profile_kaggle.py`, including GPU name and `sm_xy` in the error.
-- Appended the new failure bucket to `docs/workflows/failure_modes_registry.md`.
+- Audited current git state, current branch, recent commits, ignored/untracked paths, and local
+  Kaggle-downloaded output folders.
+- Searched for the expected R3/R4 archives:
+  `r3_seed42_artifacts.tar.gz`, `r3_seed43_artifacts.tar.gz`,
+  `r3_seed44_artifacts.tar.gz`, and `r4_seed43_44_artifacts_bundle.tar.gz`.
+- Found Kaggle output folders containing repo snapshots from the failed saved-version rerun, but
+  no matching training archive files to hash-verify.
+- Updated project state, next action, claim registry, and result-claim boundary to preserve the
+  distinction between live-log validation and artifact-backed validation.
+- Added ignore rules for Kaggle output/download folders, LeWM local output/data roots, archive
+  files, checkpoints, Lance directories, and the root Kaggle package path.
 
 ## Checks Passed
 
-- `python -m pytest -q tests -k "failure or gpu or kaggle or cloud"`
 - `python -m pytest -q`
 - `python -m ruff check .`
 - `python -m ruff format --check .`
 - `python scripts/check_claim_registry.py`
-- Pending final repository validators before completion:
-  - `python scripts/validate_research_release.py --ci`
-  - `python scripts/doctor.py`
-  - `python scripts/validate_context_cache.py`
+- `python scripts/validate_research_release.py --ci`
+- `python scripts/doctor.py`
+- `python scripts/validate_context_cache.py`
+- `git diff --check`
+- `pre-commit run --all-files`
 
 ## Safety Status
 
-- Kaggle live remains untouched in this task; no relaunch was attempted.
-- The compute-capability failure is now explicitly treated as infrastructure/runtime
-  incompatibility, not OOM, not model failure, and not data failure.
+- No cloud/Kaggle training was launched.
+- No locked-test materialization or scoring was attempted.
+- No validation-buggy fit/select claim was added.
+- No R5, WOB, detection-performance, AUROC, AUPRC, temporal-localization, SIGReg-benefit, or
+  locked-test claim was added.
+- The failed Kaggle Version 1 save remains classified as artifact-persistence failure caused by
+  rerunning an old notebook cell without runtime setup and hitting
+  `ModuleNotFoundError: No module named 'glitch_detection'`.
+- Do not rerun training unless artifact recovery fails and a new run is explicitly documented.
+- Do not commit the Kaggle output snapshots or any archives/checkpoints if they are later
+  recovered.
 - Locked test remains closed, unmaterialized, and unscored.
-- Seed 43/44 were not launched.
-- No data, output, checkpoint, or credential is tracked.
 
 ## Gate Status After Task
 
-- Roadmap v3 R1 engineering GPU profile remains complete.
-- R2 main-run schedule remains frozen.
-- R3 seed 42 is still not passed; this task only hardens classification and fail-fast runtime
-  guards around the known P100 incompatibility.
+- FIX-0 GPU capability guard: DONE.
+- R3 seed42: human-provided validation summary exists, but local archive hash verification is
+  still needed in this repo state.
+- R4 seed43/44: live-log validated, but artifact persistence is unresolved.
+- R4 bundle: live-log created, but artifact persistence is unresolved.
+- R5: NOT_STARTED.
+- WOB expansion: NOT_STARTED.
+- Locked test: UNTOUCHED / NOT_MATERIALIZED / NOT_SCORED.
 
 ## Open Blockers
 
-- Provide a cloud shell on T4 or newer with the Lance datasets mounted at `LEWM_DATA_ROOT`.
-- Seed 43/44 remain blocked until seed 42 produces valid non-locked R3 artifacts.
+- Recover the actual R4 seed43/44 archive files and bundle, then verify their SHA256 hashes.
+- Recover or re-verify the R3 seed42 archive locally before using local artifact-backed wording.
+- If R4 archives cannot be recovered, decide whether to rerun seed43/44 under the frozen protocol
+  and document the new fingerprints.
 
 ## Next Recommended Task
 
-- Run R3 seed 42 on a cloud T4+ target. On that machine, execute
-  `bash cloud/r3_seed42/setup_runtime.sh`, then `bash cloud/r3_seed42/preflight.sh`; launch
-  `bash cloud/r3_seed42/run_seed42_full.sh` only if `preflight_passed.json` is written.
+- Recover/persist R4 artifacts before R5. Do not rerun training unless artifact recovery fails.
 
 ## Files Likely Relevant Next
 
-- `src/glitch_detection/failure_triage.py`
-- `scripts/run_kaggle_lewm.py`
-- `src/glitch_detection/lewm_gpu_profile_kaggle.py`
-- `scripts/validate_cloud_gpu_runtime.py`
-- `cloud/r3_seed42/preflight.sh`
-- `cloud/r3_seed42/run_seed42_full.sh`
-- `docs/research/54_r3_seed42_alternative_gpu_execution_plan.md`
+- `artifacts/kaggle_kernel_output/`
+- `artifacts/kaggle_kernel_pull/`
+- `docs/context/PROJECT_STATE.md`
+- `docs/context/NEXT_ACTION.md`
+- `docs/research/67_r3_r4_multiseed_status.md`
+- `docs/research/16_claim_registry.md`
