@@ -1,6 +1,6 @@
 # MASTER ROADMAP V3 - Paper-Grade LeWM Glitch Detection
 
-Date: June 13, 2026
+Date: June 17, 2026
 Target submission deadline: July 20, 2026
 Primary topic: **Latent World Models for Video Game Glitch Detection: A JEPA-based Approach**
 Status: execution roadmap; unexecuted experiments remain `experiment-pending`.
@@ -8,7 +8,9 @@ Status: execution roadmap; unexecuted experiments remain `experiment-pending`.
 ## 1. Executive Decision
 
 The project will pursue a real LeWM, normal-only, episode-level glitch-detection study. The
-shortest credible path is not to add more speculative models. It is to complete one auditable
+approved prize-oriented strategy is solid core plus controlled expansion: finish the TempGlitch
+core path first, then open World of Bugs only if the TempGlitch R5 checkpoint is passed cleanly.
+The shortest credible path is not to add more speculative models. It is to complete one auditable
 research track end to end:
 
 1. profile the current LeWM training path on GPU;
@@ -21,11 +23,12 @@ research track end to end:
 
 The paper can remain scientifically useful if LeWM underperforms. A well-controlled negative
 result about latent-surprise ranking and normal-only calibration is preferable to an unsupported
-superiority claim.
+superiority claim. World of Bugs is not a rescue move for weak TempGlitch evidence; it is a
+separately gated expansion that is allowed only after the TempGlitch core checkpoint is met.
 
 ## 2. Verified Starting Point
 
-As of Git commit `e3ba66b`:
+As of Git commit `cce03b6`:
 
 - Gates 1-8 passed.
 - Gate 9 is a limited validation-only pilot using one buggy episode and correlated windows.
@@ -35,9 +38,11 @@ As of Git commit `e3ba66b`:
   validation-buggy TempGlitch episodes across five categories.
 - The research MVP has zero selected source/pair overlap between train and validation.
 - TempGlitch uses zero actions and supports binary episode-level evaluation in this repository.
-- World of Bugs provides a future real-action controlled path.
-- The exact 500-update GPU profile harness and paper-grade multi-seed run are not complete on
-  `main`.
+- The exact 500-update GPU profile completed as engineering evidence only.
+- R4 rerun seed43 and seed44 are now artifact-backed after local SHA256 verification and
+  per-seed validator passes.
+- R5 has not started.
+- World of Bugs is a controlled post-R5 real-action expansion track and has not started.
 - Locked test is closed, unmaterialized, and unscored.
 
 ## 3. Research Questions
@@ -87,6 +92,7 @@ aggregation, training budget, and action conditioning in a controlled World of B
 ## 5. Critical Path
 
 ```text
+TempGlitch core:
 R0 protocol freeze
   -> R1 exact 500-update GPU profile
   -> R2 freeze main-run schedule
@@ -96,6 +102,14 @@ R0 protocol freeze
   -> R6 minimal ablations and failure analysis
   -> R7 validation decision and locked-test go/no-go
   -> R8 paper, artifacts, and defense package
+
+Conditional expansion after the R5 checkpoint:
+  -> W0 open WOB gate
+  -> W1 R3-WOB real-action normal-only training
+  -> W2 R5-WOB identical-episode evaluation
+  -> W3 R5-XGAME TempGlitch vs WOB comparison
+  -> W4 R6-WOB zero-action vs real-action/action-conditioning ablation
+  -> W5 optional R8 cross-game paper upgrade
 ```
 
 Only R7 may propose locked-test release. It still requires a separate direct user command.
@@ -262,6 +276,18 @@ Only R7 may propose locked-test release. It still requires a separate direct use
 - Every table cell traces to a score/metric hash and config fingerprint.
 - Calibration failures and negative results remain visible.
 
+### Checkpoint Criteria To Open WOB
+
+World of Bugs may be opened only when all of the following are true:
+
+- R4 seed43 and seed44 remain artifact-backed with local SHA256 verification and validator passes.
+- R5 TempGlitch identical-episode evaluation is completed on the frozen non-locked manifest.
+- Every R5 table cell traces to score and metric hashes.
+- No unresolved leakage, artifact-integrity, or validation-buggy fitting issue remains.
+- The claim registry is updated to match the actual R5 evidence.
+- Enough GPU budget exists for a controlled post-R5 run family.
+- Locked test remains closed.
+
 ## 11. Stage R6 - Minimal Decision-Relevant Ablations
 
 Run ablations only after the main three-seed result exists.
@@ -276,7 +302,41 @@ Run ablations only after the main three-seed result exists.
 
 Stop adding ablations when they no longer change the paper's main conclusion.
 
-## 12. Stage R7 - Validation Decision And Locked-Test Go/No-Go
+## 12. Controlled Ambitious Expansion Track - World Of Bugs
+
+### Purpose
+
+The approved strategy is solid core plus controlled expansion. TempGlitch remains the required
+core paper-grade path. World of Bugs is opened only after the TempGlitch R5 checkpoint because it
+offers the real-action, cross-game, and action-conditioning evidence that better matches the
+original research topic.
+
+World of Bugs must not be used to rescue weak TempGlitch findings post hoc. It is a predeclared,
+gated expansion that uses train-normal-only protocols, preserved claim boundaries, and the same
+locked-test discipline.
+
+### WOB Stages
+
+- `R3-WOB`: materialize and train WOB real-action normal-only checkpoints.
+- `R5-WOB`: evaluate WOB on an identical-episode non-locked manifest.
+- `R5-XGAME`: compare TempGlitch and WOB under matched reporting discipline.
+- `R6-WOB`: run zero-action versus real-action/action-conditioning ablations.
+- `R8`: upgrade paper positioning only if the evidence actually supports it.
+
+### WOB Claim Safety
+
+- No WOB result claim before WOB artifacts exist.
+- No action-conditioning claim on TempGlitch.
+- Preserve the WOB action-semantics caveat until stronger synchronization evidence exists.
+- WOB locked test remains closed unless separately authorized.
+
+### Fallback
+
+If TempGlitch R5 is late, weak, or operationally blocked, WOB remains future work. The paper
+remains valid as a leakage-aware TempGlitch evaluation and failure-mode study without claiming
+cross-game or action-conditioning evidence.
+
+## 13. Stage R7 - Validation Decision And Locked-Test Go/No-Go
 
 ### Go Criteria
 
@@ -298,13 +358,18 @@ Stop adding ablations when they no longer change the paper's main conclusion.
 Even after a Go decision, do not materialize or score locked test without a separate direct user
 command naming the frozen configuration and claim scope. One score only; no post-test tuning.
 
-## 13. Stage R8 - Paper And Defense Package
+## 14. Stage R8 - Paper And Defense Package
 
 ### Paper Positioning
 
 Preferred evidence-backed title:
 
 > Latent World Models for Video Game Glitch Detection: A Leakage-Aware Evaluation of JEPA-Based
+> Latent Surprise
+
+Preferred title if the controlled WOB expansion succeeds:
+
+> Latent World Models for Cross-Game Glitch Detection: Leakage-Aware Evaluation of JEPA-Based
 > Latent Surprise
 
 If performance is weak, use:
@@ -337,7 +402,7 @@ If performance is weak, use:
 - Negative results and limitations visible.
 - No claims beyond the registry.
 
-## 14. Execution Calendar
+## 15. Execution Calendar
 
 The calendar is aggressive and assumes available GPU quota and prompt turnaround.
 
@@ -350,20 +415,22 @@ The calendar is aggressive and assumes available GPU quota and prompt turnaround
 | Jun 20-25 | R4 | seeds 43 and 44 completed and validated |
 | Jun 25-30 | R5 | identical-episode baseline/evaluation table |
 | Jun 30-Jul 5 | R6 | minimal ablations and failure analysis |
+| Jul 1-10, conditional | WOB | controlled post-R5 expansion only if checkpoint criteria pass |
 | Jul 5-7 | R7 | validation decision; locked test remains separately gated |
 | Jul 7-14 | R8 | manuscript, figures, tables, artifact index |
 | Jul 14-18 | Internal review | claim audit, reproducibility rehearsal, defense |
 | Jul 18-20 | Submission buffer | format, anonymization, accessibility, upload |
 
-## 15. Compute Strategy
+## 16. Compute Strategy
 
 - Use Kaggle T4/P100 or equivalent cloud GPU for profile and main runs.
 - Prefer sequential seed execution until seed 42 validates.
 - Parallelize independent baselines and paper generation only after the main protocol freezes.
 - Preserve resumable checkpoints and immutable evidence for every attempt.
 - Additional compute does not justify uncontrolled search; predeclare experiment families.
+- Do not allocate WOB GPU time until the TempGlitch R5 checkpoint is explicitly met.
 
-## 16. Root Causes Of Prior Execution Friction
+## 17. Root Causes Of Prior Execution Friction
 
 The project has experienced avoidable delay for identifiable engineering reasons:
 
@@ -396,7 +463,7 @@ recorded in retry history with `bucket` and `allowed_action`. Only `cuda_oom` ma
 approved `8 -> 6 -> 4 -> 2` ladder; DataLoader spawn, decode, packaging idempotency, unknown, and
 platform-session failures are stop-and-fix or bounded retry according to the failure registry.
 
-## 17. Definition Of Done
+## 18. Definition Of Done
 
 The project is ready for a genuine paper submission when:
 
@@ -407,3 +474,6 @@ The project is ready for a genuine paper submission when:
 - claims match the registry;
 - locked-test use, if any, followed the separate one-time release rule;
 - the manuscript, figures, tables, code, and reproducibility instructions pass internal review.
+
+If WOB is opened, the cross-game/action-conditioning story is done only when the WOB stages above
+produce their own immutable artifacts and retain the same leakage-aware and locked-test rules.

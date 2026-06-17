@@ -92,4 +92,5 @@ Both commands passed locally with:
 ## Next Action
 
 Prepare the R5 identical-episode evaluation on the non-locked research MVP. Do not execute R5 or
-touch locked test without an explicit command.
+touch locked test without an explicit command. World of Bugs remains a controlled post-R5
+expansion track and is not yet open.

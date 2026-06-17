@@ -22,10 +22,11 @@ Current LeWM gate status:
 - The exact 500-update research-MVP GPU profile completed as engineering evidence only.
 - R4 rerun seed43/44 archives are locally SHA256-verified and pass per-seed artifact validators.
 - R5 identical-episode evaluation has not started.
+- World of Bugs remains a controlled post-R5 expansion track and has not started.
 - Gate 9 remains a one-buggy-episode pilot; Gate 10 has not run.
 - Locked test remains closed.
 - Only exact qualified pilot metrics are supported; broad superiority, temporal localization,
-  SIGReg benefit, and neural locked-test claims remain unsupported.
+  SIGReg benefit, WOB-result, and neural locked-test claims remain unsupported.
 
 Research planning docs:
 
@@ -61,6 +62,7 @@ Research planning docs:
 - [Gate 7-9 claim boundary](docs/research/50_results_claim_boundary.md)
 - [R3/R4 multiseed status](docs/research/67_r3_r4_multiseed_status.md)
 - [R5 identical-episode evaluation plan](docs/research/68_r5_identical_episode_eval_plan.md)
+- [R5 + WOB controlled expansion plan](docs/research/68_r5_tempglitch_and_wob_expansion_plan.md)
 
 Phase 6D completed five pair-suspect grouped refit/selection/locked-test runs with zero
 cross-split groups. The selected pipeline achieved locked-test AUROC `0.573 +/- 0.118`; this
@@ -150,7 +152,8 @@ completed the bounded normal-only gameplay pilot on a Tesla T4 and passed strict
 validation. The research-MVP GPU profile is complete as engineering evidence only, and the R4
 rerun seed43/44 archives are now locally SHA256-verified and validator-backed. The next phase is
 R5 identical-episode evaluation preparation; no R5 detection metrics or locked-test results exist
-yet.
+yet. If the R5 checkpoint is reached cleanly, World of Bugs becomes the controlled expansion track
+for cross-game, real-action, and action-conditioning evidence.
 
 The June 11, 2026 Gate 5 TempGlitch dataset upload is ready. The first approved kernel push
 returned HTTP `409 Conflict` before a run was established; the local cause was a kernel slug that
@@ -273,7 +276,8 @@ python -m glitch_detection.lewm_latent --manifest data/processed/my_experiment/m
 The next evidence step is R5 identical-episode evaluation on the non-locked research MVP using the
 artifact-backed R4 rerun checkpoints and the frozen evaluation protocol. R5 must emit
 provenance-bound finite scores and metrics before any detection-performance or baseline-comparison
-claim.
+claim. World of Bugs remains closed as a controlled expansion track until that R5 checkpoint
+passes.
 
 Audit the Phase 6E neural training partition without loading PyTorch or touching test:
 

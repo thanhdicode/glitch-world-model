@@ -4,6 +4,10 @@ Date: 2026-06-17
 
 Status: planning-only; do not execute without an explicit command
 
+This narrower TempGlitch-only planning note is complemented by
+`docs/research/68_r5_tempglitch_and_wob_expansion_plan.md`, which records the controlled post-R5
+World of Bugs gate and expansion sequence.
+
 ## Goal
 
 Prepare the non-locked R5 identical-episode evaluation for LeWM and the comparable baselines under

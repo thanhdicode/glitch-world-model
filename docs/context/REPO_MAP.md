@@ -1,7 +1,7 @@
 # REPO_MAP.md
 
-Generated: 2026-06-17T14:03:13+00:00
-Commit: `ab179b49f503823e7f3dc05264cbeb7026200ffa`
+Generated: 2026-06-17T14:21:35+00:00
+Commit: `cce03b696d2fffd1f8c31b4d047f50573b1818b6`
 Generator: `scripts/update_context_cache.py`
 
 ## Top-Level Map
@@ -353,10 +353,10 @@ Generator: `scripts/update_context_cache.py`
 | `docs/research/65_lewm_research_mvp_source_audit.md` | 65 lewm research mvp source audit |
 | `docs/research/66_lewm_gpu_profile_results.md` | 66 lewm gpu profile results |
 | `docs/research/67_r3_r4_multiseed_status.md` | 67 r3 r4 multiseed status |
+| `docs/research/68_r5_identical_episode_eval_plan.md` | 68 r5 identical episode eval plan |
 | `docs/research/adr/ADR-001-topic-scope.md` | ADR-001-topic-scope |
 | `docs/research/adr/ADR-002-dataset-strategy.md` | ADR-002-dataset-strategy |
 | `docs/research/adr/ADR-003-lewm-integration-strategy.md` | ADR-003-lewm-integration-strategy |
 | `docs/research/adr/ADR-004-mandatory-lewm-main-method.md` | ADR-004-mandatory-lewm-main-method |
 | `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch (1).md` | MASTER ROADMAP LeWM Glitch (1) |
 | `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v2.md` | MASTER ROADMAP LeWM Glitch v2 |
-| `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v3.md` | MASTER ROADMAP LeWM Glitch v3 |

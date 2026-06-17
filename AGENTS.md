@@ -24,12 +24,14 @@ Current verified status:
 - Locked test is closed.
 - LeWM gameplay evaluation exists only for one non-locked buggy episode with correlated windows.
 - R5 identical-episode evaluation has not started.
+- Controlled World of Bugs expansion is planned only after the TempGlitch R5 checkpoint and has
+  not started.
 
 Safe claims include bounded normal-only CUDA training and the exact qualified Gate 7-9 pilot
 metrics, research-source readiness, the validated 500-update GPU profile, and artifact-backed R4
 rerun seed43/44 training evidence. Do not claim broad LeWM glitch-detection performance,
-superiority, state of the art, temporal localization, SIGReg benefit, or a neural locked-test
-result.
+superiority, state of the art, temporal localization, SIGReg benefit, WOB evidence, or a neural
+locked-test result.
 
 ## Agent Operating Mode
 

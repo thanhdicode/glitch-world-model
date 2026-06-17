@@ -1,6 +1,6 @@
 # LAST_HANDOFF.md
 
-Last completed task: R4 rerun artifact verification and R5 planning refresh
+Last completed task: R4 rerun artifact verification, roadmap alignment, and R5/WOB planning refresh
 Commit: pending
 Date: 2026-06-17
 
@@ -15,7 +15,8 @@ Date: 2026-06-17
 - Extracted the seed43/44 archives into `artifacts/verified/r4_rerun_2026_06_17/` and ran
   `scripts/validate_lewm_r3_seed_artifacts.py` successfully for both seeds.
 - Updated the context-cache generator, context docs, claim registry, R3/R4 status record,
-  README, AGENTS, PLAYBOOK, paper scaffold, and added the R5 identical-episode evaluation plan.
+  README, AGENTS, PLAYBOOK, Roadmap v3, paper scaffold, and added the combined R5 plus WOB
+  controlled expansion plan.
 
 ## Checks Passed
 
@@ -63,11 +64,12 @@ Date: 2026-06-17
 ## Next Recommended Task
 
 - Prepare and, only with an explicit command, execute the non-locked R5 identical-episode
-  evaluation.
+  evaluation. Keep WOB closed until the R5 checkpoint criteria are met.
 
 ## Files Likely Relevant Next
 
 - `docs/research/68_r5_identical_episode_eval_plan.md`
+- `docs/research/68_r5_tempglitch_and_wob_expansion_plan.md`
 - `docs/research/67_r3_r4_multiseed_status.md`
 - `scripts/run_gate7_lance_scoring.py`
 - `scripts/run_gate8_baselines_from_lance.py`

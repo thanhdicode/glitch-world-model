@@ -101,7 +101,10 @@ Gate 5 passed strict CUDA/resume artifact validation. Gate 6 v8 then completed t
 normal-only TempGlitch pilot on CUDA, verified checkpoint reload and finite validation encoding,
 and passed the strict validator with locked-test flags false. Gates 7-9 then produced 10,081
 real frozen-checkpoint scores, same-manifest baselines, and validation-only pilot metrics. The
-next evidence task is broader non-locked buggy validation, not locked-test release.
+exact 500-update GPU profile is complete as engineering evidence only, and the R4 rerun seed43/44
+artifacts are now SHA256-verified and validator-backed. The next evidence task is R5 identical-
+episode evaluation on TempGlitch. World of Bugs remains a controlled post-R5 expansion track, not
+an active experiment family.
 
 ## 3. Why This Project Exists
 
@@ -232,7 +235,7 @@ described as components of the audited method, but their gameplay detection bene
 
 ## 8. Current Verified Status
 
-Status date: 2026-06-12.
+Status date: 2026-06-17.
 
 | Gate | Status | Evidence | Missing | Paper claim impact |
 | --- | --- | --- | --- | --- |
@@ -247,7 +250,10 @@ Status date: 2026-06-12.
 | 9 | passed pilot | AUROC/AUPRC and grouped-normal-P95 F1 for eight scorers | multi-episode evidence and working LeWM calibration | Only the qualified one-episode pilot result is allowed. |
 | 10 | closed | no materialization or scoring | frozen decision and explicit direct user command | No neural locked-test claim. |
 
-The LeWM TempGlitch private dataset is ready and matched the local approved Lance inventory by
+The exact 500-update non-locked GPU profile completed and passed strict artifact validation as
+engineering evidence only. The 2026-06-17 R4 rerun archives for seed43 and seed44 are now local
+SHA256-verified and pass the per-seed artifact validators; R5 has not started and WOB has not
+started. The LeWM TempGlitch private dataset is ready and matched the local approved Lance inventory by
 name and size. One exact fingerprint-approved kernel push on 2026-06-11 returned HTTP 409 before
 a run was established; its one-time approval is consumed. The local cause was a kernel slug equal
 to the dataset slug. A second exact approval for the corrected v2 package was then consumed for
@@ -472,8 +478,9 @@ The adapter must validate:
 
 `mini_latent` is a PCA/linear transition proxy. It is never LeWM, JEPA, or SIGReg.
 
-Current missing evidence remains a validated CUDA resume artifact and gameplay-scale validation
-metrics.
+Current missing evidence is no longer CUDA resume or profile feasibility. The missing evidence is
+R5 identical-episode TempGlitch metrics, frozen validation reporting at episode level, and any
+post-R5 WOB expansion artifacts.
 
 ## 14. Baseline Strategy
 
@@ -894,11 +901,12 @@ granularity, negative results, and lessons for reproducible game-QA anomaly rese
 | 6, complete | Kaggle GPU + ML Research Engineers | Validate the exact 500-update non-locked GPU profile | Roadmap v3 R0-R1, profile package and validator | strict profile artifacts pass; resource envelope recorded | none |
 | 7, complete | ML Research Engineers | Confirm artifact-backed R4 rerun seed43/44 training archives | report 67, local SHA256 verification, per-seed validator outputs | local hashes match and both validators pass | none |
 | 8 | ML Research Engineers | Prepare R5 identical-episode evaluation on the non-locked research MVP | Roadmap v3 R5, reports 67-68, scoring and evaluation scripts | frozen inputs, provenance plan, no locked-test access, no R5 execution before explicit command | missing orchestration or provenance drift |
-| 9 | Locked Test Release Officer | Keep locked test closed pending a frozen validation decision and separate direct command | release workflow | no materialization/scoring before frozen decision | schedule pressure |
+| 9 | ML Research Engineers | Hold World of Bugs as a controlled post-R5 expansion track | Roadmap v3 WOB section, report 40, combined R5/WOB plan | WOB remains unopened until the TempGlitch R5 checkpoint, claim registry is aligned, and compute budget is available | scope creep before core evidence |
+| 10 | Locked Test Release Officer | Keep locked test closed pending a frozen validation decision and separate direct command | release workflow | no materialization/scoring before frozen decision | schedule pressure |
 
 Current recommended task: prepare the R5 identical-episode evaluation from the artifact-backed R4
 rerun checkpoints and the frozen non-locked protocol. Do not execute R5 or touch locked test
-without an explicit command.
+without an explicit command. Open WOB only after the R5 checkpoint criteria in Roadmap v3 pass.
 
 ## 29. Maintenance Rules For This Playbook
 

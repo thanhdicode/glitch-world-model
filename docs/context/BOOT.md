@@ -1,7 +1,7 @@
 # BOOT.md - Fast Start Context For Agents
 
-Generated: 2026-06-17T14:03:13+00:00
-Commit: `ab179b49f503823e7f3dc05264cbeb7026200ffa`
+Generated: 2026-06-17T14:21:35+00:00
+Commit: `cce03b696d2fffd1f8c31b4d047f50573b1818b6`
 
 ## Read Order
 1. `RULES.md`
@@ -28,12 +28,15 @@ The current execution roadmap is `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v3.md`
 - The exact 500-update research-MVP GPU profile completed as engineering evidence only.
 - R4 rerun seed43/44 training artifacts are local SHA256-verified and pass per-seed validators.
 - R5 identical-episode evaluation has not started.
+- Controlled World of Bugs expansion is planned only after the TempGlitch R5 checkpoint and has
+  not started.
 - Gate 10 is closed.
 - Locked test is closed.
 - LeWM gameplay evaluation exists only as a one-buggy-episode pilot.
 
 ## Immediate Next Task
 - Prepare the non-locked R5 identical-episode evaluation inputs, commands, and provenance plan.
+- Keep World of Bugs closed until the R5 checkpoint criteria are met.
 - Do not execute R5 or touch locked test without an explicit user command.
 
 ## Safety
