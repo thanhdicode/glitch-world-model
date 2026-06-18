@@ -1,23 +1,28 @@
 # NEXT_ACTION.md
 
-Last updated: 2026-06-17T17:44:16+00:00
-Commit: `f40b7caece82e196c848947011fc973a04eb33d7`
+Last updated: 2026-06-18T00:52:31+00:00
+Commit: `c3082c69cbe16fbebdec9f9280e39a256efc392c`
 
 ## Current Priority
-Provide the missing non-locked WOB tar inputs and rerun the completed `WOB-P0` audit path while
-keeping WOB and locked test closed.
+Run the Kaggle-native `WOB-P0` audit path in a Kaggle notebook with the official datasets mounted
+while keeping WOB training/evaluation and locked test closed.
 
 ## Success Criteria
 - Preserve the completed R5 manifest, score, metric, and provenance hashes.
-- Keep `WOB-P0` status aligned to `BLOCKED_MISSING_INPUTS` until the full non-locked WOB tar tree
-  is available locally.
-- Re-run `python scripts/run_wob_p0_materialization_audit.py --wob-root <full-nonlocked-root> --output-dir outputs/wob_p0_materialization_audit --dry-run --allow-materialization-check --no-locked --write-manifest-preview` after the missing inputs are staged.
-- Keep any WOB work at planning/materialization-audit scope until a separate explicit execution
-  command is given.
+- Keep local `WOB-P0` status aligned to `BLOCKED_MISSING_INPUTS` while treating Kaggle-native
+  `WOB-P0` as the intended next execution surface.
+- Run the Kaggle-native sequence:
+  `bash cloud/wob_kaggle_native/setup_runtime.sh`,
+  `bash cloud/wob_kaggle_native/preflight.sh`,
+  `bash cloud/wob_kaggle_native/prepare_wob_root.sh`,
+  `bash cloud/wob_kaggle_native/run_wob_p0_audit.sh`.
+- Keep any WOB work at audit/preparation scope until a separate explicit execution command is
+  given for training.
 - Keep locked-test materialization/scoring false.
 - Keep World of Bugs as a controlled post-R5 expansion track and do not open it early.
 
 ## Current Known Blocker
-R5 is complete for the non-locked TempGlitch family, and `WOB-P0` is complete as an audit, but
-the current local attached WOB root is missing 110 of 120 non-locked tar rows expected by the
-frozen split metadata. This does not justify opening locked test or starting `WOB-P1`.
+R5 is complete for the non-locked TempGlitch family. Local `WOB-P0` remains blocked because the
+attached root is incomplete, but this does not justify a local 63 GiB acquisition. The correct
+next step is the Kaggle-native `WOB-P0` audit; this still does not justify opening locked test or
+starting `WOB-P1`.

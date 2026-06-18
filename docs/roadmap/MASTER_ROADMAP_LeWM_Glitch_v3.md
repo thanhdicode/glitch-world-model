@@ -43,9 +43,9 @@ As of Git commit `cce03b6`:
   per-seed validator passes.
 - R5 completed for the non-locked TempGlitch identical-episode family and is recorded in the
   dedicated R5 results note.
-- The current operational phase is `WOB-P0` follow-through: the audit and metadata-only manifest
-  preview are complete, but local WOB execution remains blocked on missing non-locked source tar
-  inputs.
+- The current operational phase is Kaggle-native `WOB-P0` preparation: the local audit and
+  metadata-only manifest preview are complete, local full-download replay is intentionally blocked,
+  and the next step is to run the split-filtered audit directly against mounted Kaggle inputs.
 - Locked test is closed, unmaterialized, and unscored.
 
 ## 3. Research Questions
@@ -117,9 +117,9 @@ Conditional expansion after the R5 checkpoint:
 
 Only R7 may propose locked-test release. It still requires a separate direct user command.
 
-Current post-R5 operational rule: finish `WOB-P0`, provide the missing non-locked WOB inputs, and
-rerun the audit before any WOB training or evaluation is considered. R6/R7/R8 remain the core
-TempGlitch roadmap stages, and WOB stays a separately authorized expansion branch.
+Current post-R5 operational rule: finish Kaggle-native `WOB-P0` and review its audit outputs
+before any WOB training or evaluation is considered. R6/R7/R8 remain the core TempGlitch roadmap
+stages, and WOB stays a separately authorized expansion branch.
 
 ## 6. Stage R0 - Protocol And Package Freeze
 

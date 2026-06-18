@@ -1,7 +1,7 @@
 # REPO_MAP.md
 
-Generated: 2026-06-17T17:44:16+00:00
-Commit: `f40b7caece82e196c848947011fc973a04eb33d7`
+Generated: 2026-06-18T00:52:31+00:00
+Commit: `c3082c69cbe16fbebdec9f9280e39a256efc392c`
 Generator: `scripts/update_context_cache.py`
 
 ## Top-Level Map
@@ -81,6 +81,7 @@ Generator: `scripts/update_context_cache.py`
 | `scripts/run_tempglitch_smoke_test.py` | build_parser, main | Python module. |
 | `scripts/run_tempglitch_split_experiments.py` | write_scores_csv, preprocess_tempglitch_videos, normal_train_records, score_validation_and_test, write_comparison, best_and_worst_categories, positive_clip_counts, clip_counts_by_split, build_parser, main | Python module. |
 | `scripts/run_tempglitch_video_level_experiments.py` | require_input_file, find_input_file, category_metrics, build_parser, main | Python module. |
+| `scripts/run_wob_p0_materialization_audit.py` | main | Python module. |
 | `scripts/run_worldofbugs_asset_demo.py` | first_existing, write_repeated_frames, write_labels, main | Python module. |
 | `scripts/select_tempglitch_protocol_config.py` | load_validation_candidates, build_parser, main | Python module. |
 | `scripts/smoke_lewm_checkpoint.py` | build_parser, main | Python module. |
@@ -138,6 +139,7 @@ Generator: `scripts/update_context_cache.py`
 | `src/glitch_detection/tempglitch.py` | TempGlitchVideoRef, TempGlitchSample, normalize_tempglitch_label, encode_tempglitch_video_url, parse_tempglitch_video_url, _load_json, fetch_tempglitch_dataset_info, fetch_tempglitch_rows, fetch_all_tempglitch_metadata, tempglitch_category_counts, _relative_video_path, _write_tempglitch_source_readme | Python module. |
 | `src/glitch_detection/video_autoencoder.py` | VideoAutoencoderUnavailableError, VideoAutoencoderConfig, require_torch, resolve_checkpoint, list_clip_frames, select_frame_paths, load_clip_array, ClipTensorDataset, build_model, _resolve_device, _set_deterministic_seed, _data_loader | Python module. |
 | `src/glitch_detection/video_eval.py` | _percentile, _aggregate, aggregate_scores_by_source, source_labels_from_intervals, _split_metadata, build_video_level_rows, compute_video_level_metrics, calibrate_video_threshold, evaluate_video_with_fixed_threshold, write_video_rows_csv, write_json, write_video_comparison | Python module. |
+| `src/glitch_detection/wob_p0_audit.py` | WobP0Config, build_parser, sha256_file, load_csv_rows, load_json, detect_converter_scripts, detect_lance_outputs, resolve_source_path, source_exists, assert_safe_wob_root, build_manifest_rows, write_manifest_preview | Python module. |
 | `src/glitch_detection/wob_protocol.py` | parse_wob_inventory, inspect_wob_episode_tar | Python module. |
 
 ## Scripts
@@ -193,6 +195,7 @@ Generator: `scripts/update_context_cache.py`
 | `scripts/run_tempglitch_smoke_test.py` | CLI/helper script. | general |
 | `scripts/run_tempglitch_split_experiments.py` | CLI/helper script. | general |
 | `scripts/run_tempglitch_video_level_experiments.py` | CLI/helper script. | general |
+| `scripts/run_wob_p0_materialization_audit.py` | CLI/helper script. | general |
 | `scripts/run_worldofbugs_asset_demo.py` | CLI/helper script. | general |
 | `scripts/select_tempglitch_protocol_config.py` | CLI/helper script. | general |
 | `scripts/smoke_lewm_checkpoint.py` | CLI/helper script. | Gate 5 |
@@ -279,6 +282,7 @@ Generator: `scripts/update_context_cache.py`
 | `tests/test_tempglitch_split_runner.py` | tempglitch_split_runner |
 | `tests/test_video_autoencoder.py` | video_autoencoder |
 | `tests/test_video_eval.py` | video_eval |
+| `tests/test_wob_p0_audit.py` | wob_p0_audit |
 | `tests/test_wob_protocol.py` | wob_protocol |
 
 ## Docs
@@ -361,6 +365,6 @@ Generator: `scripts/update_context_cache.py`
 | `docs/research/68_r5_tempglitch_and_wob_expansion_plan.md` | 68 r5 tempglitch and wob expansion plan |
 | `docs/research/69_r5_tempglitch_identical_episode_results.md` | 69 r5 tempglitch identical episode results |
 | `docs/research/70_wob_controlled_expansion_plan.md` | 70 wob controlled expansion plan |
+| `docs/research/71_wob_p0_dataset_materialization_audit.md` | 71 wob p0 dataset materialization audit |
 | `docs/research/adr/ADR-001-topic-scope.md` | ADR-001-topic-scope |
 | `docs/research/adr/ADR-002-dataset-strategy.md` | ADR-002-dataset-strategy |
-| `docs/research/adr/ADR-003-lewm-integration-strategy.md` | ADR-003-lewm-integration-strategy |

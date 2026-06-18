@@ -2,8 +2,8 @@
 
 Date: 2026-06-18
 
-Status: planning-only; see `71_wob_p0_dataset_materialization_audit.md` for the completed
-`WOB-P0` audit and current blocked status
+Status: planning-only; local `WOB-P0` is blocked on missing local tar inputs, while the
+Kaggle-native `WOB-P0` preparation path is now in place
 
 ## 1. Current Evidence Baseline
 
@@ -17,10 +17,14 @@ Status: planning-only; see `71_wob_p0_dataset_materialization_audit.md` for the 
   F1 row.
 - Locked test remains closed, unmaterialized, and unscored.
 - World of Bugs training/evaluation have not started.
-- `WOB-P0` has now completed as a dataset/materialization audit and metadata-only manifest preview
-  freeze.
-- Current `WOB-P0` outcome is `BLOCKED_MISSING_INPUTS` because the local attached WOB root
-  satisfies only 10 of the 120 non-locked rows expected by the frozen split metadata.
+- `WOB-P0` has now completed as a local dataset/materialization audit and metadata-only manifest
+  preview freeze.
+- Local `WOB-P0` remains `BLOCKED_MISSING_INPUTS` because the local attached WOB root satisfies
+  only 10 of the 120 non-locked rows expected by the frozen split metadata.
+- Official Kaggle listing checks confirm that all 120 non-locked rows exist in the authoritative
+  Kaggle datasets.
+- The intended next milestone is a Kaggle-native `WOB-P0` audit using mounted Kaggle inputs, not a
+  63.462 GiB local full download.
 
 ## 2. Why WOB Comes Next
 
@@ -78,7 +82,7 @@ aligned.
 
 ## 5. Proposed WOB Phase Breakdown
 
-- `WOB-P0`: dataset/materialization audit plus manifest freeze.
+- `WOB-P0`: Kaggle-native full non-locked dataset/materialization audit plus manifest freeze.
 - `WOB-P1`: seed42 real-action normal-only run.
 - `WOB-P2`: seed43/44 only if seed42 validator passes and budget remains acceptable.
 - `WOB-P3`: WOB identical-episode evaluation under a frozen manifest and matched reporting path.
@@ -103,6 +107,11 @@ aligned.
 - GPU runtime target approved for the chosen seed schedule.
 - Planned ignored output roots for artifacts, scores, and metrics.
 - Existing validators plus any documented implementation gap for missing WOB-specific orchestration.
+- Kaggle-native root-preparation path:
+  - `scripts/check_wob_kaggle_listing.py`
+  - `cloud/wob_kaggle_native/prepare_wob_root.py`
+  - `cloud/wob_kaggle_native/preflight.sh`
+  - `cloud/wob_kaggle_native/run_wob_p0_audit.sh`
 
 ## 7. Compute And Runtime Budget
 
@@ -110,8 +119,8 @@ No WOB-measured runtime is currently recorded in the repository, so this phase d
 
 Conservative planning posture:
 
-- Treat WOB runtime and memory as unknown until `WOB-P0` and the first controlled seed pass define
-  the actual envelope.
+- Treat WOB runtime and memory as unknown until Kaggle-native `WOB-P0` and the first controlled
+  seed pass define the actual envelope.
 - Use TempGlitch R4/R5 only as rough planning context, not as a WOB runtime estimate.
 - Approve the staged seed42-first plan before any three-seed WOB family is considered.
 - Require an explicit compute decision before launching `WOB-P1`.
@@ -123,7 +132,9 @@ Safe before WOB execution:
 - WOB is planned as a controlled expansion after the completed TempGlitch R5 checkpoint.
 - The repository already has frozen WOB protocol evidence and reduced loader compatibility.
 - WOB remains unopened for training/evaluation.
-- `WOB-P0` is complete but blocked on missing non-locked source tar inputs.
+- Local `WOB-P0` is complete but blocked on missing non-locked source tar inputs.
+- Kaggle-native `WOB-P0` preparation is complete and should be executed before any `WOB-P1`
+  training request.
 
 Unsafe before WOB execution:
 
@@ -149,7 +160,7 @@ All of the following must be true before any WOB training or evaluation:
 
 Next prompt theme:
 
-`WOB-P0 dataset/materialization audit + manifest freeze`
+`WOB-P0 Kaggle-native dataset/materialization audit + manifest freeze`
 
 The next execution-oriented phase should audit the frozen WOB inputs, confirm the materialization
 path, freeze the first non-locked WOB manifest, and stop before training unless explicitly
@@ -157,6 +168,9 @@ authorized to continue.
 
 Update after execution of that prompt:
 
-- `WOB-P0` completed in [71_wob_p0_dataset_materialization_audit.md](71_wob_p0_dataset_materialization_audit.md).
-- The current blocker is missing non-locked WOB tar inputs under the local attached root, so
-  `WOB-P1` should not start until those inputs are provided and the audit is re-run successfully.
+- `WOB-P0` completed locally in [71_wob_p0_dataset_materialization_audit.md](71_wob_p0_dataset_materialization_audit.md).
+- The current local blocker is missing non-locked WOB tar inputs under the attached root.
+- The prepared next step is a Kaggle-native `WOB-P0` pass using mounted official Kaggle datasets
+  and the `cloud/wob_kaggle_native/` package.
+- `WOB-P1` should not start until that Kaggle-native audit passes and a human explicitly
+  authorizes training.

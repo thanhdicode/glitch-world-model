@@ -6,10 +6,21 @@ Status: `BLOCKED_MISSING_INPUTS`
 
 ## 1. Executive Status
 
-`WOB-P0` completed as a dataset/materialization audit plus metadata-only manifest-preview freeze.
-World of Bugs training and evaluation remain unopened. The current repository contains the frozen
-WOB protocol, the reduced Lance conversion proof, and a dedicated `WOB-P0` audit runner, but the
-local attached WOB root does not contain the full non-locked tar tree required to open `WOB-P1`.
+`WOB-P0` completed as a local dataset/materialization audit plus metadata-only manifest-preview
+freeze. World of Bugs training and evaluation remain unopened. The current repository contains the
+frozen WOB protocol, the reduced Lance conversion proof, and a dedicated `WOB-P0` audit runner,
+but the local attached WOB root does not contain the full non-locked tar tree required for a full
+local replay.
+
+Current status split:
+
+- `LOCAL_WOB_P0_STATUS = BLOCKED_MISSING_INPUTS`
+- `KAGGLE_NATIVE_STATUS = READY_FOR_KAGGLE_WOB_P0`
+- `WOB_P1_TRAINING_STATUS = NOT_STARTED`
+
+The full local 63.462 GiB non-locked acquisition path is not the intended training workflow.
+Official Kaggle datasets should be mounted directly inside a Kaggle notebook, filtered by the
+repository split metadata, and audited there before any training decision is made.
 
 ## 2. Evidence Sources Inspected
 
@@ -27,6 +38,8 @@ local attached WOB root does not contain the full non-locked tar tree required t
 - `scripts/freeze_wob_protocol.py`
 - `scripts/build_wob_lewm_lance.py`
 - `scripts/run_wob_p0_materialization_audit.py`
+- `scripts/check_wob_kaggle_listing.py`
+- `cloud/wob_kaggle_native/prepare_wob_root.py`
 - `src/glitch_detection/wob_protocol.py`
 - `src/glitch_detection/lewm_data.py`
 - `src/glitch_detection/wob_p0_audit.py`
@@ -67,6 +80,11 @@ local attached WOB root does not contain the full non-locked tar tree required t
   - non-locked rows expected from frozen metadata: `120`
   - non-locked tar rows found under the provided local root: `10`
   - non-locked tar rows missing under the provided local root: `110`
+- Kaggle-native listing check:
+  - command: `python scripts/check_wob_kaggle_listing.py --output-dir outputs/wob_kaggle_listing`
+  - result: all `120` non-locked rows are present in the official Kaggle listings
+  - total listed non-locked bytes: `68,141,332,480` (`63.462 GiB`)
+  - local full download of those rows was intentionally stopped and cleaned because direct Kaggle mounting is the intended workflow
 - Manifest preview/freeze:
   - metadata-only preview written to `outputs/wob_p0_materialization_audit/wob_manifest_preview.csv`
   - SHA256: `fffbd08be4c5ade02487784b762805ecbfb1d89f962988986ee075854807e54f`
@@ -78,7 +96,7 @@ local attached WOB root does not contain the full non-locked tar tree required t
 
 ## 5. Missing Inputs / Implementation Gaps
 
-Missing local inputs are the blocker, not converter availability.
+Missing local inputs are the blocker for local replay, not for Kaggle-native preparation.
 
 - The frozen split expects the non-locked WOB tar tree to resolve directly from `split.csv`
   sources such as:
@@ -93,9 +111,9 @@ Missing local inputs are the blocker, not converter availability.
 
 Human action required before `WOB-P1`:
 
-1. Provide a local WOB root whose layout matches `split.csv` for all non-locked rows.
-2. Keep locked-test rows closed and excluded.
-3. Re-run the `WOB-P0` audit against that complete non-locked root.
+1. Run the Kaggle-native `WOB-P0` audit with the official mounted Kaggle datasets.
+2. Keep locked-test rows closed and excluded via `split.csv`.
+3. Review the Kaggle-native `WOB-P0` report before authorizing any `WOB-P1` training.
 
 ## 6. Claim Boundaries
 
@@ -104,7 +122,9 @@ Safe:
 - `WOB-P0 audit completed.`
 - `WOB remains unopened for training/evaluation.`
 - `A metadata-only non-locked manifest preview was frozen from existing split metadata.`
-- `Current local WOB inputs are incomplete for WOB-P1.`
+- `Current local WOB inputs are incomplete for a full local WOB replay.`
+- `The official Kaggle dataset listings contain all non-locked rows needed for a Kaggle-native WOB-P0 audit.`
+- `Kaggle-native WOB-P0 tooling is prepared, but training/evaluation remain unopened.`
 
 Unsafe:
 
@@ -120,7 +140,7 @@ Current recommendation: do not open `WOB-P1` yet.
 
 Next prerequisite task:
 
-- provide the missing non-locked WOB tar tree and re-run `WOB-P0`.
+- run the Kaggle-native `WOB-P0` audit in a Kaggle notebook with the official datasets attached.
 
 Only after that passes should the next execution phase become:
 
@@ -128,8 +148,8 @@ Only after that passes should the next execution phase become:
 
 ## 8. Kaggle / Cloud Guidance For The Next Execution Phase
 
-This guidance is for `WOB-P1` only after the missing non-locked WOB inputs are provided and a
-repeat `WOB-P0` pass reaches `READY_FOR_WOB_P1`.
+This guidance is for `WOB-P1` only after the Kaggle-native `WOB-P0` pass succeeds and a human
+explicitly authorizes training.
 
 - Kaggle is acceptable only if the runtime provides a T4-or-newer GPU with CUDA `sm_70+` and at
   least 14 GB VRAM.
@@ -138,5 +158,6 @@ repeat `WOB-P0` pass reaches `READY_FOR_WOB_P1`.
 - Train-normal only.
 - Keep locked test closed.
 - Run a dry-run/preflight first before any live training submission.
-- Required inputs should include the full non-locked WOB tar root, frozen split metadata, the
-  converter/materializer scripts, and the chosen LeWM runtime/config package.
+- Required inputs should include the mounted official Kaggle inputs, frozen split metadata, the
+  Kaggle-native root-preparation/audit scripts, and the chosen LeWM runtime/config package.
+- Do not upload a local 63 GiB WOB tar tree back to Kaggle.
