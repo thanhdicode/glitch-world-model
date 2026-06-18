@@ -23,12 +23,13 @@ Current verified status:
 - R4 rerun seed43/44 training artifacts are local SHA256-verified and pass per-seed validators.
 - R5 TempGlitch non-locked identical-episode evaluation completed and produced
   provenance-bound episode-level outputs under the frozen validation-only protocol.
-- The next phase is Kaggle-native `WOB-P0` audit execution; WOB training/evaluation are not yet
-  authorized.
+- Kaggle-native `WOB-P0` passed with a verified downloaded evidence bundle; WOB training/evaluation
+  remain unopened.
 - Controlled World of Bugs expansion is `LOCAL_WOB_P0_STATUS=BLOCKED_MISSING_INPUTS`,
-  `KAGGLE_NATIVE_STATUS=READY_FOR_KAGGLE_WOB_P0`, `WOB_P1_TRAINING_STATUS=NOT_STARTED`.
-- The default notebook path for that audit is the one-section wrapper
-  `cloud/wob_kaggle_native/run_kaggle_wob_p0_all.sh`.
+  `WOB_P0_KAGGLE_STATUS=PASSED`, `WOB_STATUS=READY_FOR_WOB_P1`,
+  `WOB_P1_TRAINING_STATUS=NOT_STARTED`.
+- The prepared next notebook path is the seed42 one-section wrapper
+  `cloud/wob_p1_seed42/run_kaggle_wob_p1_seed42_all.sh`.
 - Locked test is closed.
 - LeWM gameplay evaluation now includes the earlier one-buggy-episode window pilot plus the
   completed non-locked TempGlitch R5 identical-episode family.

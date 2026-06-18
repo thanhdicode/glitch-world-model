@@ -2,25 +2,53 @@
 
 Date: 2026-06-18
 
-Status: `BLOCKED_MISSING_INPUTS`
+Status: `LOCAL_BLOCKED_BUT_KAGGLE_PASSED`
 
 ## 1. Executive Status
 
-`WOB-P0` completed as a local dataset/materialization audit plus metadata-only manifest-preview
-freeze. World of Bugs training and evaluation remain unopened. The current repository contains the
-frozen WOB protocol, the reduced Lance conversion proof, and a dedicated `WOB-P0` audit runner,
-but the local attached WOB root does not contain the full non-locked tar tree required for a full
-local replay.
+`WOB-P0` now has two distinct states that must not be conflated. Local `WOB-P0` remains blocked
+on incomplete raw tar coverage, while the Kaggle-native `WOB-P0` path has passed with a verified
+downloaded evidence bundle. World of Bugs training and evaluation remain unopened.
 
 Current status split:
 
 - `LOCAL_WOB_P0_STATUS = BLOCKED_MISSING_INPUTS`
-- `KAGGLE_NATIVE_STATUS = READY_FOR_KAGGLE_WOB_P0`
+- `WOB_P0_KAGGLE_STATUS = PASSED`
+- `WOB_STATUS = READY_FOR_WOB_P1`
 - `WOB_P1_TRAINING_STATUS = NOT_STARTED`
 
 The full local 63.462 GiB non-locked acquisition path is not the intended training workflow.
 Official Kaggle datasets should be mounted directly inside a Kaggle notebook, filtered by the
 repository split metadata, and audited there before any training decision is made.
+
+Verified Kaggle-native `WOB-P0` bundle facts:
+
+- evidence tarball SHA256:
+  `e08e683ecdf59662092116495fbb4f10ab74225c5414ae7acf1d456bd5d492b9`
+- final audit status: `READY_FOR_WOB_P1`
+- mounted dataset roots:
+  - `/kaggle/input/datasets/benedictwilkinsai/world-of-bugs-normal`
+  - `/kaggle/input/datasets/benedictwilkinsai/world-of-bugs-test`
+- split CSV:
+  `/kaggle/working/glitch-world-model/configs/wob_protocol/split.csv`
+- phase: `p0_full_nonlocked`
+- `selected_rows = 120`
+- `resolved_rows = 120`
+- `missing_rows = 0`
+- `locked_rows_skipped = 59`
+- `locked_test_materialized = false`
+- `locked_test_scored = false`
+- `performance_metrics_present = false`
+- `action_metadata_present = true`
+- `semantic_action_synchronization_verified = false`
+- WOB root manifest SHA256:
+  `cc6031f304cb6c39d49567ba25a750e1f7d7e07738b471237db4f4ac8b46ea73`
+- audit manifest preview SHA256:
+  `cefe9f32014bde5aa767d81019479d2f17fbe5fd1dfd388982e8812d4f434d22`
+- GPU preflight:
+  - `Tesla T4`
+  - `sm_75`
+  - `future_training_gpu_ok = true`
 
 First live Kaggle execution notes:
 
@@ -123,11 +151,12 @@ Missing local inputs are the blocker for local replay, not for Kaggle-native pre
   - `C:\Users\ADMIN\Desktop\glitch-world-model\outputs\wob_schema_audit\attached\TEST\BlackScreen\ep-0001\ep-0001.tar`
   - `C:\Users\ADMIN\Desktop\glitch-world-model\outputs\wob_schema_audit\attached\TEST\CameraClipping\ep-0000\ep-0000.tar`
 
-Human action required before `WOB-P1`:
+Human action required before `WOB-P1` execution:
 
-1. Run the Kaggle-native `WOB-P0` audit with the official mounted Kaggle datasets.
+1. Keep local WOB replay blocked unless full raw coverage is explicitly needed for another reason.
 2. Keep locked-test rows closed and excluded via `split.csv`.
-3. Review the Kaggle-native `WOB-P0` report before authorizing any `WOB-P1` training.
+3. Authorize only the seed42 `WOB-P1` real-action train-normal run; do not open seed43/44 or WOB
+   evaluation yet.
 
 ## 6. Claim Boundaries
 
@@ -138,7 +167,8 @@ Safe:
 - `A metadata-only non-locked manifest preview was frozen from existing split metadata.`
 - `Current local WOB inputs are incomplete for a full local WOB replay.`
 - `The official Kaggle dataset listings contain all non-locked rows needed for a Kaggle-native WOB-P0 audit.`
-- `Kaggle-native WOB-P0 tooling is prepared, but training/evaluation remain unopened.`
+- `The verified Kaggle-native WOB-P0 bundle resolved all 120 non-locked rows while keeping locked test closed.`
+- `Kaggle-native WOB-P0 tooling passed, but WOB training/evaluation remain unopened.`
 
 Unsafe:
 
@@ -150,11 +180,11 @@ Unsafe:
 
 ## 7. Recommended Next Phase
 
-Current recommendation: do not open `WOB-P1` yet.
+Current recommendation: prepare `WOB-P1` seed42 safely, but do not run WOB evaluation yet.
 
 Next prerequisite task:
 
-- run the Kaggle-native `WOB-P0` audit in a Kaggle notebook with the official datasets attached.
+- prepare the seed42 one-section Kaggle runner using the verified `WOB-P0` bundle.
 
 Only after that passes should the next execution phase become:
 

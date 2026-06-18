@@ -255,7 +255,7 @@ The exact 500-update non-locked GPU profile completed and passed strict artifact
 engineering evidence only. The 2026-06-17 R4 rerun archives for seed43 and seed44 are now local
 SHA256-verified and pass the per-seed artifact validators; R5 is complete for the non-locked
 TempGlitch identical-episode family, local WOB replay remains `BLOCKED_MISSING_INPUTS`, and the
-Kaggle-native `WOB-P0` path is prepared. The LeWM
+Kaggle-native `WOB-P0` pass is now verified from a downloaded evidence bundle. The LeWM
 TempGlitch private dataset is ready and matched the local approved Lance inventory by
 name and size. One exact fingerprint-approved kernel push on 2026-06-11 returned HTTP 409 before
 a run was established; its one-time approval is consumed. The local cause was a kernel slug equal
@@ -904,14 +904,14 @@ granularity, negative results, and lessons for reproducible game-QA anomaly rese
 | 6, complete | Kaggle GPU + ML Research Engineers | Validate the exact 500-update non-locked GPU profile | Roadmap v3 R0-R1, profile package and validator | strict profile artifacts pass; resource envelope recorded | none |
 | 7, complete | ML Research Engineers | Confirm artifact-backed R4 rerun seed43/44 training archives | report 67, local SHA256 verification, per-seed validator outputs | local hashes match and both validators pass | none |
 | 8, complete | ML Research Engineers | Complete R5 identical-episode evaluation on the non-locked research MVP | Roadmap v3 R5, reports 67-69, scoring and evaluation scripts | frozen inputs, provenance-bound outputs, no locked-test access | none |
-| 9 | ML Research Engineers | Prepare and execute Kaggle-native `WOB-P0` audit tooling | Roadmap v3 WOB section, reports 40, 67-71, Kaggle-native cloud package, claim registry, context docs | official Kaggle listings verified, notebook root-prep path exists, WOB still unopened, locked rows excluded | scope creep before core evidence |
-| 10 | Locked Test Release Officer | Keep locked test closed pending a frozen validation decision and separate direct command | release workflow | no materialization/scoring before frozen decision | schedule pressure |
+| 9, complete | ML Research Engineers | Execute and verify the Kaggle-native `WOB-P0` audit | Roadmap v3 WOB section, reports 40, 67-71, downloaded Kaggle audit bundle, claim registry, context docs | verified bundle reports `READY_FOR_WOB_P1`, 120/120 non-locked rows resolved, 59 locked rows skipped, locked test remains closed | none |
+| 10 | ML Research Engineers | Prepare the `WOB-P1` seed42 real-action train-normal Kaggle runner | Roadmap v3 WOB section, verified WOB-P0 bundle, seed42 cloud package, artifact validator, context docs | one-section seed42 runner exists, train-normal/validation-normal only, validation-buggy excluded from fit/select, locked test closed | runtime or packaging drift |
+| 11 | Locked Test Release Officer | Keep locked test closed pending a frozen validation decision and separate direct command | release workflow | no materialization/scoring before frozen decision | schedule pressure |
 
-Current recommended task: run the Kaggle-native `WOB-P0` audit using the completed TempGlitch R5
-bundle as the prerequisite evidence, the official Kaggle datasets as mounted inputs, and the
-one-section notebook entrypoint `cloud/wob_kaggle_native/run_kaggle_wob_p0_all.sh`. Do not
-execute WOB training or touch locked test without a later explicit command. Open WOB only after
-the Kaggle-native `WOB-P0` gate and the Roadmap v3 checkpoint criteria pass.
+Current recommended task: use the verified Kaggle-native `WOB-P0` bundle to prepare the
+seed42-only `WOB-P1` real-action training runner, using the one-section notebook entrypoint
+`cloud/wob_p1_seed42/run_kaggle_wob_p1_seed42_all.sh`. Do not execute WOB evaluation or touch
+locked test without a later explicit command. Open seed43/44 only after seed42 artifacts pass.
 
 ## 29. Maintenance Rules For This Playbook
 

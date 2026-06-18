@@ -1,7 +1,7 @@
 # REPO_MAP.md
 
-Generated: 2026-06-18T01:50:12+00:00
-Commit: `7da3f7ba6000cfd5c3d962fbd25f4e7981155d9a`
+Generated: 2026-06-18T02:50:59+00:00
+Commit: `8ab7e7879e2283ac57739d681a4244d477adfdd4`
 Generator: `scripts/update_context_cache.py`
 
 ## Top-Level Map
@@ -285,6 +285,7 @@ Generator: `scripts/update_context_cache.py`
 | `tests/test_tempglitch_split_runner.py` | tempglitch_split_runner |
 | `tests/test_video_autoencoder.py` | video_autoencoder |
 | `tests/test_video_eval.py` | video_eval |
+| `tests/test_wob_kaggle_native_common.py` | wob_kaggle_native_common |
 | `tests/test_wob_kaggle_native_prepare.py` | wob_kaggle_native_prepare |
 | `tests/test_wob_p0_audit.py` | wob_p0_audit |
 | `tests/test_wob_protocol.py` | wob_protocol |

@@ -43,9 +43,10 @@ As of Git commit `cce03b6`:
   per-seed validator passes.
 - R5 completed for the non-locked TempGlitch identical-episode family and is recorded in the
   dedicated R5 results note.
-- The current operational phase is Kaggle-native `WOB-P0` preparation: the local audit and
-  metadata-only manifest preview are complete, local full-download replay is intentionally blocked,
-  and the next step is to run the split-filtered audit directly against mounted Kaggle inputs.
+- The current operational phase is post-`WOB-P0` preparation: the local audit remains blocked on
+  missing raw tar coverage, the Kaggle-native `WOB-P0` pass has now been verified from the
+  downloaded audit bundle, and the next controlled WOB phase is seed42-only `WOB-P1` training
+  preparation.
 - Locked test is closed, unmaterialized, and unscored.
 
 ## 3. Research Questions
@@ -117,9 +118,10 @@ Conditional expansion after the R5 checkpoint:
 
 Only R7 may propose locked-test release. It still requires a separate direct user command.
 
-Current post-R5 operational rule: finish Kaggle-native `WOB-P0` and review its audit outputs
-before any WOB training or evaluation is considered. R6/R7/R8 remain the core TempGlitch roadmap
-stages, and WOB stays a separately authorized expansion branch.
+Current post-R5 operational rule: keep the verified Kaggle-native `WOB-P0` bundle as the WOB
+entry checkpoint, prepare seed42-only `WOB-P1` first, and keep WOB evaluation separately closed.
+R6/R7/R8 remain the core TempGlitch roadmap stages, and WOB stays a separately authorized
+expansion branch.
 
 ## 6. Stage R0 - Protocol And Package Freeze
 
@@ -333,7 +335,8 @@ locked-test discipline.
 ### WOB Claim Safety
 
 - No WOB result claim before WOB artifacts exist.
-- `WOB-P0` completion supports only audit/materialization-readiness wording, not WOB execution.
+- `WOB-P0` completion supports only audit/materialization-readiness wording, not WOB performance
+  or evaluation.
 - No action-conditioning claim on TempGlitch.
 - Preserve the WOB action-semantics caveat until stronger synchronization evidence exists.
 - WOB locked test remains closed unless separately authorized.

@@ -26,9 +26,10 @@ Current LeWM gate status:
 - World of Bugs remains a controlled post-R5 expansion track and has not started training or
   evaluation.
 - Local WOB replay remains blocked on missing raw tar coverage, but the Kaggle-native `WOB-P0`
-  audit path is now prepared.
-- The next phase is Kaggle-native `WOB-P0` audit execution, not WOB training.
-- The intended notebook entrypoint is `cloud/wob_kaggle_native/run_kaggle_wob_p0_all.sh`.
+  audit has now passed and resolved all 120 non-locked rows with locked test still closed.
+- The next prepared phase is `WOB-P1` seed42 real-action train-normal Kaggle training, not WOB
+  evaluation.
+- The intended notebook entrypoint is `cloud/wob_p1_seed42/run_kaggle_wob_p1_seed42_all.sh`.
 - Gate 9 remains a one-buggy-episode pilot; Gate 10 has not run.
 - Locked test remains closed.
 - Only exact qualified pilot and R5-family metrics are supported; broad superiority, temporal
@@ -162,9 +163,9 @@ validation. The research-MVP GPU profile is complete as engineering evidence onl
 seed43/44 archives are locally SHA256-verified and validator-backed, and R5 has now completed a
 non-locked TempGlitch identical-episode evaluation family. Those R5 results are qualified to that
 frozen validation-only family and do not support broad superiority or general glitch-detection
-claims. The next phase is Kaggle-native `WOB-P0` audit execution using mounted official Kaggle
-datasets; WOB training remains closed until that audit passes and a separate explicit command
-authorizes `WOB-P1`.
+claims. Kaggle-native `WOB-P0` has now passed with a verified downloaded evidence bundle; the next
+prepared phase is `WOB-P1` seed42 training using mounted official Kaggle datasets. WOB evaluation
+remains closed, and the locked test still requires a separate explicit command.
 
 The June 11, 2026 Gate 5 TempGlitch dataset upload is ready. The first approved kernel push
 returned HTTP `409 Conflict` before a run was established; the local cause was a kernel slug that

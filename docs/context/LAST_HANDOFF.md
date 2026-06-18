@@ -1,45 +1,39 @@
 # LAST_HANDOFF.md
 
-Last completed task: WOB Kaggle-native pipeline preparation
+Last completed task: WOB-P0 Kaggle evidence sync and WOB-P1 seed42 runner preparation
 Commit: current task commit
 Date: 2026-06-18
 
 ## What Changed
 
-- Stopped and cleaned the accidental local full-download direction for WOB after confirming it was
-  not the intended workflow.
-- Removed partial local acquisition artifacts from the temporary WOB probe/full-download roots
-  after recording their size and purpose.
-- Replaced the unsafe local acquisition helper with `scripts/check_wob_kaggle_listing.py`, which
-  verifies the official Kaggle listings without downloading 63 GiB locally.
-- Added a Kaggle-native WOB root-preparation tool and cloud package under
-  `cloud/wob_kaggle_native/`.
-- Verified that all 120 non-locked rows exist in the authoritative Kaggle listings and that the
-  intended next step is a Kaggle-native `WOB-P0` audit, not local full acquisition.
-- Updated status docs, roadmap text, claim registry, and onboarding docs to reflect:
-  local `WOB-P0` blocked, Kaggle-native `WOB-P0` ready, `WOB-P1` still not started.
+- Verified the downloaded Kaggle-native `WOB-P0` evidence bundle and confirmed:
+  `READY_FOR_WOB_P1`, 120 selected rows, 120 resolved rows, 0 missing rows, 59 locked rows
+  skipped, locked test closed, and no performance metrics.
+- Added `scripts/verify_wob_p0_kaggle_evidence.py` so the downloaded WOB-P0 audit bundle can be
+  rechecked locally without extracting raw symlinked episode payloads.
+- Updated the claim registry, roadmap, WOB docs, and context status to distinguish:
+  local `WOB-P0` still blocked, Kaggle-native `WOB-P0` passed, `WOB_STATUS=READY_FOR_WOB_P1`,
+  `WOB_P1_TRAINING_STATUS=NOT_STARTED`.
+- Added the seed42-only one-section Kaggle runner package under `cloud/wob_p1_seed42/`.
+- Reused the existing real LeWM Kaggle trainer and WOB Lance conversion path instead of inventing
+  a new training command.
+- Added `scripts/validate_wob_seed42_artifacts.py` plus focused tests for bundle verification,
+  P1 selection filtering, packaging hygiene, and the one-section Kaggle command.
 
 ## Checks Passed
 
-- `python scripts/check_wob_kaggle_listing.py`
-- `python -m pytest -q tests/test_wob_p0_audit.py tests/test_wob_protocol.py tests/test_wob_kaggle_native_prepare.py tests/test_check_wob_kaggle_listing.py`
-- `python scripts/update_context_cache.py --refresh-boot`
-- `python -m pytest -q`
-- `python -m ruff check .`
-- `python -m ruff format --check .`
-- `python scripts/check_claim_registry.py`
-- `python scripts/doctor.py`
-- `python scripts/validate_research_release.py --ci`
-- Remaining final git/pre-commit checks run after this handoff update.
+- `python scripts/verify_wob_p0_kaggle_evidence.py --tarball C:\Users\ADMIN\Downloads\wob_p0_kaggle_audit_outputs.tar.gz --sha256 C:\Users\ADMIN\Downloads\wob_p0_kaggle_audit_outputs.tar.gz.sha256`
+- `python -m pytest -q tests/test_verify_wob_p0_kaggle_evidence.py tests/test_wob_p1_seed42_runner.py tests/test_wob_kaggle_native_prepare.py tests/test_wob_p0_audit.py tests/test_wob_protocol.py tests/test_run_kaggle_lewm.py`
+- Remaining full validation suite runs after this handoff update.
 
 ## Safety Status
 
-- No cloud/Kaggle training, WOB training, WOB evaluation, R6 ablation, or locked-test action was
-  launched in this task.
+- No local WOB training, WOB evaluation, locked-test action, or WOB seed43/44 launch was run in
+  this task.
 - No broad LeWM superiority, state-of-the-art, temporal-localization, SIGReg-benefit, WOB-result,
   cross-game, or locked-test claim was added.
-- Only audit/check tooling, tests, cloud-prep scripts, and documentation/planning surfaces were
-  changed.
+- Only verification tooling, tests, safe Kaggle-runner scripts, and documentation/status surfaces
+  were changed.
 - Locked test remains closed, unmaterialized, and unscored.
 
 ## Gate Status After Task
@@ -51,28 +45,29 @@ Date: 2026-06-18
   passes.
 - R4 bundle: artifact-backed rerun after local SHA256 verification.
 - R5: COMPLETED_NONLOCKED with provenance-bound episode-level outputs.
-- WOB expansion: local `WOB-P0` is `BLOCKED_MISSING_INPUTS`, Kaggle-native `WOB-P0` is ready to
-  run, and `WOB-P1` remains not started.
+- WOB expansion: local `WOB-P0` is `BLOCKED_MISSING_INPUTS`, Kaggle-native `WOB-P0` is `PASSED`,
+  `WOB_STATUS=READY_FOR_WOB_P1`, and `WOB-P1` remains not started.
 - Locked test: UNTOUCHED / NOT_MATERIALIZED / NOT_SCORED.
 
 ## Open Blockers
 
-- WOB remains unopened for training/evaluation pending a Kaggle-native `WOB-P0` execution result,
-  an explicit execution command, and a compute budget/runtime decision.
-- Seed42 local archive provenance remains separate from the local extracted artifact root used in
-  R5, so keep any seed42 wording traceable to the extracted-root hashes already recorded.
+- WOB evaluation remains unopened pending a future explicit command after seed42 artifacts exist.
+- The prepared `WOB-P1` runner still depends on the Kaggle runtime successfully installing the
+  LeWM runtime packages and completing the first real-action seed42 training pass.
 
 ## Next Recommended Task
 
-- Create a Kaggle notebook, attach the official WOB datasets, run the Kaggle-native `WOB-P0`
-  audit package, and only then consider a separate `WOB-P1` execution command. Keep WOB and
-  locked test closed in the meantime.
+- Create a Kaggle notebook, attach the same two official WOB datasets, and run the one-section
+  seed42 command from `cloud/wob_p1_seed42/run_kaggle_wob_p1_seed42_all.sh`. Download only
+  `wob_seed42_artifacts.tar.gz` and its `.sha256`. Keep seed43/44, WOB evaluation, and locked
+  test closed in the meantime.
 
 ## Files Likely Relevant Next
 
 - `docs/research/70_wob_controlled_expansion_plan.md`
 - `docs/research/71_wob_p0_dataset_materialization_audit.md`
-- `scripts/check_wob_kaggle_listing.py`
-- `cloud/wob_kaggle_native/README.md`
-- `cloud/wob_kaggle_native/prepare_wob_root.py`
+- `scripts/verify_wob_p0_kaggle_evidence.py`
+- `cloud/wob_p1_seed42/README.md`
+- `cloud/wob_p1_seed42/run_kaggle_wob_p1_seed42_all.sh`
+- `scripts/validate_wob_seed42_artifacts.py`
 - `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v3.md`

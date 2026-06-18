@@ -2,8 +2,8 @@
 
 Date: 2026-06-18
 
-Status: planning-only; local `WOB-P0` is blocked on missing local tar inputs, while the
-Kaggle-native `WOB-P0` preparation path is now in place
+Status: planning-only for WOB execution; local `WOB-P0` is blocked on missing local tar inputs,
+while the Kaggle-native `WOB-P0` pass is now verified from the downloaded evidence bundle
 
 ## 1. Current Evidence Baseline
 
@@ -23,8 +23,14 @@ Kaggle-native `WOB-P0` preparation path is now in place
   only 10 of the 120 non-locked rows expected by the frozen split metadata.
 - Official Kaggle listing checks confirm that all 120 non-locked rows exist in the authoritative
   Kaggle datasets.
-- The intended next milestone is a Kaggle-native `WOB-P0` audit using mounted Kaggle inputs, not a
-  63.462 GiB local full download.
+- The verified Kaggle-native `WOB-P0` evidence bundle hash is
+  `e08e683ecdf59662092116495fbb4f10ab74225c5414ae7acf1d456bd5d492b9`.
+- The Kaggle-native `WOB-P0` bundle reports `READY_FOR_WOB_P1`, 120 selected rows, 120 resolved
+  rows, 0 missing rows, 59 locked rows skipped, `locked_test_materialized=false`,
+  `locked_test_scored=false`, `performance_metrics_present=false`, and
+  `semantic_action_synchronization_verified=false`.
+- The intended next milestone is `WOB-P1` seed42 real-action normal-only training preparation, not
+  a 63.462 GiB local full download.
 
 ## 2. Why WOB Comes Next
 
@@ -133,8 +139,8 @@ Safe before WOB execution:
 - The repository already has frozen WOB protocol evidence and reduced loader compatibility.
 - WOB remains unopened for training/evaluation.
 - Local `WOB-P0` is complete but blocked on missing non-locked source tar inputs.
-- Kaggle-native `WOB-P0` preparation is complete and should be executed before any `WOB-P1`
-  training request.
+- Kaggle-native `WOB-P0` passed and now supports seed42 `WOB-P1` runner preparation only; WOB
+  training and evaluation remain unopened until a separate explicit human command.
 
 Unsafe before WOB execution:
 
@@ -160,7 +166,7 @@ All of the following must be true before any WOB training or evaluation:
 
 Next prompt theme:
 
-`WOB-P0 Kaggle-native dataset/materialization audit + manifest freeze`
+`WOB-P1 seed42 real-action train-normal Kaggle runner`
 
 The next execution-oriented phase should audit the frozen WOB inputs, confirm the materialization
 path, freeze the first non-locked WOB manifest, and stop before training unless explicitly
@@ -170,9 +176,8 @@ Update after execution of that prompt:
 
 - `WOB-P0` completed locally in [71_wob_p0_dataset_materialization_audit.md](71_wob_p0_dataset_materialization_audit.md).
 - The current local blocker is missing non-locked WOB tar inputs under the attached root.
-- The prepared next step is a Kaggle-native `WOB-P0` pass using mounted official Kaggle datasets
-  and the `cloud/wob_kaggle_native/` package.
-- The one-section notebook entrypoint is
-  `cloud/wob_kaggle_native/run_kaggle_wob_p0_all.sh`.
-- `WOB-P1` should not start until that Kaggle-native audit passes and a human explicitly
-  authorizes training.
+- The Kaggle-native `WOB-P0` pass is verified from the downloaded evidence bundle with hash
+  `e08e683ecdf59662092116495fbb4f10ab74225c5414ae7acf1d456bd5d492b9`.
+- The prepared next step is the seed42 one-section notebook entrypoint
+  `cloud/wob_p1_seed42/run_kaggle_wob_p1_seed42_all.sh`.
+- `WOB-P1` should not execute until a human explicitly authorizes training.
