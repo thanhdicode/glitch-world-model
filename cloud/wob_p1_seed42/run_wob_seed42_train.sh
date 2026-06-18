@@ -64,6 +64,8 @@ print(payload["early_stopping_patience"])
 PY
 )"
 
+EXTRA_ARGS=("$@")
+
 python scripts/run_kaggle_lewm.py \
   --train-dataset "$TRAIN_DATASET" \
   --validation-dataset "$VALIDATION_DATASET" \
@@ -78,4 +80,5 @@ python scripts/run_kaggle_lewm.py \
   --target-optimizer-updates "$WOB_TARGET_UPDATES" \
   --evaluation-interval-updates "$WOB_EVAL_INTERVAL" \
   --checkpoint-interval-updates "$WOB_CHECKPOINT_INTERVAL" \
-  --early-stopping-patience "$WOB_EARLY_STOPPING"
+  --early-stopping-patience "$WOB_EARLY_STOPPING" \
+  "${EXTRA_ARGS[@]}"
