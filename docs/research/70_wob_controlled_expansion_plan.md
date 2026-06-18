@@ -172,5 +172,7 @@ Update after execution of that prompt:
 - The current local blocker is missing non-locked WOB tar inputs under the attached root.
 - The prepared next step is a Kaggle-native `WOB-P0` pass using mounted official Kaggle datasets
   and the `cloud/wob_kaggle_native/` package.
+- The one-section notebook entrypoint is
+  `cloud/wob_kaggle_native/run_kaggle_wob_p0_all.sh`.
 - `WOB-P1` should not start until that Kaggle-native audit passes and a human explicitly
   authorizes training.

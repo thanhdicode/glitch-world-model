@@ -1,0 +1,91 @@
+{
+  "bug_sample": {
+    "action_shape": [],
+    "action_state_structurally_aligned": true,
+    "action_values": [
+      0,
+      1,
+      2
+    ],
+    "common_keys": [
+      "action",
+      "done",
+      "info",
+      "reward",
+      "state"
+    ],
+    "contiguous_step_indices": true,
+    "first_step_index": 0,
+    "info_unpickled": false,
+    "last_step_index": 88,
+    "required_numeric_schema_valid": true,
+    "sampled_step_count": 32,
+    "semantic_action_synchronization_verified": false,
+    "state_shape": [
+      3,
+      84,
+      84
+    ],
+    "step_count": 89,
+    "tar_path": "outputs\\wob_schema_audit\\bug\\ep-0000.tar"
+  },
+  "locked_test_materialized": false,
+  "normal_inventory": {
+    "bug_category_counts": {},
+    "bug_episode_count": 0,
+    "excluded_small_normal_count": 10,
+    "normal_episode_count": 60,
+    "unknown_file_count": 0,
+    "unknown_files": []
+  },
+  "normal_sample": {
+    "action_shape": [],
+    "action_state_structurally_aligned": true,
+    "action_values": [
+      0,
+      1,
+      3
+    ],
+    "common_keys": [
+      "action",
+      "done",
+      "info",
+      "reward",
+      "state"
+    ],
+    "contiguous_step_indices": true,
+    "first_step_index": 0,
+    "info_unpickled": false,
+    "last_step_index": 4959,
+    "required_numeric_schema_valid": true,
+    "sampled_step_count": 32,
+    "semantic_action_synchronization_verified": false,
+    "state_shape": [
+      3,
+      84,
+      84
+    ],
+    "step_count": 4960,
+    "tar_path": "outputs\\wob_schema_audit\\normal\\ep-0000.tar"
+  },
+  "semantic_action_synchronization_verified": false,
+  "test_inventory": {
+    "bug_category_counts": {
+      "BlackScreen": 10,
+      "BoundaryHole": 29,
+      "CameraClipping": 10,
+      "GeometryClipping": 10,
+      "GeometryCorruption": 10,
+      "ScreenTear": 10,
+      "TextureCorruption": 10,
+      "TextureMissing": 10,
+      "ZClipping": 10,
+      "ZFighting": 10
+    },
+    "bug_episode_count": 119,
+    "excluded_small_normal_count": 0,
+    "normal_episode_count": 0,
+    "unknown_file_count": 0,
+    "unknown_files": []
+  }
+}

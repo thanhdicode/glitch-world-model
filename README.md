@@ -28,6 +28,7 @@ Current LeWM gate status:
 - Local WOB replay remains blocked on missing raw tar coverage, but the Kaggle-native `WOB-P0`
   audit path is now prepared.
 - The next phase is Kaggle-native `WOB-P0` audit execution, not WOB training.
+- The intended notebook entrypoint is `cloud/wob_kaggle_native/run_kaggle_wob_p0_all.sh`.
 - Gate 9 remains a one-buggy-episode pilot; Gate 10 has not run.
 - Locked test remains closed.
 - Only exact qualified pilot and R5-family metrics are supported; broad superiority, temporal

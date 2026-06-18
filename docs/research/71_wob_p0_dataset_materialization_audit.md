@@ -22,6 +22,20 @@ The full local 63.462 GiB non-locked acquisition path is not the intended traini
 Official Kaggle datasets should be mounted directly inside a Kaggle notebook, filtered by the
 repository split metadata, and audited there before any training decision is made.
 
+First live Kaggle execution notes:
+
+- The official datasets mounted successfully under nested Kaggle paths such as
+  `/kaggle/input/datasets/benedictwilkinsai/world-of-bugs-normal` and
+  `/kaggle/input/datasets/benedictwilkinsai/world-of-bugs-test`.
+- The first live Kaggle-native attempt exposed runner bugs rather than a data-availability
+  problem:
+  - shallow path detection assumptions;
+  - `find | head` under `set -o pipefail` causing exit code `141`;
+  - exporting `LEWM_REPO_ROOT` after calling `setup_runtime.sh`;
+  - assuming ignored `outputs/gate3/world_of_bugs/split.csv` exists in a fresh clone.
+- The repository now includes a one-section Kaggle entrypoint that fixes those wrapper issues and
+  uses tracked protocol metadata under `configs/wob_protocol/`.
+
 ## 2. Evidence Sources Inspected
 
 - `docs/research/40_gate3_gate4_real_dataset_protocol.md`

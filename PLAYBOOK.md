@@ -908,10 +908,10 @@ granularity, negative results, and lessons for reproducible game-QA anomaly rese
 | 10 | Locked Test Release Officer | Keep locked test closed pending a frozen validation decision and separate direct command | release workflow | no materialization/scoring before frozen decision | schedule pressure |
 
 Current recommended task: run the Kaggle-native `WOB-P0` audit using the completed TempGlitch R5
-bundle as the prerequisite evidence and the official Kaggle datasets as mounted inputs. Do not
+bundle as the prerequisite evidence, the official Kaggle datasets as mounted inputs, and the
+one-section notebook entrypoint `cloud/wob_kaggle_native/run_kaggle_wob_p0_all.sh`. Do not
 execute WOB training or touch locked test without a later explicit command. Open WOB only after
-the Kaggle-native `WOB-P0` gate and the R5
-checkpoint criteria in Roadmap v3 pass.
+the Kaggle-native `WOB-P0` gate and the Roadmap v3 checkpoint criteria pass.
 
 ## 29. Maintenance Rules For This Playbook
 

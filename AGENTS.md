@@ -27,6 +27,8 @@ Current verified status:
   authorized.
 - Controlled World of Bugs expansion is `LOCAL_WOB_P0_STATUS=BLOCKED_MISSING_INPUTS`,
   `KAGGLE_NATIVE_STATUS=READY_FOR_KAGGLE_WOB_P0`, `WOB_P1_TRAINING_STATUS=NOT_STARTED`.
+- The default notebook path for that audit is the one-section wrapper
+  `cloud/wob_kaggle_native/run_kaggle_wob_p0_all.sh`.
 - Locked test is closed.
 - LeWM gameplay evaluation now includes the earlier one-buggy-episode window pilot plus the
   completed non-locked TempGlitch R5 identical-episode family.

@@ -12,32 +12,34 @@ Attach these Kaggle datasets to the notebook:
 - `benedictwilkinsai/world-of-bugs-test`
 
 The repository split metadata still governs which rows are allowed. Rows marked `split=test` in
-`outputs/gate3/world_of_bugs/split.csv` remain locked and must stay excluded.
+`configs/wob_protocol/split.csv` remain locked and must stay excluded.
 
 ## Human Steps
 
 1. Create a Kaggle Notebook.
 2. Add the official datasets:
-   - `benedictwilkinsai/world-of-bugs-normal`
-   - `benedictwilkinsai/world-of-bugs-test`
+   - `World of Bugs - Train`
+   - `World of Bugs - Test`
 3. Do not upload 63 GiB from local storage.
-4. Use CPU for `WOB-P0` audit; use T4 or newer for any future training phase.
+4. CPU is enough for `WOB-P0`; T4 or newer is only for a future training phase.
 5. Do not use P100 for future LeWM WOB training if the preflight requires `sm_70+`.
-6. Clone or upload this repository at the intended commit.
-7. Run:
+6. Run this single cell:
 
 ```bash
-export LEWM_REPO_ROOT=/kaggle/working/glitch-world-model
-export NORMAL_INPUT_ROOT=/kaggle/input/world-of-bugs-normal
-export TEST_INPUT_ROOT=/kaggle/input/world-of-bugs-test
-cd "$LEWM_REPO_ROOT"
-bash cloud/wob_kaggle_native/setup_runtime.sh
-bash cloud/wob_kaggle_native/preflight.sh
-bash cloud/wob_kaggle_native/prepare_wob_root.sh
-bash cloud/wob_kaggle_native/run_wob_p0_audit.sh
+%%bash
+set -Eeuo pipefail
+REPO_URL="https://github.com/thanhdicode/glitch-world-model.git"
+REPO_REF="main"
+REPO_DIR="/kaggle/working/glitch-world-model"
+rm -rf "$REPO_DIR"
+git clone "$REPO_URL" "$REPO_DIR"
+cd "$REPO_DIR"
+git checkout "$REPO_REF"
+bash cloud/wob_kaggle_native/run_kaggle_wob_p0_all.sh
 ```
 
-8. Download only generated manifests and audit reports from `/kaggle/working`.
+7. Download only generated manifests and audit reports from `/kaggle/working`.
+8. If the script fails, download `wob_p0_kaggle_failure_debug.tar.gz` and send it back.
 9. Do not run `WOB-P1` training until a human explicitly authorizes it after the Kaggle-native
    `WOB-P0` pass.
 
@@ -46,6 +48,8 @@ bash cloud/wob_kaggle_native/run_wob_p0_audit.sh
 - `/kaggle/working/wob_root`
 - `/kaggle/working/wob_kaggle_native_outputs`
 - `/kaggle/working/wob_p0_materialization_audit`
+- `/kaggle/working/wob_p0_kaggle_audit_outputs.tar.gz`
+- `/kaggle/working/wob_p0_kaggle_failure_debug.tar.gz` on failure
 
 ## Phase Behavior
 

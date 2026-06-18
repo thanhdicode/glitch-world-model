@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_SPLIT_PATH = ROOT / "outputs" / "gate3" / "world_of_bugs" / "split.csv"
+DEFAULT_SPLIT_PATH = ROOT / "configs" / "wob_protocol" / "split.csv"
 DEFAULT_OUTPUT_DIR = ROOT / "outputs" / "wob_kaggle_listing"
 NORMAL_SLUG = "benedictwilkinsai/world-of-bugs-normal"
 TEST_SLUG = "benedictwilkinsai/world-of-bugs-test"

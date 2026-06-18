@@ -1,0 +1,13 @@
+{
+  "access_date": "2026-06-11",
+  "inventory_sha256": "72bda2bdb85a327958300c5111755e8feea580f9e1353ff212f54ab1dcea251e",
+  "license": "ODC Attribution License (ODC-By)",
+  "normal_dataset": "benedictwilkinsai/world-of-bugs-normal",
+  "normal_last_updated": "2022-02-22 15:07:30.350000",
+  "protocol_audit_sha256": "e6697304b5efdd7dcaa648836aaeb417185fdff3aec88d4581f4ec94c7b95b48",
+  "raw_full_dataset_materialized_locally": false,
+  "seed": 42,
+  "split_sha256": "95dccf3a0d2c607f42130085da7a810eec0eb6ba39e5b6c4ee02fca7708c9ff4",
+  "test_dataset": "benedictwilkinsai/world-of-bugs-test",
+  "test_last_updated": "2022-02-22 15:07:33.573000"
+}

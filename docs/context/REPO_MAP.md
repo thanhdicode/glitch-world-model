@@ -1,7 +1,7 @@
 # REPO_MAP.md
 
-Generated: 2026-06-18T00:52:31+00:00
-Commit: `c3082c69cbe16fbebdec9f9280e39a256efc392c`
+Generated: 2026-06-18T01:50:12+00:00
+Commit: `7da3f7ba6000cfd5c3d962fbd25f4e7981155d9a`
 Generator: `scripts/update_context_cache.py`
 
 ## Top-Level Map
@@ -39,6 +39,7 @@ Generator: `scripts/update_context_cache.py`
 | `scripts/build_tempglitch_validation_manifest.py` | evenly_spaced_starts, build_validation_manifest, main | Python module. |
 | `scripts/build_wob_lewm_lance.py` | build_parser, main | Python module. |
 | `scripts/check_claim_registry.py` | Claim, parse_claim_registry, validate_claims, build_parser, main | Python module. |
+| `scripts/check_wob_kaggle_listing.py` | build_parser, load_nonlocked_rows, dataset_slug_for_source, parse_kaggle_files_csv, kaggle_files, human_kaggle_setup_instructions, compute_listing_report, render_markdown, main | Python module. |
 | `scripts/convert_tempglitch_labels.py` | build_parser, main | Python module. |
 | `scripts/create_dynamics_test_dataset.py` | draw_scene, main | Python module. |
 | `scripts/create_hard_dynamics_dataset.py` | draw_scene, main | Python module. |
@@ -153,6 +154,7 @@ Generator: `scripts/update_context_cache.py`
 | `scripts/build_tempglitch_validation_manifest.py` | CLI/helper script. | general |
 | `scripts/build_wob_lewm_lance.py` | CLI/helper script. | Gate 5 |
 | `scripts/check_claim_registry.py` | CLI/helper script. | general |
+| `scripts/check_wob_kaggle_listing.py` | CLI/helper script. | Gate 5 |
 | `scripts/convert_tempglitch_labels.py` | CLI/helper script. | general |
 | `scripts/create_dynamics_test_dataset.py` | CLI/helper script. | general |
 | `scripts/create_hard_dynamics_dataset.py` | CLI/helper script. | general |
@@ -216,6 +218,7 @@ Generator: `scripts/update_context_cache.py`
 | `tests/conftest.py` | conftest |
 | `tests/test_analysis.py` | analysis |
 | `tests/test_calibration.py` | calibration |
+| `tests/test_check_wob_kaggle_listing.py` | check_wob_kaggle_listing |
 | `tests/test_compare_experiments.py` | compare_experiments |
 | `tests/test_context_cache.py` | context_cache |
 | `tests/test_dataset_protocols.py` | dataset_protocols |
@@ -282,6 +285,7 @@ Generator: `scripts/update_context_cache.py`
 | `tests/test_tempglitch_split_runner.py` | tempglitch_split_runner |
 | `tests/test_video_autoencoder.py` | video_autoencoder |
 | `tests/test_video_eval.py` | video_eval |
+| `tests/test_wob_kaggle_native_prepare.py` | wob_kaggle_native_prepare |
 | `tests/test_wob_p0_audit.py` | wob_p0_audit |
 | `tests/test_wob_protocol.py` | wob_protocol |
 

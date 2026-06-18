@@ -3,14 +3,22 @@ set -euo pipefail
 
 : "${LEWM_REPO_ROOT:?Set LEWM_REPO_ROOT to the cloned repository path.}"
 
+cd "$LEWM_REPO_ROOT"
+
 NORMAL_INPUT_ROOT="${NORMAL_INPUT_ROOT:-/kaggle/input/world-of-bugs-normal}"
 TEST_INPUT_ROOT="${TEST_INPUT_ROOT:-/kaggle/input/world-of-bugs-test}"
-SPLIT_CSV="${SPLIT_CSV:-$LEWM_REPO_ROOT/outputs/gate3/world_of_bugs/split.csv}"
 P0_OUTPUT_ROOT="${P0_OUTPUT_ROOT:-/kaggle/working/wob_kaggle_native_outputs}"
+if [[ -z "${SPLIT_CSV:-}" ]]; then
+  SPLIT_CSV="$(python - <<'PY'
+from pathlib import Path
+from cloud.wob_kaggle_native.common import resolve_split_csv
+import os
+print(resolve_split_csv(Path(os.environ["LEWM_REPO_ROOT"])))
+PY
+)"
+fi
 export NORMAL_INPUT_ROOT TEST_INPUT_ROOT SPLIT_CSV P0_OUTPUT_ROOT
 mkdir -p "$P0_OUTPUT_ROOT"
-
-cd "$LEWM_REPO_ROOT"
 
 python - <<'PY'
 import json

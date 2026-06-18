@@ -1,7 +1,7 @@
 # BOOT.md - Fast Start Context For Agents
 
-Generated: 2026-06-18T00:52:31+00:00
-Commit: `c3082c69cbe16fbebdec9f9280e39a256efc392c`
+Generated: 2026-06-18T01:50:12+00:00
+Commit: `7da3f7ba6000cfd5c3d962fbd25f4e7981155d9a`
 
 ## Read Order
 1. `RULES.md`
@@ -29,16 +29,17 @@ The current execution roadmap is `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v3.md`
 - R4 rerun seed43/44 training artifacts are local SHA256-verified and pass per-seed validators.
 - R5 identical-episode evaluation completed on the non-locked research MVP and wrote
   provenance-bound episode-level outputs.
-- Controlled World of Bugs expansion remains unopened after R5 and is ready only for a separate
-  planning step.
+- Local `WOB-P0` remains blocked on missing tar files, but the Kaggle-native `WOB-P0` notebook
+  entrypoint is ready to run against the official mounted datasets.
 - Gate 10 is closed.
 - Locked test is closed.
 - LeWM gameplay evaluation now exists for the non-locked TempGlitch research MVP only; locked
-  test and WOB remain unopened.
+  test remains unopened, and WOB is still limited to audit preparation.
 
 ## Immediate Next Task
-- Preserve the completed non-locked R5 evidence bundle and keep its hashes synchronized in docs.
-- Keep World of Bugs closed until a separate post-R5 planning step confirms budget and scope.
+- Run the one-section Kaggle-native `WOB-P0` notebook entrypoint against the official mounted
+  World of Bugs datasets.
+- Keep WOB at audit/materialization scope only; do not open `WOB-P1` training or evaluation.
 - Do not touch locked test.
 
 ## Safety
