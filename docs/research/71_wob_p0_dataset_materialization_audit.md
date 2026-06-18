@@ -8,14 +8,17 @@ Status: `LOCAL_BLOCKED_BUT_KAGGLE_PASSED`
 
 `WOB-P0` now has two distinct states that must not be conflated. Local `WOB-P0` remains blocked
 on incomplete raw tar coverage, while the Kaggle-native `WOB-P0` path has passed with a verified
-downloaded evidence bundle. World of Bugs training and evaluation remain unopened.
+downloaded evidence bundle. `WOB-P0` itself did not include training or evaluation; the later
+seed42 WOB-P1 training artifact is recorded separately in
+[72_wob_p1_seed42_training_result.md](72_wob_p1_seed42_training_result.md).
 
 Current status split:
 
 - `LOCAL_WOB_P0_STATUS = BLOCKED_MISSING_INPUTS`
 - `WOB_P0_KAGGLE_STATUS = PASSED`
-- `WOB_STATUS = READY_FOR_WOB_P1`
-- `WOB_P1_TRAINING_STATUS = NOT_STARTED`
+- `WOB_STATUS = WOB_P1_SEED42_TRAINING_VALIDATED`
+- `WOB_P1_TRAINING_STATUS = SEED42_VALIDATED`
+- `WOB_EVALUATION_STATUS = NOT_STARTED`
 
 The full local 63.462 GiB non-locked acquisition path is not the intended training workflow.
 Official Kaggle datasets should be mounted directly inside a Kaggle notebook, filtered by the
@@ -151,24 +154,24 @@ Missing local inputs are the blocker for local replay, not for Kaggle-native pre
   - `C:\Users\ADMIN\Desktop\glitch-world-model\outputs\wob_schema_audit\attached\TEST\BlackScreen\ep-0001\ep-0001.tar`
   - `C:\Users\ADMIN\Desktop\glitch-world-model\outputs\wob_schema_audit\attached\TEST\CameraClipping\ep-0000\ep-0000.tar`
 
-Human action required before `WOB-P1` execution:
+Human action required before further WOB execution:
 
 1. Keep local WOB replay blocked unless full raw coverage is explicitly needed for another reason.
 2. Keep locked-test rows closed and excluded via `split.csv`.
-3. Authorize only the seed42 `WOB-P1` real-action train-normal run; do not open seed43/44 or WOB
-   evaluation yet.
+3. Freeze the seed42 non-locked WOB evaluation manifest and reporting path before any evaluation.
+4. Do not open seed43/44 or WOB evaluation without a separate explicit command.
 
 ## 6. Claim Boundaries
 
 Safe:
 
 - `WOB-P0 audit completed.`
-- `WOB remains unopened for training/evaluation.`
+- `WOB-P0 did not itself include training or evaluation.`
 - `A metadata-only non-locked manifest preview was frozen from existing split metadata.`
 - `Current local WOB inputs are incomplete for a full local WOB replay.`
 - `The official Kaggle dataset listings contain all non-locked rows needed for a Kaggle-native WOB-P0 audit.`
 - `The verified Kaggle-native WOB-P0 bundle resolved all 120 non-locked rows while keeping locked test closed.`
-- `Kaggle-native WOB-P0 tooling passed, but WOB training/evaluation remain unopened.`
+- `Kaggle-native WOB-P0 tooling passed, and WOB-P1 seed42 training is recorded separately.`
 
 Unsafe:
 
@@ -180,25 +183,23 @@ Unsafe:
 
 ## 7. Recommended Next Phase
 
-Current recommendation: prepare `WOB-P1` seed42 safely, but do not run WOB evaluation yet.
+Current recommendation: run the WOB-P1 seed42 evaluation-readiness gate, but do not run WOB
+evaluation yet.
 
 Next prerequisite task:
 
-- prepare the seed42 one-section Kaggle runner using the verified `WOB-P0` bundle.
-
-Only after that passes should the next execution phase become:
-
-- `WOB-P1` seed42 real-action train-normal run.
+- freeze the seed42 non-locked WOB evaluation manifest, reporting path, and claim boundary using
+  the verified `WOB-P0` and WOB-P1 seed42 training artifacts.
 
 ## 8. Kaggle / Cloud Guidance For The Next Execution Phase
 
-This guidance is for `WOB-P1` only after the Kaggle-native `WOB-P0` pass succeeds and a human
-explicitly authorizes training.
+This guidance is historical WOB-P1 training guidance. The seed42 training artifact is now verified;
+future WOB work must pass an evaluation-readiness gate before any evaluation.
 
 - Kaggle is acceptable only if the runtime provides a T4-or-newer GPU with CUDA `sm_70+` and at
   least 14 GB VRAM.
 - Do not use P100; preflight must fail on `sm_60`.
-- Start with seed42 only.
+- Preserve the seed42 training artifact as the only verified WOB-P1 training run so far.
 - Train-normal only.
 - Keep locked test closed.
 - Run a dry-run/preflight first before any live training submission.

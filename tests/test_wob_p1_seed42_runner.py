@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import csv
 import json
+import sys
 import tarfile
+from importlib import util
 from pathlib import Path
 
 from cloud.wob_p1_seed42.common import (
@@ -10,6 +12,26 @@ from cloud.wob_p1_seed42.common import (
     package_artifacts,
     write_selected_split_csv,
 )
+
+
+def _load_preflight_robust():
+    path = Path(__file__).resolve().parents[1] / "cloud" / "wob_p1_seed42" / "preflight_robust.py"
+    spec = util.spec_from_file_location("wob_p1_preflight_robust", path)
+    assert spec is not None
+    assert spec.loader is not None
+    module = util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def _load_finalize_artifacts():
+    path = Path(__file__).resolve().parents[1] / "cloud" / "wob_p1_seed42" / "finalize_artifacts.py"
+    spec = util.spec_from_file_location("wob_p1_finalize_artifacts", path)
+    assert spec is not None
+    assert spec.loader is not None
+    module = util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
 
 
 def _write_split(path: Path) -> None:
@@ -123,6 +145,96 @@ def test_wob_p1_preflight_checks_reject_sm60_runtime():
     ).read_text(encoding="utf-8")
     assert "--min-compute-major 7" in script
     assert "--min-vram-gb 14" in script
+
+
+def test_robust_preflight_uses_total_memory_cuda_property(monkeypatch):
+    module = _load_preflight_robust()
+
+    class _Props:
+        total_memory = 16 * 1024**3
+
+    class _FakeCuda:
+        @staticmethod
+        def is_available():
+            return True
+
+        @staticmethod
+        def device_count():
+            return 1
+
+        @staticmethod
+        def get_device_properties(index):
+            return _Props()
+
+        @staticmethod
+        def get_device_capability(index):
+            return (7, 5)
+
+        @staticmethod
+        def get_device_name(index):
+            return "Tesla T4"
+
+    class _FakeTorch:
+        __version__ = "fake"
+        cuda = _FakeCuda()
+
+    monkeypatch.setitem(sys.modules, "torch", _FakeTorch())
+
+    report = module._check_cuda()
+
+    assert report["ok"] is True
+    assert report["vram_bytes"] == 16 * 1024**3
+    assert report["gpus"][0]["vram_gb"] == 16.0
+
+
+def test_robust_preflight_detects_nested_kaggle_inputs(tmp_path: Path):
+    module = _load_preflight_robust()
+    base = tmp_path / "kaggle" / "input" / "datasets" / "benedictwilkinsai"
+    (base / "world-of-bugs-normal" / "NORMAL-TRAIN").mkdir(parents=True)
+    (base / "world-of-bugs-test" / "TEST").mkdir(parents=True)
+
+    report = module._check_kaggle_inputs(str(tmp_path / "kaggle" / "input"))
+
+    assert report["ok"] is True
+    assert report["normal_input_root"].endswith("world-of-bugs-normal")
+    assert report["test_input_root"].endswith("world-of-bugs-test")
+
+
+def test_finalize_removes_stale_failure_debug_after_success(tmp_path: Path):
+    module = _load_finalize_artifacts()
+    output_root = tmp_path / "out"
+    metadata_root = tmp_path / "meta"
+    log_dir = tmp_path / "logs"
+    output_root.mkdir()
+    metadata_root.mkdir()
+    log_dir.mkdir()
+    (output_root / "training_metadata.json").write_text(
+        json.dumps(
+            {
+                "status": "research_update_run_complete_unvalidated",
+                "updates_completed": 4000,
+                "best_validation_loss": 0.6093359693480057,
+            }
+        ),
+        encoding="utf-8",
+    )
+    (output_root / "validator_report.json").write_text(
+        json.dumps({"status": "wob_seed42_validated"}),
+        encoding="utf-8",
+    )
+    stale_debug = tmp_path / "wob_seed42_failure_debug.tar.gz"
+    stale_debug.write_bytes(b"stale")
+
+    manifest = module.finalize(
+        str(output_root),
+        str(metadata_root),
+        str(log_dir),
+        str(tmp_path / "wob_seed42_artifacts.tar.gz"),
+        failure_debug_path=str(stale_debug),
+    )
+
+    assert manifest["stale_failure_debug_removed"] is True
+    assert not stale_debug.exists()
 
 
 def test_wob_docs_do_not_claim_wob_performance():

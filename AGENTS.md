@@ -23,23 +23,24 @@ Current verified status:
 - R4 rerun seed43/44 training artifacts are local SHA256-verified and pass per-seed validators.
 - R5 TempGlitch non-locked identical-episode evaluation completed and produced
   provenance-bound episode-level outputs under the frozen validation-only protocol.
-- Kaggle-native `WOB-P0` passed with a verified downloaded evidence bundle; WOB training/evaluation
-  remain unopened.
+- Kaggle-native `WOB-P0` passed with a verified downloaded evidence bundle; WOB-P1 seed42 training
+  artifact verification is complete, while WOB evaluation remains unopened.
 - Controlled World of Bugs expansion is `LOCAL_WOB_P0_STATUS=BLOCKED_MISSING_INPUTS`,
-  `WOB_P0_KAGGLE_STATUS=PASSED`, `WOB_STATUS=READY_FOR_WOB_P1`,
-  `WOB_P1_TRAINING_STATUS=NOT_STARTED`.
-- The prepared next notebook path is the seed42 one-section wrapper
-  `cloud/wob_p1_seed42/run_kaggle_wob_p1_seed42_all.sh`.
+  `WOB_P0_KAGGLE_STATUS=PASSED`, `WOB_STATUS=WOB_P1_SEED42_TRAINING_VALIDATED`,
+  `WOB_P1_TRAINING_STATUS=SEED42_VALIDATED`, `WOB_EVALUATION_STATUS=NOT_STARTED`.
+- The next WOB gate is seed42 non-locked evaluation readiness; seed43/44 and WOB evaluation remain
+  separately closed.
 - Locked test is closed.
 - LeWM gameplay evaluation now includes the earlier one-buggy-episode window pilot plus the
   completed non-locked TempGlitch R5 identical-episode family.
 
 Safe claims include bounded normal-only CUDA training and the exact qualified Gate 7-9 pilot
 metrics, research-source readiness, the validated 500-update GPU profile, artifact-backed R4
-rerun seed43/44 training evidence, and the exact qualified R5 TempGlitch family results. Do not
-claim broad LeWM glitch-detection performance, superiority, state of the art, temporal
-localization, SIGReg benefit, WOB evidence, cross-game generalization, or a neural locked-test
-result.
+rerun seed43/44 training evidence, the exact qualified R5 TempGlitch family results, and the
+narrow WOB-P1 seed42 validator-passed training-artifact claim. Do not claim broad LeWM
+glitch-detection performance, superiority, state of the art, temporal localization, SIGReg
+benefit, WOB evaluation performance, cross-game generalization, action-conditioning benefit, or a
+neural locked-test result.
 
 ## Agent Operating Mode
 

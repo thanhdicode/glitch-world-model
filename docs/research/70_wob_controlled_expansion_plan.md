@@ -2,8 +2,8 @@
 
 Date: 2026-06-18
 
-Status: planning-only for WOB execution; local `WOB-P0` is blocked on missing local tar inputs,
-while the Kaggle-native `WOB-P0` pass is now verified from the downloaded evidence bundle
+Status: WOB-P1 seed42 training artifact verified; local `WOB-P0` is blocked on missing local tar
+inputs, the Kaggle-native `WOB-P0` pass is verified, and WOB evaluation remains unopened
 
 ## 1. Current Evidence Baseline
 
@@ -16,7 +16,9 @@ while the Kaggle-native `WOB-P0` pass is now verified from the downloaded eviden
   baselines, while F1/calibration remained mixed because `frame_diff` had the strongest observed
   F1 row.
 - Locked test remains closed, unmaterialized, and unscored.
-- World of Bugs training/evaluation have not started.
+- WOB-P1 seed42 training has produced a SHA256-verified, validator-passed artifact under the
+  train-normal / validation-normal protocol.
+- WOB evaluation has not started.
 - `WOB-P0` has now completed as a local dataset/materialization audit and metadata-only manifest
   preview freeze.
 - Local `WOB-P0` remains `BLOCKED_MISSING_INPUTS` because the local attached WOB root satisfies
@@ -29,8 +31,10 @@ while the Kaggle-native `WOB-P0` pass is now verified from the downloaded eviden
   rows, 0 missing rows, 59 locked rows skipped, `locked_test_materialized=false`,
   `locked_test_scored=false`, `performance_metrics_present=false`, and
   `semantic_action_synchronization_verified=false`.
-- The intended next milestone is `WOB-P1` seed42 real-action normal-only training preparation, not
-  a 63.462 GiB local full download.
+- The verified WOB-P1 seed42 artifact hash is
+  `54bb2b606233e35ca2f23607d0bf07d8101c040080c15154dacb7c9cd4c62f03`.
+- The intended next milestone is a non-locked WOB evaluation-readiness gate for seed42, not a
+  63.462 GiB local full download and not seed43/44 training.
 
 ## 2. Why WOB Comes Next
 
@@ -89,8 +93,10 @@ aligned.
 ## 5. Proposed WOB Phase Breakdown
 
 - `WOB-P0`: Kaggle-native full non-locked dataset/materialization audit plus manifest freeze.
-- `WOB-P1`: seed42 real-action normal-only run.
-- `WOB-P2`: seed43/44 only if seed42 validator passes and budget remains acceptable.
+- `WOB-P1`: seed42 real-action normal-only run. Status: training artifact verified, evaluation
+  unopened.
+- `WOB-P2`: seed43/44 only if seed42 evaluation-readiness review passes and budget remains
+  acceptable.
 - `WOB-P3`: WOB identical-episode evaluation under a frozen manifest and matched reporting path.
 - `WOB-P4`: TempGlitch versus WOB cross-dataset comparison under matched claim boundaries.
 - `WOB-P5`: zero-action versus real-action/action-conditioning ablation only if earlier evidence
@@ -125,26 +131,29 @@ No WOB-measured runtime is currently recorded in the repository, so this phase d
 
 Conservative planning posture:
 
-- Treat WOB runtime and memory as unknown until Kaggle-native `WOB-P0` and the first controlled
-  seed pass define the actual envelope.
+- Treat WOB evaluation runtime and memory as unknown until a seed42 evaluation-readiness review
+  defines the actual envelope.
 - Use TempGlitch R4/R5 only as rough planning context, not as a WOB runtime estimate.
-- Approve the staged seed42-first plan before any three-seed WOB family is considered.
-- Require an explicit compute decision before launching `WOB-P1`.
+- Do not launch seed43/44 before seed42 evaluation readiness is reviewed.
+- Require an explicit compute decision before launching any further WOB training or evaluation.
 
 ## 8. Claim Boundaries
 
-Safe before WOB execution:
+Safe after WOB-P1 seed42 training artifact verification:
 
 - WOB is planned as a controlled expansion after the completed TempGlitch R5 checkpoint.
 - The repository already has frozen WOB protocol evidence and reduced loader compatibility.
-- WOB remains unopened for training/evaluation.
+- WOB-P1 seed42 produced a SHA256-verified, validator-passed training artifact under the recorded
+  train-normal / validation-normal protocol.
+- Validation-buggy rows remained excluded from fit/selection.
+- WOB evaluation remains unopened.
 - Local `WOB-P0` is complete but blocked on missing non-locked source tar inputs.
-- Kaggle-native `WOB-P0` passed and now supports seed42 `WOB-P1` runner preparation only; WOB
-  training and evaluation remain unopened until a separate explicit human command.
+- Kaggle-native `WOB-P0` passed and the seed42 `WOB-P1` training artifact is verified; WOB
+  evaluation remains unopened until a separate explicit human command.
 
-Unsafe before WOB execution:
+Unsafe before WOB evaluation:
 
-- Any WOB result claim.
+- Any WOB detection-performance or evaluation result claim.
 - Any cross-game generalization claim.
 - Any action-conditioning benefit claim.
 - Any superiority or state-of-the-art claim.
@@ -152,7 +161,7 @@ Unsafe before WOB execution:
 
 ## 9. Go/No-Go Criteria for WOB Execution
 
-All of the following must be true before any WOB training or evaluation:
+All of the following must be true before any WOB evaluation or additional WOB training:
 
 - Post-R5 docs and context are aligned.
 - The WOB manifest and reporting sequence are frozen.
@@ -160,17 +169,17 @@ All of the following must be true before any WOB training or evaluation:
 - The WOB locked split remains closed.
 - Compute budget and runtime target are explicitly approved.
 - Required scripts are identified, or any implementation gap is documented and accepted.
-- A separate explicit human command authorizes WOB execution.
+- A separate explicit human command authorizes WOB evaluation or additional WOB training.
 
 ## 10. Next Phase Prompt Stub
 
 Next prompt theme:
 
-`WOB-P1 seed42 real-action train-normal Kaggle runner`
+`WOB-P1 seed42 non-locked evaluation-readiness gate`
 
-The next execution-oriented phase should audit the frozen WOB inputs, confirm the materialization
-path, freeze the first non-locked WOB manifest, and stop before training unless explicitly
-authorized to continue.
+The next execution-oriented phase should freeze the seed42 non-locked WOB evaluation manifest and
+reporting path, confirm that validation-buggy rows are used only for evaluation, and stop before
+running evaluation unless explicitly authorized to continue.
 
 Update after execution of that prompt:
 
@@ -178,6 +187,7 @@ Update after execution of that prompt:
 - The current local blocker is missing non-locked WOB tar inputs under the attached root.
 - The Kaggle-native `WOB-P0` pass is verified from the downloaded evidence bundle with hash
   `e08e683ecdf59662092116495fbb4f10ab74225c5414ae7acf1d456bd5d492b9`.
-- The prepared next step is the seed42 one-section notebook entrypoint
-  `cloud/wob_p1_seed42/run_kaggle_wob_p1_seed42_all.sh`.
-- `WOB-P1` should not execute until a human explicitly authorizes training.
+- The seed42 WOB-P1 training artifact is verified in
+  [72_wob_p1_seed42_training_result.md](72_wob_p1_seed42_training_result.md).
+- The next gate is evaluation readiness only; seed43/44, WOB evaluation, and locked test remain
+  closed until separately authorized.

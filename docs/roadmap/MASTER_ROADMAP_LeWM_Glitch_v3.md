@@ -43,10 +43,9 @@ As of Git commit `cce03b6`:
   per-seed validator passes.
 - R5 completed for the non-locked TempGlitch identical-episode family and is recorded in the
   dedicated R5 results note.
-- The current operational phase is post-`WOB-P0` preparation: the local audit remains blocked on
-  missing raw tar coverage, the Kaggle-native `WOB-P0` pass has now been verified from the
-  downloaded audit bundle, and the next controlled WOB phase is seed42-only `WOB-P1` training
-  preparation.
+- The current operational phase is post-`WOB-P1` seed42 training verification: the local audit
+  remains blocked on missing raw tar coverage, the Kaggle-native `WOB-P0` pass has been verified,
+  the seed42 WOB-P1 training artifact is validator-passed, and WOB evaluation remains unopened.
 - Locked test is closed, unmaterialized, and unscored.
 
 ## 3. Research Questions
@@ -118,8 +117,9 @@ Conditional expansion after the R5 checkpoint:
 
 Only R7 may propose locked-test release. It still requires a separate direct user command.
 
-Current post-R5 operational rule: keep the verified Kaggle-native `WOB-P0` bundle as the WOB
-entry checkpoint, prepare seed42-only `WOB-P1` first, and keep WOB evaluation separately closed.
+Current post-R5 operational rule: keep the verified Kaggle-native `WOB-P0` bundle and verified
+seed42 WOB-P1 training artifact as WOB entry evidence, run an evaluation-readiness gate before any
+WOB evaluation, and keep WOB evaluation separately closed.
 R6/R7/R8 remain the core TempGlitch roadmap stages, and WOB stays a separately authorized
 expansion branch.
 
@@ -334,9 +334,11 @@ locked-test discipline.
 
 ### WOB Claim Safety
 
-- No WOB result claim before WOB artifacts exist.
+- No WOB detection-performance claim before WOB evaluation artifacts exist.
 - `WOB-P0` completion supports only audit/materialization-readiness wording, not WOB performance
   or evaluation.
+- `WOB-P1` seed42 training verification supports only the narrow training-artifact claim, not WOB
+  detection performance or evaluation.
 - No action-conditioning claim on TempGlitch.
 - Preserve the WOB action-semantics caveat until stronger synchronization evidence exists.
 - WOB locked test remains closed unless separately authorized.
@@ -439,7 +441,8 @@ The calendar is aggressive and assumes available GPU quota and prompt turnaround
 - Parallelize independent baselines and paper generation only after the main protocol freezes.
 - Preserve resumable checkpoints and immutable evidence for every attempt.
 - Additional compute does not justify uncontrolled search; predeclare experiment families.
-- Do not allocate WOB GPU time until the TempGlitch R5 checkpoint is explicitly met.
+- Do not allocate additional WOB GPU time until the seed42 evaluation-readiness gate is explicitly
+  passed.
 
 ## 17. Root Causes Of Prior Execution Friction
 

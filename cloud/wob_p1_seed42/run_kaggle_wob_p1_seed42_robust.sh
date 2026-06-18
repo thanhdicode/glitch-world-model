@@ -323,7 +323,8 @@ python cloud/wob_p1_seed42/finalize_artifacts.py \
   --output-root "$WOB_OUTPUT_ROOT/wob_seed42" \
   --metadata-root "$WOB_P1_METADATA_ROOT" \
   --log-dir "$LOG_DIR" \
-  --tarball-path "/kaggle/working/wob_seed42_artifacts.tar.gz"
+  --tarball-path "/kaggle/working/wob_seed42_artifacts.tar.gz" \
+  --failure-debug-path "/kaggle/working/wob_seed42_failure_debug.tar.gz"
 
 if [[ -f /kaggle/working/wob_seed42_artifacts.tar.gz ]]; then
   sha256sum /kaggle/working/wob_seed42_artifacts.tar.gz > /kaggle/working/wob_seed42_artifacts.tar.gz.sha256

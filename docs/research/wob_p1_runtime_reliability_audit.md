@@ -1,7 +1,7 @@
 # WOB-P1 Runtime Reliability Audit
 
 **Date**: 2026-06-18
-**Repo SHA**: 50c671cdbf4c8af7832f63d40363a5c66240c3fe
+**Repo SHA**: pre-fix audit base `50c671cdbf4c8af7832f63d40363a5c66240c3fe`
 **Branch**: main
 **Auditor**: Junie (automated)
 
@@ -38,7 +38,7 @@ Detection is handled by `cloud.wob_kaggle_native.common.detect_kaggle_roots()`.
 | Lance datasets | `/kaggle/working/wob_lance/` |
 | Final tarball | `/kaggle/working/wob_seed42_artifacts.tar.gz` |
 | Tarball hash | `/kaggle/working/wob_seed42_artifacts.tar.gz.sha256` |
-| Failure debug | `/kaggle/working/wob_seed42_failure_debug.tar.gz` |
+| Failure debug | `/kaggle/working/wob_seed42_failure_debug.tar.gz` only when the run fails |
 
 ## 4. Idempotency Assessment
 
@@ -135,3 +135,33 @@ well within limits. However, if Lance build is slow, this could be a factor.
 
 See `cloud/wob_p1_seed42/README_KAGGLE_RELIABLE_RUN.md` for the exact Kaggle cell to
 paste after the hardening changes are applied.
+
+## 14. 2026-06-18 Seed42 Artifact And Stale Debug Update
+
+The downloaded seed42 success bundle was verified separately from the failure-debug archive:
+
+- Success artifact SHA256:
+  `54bb2b606233e35ca2f23607d0bf07d8101c040080c15154dacb7c9cd4c62f03`
+- Validator status: `wob_seed42_validated`
+- Updates completed: `4000`
+- Best update: `1500`
+- Best validation-normal loss: `0.6093359693480057`
+- `validation_buggy_used_for_fit_select=false`
+- `locked_test_materialized=false`
+- `locked_test_scored=false`
+- `evaluation_run=false`
+
+The accompanying failure-debug archive is classified as `STALE_DEBUG_FALSE_POSITIVE`. Its robust
+preflight report failed because CUDA inspection referenced `total_mem` on
+`torch._C._CudaDeviceProperties`, while the success bundle later recorded CUDA training and a
+passed validator. The debug archive also detected the nested official Kaggle dataset roots that
+the earlier shallow input check rejected.
+
+Follow-up hardening:
+
+- robust preflight now reads `total_memory` with a compatibility fallback;
+- robust preflight uses the shared Kaggle root detector for nested official dataset mounts;
+- finalization removes a stale failure-debug tarball after a successful training and validator
+  pass;
+- the tarball validator can validate the downloaded bundle directly from the tarball plus SHA256
+  sidecar without extracting raw data into the repository.

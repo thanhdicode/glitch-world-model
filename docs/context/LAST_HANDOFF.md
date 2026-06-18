@@ -1,65 +1,63 @@
 # LAST_HANDOFF.md
 
-Last completed task: FISAT/Springer paper scaffold pre-submission hardening
+Last completed task: WOB-P1 seed42 training artifact verification and runner hardening
 Commit: current task commit
 Date: 2026-06-18
 
 ## What Changed
 
-- Finalized the local Springer/LNICST scaffold and kept `paper/main.tex` on `llncs`.
-- Expanded the bibliography with checked metadata and stable URLs/DOIs where available.
-- Hardened the source matrix so each literature group has support, non-support, allowed-claim,
-  forbidden-overclaim, and target-section boundaries.
-- Added readiness status and exact paper TODOs for Overleaf compile, FISAT initial submission, and
-  camera-ready packaging.
-- Separated paper blockers from empirical blockers and kept WOB-P1 seed42 as a separate gate.
+- Verified the downloaded WOB-P1 seed42 training artifact against its SHA256 sidecar.
+- Recorded the narrow validator-passed training-artifact claim and kept WOB evaluation unopened.
+- Classified the accompanying failure-debug archive as `STALE_DEBUG_FALSE_POSITIVE`.
+- Hardened robust preflight CUDA memory inspection and nested Kaggle input detection.
+- Hardened finalization so a successful run can remove a stale failure-debug tarball.
 
 ## Checks Passed
 
-- `python -m pytest`
+- `python scripts/update_context_cache.py --refresh-boot`
+- `python scripts/validate_wob_seed42_artifacts.py --tarball "C:\Users\ADMIN\Downloads\wob_seed42_artifacts.tar.gz" --sha256 "C:\Users\ADMIN\Downloads\wob_seed42_artifacts.tar.gz.sha256"`
+- `python -m pytest -q`
 - `python -m ruff check .`
 - `python -m ruff format --check .`
-- `python scripts/validate_research_release.py --ci`
 - `python scripts/check_claim_registry.py`
-- `python scripts/doctor.py`
 - `python scripts/validate_context_cache.py`
+- `python scripts/doctor.py`
+- `python scripts/validate_research_release.py --ci`
 - `pre-commit run --all-files`
+- `git diff --check`
 
 ## Safety Status
 
-- No training run, evaluation run, locked-test action, or Kaggle live action was performed in this
-  task.
-- No broad LeWM superiority, state-of-the-art, locked-test, WOB training/evaluation, SIGReg,
-  real-time, or temporal-localization claim was introduced.
-- The scaffold is intentionally appendix-first and evidence-bounded.
+- No WOB training was launched in this task; verification used the downloaded seed42 artifact.
+- No WOB evaluation, seed43/44 launch, or locked-test action was performed.
+- No raw data, output bundle, checkpoint, weight file, credential, or Kaggle token was committed.
+- No WOB detection-performance, cross-game, action-conditioning, superiority, or locked-test claim
+  was introduced.
 - Locked test remains closed, unmaterialized, and unscored.
 
 ## Gate Status After Task
 
 - R5 remains the current paper-facing empirical ceiling: completed, non-locked, validation-only,
   provenance-bound identical-episode family.
-- WOB remains a controlled expansion track and is still outside the bounded results section.
+- WOB-P1 seed42 training artifact verification is complete, but WOB evaluation remains unopened
+  and outside the bounded results section.
 - Locked test remains UNTOUCHED / NOT_MATERIALIZED / NOT_SCORED.
 
 ## Open Blockers
 
-- Local PDF compile remains blocked by LaTeX/template availability; the repository intentionally
-  does not vendor `llncs.cls`.
-- The final abstract, metadata, page count, similarity screening, and final claim audit remain open
-  before submission.
+- WOB seed42 still has no evaluation result.
+- Seed43/44 remain closed.
+- Locked test remains separately gated.
 
 ## Next Recommended Task
 
-- Expand the paper bibliography and literature matrix from verified primary sources, then tighten
-  section prose while keeping the R5 results bounded to the non-locked TempGlitch validation-only
-  identical-episode family.
+- Run the WOB-P1 seed42 non-locked evaluation-readiness gate: freeze the evaluation manifest,
+  reporting path, and claim boundary, then stop for explicit authorization before evaluation.
 
 ## Files Likely Relevant Next
 
-- `paper/main.tex`
-- `paper/sections/02_related_work.tex`
-- `paper/sections/08_results_bounded.tex`
-- `paper/appendices/a_claim_registry.tex`
-- `paper/tables/r5_bounded_results.tex`
-- `docs/research/70_paper_claim_map.md`
-- `docs/research/71_paper_source_matrix.md`
+- `docs/research/72_wob_p1_seed42_training_result.md`
+- `docs/research/70_wob_controlled_expansion_plan.md`
+- `cloud/wob_p1_seed42/`
+- `scripts/validate_wob_seed42_artifacts.py`
+- `docs/research/16_claim_registry.md`

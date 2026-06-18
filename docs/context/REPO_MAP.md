@@ -1,7 +1,7 @@
 # REPO_MAP.md
 
-Generated: 2026-06-18T02:50:59+00:00
-Commit: `8ab7e7879e2283ac57739d681a4244d477adfdd4`
+Generated: 2026-06-18T08:12:56+00:00
+Commit: `5b05ea7768df7e7117ec38ba69d16b3fca3e5a8c`
 Generator: `scripts/update_context_cache.py`
 
 ## Top-Level Map
@@ -27,6 +27,7 @@ Generator: `scripts/update_context_cache.py`
 | `slides/` | Tracked repository path. |
 | `src/` | Reusable pipeline and model integration code. |
 | `tests/` | Fast default-environment tests. |
+| `uv.lock/` | Tracked repository path. |
 
 ## Python Modules
 | File | Symbols | Purpose |
@@ -96,6 +97,8 @@ Generator: `scripts/update_context_cache.py`
 | `scripts/validate_lewm_r3_seed_artifacts.py` | _read_json, _assert, _finite_numbers, validate_artifacts, main | Python module. |
 | `scripts/validate_lewm_research_mvp_config.py` | _require, validate_research_mvp_config, build_parser, main | Python module. |
 | `scripts/validate_research_release.py` | git_tracked_files, validate_tracked_files, validate_required_paths, validate_playbook_structure, validate_release, working_tree_errors, build_parser, main | Python module. |
+| `scripts/validate_wob_seed42_artifacts.py` | _read_json, _assert, _finite_numbers, _sha256_file, _sha256_tar_member, _parse_sha256_sidecar, _read_text_member, _read_json_member, validate_artifacts, validate_artifact_tarball, main | Python module. |
+| `scripts/verify_wob_p0_kaggle_evidence.py` | sha256_file, parse_sha256_sidecar, _read_text_member, _read_json_member, verify_wob_p0_kaggle_evidence, build_parser, main | Python module. |
 | `src/glitch_detection/__init__.py` | - | Glitch detection research pipeline. |
 | `src/glitch_detection/analysis.py` | _split_metadata, load_scores_with_labels, prediction_rows, _group_rows, binary_metrics_by_group, top_errors, _percentile, score_distribution_summary, write_json, write_rows_csv, write_markdown_table, _format_markdown_value | Python module. |
 | `src/glitch_detection/calibration.py` | calibrate_threshold, evaluate_with_fixed_threshold | Python module. |
@@ -211,6 +214,8 @@ Generator: `scripts/update_context_cache.py`
 | `scripts/validate_lewm_r3_seed_artifacts.py` | CLI/helper script. | Gate 5 |
 | `scripts/validate_lewm_research_mvp_config.py` | CLI/helper script. | Gate 5 |
 | `scripts/validate_research_release.py` | CLI/helper script. | general |
+| `scripts/validate_wob_seed42_artifacts.py` | CLI/helper script. | general |
+| `scripts/verify_wob_p0_kaggle_evidence.py` | CLI/helper script. | Gate 5 |
 
 ## Tests
 | Test | Coverage |
@@ -283,11 +288,13 @@ Generator: `scripts/update_context_cache.py`
 | `tests/test_statistics.py` | statistics |
 | `tests/test_tempglitch.py` | tempglitch |
 | `tests/test_tempglitch_split_runner.py` | tempglitch_split_runner |
+| `tests/test_verify_wob_p0_kaggle_evidence.py` | verify_wob_p0_kaggle_evidence |
 | `tests/test_video_autoencoder.py` | video_autoencoder |
 | `tests/test_video_eval.py` | video_eval |
 | `tests/test_wob_kaggle_native_common.py` | wob_kaggle_native_common |
 | `tests/test_wob_kaggle_native_prepare.py` | wob_kaggle_native_prepare |
 | `tests/test_wob_p0_audit.py` | wob_p0_audit |
+| `tests/test_wob_p1_seed42_runner.py` | wob_p1_seed42_runner |
 | `tests/test_wob_protocol.py` | wob_protocol |
 
 ## Docs
@@ -369,7 +376,7 @@ Generator: `scripts/update_context_cache.py`
 | `docs/research/68_r5_identical_episode_eval_plan.md` | 68 r5 identical episode eval plan |
 | `docs/research/68_r5_tempglitch_and_wob_expansion_plan.md` | 68 r5 tempglitch and wob expansion plan |
 | `docs/research/69_r5_tempglitch_identical_episode_results.md` | 69 r5 tempglitch identical episode results |
+| `docs/research/70_paper_claim_map.md` | 70 paper claim map |
 | `docs/research/70_wob_controlled_expansion_plan.md` | 70 wob controlled expansion plan |
+| `docs/research/71_paper_source_matrix.md` | 71 paper source matrix |
 | `docs/research/71_wob_p0_dataset_materialization_audit.md` | 71 wob p0 dataset materialization audit |
-| `docs/research/adr/ADR-001-topic-scope.md` | ADR-001-topic-scope |
-| `docs/research/adr/ADR-002-dataset-strategy.md` | ADR-002-dataset-strategy |

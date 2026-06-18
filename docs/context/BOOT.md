@@ -1,7 +1,7 @@
 # BOOT.md - Fast Start Context For Agents
 
-Generated: 2026-06-18T02:50:59+00:00
-Commit: `8ab7e7879e2283ac57739d681a4244d477adfdd4`
+Generated: 2026-06-18T08:12:56+00:00
+Commit: `5b05ea7768df7e7117ec38ba69d16b3fca3e5a8c`
 
 ## Read Order
 1. `RULES.md`
@@ -29,16 +29,17 @@ The current execution roadmap is `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v3.md`
 - R4 rerun seed43/44 training artifacts are local SHA256-verified and pass per-seed validators.
 - R5 identical-episode evaluation completed on the non-locked research MVP and wrote
   provenance-bound episode-level outputs.
-- Local `WOB-P0` remains blocked on missing tar files, but the Kaggle-native `WOB-P0` pass is now
-  verified from the downloaded evidence bundle.
+- Local `WOB-P0` remains blocked on missing tar files, the Kaggle-native `WOB-P0` pass is
+  verified from the downloaded evidence bundle, and WOB-P1 seed42 training artifact verification
+  is complete.
 - Gate 10 is closed.
 - Locked test is closed.
 - LeWM gameplay evaluation now exists for the non-locked TempGlitch research MVP only; locked
-  test remains unopened, and WOB remains limited to audit-plus-training preparation.
+  test remains unopened, and WOB remains limited to audit-plus-training-artifact evidence.
 
 ## Immediate Next Task
 - Preserve the verified Kaggle-native `WOB-P0` bundle and its recorded hashes.
-- Prepare the one-section `WOB-P1` seed42 Kaggle runner without opening WOB evaluation.
+- Run the WOB-P1 seed42 evaluation-readiness gate without opening WOB evaluation.
 - Do not touch locked test.
 
 ## Safety
@@ -50,6 +51,8 @@ The current execution roadmap is `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v3.md`
 - No data, output, checkpoint, Lance dataset, cache, `.env`, token, or `kaggle.json` commits.
 - No broad LeWM superiority, SIGReg benefit, temporal localization, SOTA, or neural locked-test
   claim from the current non-locked evidence bundle.
+- No WOB detection-performance, cross-game, or action-conditioning claim from the seed42 training
+  artifact.
 
 ## Required Checks
 ```powershell

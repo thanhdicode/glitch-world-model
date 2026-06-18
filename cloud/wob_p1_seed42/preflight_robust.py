@@ -16,6 +16,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from cloud.wob_kaggle_native.common import detect_kaggle_roots
+
 
 def _utc_now() -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -35,13 +37,34 @@ def _check_cuda() -> dict[str, Any]:
 
         available = torch.cuda.is_available()
         if available:
+            gpus: list[dict[str, Any]] = []
+            for index in range(torch.cuda.device_count()):
+                props = torch.cuda.get_device_properties(index)
+                total_memory = getattr(props, "total_memory", None)
+                if total_memory is None:
+                    total_memory = getattr(props, "total_mem", None)
+                if total_memory is None:
+                    raise AttributeError(
+                        "CUDA device properties expose neither total_memory nor total_mem"
+                    )
+                capability = torch.cuda.get_device_capability(index)
+                gpus.append(
+                    {
+                        "index": index,
+                        "name": torch.cuda.get_device_name(index),
+                        "compute_capability": list(capability),
+                        "vram_bytes": int(total_memory),
+                        "vram_gb": round(int(total_memory) / (1024**3), 2),
+                    }
+                )
             return {
                 "cuda_available": True,
-                "gpu_name": torch.cuda.get_device_name(0),
-                "gpu_count": torch.cuda.device_count(),
-                "compute_capability": list(torch.cuda.get_device_capability(0)),
-                "vram_bytes": torch.cuda.get_device_properties(0).total_mem,
-                "vram_gb": round(torch.cuda.get_device_properties(0).total_mem / (1024**3), 2),
+                "gpu_name": gpus[0]["name"],
+                "gpu_count": len(gpus),
+                "compute_capability": gpus[0]["compute_capability"],
+                "vram_bytes": gpus[0]["vram_bytes"],
+                "vram_gb": gpus[0]["vram_gb"],
+                "gpus": gpus,
                 "torch_version": torch.__version__,
                 "ok": True,
             }
@@ -97,11 +120,26 @@ def _check_imports() -> dict[str, Any]:
 
 def _check_kaggle_inputs(input_root: str = "/kaggle/input") -> dict[str, Any]:
     root = Path(input_root)
-    expected = ["world-of-bugs-normal", "world-of-bugs-test"]
-    found: dict[str, bool] = {}
-    for name in expected:
-        found[name] = (root / name).exists()
-    return {"input_root": input_root, "datasets": found, "ok": all(found.values())}
+    try:
+        normal_root, test_root = detect_kaggle_roots(root)
+    except Exception as exc:
+        return {
+            "input_root": input_root,
+            "normal_input_root": None,
+            "test_input_root": None,
+            "ok": False,
+            "reason": str(exc),
+        }
+    return {
+        "input_root": input_root,
+        "normal_input_root": str(normal_root),
+        "test_input_root": str(test_root),
+        "datasets": {
+            "world-of-bugs-normal": normal_root.exists(),
+            "world-of-bugs-test": test_root.exists(),
+        },
+        "ok": normal_root.exists() and test_root.exists(),
+    }
 
 
 def _check_locked_test_absent() -> dict[str, Any]:

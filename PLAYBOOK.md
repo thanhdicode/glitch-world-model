@@ -905,13 +905,12 @@ granularity, negative results, and lessons for reproducible game-QA anomaly rese
 | 7, complete | ML Research Engineers | Confirm artifact-backed R4 rerun seed43/44 training archives | report 67, local SHA256 verification, per-seed validator outputs | local hashes match and both validators pass | none |
 | 8, complete | ML Research Engineers | Complete R5 identical-episode evaluation on the non-locked research MVP | Roadmap v3 R5, reports 67-69, scoring and evaluation scripts | frozen inputs, provenance-bound outputs, no locked-test access | none |
 | 9, complete | ML Research Engineers | Execute and verify the Kaggle-native `WOB-P0` audit | Roadmap v3 WOB section, reports 40, 67-71, downloaded Kaggle audit bundle, claim registry, context docs | verified bundle reports `READY_FOR_WOB_P1`, 120/120 non-locked rows resolved, 59 locked rows skipped, locked test remains closed | none |
-| 10 | ML Research Engineers | Prepare the `WOB-P1` seed42 real-action train-normal Kaggle runner | Roadmap v3 WOB section, verified WOB-P0 bundle, seed42 cloud package, artifact validator, context docs | one-section seed42 runner exists, train-normal/validation-normal only, validation-buggy excluded from fit/select, locked test closed | runtime or packaging drift |
+| 10, complete | ML Research Engineers | Verify the `WOB-P1` seed42 real-action train-normal Kaggle training artifact | Roadmap v3 WOB section, verified WOB-P0 bundle, seed42 cloud package, artifact validator, context docs, report 72 | seed42 artifact SHA256 verified and validator-passed, train-normal/validation-normal only, validation-buggy excluded from fit/select, locked test closed | no WOB evaluation result |
 | 11 | Locked Test Release Officer | Keep locked test closed pending a frozen validation decision and separate direct command | release workflow | no materialization/scoring before frozen decision | schedule pressure |
 
-Current recommended task: use the verified Kaggle-native `WOB-P0` bundle to prepare the
-seed42-only `WOB-P1` real-action training runner, using the one-section notebook entrypoint
-`cloud/wob_p1_seed42/run_kaggle_wob_p1_seed42_all.sh`. Do not execute WOB evaluation or touch
-locked test without a later explicit command. Open seed43/44 only after seed42 artifacts pass.
+Current recommended task: use the verified `WOB-P1` seed42 training artifact to run a non-locked
+evaluation-readiness gate. Do not execute WOB evaluation, open seed43/44, or touch locked test
+without a later explicit command.
 
 ## 29. Maintenance Rules For This Playbook
 

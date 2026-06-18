@@ -126,11 +126,17 @@ def finalize(
     metadata_root: str,
     log_dir: str,
     tarball_path: str,
+    failure_debug_path: str | None = None,
 ) -> dict[str, Any]:
     out = Path(output_root)
     meta = Path(metadata_root)
     logs = Path(log_dir)
     tar_path = Path(tarball_path)
+    failure_debug = (
+        Path(failure_debug_path)
+        if failure_debug_path
+        else tar_path.with_name("wob_seed42_failure_debug.tar.gz")
+    )
 
     manifest: dict[str, Any] = {
         "timestamp": _utc_now(),
@@ -173,6 +179,11 @@ def finalize(
     manifest["locked_test_materialized"] = False
     manifest["locked_test_scored"] = False
     manifest["evaluation_run"] = False
+    manifest["stale_failure_debug_removed"] = False
+    if manifest["training_completed"] and manifest["validator_passed"] and failure_debug.is_file():
+        failure_debug.unlink()
+        manifest["stale_failure_debug_removed"] = True
+        manifest["stale_failure_debug_path"] = str(failure_debug)
 
     # Write manifest
     manifest_path = out / "artifact_manifest.json"
@@ -196,9 +207,16 @@ def main(argv: list[str] | None = None) -> None:
     parser.add_argument("--metadata-root", required=True)
     parser.add_argument("--log-dir", required=True)
     parser.add_argument("--tarball-path", required=True)
+    parser.add_argument("--failure-debug-path", default=None)
     args = parser.parse_args(argv)
 
-    manifest = finalize(args.output_root, args.metadata_root, args.log_dir, args.tarball_path)
+    manifest = finalize(
+        args.output_root,
+        args.metadata_root,
+        args.log_dir,
+        args.tarball_path,
+        failure_debug_path=args.failure_debug_path,
+    )
     print("\n=== Artifact Manifest Summary ===")
     print(
         json.dumps(
