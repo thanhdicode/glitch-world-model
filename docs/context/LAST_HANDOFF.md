@@ -1,73 +1,65 @@
 # LAST_HANDOFF.md
 
-Last completed task: WOB-P0 Kaggle evidence sync and WOB-P1 seed42 runner preparation
+Last completed task: FISAT/Springer paper scaffold pre-submission hardening
 Commit: current task commit
 Date: 2026-06-18
 
 ## What Changed
 
-- Verified the downloaded Kaggle-native `WOB-P0` evidence bundle and confirmed:
-  `READY_FOR_WOB_P1`, 120 selected rows, 120 resolved rows, 0 missing rows, 59 locked rows
-  skipped, locked test closed, and no performance metrics.
-- Added `scripts/verify_wob_p0_kaggle_evidence.py` so the downloaded WOB-P0 audit bundle can be
-  rechecked locally without extracting raw symlinked episode payloads.
-- Updated the claim registry, roadmap, WOB docs, and context status to distinguish:
-  local `WOB-P0` still blocked, Kaggle-native `WOB-P0` passed, `WOB_STATUS=READY_FOR_WOB_P1`,
-  `WOB_P1_TRAINING_STATUS=NOT_STARTED`.
-- Added the seed42-only one-section Kaggle runner package under `cloud/wob_p1_seed42/`.
-- Reused the existing real LeWM Kaggle trainer and WOB Lance conversion path instead of inventing
-  a new training command.
-- Added `scripts/validate_wob_seed42_artifacts.py` plus focused tests for bundle verification,
-  P1 selection filtering, packaging hygiene, and the one-section Kaggle command.
+- Finalized the local Springer/LNICST scaffold and kept `paper/main.tex` on `llncs`.
+- Expanded the bibliography with checked metadata and stable URLs/DOIs where available.
+- Hardened the source matrix so each literature group has support, non-support, allowed-claim,
+  forbidden-overclaim, and target-section boundaries.
+- Added readiness status and exact paper TODOs for Overleaf compile, FISAT initial submission, and
+  camera-ready packaging.
+- Separated paper blockers from empirical blockers and kept WOB-P1 seed42 as a separate gate.
 
 ## Checks Passed
 
-- `python scripts/verify_wob_p0_kaggle_evidence.py --tarball C:\Users\ADMIN\Downloads\wob_p0_kaggle_audit_outputs.tar.gz --sha256 C:\Users\ADMIN\Downloads\wob_p0_kaggle_audit_outputs.tar.gz.sha256`
-- `python -m pytest -q tests/test_verify_wob_p0_kaggle_evidence.py tests/test_wob_p1_seed42_runner.py tests/test_wob_kaggle_native_prepare.py tests/test_wob_p0_audit.py tests/test_wob_protocol.py tests/test_run_kaggle_lewm.py`
-- Remaining full validation suite runs after this handoff update.
+- `python -m pytest`
+- `python -m ruff check .`
+- `python -m ruff format --check .`
+- `python scripts/validate_research_release.py --ci`
+- `python scripts/check_claim_registry.py`
+- `python scripts/doctor.py`
+- `python scripts/validate_context_cache.py`
+- `pre-commit run --all-files`
 
 ## Safety Status
 
-- No local WOB training, WOB evaluation, locked-test action, or WOB seed43/44 launch was run in
-  this task.
-- No broad LeWM superiority, state-of-the-art, temporal-localization, SIGReg-benefit, WOB-result,
-  cross-game, or locked-test claim was added.
-- Only verification tooling, tests, safe Kaggle-runner scripts, and documentation/status surfaces
-  were changed.
+- No training run, evaluation run, locked-test action, or Kaggle live action was performed in this
+  task.
+- No broad LeWM superiority, state-of-the-art, locked-test, WOB training/evaluation, SIGReg,
+  real-time, or temporal-localization claim was introduced.
+- The scaffold is intentionally appendix-first and evidence-bounded.
 - Locked test remains closed, unmaterialized, and unscored.
 
 ## Gate Status After Task
 
-- FIX-0 GPU capability guard: DONE.
-- R3 seed42: local extract remains present, but fresh local archive provenance is separate from
-  the later R5 evidence bundle.
-- R4 seed43/44: artifact-backed rerun after local SHA256 verification and per-seed validator
-  passes.
-- R4 bundle: artifact-backed rerun after local SHA256 verification.
-- R5: COMPLETED_NONLOCKED with provenance-bound episode-level outputs.
-- WOB expansion: local `WOB-P0` is `BLOCKED_MISSING_INPUTS`, Kaggle-native `WOB-P0` is `PASSED`,
-  `WOB_STATUS=READY_FOR_WOB_P1`, and `WOB-P1` remains not started.
-- Locked test: UNTOUCHED / NOT_MATERIALIZED / NOT_SCORED.
+- R5 remains the current paper-facing empirical ceiling: completed, non-locked, validation-only,
+  provenance-bound identical-episode family.
+- WOB remains a controlled expansion track and is still outside the bounded results section.
+- Locked test remains UNTOUCHED / NOT_MATERIALIZED / NOT_SCORED.
 
 ## Open Blockers
 
-- WOB evaluation remains unopened pending a future explicit command after seed42 artifacts exist.
-- The prepared `WOB-P1` runner still depends on the Kaggle runtime successfully installing the
-  LeWM runtime packages and completing the first real-action seed42 training pass.
+- Local PDF compile remains blocked by LaTeX/template availability; the repository intentionally
+  does not vendor `llncs.cls`.
+- The final abstract, metadata, page count, similarity screening, and final claim audit remain open
+  before submission.
 
 ## Next Recommended Task
 
-- Create a Kaggle notebook, attach the same two official WOB datasets, and run the one-section
-  seed42 command from `cloud/wob_p1_seed42/run_kaggle_wob_p1_seed42_all.sh`. Download only
-  `wob_seed42_artifacts.tar.gz` and its `.sha256`. Keep seed43/44, WOB evaluation, and locked
-  test closed in the meantime.
+- Expand the paper bibliography and literature matrix from verified primary sources, then tighten
+  section prose while keeping the R5 results bounded to the non-locked TempGlitch validation-only
+  identical-episode family.
 
 ## Files Likely Relevant Next
 
-- `docs/research/70_wob_controlled_expansion_plan.md`
-- `docs/research/71_wob_p0_dataset_materialization_audit.md`
-- `scripts/verify_wob_p0_kaggle_evidence.py`
-- `cloud/wob_p1_seed42/README.md`
-- `cloud/wob_p1_seed42/run_kaggle_wob_p1_seed42_all.sh`
-- `scripts/validate_wob_seed42_artifacts.py`
-- `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v3.md`
+- `paper/main.tex`
+- `paper/sections/02_related_work.tex`
+- `paper/sections/08_results_bounded.tex`
+- `paper/appendices/a_claim_registry.tex`
+- `paper/tables/r5_bounded_results.tex`
+- `docs/research/70_paper_claim_map.md`
+- `docs/research/71_paper_source_matrix.md`

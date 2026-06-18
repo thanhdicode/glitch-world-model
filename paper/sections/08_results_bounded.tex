@@ -1,0 +1,22 @@
+\section{Bounded Results}
+\label{sec:results}
+
+TODO: keep this section limited to validated, hash-addressable result families. Do not add
+ablation, WOB, locked-test, or cross-dataset result prose without a corresponding validated
+artifact and claim-registry update.
+
+Table~\ref{tab:r5-bounded-results} summarizes the current qualified comparison surface. The table
+caption explicitly states the permitted scope: \emph{Non-locked TempGlitch validation-only
+identical-episode family.}
+
+\input{tables/r5_bounded_results}
+
+Within this frozen family, the best observed AUROC and AUPRC rows came from seed44 LeWM variants,
+while a \texttt{frame\_diff} configuration produced the strongest bounded F1 row. These are exact
+family-qualified observations, not broad method claims. The confidence intervals are wide enough to
+reinforce that this paper should emphasize provenance and containment over triumphal framing.
+
+The safe interpretation is therefore modest: the repository now contains a full provenance-bound
+R5 evaluation bundle and a reproducible bounded comparison table. The unsafe interpretation would
+be to promote these rows into a general claim of superiority, state of the art, or cross-dataset
+readiness. Appendix~\ref{app:forbidden-claims} makes that distinction explicit.

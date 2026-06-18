@@ -1,0 +1,32 @@
+\section{Related Work}
+\label{sec:related-work}
+
+The verified bibliography is organized by what each source is allowed to support. Gameplay-glitch
+benchmarks frame the task and the temporal-glitch setting \cite{glitchbench,tempglitch}. Automated
+game-testing work provides a broader software-engineering context in which testing goals and
+oracles remain central \cite{politowski2022automatedtesting}. These sources motivate the problem;
+they do not establish that the present repository solves production game QA.
+
+The representation context comes from joint-embedding predictive architectures
+\cite{ijepa,vjepa}, latent world models \cite{worldmodels,planet,dreamerv3}, and the external LeWM
+paper \cite{lewm}. These sources explain why latent prediction and learned dynamics are relevant
+background. They do not support any claim that this repository contributes a new architecture or
+achieves control/planning results.
+
+Video anomaly detection and OOD/calibration work are included to locate the evaluation problem
+without importing their metrics as paper claims \cite{sultani2018ucfcrime,park2020mnad,
+hendrycks2017baseline,guo2017calibration}. Leakage and reproducibility papers motivate the
+paper's conservative split, threshold, and artifact-reporting discipline
+\cite{kaufman2011leakage,kapoor2023leakage,pineau2021reproducibility}.
+
+At this stage, the role of related work is not to claim a comprehensive literature survey. Instead,
+it provides the minimum scholarly context necessary to position the paper without inventing
+coverage. Table~\ref{tab:literature-matrix} records the current literature surface and the exact
+claim boundary for each group.
+
+\input{tables/literature_matrix}
+
+The literature section should remain cautious as the manuscript develops. In particular, this
+scaffold does not argue that latent-surprise methods dominate alternative anomaly detectors; it
+only notes that joint-embedding predictive architectures and latent world models are plausible
+background for the repository's bounded evaluation.

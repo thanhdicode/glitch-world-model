@@ -1,0 +1,18 @@
+\section{Problem Formulation}
+\label{sec:problem-formulation}
+
+The paper studies gameplay glitch detection as a bounded binary discrimination problem at the
+episode level. Each evaluation episode belongs to either a normal or buggy category, while
+window-level scores are treated as diagnostic intermediates rather than the primary reporting unit.
+
+Let an episode be decomposed into temporally ordered windows. A scorer assigns each window a scalar
+anomaly score, and an episode aggregation rule converts the window scores into a single episode
+score. Under the current validated protocol, the paper compares episode-level discrimination
+behavior across artifact-backed LeWM checkpoints and simple baselines using fixed, provenance-bound
+manifests.
+
+The formulation in this scaffold is intentionally narrower than a general anomaly-detection claim.
+It does not assert cross-game generalization, temporal localization, or deployment robustness. It
+only frames the exact question answered by the current non-locked validation family: whether a
+frozen set of scorers can separate bounded normal and buggy TempGlitch evaluation episodes when fit
+and threshold selection obey the repository's leakage controls.

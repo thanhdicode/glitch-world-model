@@ -1,0 +1,19 @@
+\section{Method Summary}
+\label{sec:method}
+
+The current manuscript is method-light by design. Its paper-facing method surface consists of
+artifact-backed latent-surprise scoring from previously trained LeWM checkpoints together with two
+simple comparison baselines, \texttt{frame\_diff} and train-normal-fitted
+\texttt{feature\_distance}.
+
+The LeWM family is conceptually aligned with joint-embedding predictive architectures
+\cite{ijepa,vjepa,lewm} and with broader latent world-model work
+\cite{worldmodels,planet,dreamerv3}. In the repository's bounded evaluation path, a trained
+checkpoint maps input windows to latent prediction behavior from which scalar surprise statistics
+can be derived. Different score variants and episode aggregations are compared within a frozen
+manifest rather than through unconstrained post hoc tuning.
+
+This section intentionally avoids claiming a new architecture contribution. For the current paper
+state, the safe contribution is the evaluation framing and the artifact-backed reporting surface,
+not a proof of broad method superiority. Any later expansion of the method section should remain
+subordinate to the claim map and provenance appendices.

@@ -1,0 +1,14 @@
+\section{Datasets and Data Scope}
+\label{sec:datasets}
+
+The current bounded empirical surface is the TempGlitch research MVP source summarized in
+Table~\ref{tab:dataset-inventory}. The paper-facing R5 family uses train-normal data for fit-only
+operations, a validation-normal split that is partitioned into calibration and evaluation roles,
+and a validation-buggy split reserved for evaluation only.
+
+\input{tables/dataset_inventory}
+
+World of Bugs appears in the repository as a controlled expansion track rather than as a paper
+results source at this stage. The project has verified WOB-P0 acquisition evidence, but WOB
+training and evaluation remain unopened for paper claims. Keeping that boundary explicit avoids
+blending workflow readiness with empirical evidence.

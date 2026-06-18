@@ -1,0 +1,28 @@
+\section{Introduction}
+\label{sec:introduction}
+
+Video game glitch detection is an appealing testbed for anomaly-sensitive visual systems because
+the target events are rare, heterogeneous, and easy to overclaim from narrow evaluation windows.
+Recent benchmark and evaluation efforts have started to make the space more concrete, but they
+also highlight how quickly leakage, split mistakes, or unsupported generalization language can
+distort conclusions \cite{glitchbench,tempglitch,kaufman2011leakage,kapoor2023leakage}.
+
+This manuscript is therefore organized around a deliberately conservative thesis: before broad
+performance claims, a paper in this area needs a bounded protocol, explicit artifact provenance,
+and a clear statement of what was and was not evaluated. The present scaffold focuses on that
+infrastructure for latent-surprise style gameplay glitch detection using artifact-backed LeWM
+checkpoints and a non-locked TempGlitch validation-only identical-episode family. The surrounding
+literature motivates the ingredients--latent world-model representations, video anomaly scoring,
+calibration caution, and reproducibility checklists--but none of those external sources is treated
+as evidence for this repository's empirical results.
+
+At the current evidence level, the paper makes only bounded claims. It does not claim state of the
+art, broad superiority over alternative methods, locked-test performance, World of Bugs training or
+evaluation performance, real-time deployment readiness, or temporal-localization ability. The
+appendices and control documents are intentionally first-class because the current paper phase is
+as much about scientific containment as about results presentation.
+
+The rest of the scaffold separates problem framing, method summary, protocol controls, dataset
+inventory, bounded experiments, and limitations. This structure is intended to let later prose
+expansion happen safely from the claim map in Appendix~\ref{app:claim-registry} rather than from
+memory or informal summaries.

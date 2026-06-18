@@ -1,0 +1,20 @@
+\begin{table}[t]
+\caption{Verified literature matrix. Sources provide context only unless a repository evidence
+document separately supports a project-specific claim.}
+\label{tab:literature-matrix}
+\centering
+\small
+\begin{tabularx}{\textwidth}{@{}lX X@{}}
+\toprule
+Group & Supports & Does not support \\
+\midrule
+JEPA: \texttt{ijepa}, \texttt{vjepa} & Background on joint-embedding predictive architectures and video feature prediction. & Claims that this repository improves JEPA-family representation learning. \\
+Latent world models: \texttt{worldmodels}, \texttt{planet}, \texttt{dreamerv3}, \texttt{lewm} & Context for learned latent dynamics and latent world-model framing. & Claims about control, planning, or broad world-model performance by this repository. \\
+Video anomaly detection: \texttt{sultani2018ucfcrime}, \texttt{park2020mnad} & Background on video anomaly-detection formulations. & Direct comparability or superiority over surveillance-video anomaly systems. \\
+Gameplay glitch detection: \texttt{glitchbench}, \texttt{tempglitch} & Motivation for gameplay glitch benchmarks and temporal glitch framing. & Any benchmark leaderboard, VLM, or broad glitch-detection superiority claim. \\
+Automated game testing: \texttt{politowski2022automatedtesting} & Context that automated game testing remains workflow- and oracle-sensitive. & A production QA or human-replacement claim. \\
+OOD and calibration: \texttt{hendrycks2017baseline}, \texttt{guo2017calibration} & Background for score-based detection and calibration caution. & Claims that LeWM surprise is calibrated probability or an OOD benchmark winner. \\
+Leakage and reproducibility: \texttt{kaufman2011leakage}, \texttt{kapoor2023leakage}, \texttt{pineau2021reproducibility} & Rationale for split hygiene, learn-predict separation, and checklist-style reporting. & Claims that unaudited future experiments are already reproducible or leakage-free. \\
+\bottomrule
+\end{tabularx}
+\end{table}

@@ -1,84 +1,57 @@
-\documentclass[10pt,conference]{IEEEtran}
-\usepackage{booktabs}
-\usepackage{graphicx}
-\usepackage{url}
+\documentclass[runningheads]{llncs}
 
-\title{Latent World Models for Video Game Glitch Detection: A Leakage-Aware Evaluation Protocol}
-\author{\IEEEauthorblockN{Anonymous for Review}}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+% Working title; keep bounded until the final claim audit is complete.
+\title{Leakage-Aware Latent Surprise Evaluation for Gameplay Glitch Detection}
+\titlerunning{Leakage-Aware Latent Surprise Evaluation}
+
+\author{Author metadata placeholder}
+\authorrunning{Author metadata placeholder}
+\institute{Institution metadata placeholder}
 
 \begin{document}
 \maketitle
 
 \begin{abstract}
-We study whether latent world-model prediction errors can support video game glitch detection
-under leakage-aware evaluation. The current manuscript scaffold documents the protocol, data
-splits, safety gates, completed R5 episode-level evaluation provenance, and the remaining
-pre-paper alignment work. It intentionally keeps placeholders for R3 archival clarification,
-full paper-table insertion of the R5 family, ablations, and any conditional post-R5 World of
-Bugs expansion. No locked-test result or broad performance conclusion is reported before the
-required artifact-backed validation and claim review complete.
+This manuscript is an appendix-first Springer/LNICST-safe scaffold for a bounded paper on
+gameplay glitch detection with latent-surprise methods. The current draft intentionally limits
+itself to verified repository evidence, with a cautious focus on the non-locked TempGlitch
+validation-only identical-episode family and on reproducibility documentation. The abstract is a
+TODO placeholder and must be replaced only after the bibliography, claim map, and section-level
+evidence audit are complete. It does not claim final performance.
+\keywords{gameplay glitch detection \and world models \and evaluation protocol \and reproducibility}
 \end{abstract}
 
-\section{Introduction}
-Video game glitches are visually diverse, temporally sparse, and expensive to annotate. A
-latent-surprise detector is attractive because glitches may violate learned normal gameplay
-dynamics. This paper evaluates that hypothesis only through predeclared non-locked validation
-experiments and strict artifact checks.
+\input{sections/01_introduction}
+\input{sections/02_related_work}
+\input{sections/03_problem_formulation}
+\input{sections/04_method}
+\input{sections/05_protocol}
+\input{sections/06_datasets}
+\input{sections/07_experiments}
+\input{sections/08_results_bounded}
+\input{sections/09_limitations}
+\input{sections/10_conclusion}
 
-\section{Related Work}
-We position the study against gameplay glitch benchmarks, video anomaly detection, latent world
-models, and joint-embedding predictive architectures \cite{tempglitch,glitchbench,lewm,ijepa,vjepa}.
-
-\section{Protocol}
-The protocol trains or calibrates only on allowed train-normal data. Checkpoint selection and early
-stopping use validation-normal prediction loss only. Validation-buggy episodes are reserved for
-post-training evaluation. The locked test remains closed until a separate frozen validation
-decision and explicit user command.
-
-\section{Data}
-The research MVP source contains train-normal, validation-normal, and validation-buggy TempGlitch
-Lance datasets with frozen hashes recorded in the repository. R3 seed 42 uses only:
-\begin{itemize}
-  \item train-normal: \texttt{tempglitch\_train\_normal\_all\_local.lance}
-  \item validation-normal: \texttt{tempglitch\_validation\_normal\_all\_local.lance}
-\end{itemize}
-No validation-buggy or locked-test path is used during training, fitting, checkpoint selection, or
-early stopping.
-
-\section{Method}
-The LeWM path trains a JEPA-style latent world model on normal gameplay and later evaluates latent
-prediction surprise at episode level. Baselines and ablations are predeclared in the roadmap, but
-their results are not inserted until their artifacts validate. A World of Bugs cross-game,
-real-action extension is planned only as a controlled post-R5 expansion track.
-
-\section{R3 Seed 42 Training}
-TODO_R3_SEED42_RESULT
-
-\section{R4 Multi-Seed Training}
-Artifact-backed R4 rerun archives for seeds 43 and 44 were locally SHA256-verified and both
-per-seed artifact validators passed. Detection metrics remain pending until R5 identical-episode
-evaluation.
-
-\section{R5 Episode-Level Evaluation}
-The repository now contains a completed provenance-bound non-locked TempGlitch R5
-identical-episode bundle; see `docs/research/69_r5_tempglitch_identical_episode_results.md` for
-the frozen manifest, score, metric, and provenance hashes plus the exact qualified result table.
-Full paper-table integration remains pending in this scaffold.
-
-\section{Ablations}
-TODO_ABLATION_RESULT
-
-\section{Limitations}
-This scaffold makes no claim of state of the art, superiority over baselines, temporal
-localization, SIGReg benefit, or locked-test performance. Negative or failed infrastructure results
-remain part of the record.
-
-\section{Conclusion}
-The project now has artifact-backed R4 rerun training archives for seeds 43 and 44. Scientific
-conclusions remain limited to the exact qualified non-locked TempGlitch R5 family now recorded in
-the repository. Any World of Bugs expansion remains conditional on that TempGlitch R5 checkpoint,
-separate planning approval, and continued locked-test closure.
-
-\bibliographystyle{IEEEtran}
+\bibliographystyle{splncs04}
 \bibliography{references}
+
+\appendix
+\input{appendices/a_claim_registry}
+\input{appendices/b_artifact_provenance}
+\input{appendices/c_dataset_split_protocol}
+\input{appendices/d_reproducibility_checklist}
+\input{appendices/e_forbidden_claims}
+\input{appendices/f_submission_checklist}
+
 \end{document}
