@@ -1,0 +1,62 @@
+{
+  "action_synchronization_verified": false,
+  "calibration": {
+    "count": 12,
+    "evaluation_role": "calibration_normal",
+    "label": "Normal"
+  },
+  "claim_boundary": "The WOB evaluation-readiness gate freezes the seed42 non-locked WOB evaluation manifest, role split, recorded artifact hashes, reporting paths, and claim boundary as metadata only. It runs no WOB evaluation and supports no WOB detection-performance, cross-game generalization, action-conditioning-benefit, SIGReg-benefit, superiority, or locked-test claim. WOB result claims may only be made after the R5-WOB evaluation artifacts exist.",
+  "eval_manifest_path": "configs/wob_protocol/wob_expansion_eval_manifest.csv",
+  "eval_manifest_row_count": 72,
+  "eval_manifest_sha256": "f7dbd85876809a1c2437cf5827ce4c27f289078ca0904ed70c1d75908a1bcec6",
+  "evaluation": {
+    "count": 60,
+    "evaluation_role": "evaluation_buggy",
+    "label": "Buggy"
+  },
+  "evaluation_run": false,
+  "forbidden_claims": [
+    "WOB detection performance or AUROC/AUPRC/F1 before R5-WOB evaluation artifacts exist",
+    "cross-game generalization before R5-XGAME exists",
+    "action-conditioning benefit before the WOB real-action vs zero-action ablation exists",
+    "SIGReg benefit before the R6 SIGReg ablation exists",
+    "any locked-test result or locked-test materialization/scoring"
+  ],
+  "locked_rows_excluded": 59,
+  "locked_test_materialized": false,
+  "locked_test_scored": false,
+  "methods_planned": [
+    "lewm seed42",
+    "lewm seed43",
+    "lewm seed44",
+    "frame_diff",
+    "feature_distance (train-normal-fitted)"
+  ],
+  "phase": "wob_expansion_readiness",
+  "recorded_artifact_hashes": {
+    "wob_p0_kaggle_audit_sha256": "e08e683ecdf59662092116495fbb4f10ab74225c5414ae7acf1d456bd5d492b9",
+    "wob_p1_seed42_artifact_sha256": "54bb2b606233e35ca2f23607d0bf07d8101c040080c15154dacb7c9cd4c62f03"
+  },
+  "reporting": {
+    "episode_scores_output": "outputs/r5_wob_identical_episode/r5_wob_episode_scores.csv",
+    "manifest_output": "outputs/r5_wob_identical_episode/r5_wob_manifest.csv",
+    "metrics_output": "outputs/r5_wob_identical_episode/r5_wob_metrics.json",
+    "output_dir": "outputs/r5_wob_identical_episode",
+    "provenance_output": "outputs/r5_wob_identical_episode/r5_wob_provenance.json",
+    "results_doc": "docs/research/78_r5_wob_identical_episode_results.md"
+  },
+  "seed": 42,
+  "seed42_selected_checkpoint": {
+    "action_dim": 4,
+    "best_update": 1500,
+    "best_validation_loss": 0.6093359693480057,
+    "seed": 42,
+    "selection_split": "validation_normal",
+    "target_optimizer_updates": 15000
+  },
+  "source_split_csv": "configs/wob_protocol/split.csv",
+  "source_split_sha256": "646dd79fa51fe2fc53a6d3e2bbbe86397f656dc0e2b2629304b7a67c18903024",
+  "status": "frozen",
+  "train_rows_excluded": 48,
+  "validation_buggy_used_for_fit_select": false
+}

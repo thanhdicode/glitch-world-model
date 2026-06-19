@@ -1,7 +1,7 @@
 # BOOT.md - Fast Start Context For Agents
 
-Generated: 2026-06-18T08:12:56+00:00
-Commit: `5b05ea7768df7e7117ec38ba69d16b3fca3e5a8c`
+Generated: 2026-06-19T04:37:58+00:00
+Commit: `32717340369d1d5e49f05859e95f0f33bb22f0ba`
 
 ## Read Order
 1. `RULES.md`
@@ -32,15 +32,19 @@ The current execution roadmap is `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v3.md`
 - Local `WOB-P0` remains blocked on missing tar files, the Kaggle-native `WOB-P0` pass is
   verified from the downloaded evidence bundle, and WOB-P1 seed42 training artifact verification
   is complete.
+- The seed42 non-locked WOB evaluation-readiness gate is frozen, and robust seed43/44 Kaggle
+  training runners are prepared.
 - Gate 10 is closed.
 - Locked test is closed.
 - LeWM gameplay evaluation now exists for the non-locked TempGlitch research MVP only; locked
   test remains unopened, and WOB remains limited to audit-plus-training-artifact evidence.
 
 ## Immediate Next Task
-- Preserve the verified Kaggle-native `WOB-P0` bundle and its recorded hashes.
-- Run the WOB-P1 seed42 evaluation-readiness gate without opening WOB evaluation.
-- Do not touch locked test.
+- Preserve the verified Kaggle-native `WOB-P0` bundle, the seed42 training artifact hash, and the
+  frozen evaluation-readiness metadata.
+- Use the prepared robust Kaggle runner to execute seed43 first, then validate the uploaded
+  seed43 artifact before seed44.
+- Do not run WOB evaluation yet and do not touch locked test.
 
 ## Safety
 - Non-locked-test Kaggle actions use standing Kaggle authorization after security, license,

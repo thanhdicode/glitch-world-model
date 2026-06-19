@@ -1,7 +1,7 @@
 # REPO_MAP.md
 
-Generated: 2026-06-18T08:12:56+00:00
-Commit: `5b05ea7768df7e7117ec38ba69d16b3fca3e5a8c`
+Generated: 2026-06-19T04:37:58+00:00
+Commit: `32717340369d1d5e49f05859e95f0f33bb22f0ba`
 Generator: `scripts/update_context_cache.py`
 
 ## Top-Level Map
@@ -62,6 +62,7 @@ Generator: `scripts/update_context_cache.py`
 | `scripts/prepare_lewm_kaggle_package.py` | build_parser, main | Python module. |
 | `scripts/prepare_lewm_r3_seed_run.py` | canonical_sha256, git_sha, prepare_seed_run, build_parser, main | Python module. |
 | `scripts/prepare_phase6e_kaggle_dataset.py` | _require_file, _estimate_directory, _upload_readme, prepare_phase6e_kaggle_dataset, build_parser, main | Python module. |
+| `scripts/prepare_wob_expansion_readiness.py` | _read_split_rows, _sha256_bytes, build_eval_manifest_rows, render_eval_manifest_csv, build_readiness, render_split_source, prepare, build_parser, main | Freeze the seed42 non-locked World of Bugs evaluation-readiness bundle. |
 | `scripts/repair_kaggle_kernel_write_path.py` | discover_kaggle_executables, safe_file_status, create_canary_package, build_submission_variants, _run, _diagnostics, _canary_slug, _check_remote, _run_variant, build_parser, main | Python module. |
 | `scripts/run_dynamics_experiments.py` | main | Python module. |
 | `scripts/run_gate7_lance_scoring.py` | _validate_inputs, build_parser, main | Python module. |
@@ -97,7 +98,8 @@ Generator: `scripts/update_context_cache.py`
 | `scripts/validate_lewm_r3_seed_artifacts.py` | _read_json, _assert, _finite_numbers, validate_artifacts, main | Python module. |
 | `scripts/validate_lewm_research_mvp_config.py` | _require, validate_research_mvp_config, build_parser, main | Python module. |
 | `scripts/validate_research_release.py` | git_tracked_files, validate_tracked_files, validate_required_paths, validate_playbook_structure, validate_release, working_tree_errors, build_parser, main | Python module. |
-| `scripts/validate_wob_seed42_artifacts.py` | _read_json, _assert, _finite_numbers, _sha256_file, _sha256_tar_member, _parse_sha256_sidecar, _read_text_member, _read_json_member, validate_artifacts, validate_artifact_tarball, main | Python module. |
+| `scripts/validate_wob_expansion_readiness.py` | _read_json, _assert, _sha256_bytes, _read_manifest_rows, validate_readiness, build_parser, main | Validate the frozen seed42 non-locked World of Bugs evaluation-readiness bundle. |
+| `scripts/validate_wob_seed42_artifacts.py` | main | Python module. |
 | `scripts/verify_wob_p0_kaggle_evidence.py` | sha256_file, parse_sha256_sidecar, _read_text_member, _read_json_member, verify_wob_p0_kaggle_evidence, build_parser, main | Python module. |
 | `src/glitch_detection/__init__.py` | - | Glitch detection research pipeline. |
 | `src/glitch_detection/analysis.py` | _split_metadata, load_scores_with_labels, prediction_rows, _group_rows, binary_metrics_by_group, top_errors, _percentile, score_distribution_summary, write_json, write_rows_csv, write_markdown_table, _format_markdown_value | Python module. |
@@ -179,6 +181,7 @@ Generator: `scripts/update_context_cache.py`
 | `scripts/prepare_lewm_kaggle_package.py` | CLI/helper script. | Gate 5 |
 | `scripts/prepare_lewm_r3_seed_run.py` | CLI/helper script. | Gate 5 |
 | `scripts/prepare_phase6e_kaggle_dataset.py` | CLI/helper script. | Gate 5 |
+| `scripts/prepare_wob_expansion_readiness.py` | Freeze the seed42 non-locked World of Bugs evaluation-readiness bundle. | general |
 | `scripts/repair_kaggle_kernel_write_path.py` | CLI/helper script. | Gate 5 |
 | `scripts/run_dynamics_experiments.py` | CLI/helper script. | general |
 | `scripts/run_gate7_lance_scoring.py` | CLI/helper script. | general |
@@ -214,6 +217,7 @@ Generator: `scripts/update_context_cache.py`
 | `scripts/validate_lewm_r3_seed_artifacts.py` | CLI/helper script. | Gate 5 |
 | `scripts/validate_lewm_research_mvp_config.py` | CLI/helper script. | Gate 5 |
 | `scripts/validate_research_release.py` | CLI/helper script. | general |
+| `scripts/validate_wob_expansion_readiness.py` | Validate the frozen seed42 non-locked World of Bugs evaluation-readiness bundle. | general |
 | `scripts/validate_wob_seed42_artifacts.py` | CLI/helper script. | general |
 | `scripts/verify_wob_p0_kaggle_evidence.py` | CLI/helper script. | Gate 5 |
 
@@ -291,6 +295,7 @@ Generator: `scripts/update_context_cache.py`
 | `tests/test_verify_wob_p0_kaggle_evidence.py` | verify_wob_p0_kaggle_evidence |
 | `tests/test_video_autoencoder.py` | video_autoencoder |
 | `tests/test_video_eval.py` | video_eval |
+| `tests/test_wob_expansion_readiness.py` | wob_expansion_readiness |
 | `tests/test_wob_kaggle_native_common.py` | wob_kaggle_native_common |
 | `tests/test_wob_kaggle_native_prepare.py` | wob_kaggle_native_prepare |
 | `tests/test_wob_p0_audit.py` | wob_p0_audit |

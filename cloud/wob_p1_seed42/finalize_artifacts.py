@@ -1,4 +1,4 @@
-"""Finalize WOB-P1 seed42 artifacts: manifest JSON, SHA256 hashes, tarball.
+"""Finalize WOB-P1 seed artifacts: manifest JSON, SHA256 hashes, tarball.
 
 Refuses to package raw datasets, credentials, locked-test files, or huge caches.
 """
@@ -100,10 +100,12 @@ def _build_tarball(
     output_root: Path,
     metadata_root: Path,
     log_dir: Path,
+    *,
+    output_prefix: str,
 ) -> None:
     with tarfile.open(str(tarball_path), "w:gz") as tar:
         for root, prefix in [
-            (output_root, "wob_outputs/wob_seed42"),
+            (output_root, output_prefix),
             (metadata_root, "wob_p1_metadata"),
             (log_dir, "logs"),
         ]:
@@ -126,21 +128,24 @@ def finalize(
     metadata_root: str,
     log_dir: str,
     tarball_path: str,
+    seed: int = 42,
     failure_debug_path: str | None = None,
 ) -> dict[str, Any]:
     out = Path(output_root)
     meta = Path(metadata_root)
     logs = Path(log_dir)
     tar_path = Path(tarball_path)
+    seed_name = f"wob_seed{seed}"
     failure_debug = (
         Path(failure_debug_path)
         if failure_debug_path
-        else tar_path.with_name("wob_seed42_failure_debug.tar.gz")
+        else tar_path.with_name(f"{seed_name}_failure_debug.tar.gz")
     )
 
     manifest: dict[str, Any] = {
         "timestamp": _utc_now(),
-        "phase": "wob_p1_seed42",
+        "phase": f"wob_p1_seed{seed}",
+        "seed": seed,
         "output_root": output_root,
         "metadata_root": metadata_root,
     }
@@ -191,7 +196,13 @@ def finalize(
     print(f"Manifest written to {manifest_path}")
 
     # Build tarball
-    _build_tarball(tar_path, out, meta, logs)
+    _build_tarball(
+        tar_path,
+        out,
+        meta,
+        logs,
+        output_prefix=f"wob_outputs/{seed_name}",
+    )
     if tar_path.is_file():
         manifest["tarball_sha256"] = _sha256_file(tar_path)
         # Re-write manifest with tarball hash
@@ -202,11 +213,12 @@ def finalize(
 
 
 def main(argv: list[str] | None = None) -> None:
-    parser = argparse.ArgumentParser(description="Finalize WOB-P1 seed42 artifacts")
+    parser = argparse.ArgumentParser(description="Finalize WOB-P1 seed artifacts")
     parser.add_argument("--output-root", required=True)
     parser.add_argument("--metadata-root", required=True)
     parser.add_argument("--log-dir", required=True)
     parser.add_argument("--tarball-path", required=True)
+    parser.add_argument("--seed", default=42, type=int)
     parser.add_argument("--failure-debug-path", default=None)
     args = parser.parse_args(argv)
 
@@ -215,6 +227,7 @@ def main(argv: list[str] | None = None) -> None:
         args.metadata_root,
         args.log_dir,
         args.tarball_path,
+        seed=args.seed,
         failure_debug_path=args.failure_debug_path,
     )
     print("\n=== Artifact Manifest Summary ===")

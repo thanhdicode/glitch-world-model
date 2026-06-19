@@ -25,11 +25,13 @@ Current LeWM gate status:
   manifest, score, metric, and report outputs.
 - World of Bugs remains a controlled post-R5 expansion track; WOB-P1 seed42 training artifact
   verification is complete, while WOB evaluation remains unopened.
+- The seed42 non-locked WOB evaluation-readiness gate is frozen, and robust Kaggle training
+  runners for seed43/44 are now prepared.
 - Local WOB replay remains blocked on missing raw tar coverage, but the Kaggle-native `WOB-P0`
   audit has now passed and resolved all 120 non-locked rows with locked test still closed.
 - The verified WOB-P1 seed42 artifact is training evidence only, not WOB detection-performance
   evidence.
-- The next WOB gate is seed42 non-locked evaluation readiness, not WOB evaluation execution.
+- The next WOB execution step is human Kaggle seed43 training, not WOB evaluation execution.
 - Gate 9 remains a one-buggy-episode pilot; Gate 10 has not run.
 - Locked test remains closed.
 - Only exact qualified pilot and R5-family metrics are supported; broad superiority, temporal
@@ -165,7 +167,8 @@ non-locked TempGlitch identical-episode evaluation family. Those R5 results are 
 frozen validation-only family and do not support broad superiority or general glitch-detection
 claims. Kaggle-native `WOB-P0` has now passed with a verified downloaded evidence bundle, and the
 WOB-P1 seed42 training artifact is SHA256-verified and validator-passed under the train-normal /
-validation-normal protocol. WOB evaluation remains closed, and the locked test still requires a
+validation-normal protocol. The seed42 evaluation-readiness gate is frozen, the seed43/44 robust
+Kaggle runners are prepared, WOB evaluation remains closed, and the locked test still requires a
 separate explicit command.
 
 The June 11, 2026 Gate 5 TempGlitch dataset upload is ready. The first approved kernel push
@@ -286,9 +289,9 @@ isolated LeWM environment and compatible checkpoint/data contracts:
 python -m glitch_detection.lewm_latent --manifest data/processed/my_experiment/manifest.csv --labels data/raw/my_labels.csv --output outputs/my_experiment_lewm_scores.csv --checkpoint path/to/lewm.ckpt
 ```
 
-The next WOB evidence gate is seed42 non-locked evaluation readiness on top of the verified
-training artifact. Any future WOB evaluation must freeze its manifest, reporting path, compute
-budget, and claim boundary before execution. Seed43/44 and locked test remain separately closed.
+The next WOB execution step is human Kaggle seed43 training using the prepared robust runner. Any
+future WOB evaluation must stay on the frozen manifest/reporting path and remain closed until the
+required seed artifacts exist. Seed44 and locked test remain separately gated.
 
 Audit the Phase 6E neural training partition without loading PyTorch or touching test:
 

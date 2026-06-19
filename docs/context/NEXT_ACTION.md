@@ -1,11 +1,19 @@
 # NEXT_ACTION.md
 
-Last updated: 2026-06-18T08:12:56+00:00
-Commit: `5b05ea7768df7e7117ec38ba69d16b3fca3e5a8c`
+Last updated: 2026-06-19T04:37:58+00:00
+Commit: `32717340369d1d5e49f05859e95f0f33bb22f0ba`
 
 ## Current Priority
-Run the seed42-only `WOB-P1` non-locked evaluation-readiness gate while keeping WOB evaluation,
-seed43/44, and locked test closed.
+Use the prepared WOB seed43/44 robust Kaggle training runners under Ambitious Plan A. The seed42
+non-locked WOB evaluation-readiness gate is frozen, and the next execution step is the human
+Kaggle seed43 run, then local artifact verification, then seed44. Keep the locked test closed
+throughout.
+
+## Sequenced Steps
+1. Run the human Kaggle seed43 robust training cell on the exact pushed commit SHA.
+2. Download and locally verify the uploaded seed43 artifact bundle plus `.sha256` sidecar.
+3. Run the human Kaggle seed44 robust training cell only after seed43 verifies cleanly.
+4. Run the R5-WOB non-locked identical-episode evaluation on the frozen manifest.
 
 ## Success Criteria
 - Preserve the completed R5 manifest, score, metric, and provenance hashes.
@@ -13,14 +21,18 @@ seed43/44, and locked test closed.
   Kaggle-native `WOB-P0` bundle as the WOB entry checkpoint.
 - Preserve the verified WOB-P1 seed42 training artifact hash
   `54bb2b606233e35ca2f23607d0bf07d8101c040080c15154dacb7c9cd4c62f03`.
-- Freeze a seed42 non-locked WOB evaluation manifest, reporting path, and claim boundary before
-  any evaluation execution.
-- Keep WOB evaluation closed and do not run seed43/44 yet.
+- Keep the seed42 non-locked WOB evaluation manifest, reporting paths, and claim boundary frozen
+  before any evaluation execution.
+- Use the prepared seed43/44 robust Kaggle runners without modifying the frozen WOB protocol.
+- Do not run WOB evaluation yet.
 - Keep locked-test materialization/scoring false.
-- Keep World of Bugs as a controlled post-R5 expansion track and do not open it early.
+- Make no WOB performance, cross-game, action-conditioning, or SIGReg-benefit claim until the
+  corresponding evaluation or ablation artifacts exist.
 
 ## Current Known Blocker
-R5 is complete for the non-locked TempGlitch family. Local `WOB-P0` remains blocked because the
-attached root is incomplete, the Kaggle-native `WOB-P0` bundle is verified, and the WOB-P1 seed42
-training artifact is validator-passed. The correct next step is seed42 WOB evaluation readiness;
-this still does not justify opening locked test, seed43/44, or WOB evaluation.
+R5 is complete for the non-locked TempGlitch family and the WOB evaluation-readiness gate is
+frozen. Local `WOB-P0` remains blocked because the attached root is incomplete, while the
+Kaggle-native `WOB-P0` bundle, the WOB-P1 seed42 training artifact, and the seed43/44 runner
+prep are all validator-backed. The next experimental step needs human Kaggle GPU execution for
+seed43 first; it still does not justify opening the locked test or running WOB evaluation before
+its inputs are ready.
