@@ -1,7 +1,7 @@
 # BOOT.md - Fast Start Context For Agents
 
-Generated: 2026-06-19T06:38:44+00:00
-Commit: `6015659212973c8b7248a497ae332a505b5b1be2`
+Generated: 2026-06-19T15:35:03+00:00
+Commit: `ba024d8b1fd41f7782b644d3461bce260984083a`
 
 ## Read Order
 1. `RULES.md`
@@ -30,21 +30,22 @@ The current execution roadmap is `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v3.md`
 - R5 identical-episode evaluation completed on the non-locked research MVP and wrote
   provenance-bound episode-level outputs.
 - Local `WOB-P0` remains blocked on missing tar files, the Kaggle-native `WOB-P0` pass is
-  verified from the downloaded evidence bundle, and WOB-P1 seed42 and seed43 training artifact
-  verification are complete.
-- The seed42 non-locked WOB evaluation-readiness gate is frozen, the seed43 artifact is now
-  validator-backed, and the seed44 Kaggle runner is prepared.
+  verified from the downloaded evidence bundle, and WOB-P1 seed42/seed43/seed44 training
+  artifact verification is complete.
+- The seed42 non-locked WOB evaluation-readiness gate is frozen, all three planned WOB-P1
+  training artifacts are now validator-backed, and the non-locked `R5-WOB` evaluation path
+  remains closed pending a separate explicit human command.
 - Gate 10 is closed.
 - Locked test is closed.
 - LeWM gameplay evaluation now exists for the non-locked TempGlitch research MVP only; locked
   test remains unopened, and WOB remains limited to audit-plus-training-artifact evidence.
 
 ## Immediate Next Task
-- Preserve the verified Kaggle-native `WOB-P0` bundle, the seed42 and seed43 training artifact
+- Preserve the verified Kaggle-native `WOB-P0` bundle, the seed42/seed43/seed44 training artifact
   hashes, and the frozen evaluation-readiness metadata.
-- Use the prepared robust Kaggle runner to execute seed44 next, then validate the uploaded
-  seed44 artifact before WOB evaluation.
-- Do not run WOB evaluation yet and do not touch locked test.
+- Keep the non-locked `R5-WOB` evaluation path closed until a separate explicit human command
+  authorizes evaluation.
+- Do not touch locked test.
 
 ## Safety
 - Non-locked-test Kaggle actions use standing Kaggle authorization after security, license,

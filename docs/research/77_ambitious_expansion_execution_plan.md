@@ -30,7 +30,7 @@ This document is the controlling execution narrative for that decision. It is co
 | WOB-P0 Kaggle-native audit | PASSED | C-070; bundle SHA256 `e08e683ecdf59662092116495fbb4f10ab74225c5414ae7acf1d456bd5d492b9` |
 | WOB-P1 seed42 training | VALIDATED (artifact only) | C-071; bundle SHA256 `54bb2b606233e35ca2f23607d0bf07d8101c040080c15154dacb7c9cd4c62f03` |
 | WOB-P1 seed43 training | VALIDATED (artifact only) | C-074; bundle SHA256 `df027039b13e987a64d65b7668bec9e2cb998ba54cefc2cedf061acf2e5a6e88` |
-| WOB seed44 training | RUNNER READY; HUMAN KAGGLE EXECUTION PENDING | C-073; robust runner scripts + generalized validator + tests |
+| WOB-P1 seed44 training | VALIDATED (artifact only) | C-075; bundle SHA256 `c5b3178cdb75a0c1f9bcca78eba8beaaf21ffa703917a3f42c476563849fd041` |
 | WOB evaluation (R5-WOB) | NOT STARTED | `WOB_EVALUATION_STATUS=NOT_STARTED` |
 | R5-XGAME cross-game comparison | NOT STARTED | depends on R5-WOB |
 | R6 ablations + failure analysis | NOT STARTED | — |
@@ -44,9 +44,10 @@ Local `WOB-P0` remains `BLOCKED_MISSING_INPUTS` (incomplete attached root); the 
 ## 3. What "next" actually is
 
 The next *practical experimental stage* is to **complete the WOB expansion**, not to finalize the
-paper. The seed42 non-locked WOB evaluation-readiness gate is now frozen locally, seed43 training
-artifact verification is complete, and the seed44 robust Kaggle runner remains ready. The next
-external step is human Kaggle GPU execution for seed44.
+paper. The seed42 non-locked WOB evaluation-readiness gate is now frozen locally, and all three
+planned WOB-P1 training artifacts are now verified. The next empirical step is the frozen
+non-locked `R5-WOB` evaluation path, which remains closed until a separate explicit human command
+authorizes evaluation.
 
 R6 ablations remain **mandatory**. They run after WOB R5/XGAME, or in parallel where they are
 CPU-only (e.g. aggregation ablations reusing existing R5 raw scores). Paper drafting may proceed
@@ -60,8 +61,8 @@ Stages are executed in order; do not burn stages.
 - **A. Repo state audit and plan lock.** This document + `NEXT_ACTION.md` update. (in progress)
 - **B. WOB expansion opening / evaluation-readiness freeze.** Freeze seed42 non-locked WOB
   evaluation manifest, reporting paths, and claim boundary; validate locally. (this batch)
-- **C. R3-WOB seeds 43/44 real-action training.** Seed43 is now artifact-validated; seed44 still
-  requires human GPU execution and post-download verification. Precondition: B passes + GPU go.
+- **C. R3-WOB seeds 43/44 real-action training.** Completed as training-artifact validation only;
+  seed43/seed44 are now SHA256-verified and validator-passed. Precondition satisfied.
 - **D. R5-WOB non-locked identical-episode evaluation.** Same frozen manifest for all methods;
   LeWM seeds 42/43/44 + `frame_diff` + train-normal-fitted `feature_distance`.
 - **E. R5-XGAME TempGlitch vs WOB comparison.** Controlled cross-dataset table; no universal
@@ -91,6 +92,6 @@ Stages are executed in order; do not burn stages.
 
 Phase A+B are preserved on branch `wob-expansion-readiness-gate` at commit `3271734`. Phase C prep
 added the generalized seed validator, robust seed43/44 Kaggle runners, tests, and claim registry
-entry C-073. Seed43 has now produced a locally SHA256-verified, validator-passed training artifact
-recorded as C-074, while seed44 human Kaggle execution remains separate and has not been run
-in-repo.
+entry C-073. Seed43 and seed44 have now produced locally SHA256-verified, validator-passed
+training artifacts recorded as C-074 and C-075. The next empirical gate is `R5-WOB`, which
+remains separately closed until explicitly authorized.

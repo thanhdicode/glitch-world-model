@@ -1,10 +1,9 @@
 # PLAYBOOK.md - LeWM-Glitch Research Operating Bible
 
-Last updated: 2026-06-18
+Last updated: 2026-06-19
 Status owner: repository owner / technical program lead
 Canonical branch at update: `main`
-Evidence cutoff: post-R5 repo alignment through commit
-`2f10ead60bd8a8cfb815f6ce1f83af06ba97538f`
+Evidence cutoff: post-WOB-P1 seed44 artifact verification
 
 ## 0. How To Use This Playbook
 
@@ -103,9 +102,10 @@ and passed the strict validator with locked-test flags false. Gates 7-9 then pro
 real frozen-checkpoint scores, same-manifest baselines, and validation-only pilot metrics. The
 exact 500-update GPU profile is complete as engineering evidence only, the R4 rerun seed43/44
 artifacts are now SHA256-verified and validator-backed, R5 has completed a provenance-bound
-non-locked TempGlitch identical-episode evaluation family, and WOB-P1 seed43 now has a
-SHA256-verified validator-passed training artifact. World of Bugs remains a controlled post-R5
-expansion track, with seed44 training still pending and WOB evaluation still closed.
+non-locked TempGlitch identical-episode evaluation family, and WOB-P1 seed42/seed43/seed44 now
+have SHA256-verified validator-passed training artifacts. World of Bugs remains a controlled
+post-R5 expansion track, with non-locked WOB evaluation still closed pending a separate explicit
+human command.
 
 ## 3. Why This Project Exists
 
@@ -236,7 +236,7 @@ described as components of the audited method, but their gameplay detection bene
 
 ## 8. Current Verified Status
 
-Status date: 2026-06-18.
+Status date: 2026-06-19.
 
 | Gate | Status | Evidence | Missing | Paper claim impact |
 | --- | --- | --- | --- | --- |
@@ -254,8 +254,10 @@ Status date: 2026-06-18.
 The exact 500-update non-locked GPU profile completed and passed strict artifact validation as
 engineering evidence only. The 2026-06-17 R4 rerun archives for seed43 and seed44 are now local
 SHA256-verified and pass the per-seed artifact validators; R5 is complete for the non-locked
-TempGlitch identical-episode family, local WOB replay remains `BLOCKED_MISSING_INPUTS`, and the
-Kaggle-native `WOB-P0` pass is now verified from a downloaded evidence bundle. The LeWM
+TempGlitch identical-episode family, local WOB replay remains `BLOCKED_MISSING_INPUTS`, the
+Kaggle-native `WOB-P0` pass is now verified from a downloaded evidence bundle, and the WOB-P1
+seed42/seed43/seed44 training artifacts are now validator-backed under the train-normal /
+validation-normal protocol. The LeWM
 TempGlitch private dataset is ready and matched the local approved Lance inventory by
 name and size. One exact fingerprint-approved kernel push on 2026-06-11 returned HTTP 409 before
 a run was established; its one-time approval is consumed. The local cause was a kernel slug equal
@@ -908,9 +910,9 @@ granularity, negative results, and lessons for reproducible game-QA anomaly rese
 | 10, complete | ML Research Engineers | Verify the `WOB-P1` seed42 real-action train-normal Kaggle training artifact | Roadmap v3 WOB section, verified WOB-P0 bundle, seed42 cloud package, artifact validator, context docs, report 72 | seed42 artifact SHA256 verified and validator-passed, train-normal/validation-normal only, validation-buggy excluded from fit/select, locked test closed | no WOB evaluation result |
 | 11 | Locked Test Release Officer | Keep locked test closed pending a frozen validation decision and separate direct command | release workflow | no materialization/scoring before frozen decision | schedule pressure |
 
-Current recommended task: run the prepared human Kaggle seed44 robust training cell next, then
-verify the uploaded seed44 artifacts locally before opening WOB evaluation. Do not execute WOB
-evaluation or touch locked test yet.
+Current recommended task: preserve the frozen WOB evaluation-readiness metadata and do not open
+the non-locked `R5-WOB` evaluation path until a separate explicit human command authorizes it. Do
+not touch locked test.
 
 ## 29. Maintenance Rules For This Playbook
 
