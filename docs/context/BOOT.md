@@ -1,7 +1,7 @@
 # BOOT.md - Fast Start Context For Agents
 
-Generated: 2026-06-18T08:12:56+00:00
-Commit: `5b05ea7768df7e7117ec38ba69d16b3fca3e5a8c`
+Generated: 2026-06-19T04:11:06+00:00
+Commit: `d8419ee446900a401ffedf6bdf0346b43915bec6`
 
 ## Read Order
 1. `RULES.md`
@@ -39,8 +39,10 @@ The current execution roadmap is `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v3.md`
 
 ## Immediate Next Task
 - Preserve the verified Kaggle-native `WOB-P0` bundle and its recorded hashes.
-- Run the WOB-P1 seed42 evaluation-readiness gate without opening WOB evaluation.
-- Do not touch locked test.
+- The seed42 WOB evaluation-readiness gate is frozen and validated; keep it frozen.
+- Next experimental step is WOB seed43/44 real-action training (human Kaggle GPU) after a
+  GPU-budget confirmation, then the R5-WOB non-locked evaluation.
+- Do not run WOB evaluation yet and do not touch locked test.
 
 ## Safety
 - Non-locked-test Kaggle actions use standing Kaggle authorization after security, license,
