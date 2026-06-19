@@ -119,6 +119,22 @@ def _check_imports() -> dict[str, Any]:
 
 
 def _check_kaggle_inputs(input_root: str = "/kaggle/input") -> dict[str, Any]:
+    env_normal = os.environ.get("NORMAL_INPUT_ROOT")
+    env_test = os.environ.get("TEST_INPUT_ROOT")
+    if env_normal and env_test:
+        normal_root = Path(env_normal)
+        test_root = Path(env_test)
+        return {
+            "input_root": input_root,
+            "normal_input_root": str(normal_root),
+            "test_input_root": str(test_root),
+            "datasets": {
+                "world-of-bugs-normal": (normal_root / "NORMAL-TRAIN").exists(),
+                "world-of-bugs-test": (test_root / "TEST").exists(),
+            },
+            "ok": (normal_root / "NORMAL-TRAIN").exists() and (test_root / "TEST").exists(),
+        }
+
     root = Path(input_root)
     try:
         normal_root, test_root = detect_kaggle_roots(root)

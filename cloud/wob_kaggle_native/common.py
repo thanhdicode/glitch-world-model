@@ -37,7 +37,9 @@ def resolve_split_audit(repo_root: Path) -> Path:
 def detect_kaggle_roots(input_root: Path) -> tuple[Path, Path]:
     common_normal = [
         input_root / "world-of-bugs-normal",
+        input_root / "world-of-bugs-train",
         input_root / "datasets" / "benedictwilkinsai" / "world-of-bugs-normal",
+        input_root / "datasets" / "benedictwilkinsai" / "world-of-bugs-train",
     ]
     common_test = [
         input_root / "world-of-bugs-test",
@@ -50,28 +52,50 @@ def detect_kaggle_roots(input_root: Path) -> tuple[Path, Path]:
                 return candidate
         return None
 
-    normal = exact_match(common_normal, "NORMAL-TRAIN")
-    test = exact_match(common_test, "TEST")
-    if normal and test:
-        return normal, test
+    def keyword_score(path: Path, keywords: tuple[str, ...]) -> tuple[int, int, str]:
+        lowered = str(path).lower()
+        score = sum(1 for keyword in keywords if keyword in lowered)
+        return score, -len(lowered), lowered
 
-    normal_candidates: list[Path] = []
-    test_candidates: list[Path] = []
-    for path in input_root.rglob("*"):
-        if not path.is_dir():
-            continue
-        if path.name == "NORMAL-TRAIN":
-            normal_candidates.append(path.parent)
-        if path.name == "TEST":
-            test_candidates.append(path.parent)
+    def fallback_match(marker: str, keywords: tuple[str, ...]) -> Path:
+        candidates: list[Path] = []
+        for path in input_root.rglob("*"):
+            if path.is_dir() and path.name == marker:
+                candidates.append(path.parent)
 
-    normal_candidates = sorted(set(normal_candidates))
-    test_candidates = sorted(set(test_candidates))
-    if len(normal_candidates) != 1 or len(test_candidates) != 1:
-        raise FileNotFoundError(
-            "Could not uniquely detect Kaggle WOB roots containing NORMAL-TRAIN and TEST."
+        unique_candidates = sorted(set(candidates))
+        if not unique_candidates:
+            raise FileNotFoundError(
+                f"Could not detect Kaggle WOB root containing marker {marker!r}."
+            )
+        if len(unique_candidates) == 1:
+            return unique_candidates[0]
+
+        ranked = sorted(
+            unique_candidates,
+            key=lambda path: keyword_score(path, keywords),
+            reverse=True,
         )
-    return normal_candidates[0], test_candidates[0]
+        best = ranked[0]
+        best_score = keyword_score(best, keywords)
+        tied = [path for path in ranked if keyword_score(path, keywords) == best_score]
+        if best_score[0] > 0 and len(tied) == 1:
+            return best
+
+        raise FileNotFoundError(
+            "Could not uniquely detect Kaggle WOB roots containing NORMAL-TRAIN and TEST. "
+            f"Candidates for {marker!r}: {[str(path) for path in unique_candidates]}"
+        )
+
+    normal = exact_match(common_normal, "NORMAL-TRAIN")
+    if normal is None:
+        normal = fallback_match("NORMAL-TRAIN", ("world-of-bugs", "normal", "train"))
+
+    test = exact_match(common_test, "TEST")
+    if test is None:
+        test = fallback_match("TEST", ("world-of-bugs", "test"))
+
+    return normal, test
 
 
 def add_tree_to_tar(

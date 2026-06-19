@@ -66,6 +66,14 @@ def test_runner_common_script_includes_stage_markers_and_finalization():
     assert "finalize_artifacts.py" in script
 
 
+def test_runner_common_script_refuses_to_continue_without_detected_inputs_file():
+    script = (
+        _repo_root() / "cloud" / "wob_p1_seed42" / "run_kaggle_wob_p1_seed42_robust.sh"
+    ).read_text(encoding="utf-8")
+    assert 'DETECTED_INPUTS_JSON="$WOB_P1_METADATA_ROOT/detected_inputs.json"' in script
+    assert "FATAL: detect_inputs.json was not created; refusing to continue." in script
+
+
 def test_wrapper_scripts_are_shell_entrypoints():
     repo_root = _repo_root()
     for rel in [

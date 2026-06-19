@@ -192,14 +192,20 @@ stop_heartbeat
 echo ""
 echo "=== STAGE 2: Detect Kaggle inputs ==="
 if ! stage_done "detect_inputs"; then
-  python - <<'PY'
+python - <<'PY'
 import json
 import os
 from pathlib import Path
 
 from cloud.wob_kaggle_native.common import detect_kaggle_roots
 
-normal_root, test_root = detect_kaggle_roots(Path(os.environ.get("INPUT_ROOT", "/kaggle/input")))
+env_normal = os.environ.get("NORMAL_INPUT_ROOT")
+env_test = os.environ.get("TEST_INPUT_ROOT")
+if env_normal and env_test:
+    normal_root = Path(env_normal)
+    test_root = Path(env_test)
+else:
+    normal_root, test_root = detect_kaggle_roots(Path(os.environ.get("INPUT_ROOT", "/kaggle/input")))
 if not normal_root.exists():
     raise SystemExit(f"FATAL: Normal input root does not exist: {normal_root}")
 if not test_root.exists():
@@ -221,6 +227,12 @@ PY
   mark_stage_done "detect_inputs"
 else
   echo "[SKIP] detect_inputs already done"
+fi
+
+DETECTED_INPUTS_JSON="$WOB_P1_METADATA_ROOT/detected_inputs.json"
+if [[ ! -f "$DETECTED_INPUTS_JSON" ]]; then
+  echo "FATAL: detect_inputs.json was not created; refusing to continue." >&2
+  exit 1
 fi
 
 export NORMAL_INPUT_ROOT="$(python - <<'PY'

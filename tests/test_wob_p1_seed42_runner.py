@@ -211,6 +211,22 @@ def test_robust_preflight_detects_nested_kaggle_inputs(tmp_path: Path):
     assert report["test_input_root"].endswith("world-of-bugs-test")
 
 
+def test_robust_preflight_accepts_explicit_input_overrides(tmp_path: Path, monkeypatch):
+    module = _load_preflight_robust()
+    normal = tmp_path / "mounted" / "world-of-bugs-train"
+    test = tmp_path / "mounted" / "world-of-bugs-test"
+    (normal / "NORMAL-TRAIN").mkdir(parents=True)
+    (test / "TEST").mkdir(parents=True)
+    monkeypatch.setenv("NORMAL_INPUT_ROOT", str(normal))
+    monkeypatch.setenv("TEST_INPUT_ROOT", str(test))
+
+    report = module._check_kaggle_inputs(str(tmp_path / "unused"))
+
+    assert report["ok"] is True
+    assert report["normal_input_root"] == str(normal)
+    assert report["test_input_root"] == str(test)
+
+
 def test_finalize_removes_stale_failure_debug_after_success(tmp_path: Path):
     module = _load_finalize_artifacts()
     output_root = tmp_path / "out"
