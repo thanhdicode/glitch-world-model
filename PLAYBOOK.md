@@ -102,10 +102,10 @@ normal-only TempGlitch pilot on CUDA, verified checkpoint reload and finite vali
 and passed the strict validator with locked-test flags false. Gates 7-9 then produced 10,081
 real frozen-checkpoint scores, same-manifest baselines, and validation-only pilot metrics. The
 exact 500-update GPU profile is complete as engineering evidence only, the R4 rerun seed43/44
-artifacts are now SHA256-verified and validator-backed, and R5 has completed a provenance-bound
-non-locked TempGlitch identical-episode evaluation family. The current operational phase is WOB
-controlled planning. World of Bugs remains a controlled post-R5 expansion track, not an active
-execution family.
+artifacts are now SHA256-verified and validator-backed, R5 has completed a provenance-bound
+non-locked TempGlitch identical-episode evaluation family, and WOB-P1 seed43 now has a
+SHA256-verified validator-passed training artifact. World of Bugs remains a controlled post-R5
+expansion track, with seed44 training still pending and WOB evaluation still closed.
 
 ## 3. Why This Project Exists
 
@@ -908,9 +908,9 @@ granularity, negative results, and lessons for reproducible game-QA anomaly rese
 | 10, complete | ML Research Engineers | Verify the `WOB-P1` seed42 real-action train-normal Kaggle training artifact | Roadmap v3 WOB section, verified WOB-P0 bundle, seed42 cloud package, artifact validator, context docs, report 72 | seed42 artifact SHA256 verified and validator-passed, train-normal/validation-normal only, validation-buggy excluded from fit/select, locked test closed | no WOB evaluation result |
 | 11 | Locked Test Release Officer | Keep locked test closed pending a frozen validation decision and separate direct command | release workflow | no materialization/scoring before frozen decision | schedule pressure |
 
-Current recommended task: run the prepared human Kaggle seed43 robust training cell first, then
-verify the uploaded seed43 artifacts locally before running seed44. Do not execute WOB evaluation
-or touch locked test yet.
+Current recommended task: run the prepared human Kaggle seed44 robust training cell next, then
+verify the uploaded seed44 artifacts locally before opening WOB evaluation. Do not execute WOB
+evaluation or touch locked test yet.
 
 ## 29. Maintenance Rules For This Playbook
 

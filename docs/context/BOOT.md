@@ -1,7 +1,7 @@
 # BOOT.md - Fast Start Context For Agents
 
-Generated: 2026-06-19T04:37:58+00:00
-Commit: `32717340369d1d5e49f05859e95f0f33bb22f0ba`
+Generated: 2026-06-19T06:38:44+00:00
+Commit: `6015659212973c8b7248a497ae332a505b5b1be2`
 
 ## Read Order
 1. `RULES.md`
@@ -30,20 +30,20 @@ The current execution roadmap is `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v3.md`
 - R5 identical-episode evaluation completed on the non-locked research MVP and wrote
   provenance-bound episode-level outputs.
 - Local `WOB-P0` remains blocked on missing tar files, the Kaggle-native `WOB-P0` pass is
-  verified from the downloaded evidence bundle, and WOB-P1 seed42 training artifact verification
-  is complete.
-- The seed42 non-locked WOB evaluation-readiness gate is frozen, and robust seed43/44 Kaggle
-  training runners are prepared.
+  verified from the downloaded evidence bundle, and WOB-P1 seed42 and seed43 training artifact
+  verification are complete.
+- The seed42 non-locked WOB evaluation-readiness gate is frozen, the seed43 artifact is now
+  validator-backed, and the seed44 Kaggle runner is prepared.
 - Gate 10 is closed.
 - Locked test is closed.
 - LeWM gameplay evaluation now exists for the non-locked TempGlitch research MVP only; locked
   test remains unopened, and WOB remains limited to audit-plus-training-artifact evidence.
 
 ## Immediate Next Task
-- Preserve the verified Kaggle-native `WOB-P0` bundle, the seed42 training artifact hash, and the
-  frozen evaluation-readiness metadata.
-- Use the prepared robust Kaggle runner to execute seed43 first, then validate the uploaded
-  seed43 artifact before seed44.
+- Preserve the verified Kaggle-native `WOB-P0` bundle, the seed42 and seed43 training artifact
+  hashes, and the frozen evaluation-readiness metadata.
+- Use the prepared robust Kaggle runner to execute seed44 next, then validate the uploaded
+  seed44 artifact before WOB evaluation.
 - Do not run WOB evaluation yet and do not touch locked test.
 
 ## Safety
@@ -55,8 +55,8 @@ The current execution roadmap is `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v3.md`
 - No data, output, checkpoint, Lance dataset, cache, `.env`, token, or `kaggle.json` commits.
 - No broad LeWM superiority, SIGReg benefit, temporal localization, SOTA, or neural locked-test
   claim from the current non-locked evidence bundle.
-- No WOB detection-performance, cross-game, or action-conditioning claim from the seed42 training
-  artifact.
+- No WOB detection-performance, cross-game, or action-conditioning claim from the seed42/seed43
+  training artifacts.
 
 ## Required Checks
 ```powershell

@@ -23,15 +23,15 @@ Current LeWM gate status:
 - R4 rerun seed43/44 archives are locally SHA256-verified and pass per-seed artifact validators.
 - R5 completed for the non-locked TempGlitch identical-episode family with provenance-bound
   manifest, score, metric, and report outputs.
-- World of Bugs remains a controlled post-R5 expansion track; WOB-P1 seed42 training artifact
-  verification is complete, while WOB evaluation remains unopened.
-- The seed42 non-locked WOB evaluation-readiness gate is frozen, and robust Kaggle training
-  runners for seed43/44 are now prepared.
+- World of Bugs remains a controlled post-R5 expansion track; WOB-P1 seed42 and seed43 training
+  artifact verification are complete, while WOB evaluation remains unopened.
+- The seed42 non-locked WOB evaluation-readiness gate is frozen, seed43 is now validator-backed,
+  and the robust Kaggle training runner for seed44 is ready.
 - Local WOB replay remains blocked on missing raw tar coverage, but the Kaggle-native `WOB-P0`
   audit has now passed and resolved all 120 non-locked rows with locked test still closed.
-- The verified WOB-P1 seed42 artifact is training evidence only, not WOB detection-performance
-  evidence.
-- The next WOB execution step is human Kaggle seed43 training, not WOB evaluation execution.
+- The verified WOB-P1 seed42 and seed43 artifacts are training evidence only, not WOB
+  detection-performance evidence.
+- The next WOB execution step is human Kaggle seed44 training, not WOB evaluation execution.
 - Gate 9 remains a one-buggy-episode pilot; Gate 10 has not run.
 - Locked test remains closed.
 - Only exact qualified pilot and R5-family metrics are supported; broad superiority, temporal
@@ -166,10 +166,10 @@ seed43/44 archives are locally SHA256-verified and validator-backed, and R5 has 
 non-locked TempGlitch identical-episode evaluation family. Those R5 results are qualified to that
 frozen validation-only family and do not support broad superiority or general glitch-detection
 claims. Kaggle-native `WOB-P0` has now passed with a verified downloaded evidence bundle, and the
-WOB-P1 seed42 training artifact is SHA256-verified and validator-passed under the train-normal /
-validation-normal protocol. The seed42 evaluation-readiness gate is frozen, the seed43/44 robust
-Kaggle runners are prepared, WOB evaluation remains closed, and the locked test still requires a
-separate explicit command.
+WOB-P1 seed42 and seed43 training artifacts are SHA256-verified and validator-passed under the
+train-normal / validation-normal protocol. The seed42 evaluation-readiness gate is frozen, the
+seed44 robust Kaggle runner is prepared, WOB evaluation remains closed, and the locked test still
+requires a separate explicit command.
 
 The June 11, 2026 Gate 5 TempGlitch dataset upload is ready. The first approved kernel push
 returned HTTP `409 Conflict` before a run was established; the local cause was a kernel slug that
@@ -289,9 +289,9 @@ isolated LeWM environment and compatible checkpoint/data contracts:
 python -m glitch_detection.lewm_latent --manifest data/processed/my_experiment/manifest.csv --labels data/raw/my_labels.csv --output outputs/my_experiment_lewm_scores.csv --checkpoint path/to/lewm.ckpt
 ```
 
-The next WOB execution step is human Kaggle seed43 training using the prepared robust runner. Any
+The next WOB execution step is human Kaggle seed44 training using the prepared robust runner. Any
 future WOB evaluation must stay on the frozen manifest/reporting path and remain closed until the
-required seed artifacts exist. Seed44 and locked test remain separately gated.
+required seed artifacts exist. Locked test remains separately gated.
 
 Audit the Phase 6E neural training partition without loading PyTorch or touching test:
 

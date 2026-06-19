@@ -262,7 +262,7 @@ echo "=== STAGE 4: Preflight checks ==="
 if ! stage_done "preflight"; then
   start_heartbeat "preflight"
   # Run the comprehensive Python preflight
-  python cloud/wob_p1_seed42/preflight_robust.py \
+  python -m cloud.wob_p1_seed42.preflight_robust \
     --repo-root "$LEWM_REPO_ROOT" \
     --output-root "$WOB_OUTPUT_ROOT/$WOB_SEED_NAME" \
     --log-dir "$LOG_DIR" 2>&1

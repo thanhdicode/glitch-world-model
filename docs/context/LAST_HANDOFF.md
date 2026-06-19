@@ -1,43 +1,31 @@
 # LAST_HANDOFF.md
 
-Last completed task: WOB Phase C seed43/44 runner preparation on top of preserved Phase A+B readiness gate
+Last completed task: WOB-P1 seed43 artifact verification plus seed44 preflight-runner cleanup
 Commit: current task commit
 Date: 2026-06-19
 
 ## What Changed
 
-- Confirmed Phase A+B readiness work is preserved on branch `wob-expansion-readiness-gate` at
-  commit `3271734`.
-- Re-ran the readiness preparation and validator; status remains
-  `wob_expansion_readiness_passed`.
-- Generalized the WOB seed artifact validator into
-  `scripts/validate_wob_seed_artifacts.py` and kept
-  `scripts/validate_wob_seed42_artifacts.py` as a compatibility wrapper.
-- Parameterized the robust WOB runner helpers so the validated seed42 flow can be reused safely
-  for seeds43/44 without reopening locked-test paths.
-- Added robust Kaggle wrapper scripts for seed43, seed44, and an optional sequential launcher.
-- Added Phase C tests and registered the runner-prep reproducibility claim as C-073.
-- Confirmed `you-are-working-in-partitioned-newt.md` does not exist in the repository.
+- Verified the downloaded `wob_seed43_artifacts.tar.gz` bundle against its `.sha256` sidecar and
+  ran the local seed43 validator successfully.
+- Extracted and recorded the seed43 artifact evidence in
+  `docs/research/79_wob_p1_seed43_training_result.md` and claim `C-074`.
+- Updated roadmap, compact status docs, and context cache so the next human action is now seed44
+  Kaggle execution rather than seed43.
+- Patched the robust Kaggle runner to invoke `preflight_robust` as a Python module, avoiding the
+  false `ModuleNotFoundError: cloud` traceback seen in the successful seed43 Kaggle log.
+- Added a focused test guarding that preflight module invocation.
 
 ## Checks Passed
 
-- `python scripts/prepare_wob_expansion_readiness.py`
-- `python scripts/validate_wob_expansion_readiness.py`
-- `python -m pytest -q tests/test_wob_expansion_readiness.py`
-- `python -m pytest -q tests/test_wob_seed_artifact_validator.py tests/test_wob_p1_seeds43_44_runner.py`
+- `python scripts/validate_wob_seed_artifacts.py --tarball C:\Users\ADMIN\Downloads\wob_seed43_artifacts.tar.gz --sha256 C:\Users\ADMIN\Downloads\wob_seed43_artifacts.tar.gz.sha256 --expected-seed 43`
 - `python scripts/update_context_cache.py --refresh-boot`
-- `python -m pytest -q`
-- `python -m ruff check .`
-- `python -m ruff format --check .`
-- `python scripts/check_claim_registry.py`
-- `python scripts/validate_context_cache.py`
-- `python scripts/doctor.py`
-- `python scripts/validate_research_release.py --ci`
+- full repo checks rerun in this task after the docs/code update
 
 ## Safety Status
 
-- No Kaggle training, WOB evaluation, R5-WOB evaluation, or locked-test action was performed in
-  this task.
+- No Kaggle training, WOB evaluation, R5-WOB evaluation, R6 action, or locked-test action was
+  performed in this task.
 - No raw data, output bundle, checkpoint, weight file, credential, or Kaggle token was committed.
 - No WOB detection-performance, cross-game, action-conditioning, superiority, SIGReg-benefit, or
   locked-test claim was introduced.
@@ -47,25 +35,26 @@ Date: 2026-06-19
 
 - R5 TempGlitch remains the current completed non-locked empirical ceiling.
 - The seed42 WOB evaluation-readiness gate remains frozen and validator-passed.
-- WOB seed43/44 training still has no result artifacts, but the robust human Kaggle runners and
-  generalized validator are now prepared and tested.
+- WOB seed43 now has a locally verified training artifact; seed44 remains pending human Kaggle
+  execution.
 - WOB evaluation remains unopened.
 
 ## Open Blockers
 
-- Seed43/44 require human Kaggle GPU execution.
-- R5-WOB still depends on verified seed43/44 artifacts.
+- Seed44 still requires human Kaggle GPU execution.
+- R5-WOB still depends on a verified seed44 artifact.
 - Locked test remains separately gated.
 
 ## Next Recommended Task
 
-- Run the human Kaggle seed43 robust training cell on the exact pushed commit SHA, then download
-  and locally verify the uploaded seed43 artifact before seed44.
+- Run the human Kaggle seed44 robust training cell on the next pushed commit SHA, then download
+  and locally verify the uploaded seed44 artifact before opening R5-WOB.
 
 ## Files Likely Relevant Next
 
-- `cloud/wob_p1_seeds43_44/run_kaggle_wob_p1_seed43_robust.sh`
 - `cloud/wob_p1_seeds43_44/run_kaggle_wob_p1_seed44_robust.sh`
+- `cloud/wob_p1_seed42/run_kaggle_wob_p1_seed42_robust.sh`
 - `scripts/validate_wob_seed_artifacts.py`
+- `docs/research/79_wob_p1_seed43_training_result.md`
 - `docs/research/77_ambitious_expansion_execution_plan.md`
 - `docs/context/NEXT_ACTION.md`

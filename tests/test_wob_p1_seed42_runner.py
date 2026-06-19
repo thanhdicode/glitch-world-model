@@ -147,6 +147,17 @@ def test_wob_p1_preflight_checks_reject_sm60_runtime():
     assert "--min-vram-gb 14" in script
 
 
+def test_robust_runner_invokes_preflight_as_module():
+    script = (
+        Path(__file__).resolve().parents[1]
+        / "cloud"
+        / "wob_p1_seed42"
+        / "run_kaggle_wob_p1_seed42_robust.sh"
+    ).read_text(encoding="utf-8")
+    assert "python -m cloud.wob_p1_seed42.preflight_robust" in script
+    assert "python cloud/wob_p1_seed42/preflight_robust.py" not in script
+
+
 def test_robust_preflight_uses_total_memory_cuda_property(monkeypatch):
     module = _load_preflight_robust()
 
