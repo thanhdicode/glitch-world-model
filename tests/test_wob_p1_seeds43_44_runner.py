@@ -74,6 +74,25 @@ def test_runner_common_script_refuses_to_continue_without_detected_inputs_file()
     assert "FATAL: detect_inputs.json was not created; refusing to continue." in script
 
 
+def test_runner_common_script_retries_stages_when_expected_outputs_are_missing():
+    script = (
+        _repo_root() / "cloud" / "wob_p1_seed42" / "run_kaggle_wob_p1_seed42_robust.sh"
+    ).read_text(encoding="utf-8")
+    assert '[[ ! -f "$DETECTED_INPUTS_JSON" ]]' in script
+    assert '[[ ! -f "$PREFLIGHT_JSON" ]]' in script
+    assert '[[ ! -f "$WOB_ROOT_METADATA" ]]' in script
+    assert '[[ ! -d "$TRAIN_LANCE" ]]' in script
+    assert '[[ ! -d "$VAL_LANCE" ]]' in script
+
+
+def test_runner_failure_handler_exits_nonzero():
+    script = (
+        _repo_root() / "cloud" / "wob_p1_seed42" / "run_kaggle_wob_p1_seed42_robust.sh"
+    ).read_text(encoding="utf-8")
+    assert "Failure debug tarball written to $WOB_FAILURE_DEBUG_TARBALL" in script
+    assert "exit 1" in script
+
+
 def test_wrapper_scripts_are_shell_entrypoints():
     repo_root = _repo_root()
     for rel in [

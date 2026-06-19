@@ -143,6 +143,7 @@ output_path.parent.mkdir(parents=True, exist_ok=True)
 package_artifacts(output_path, roots)
 PY
   echo "Failure debug tarball written to $WOB_FAILURE_DEBUG_TARBALL"
+  exit 1
 }
 trap failure ERR
 
@@ -191,8 +192,9 @@ stop_heartbeat
 # ---------------------------------------------------------------------------
 echo ""
 echo "=== STAGE 2: Detect Kaggle inputs ==="
-if ! stage_done "detect_inputs"; then
-python - <<'PY'
+DETECTED_INPUTS_JSON="$WOB_P1_METADATA_ROOT/detected_inputs.json"
+if ! stage_done "detect_inputs" || [[ ! -f "$DETECTED_INPUTS_JSON" ]]; then
+  python - <<'PY'
 import json
 import os
 from pathlib import Path
@@ -229,7 +231,6 @@ else
   echo "[SKIP] detect_inputs already done"
 fi
 
-DETECTED_INPUTS_JSON="$WOB_P1_METADATA_ROOT/detected_inputs.json"
 if [[ ! -f "$DETECTED_INPUTS_JSON" ]]; then
   echo "FATAL: detect_inputs.json was not created; refusing to continue." >&2
   exit 1
@@ -271,7 +272,8 @@ fi
 # ---------------------------------------------------------------------------
 echo ""
 echo "=== STAGE 4: Preflight checks ==="
-if ! stage_done "preflight"; then
+PREFLIGHT_JSON="$WOB_OUTPUT_ROOT/$WOB_SEED_NAME/preflight_passed.json"
+if ! stage_done "preflight" || [[ ! -f "$PREFLIGHT_JSON" ]]; then
   start_heartbeat "preflight"
   # Run the comprehensive Python preflight
   python -m cloud.wob_p1_seed42.preflight_robust \
@@ -291,7 +293,8 @@ fi
 # ---------------------------------------------------------------------------
 echo ""
 echo "=== STAGE 5: Prepare WOB train root ==="
-if ! stage_done "prepare_train_root"; then
+WOB_ROOT_METADATA="$WOB_TRAIN_ROOT/wob_root_metadata.json"
+if ! stage_done "prepare_train_root" || [[ ! -f "$WOB_ROOT_METADATA" ]]; then
   start_heartbeat "prepare_train_root"
   bash cloud/wob_p1_seed42/prepare_wob_train_root.sh
   stop_heartbeat
@@ -305,7 +308,9 @@ fi
 # ---------------------------------------------------------------------------
 echo ""
 echo "=== STAGE 6: Build Lance datasets ==="
-if ! stage_done "build_lance"; then
+TRAIN_LANCE="$WOB_LANCE_ROOT/wob_train_normal.lance"
+VAL_LANCE="$WOB_LANCE_ROOT/wob_validation_normal.lance"
+if ! stage_done "build_lance" || [[ ! -d "$TRAIN_LANCE" ]] || [[ ! -d "$VAL_LANCE" ]]; then
   start_heartbeat "build_lance"
   bash cloud/wob_p1_seed42/build_wob_lance_train_seed42.sh
   stop_heartbeat
