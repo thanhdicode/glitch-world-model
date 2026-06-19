@@ -1,7 +1,7 @@
 # BOOT.md - Fast Start Context For Agents
 
-Generated: 2026-06-19T15:35:03+00:00
-Commit: `ba024d8b1fd41f7782b644d3461bce260984083a`
+Generated: 2026-06-19T16:04:26+00:00
+Commit: `647e20a4da492e0105c62442505d717d24294394`
 
 ## Read Order
 1. `RULES.md`
@@ -33,8 +33,8 @@ The current execution roadmap is `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v3.md`
   verified from the downloaded evidence bundle, and WOB-P1 seed42/seed43/seed44 training
   artifact verification is complete.
 - The seed42 non-locked WOB evaluation-readiness gate is frozen, all three planned WOB-P1
-  training artifacts are now validator-backed, and the non-locked `R5-WOB` evaluation path
-  remains closed pending a separate explicit human command.
+  training artifacts are now validator-backed, and the non-locked `R5-WOB` evaluation path is
+  now authorized at the pipeline-preparation level.
 - Gate 10 is closed.
 - Locked test is closed.
 - LeWM gameplay evaluation now exists for the non-locked TempGlitch research MVP only; locked
@@ -43,8 +43,8 @@ The current execution roadmap is `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v3.md`
 ## Immediate Next Task
 - Preserve the verified Kaggle-native `WOB-P0` bundle, the seed42/seed43/seed44 training artifact
   hashes, and the frozen evaluation-readiness metadata.
-- Keep the non-locked `R5-WOB` evaluation path closed until a separate explicit human command
-  authorizes evaluation.
+- Use the prepared `R5-WOB` Kaggle runner for any real execution because the current workstation
+  still lacks full raw WOB tar coverage for a valid local replay.
 - Do not touch locked test.
 
 ## Safety
@@ -56,8 +56,8 @@ The current execution roadmap is `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v3.md`
 - No data, output, checkpoint, Lance dataset, cache, `.env`, token, or `kaggle.json` commits.
 - No broad LeWM superiority, SIGReg benefit, temporal localization, SOTA, or neural locked-test
   claim from the current non-locked evidence bundle.
-- No WOB detection-performance, cross-game, or action-conditioning claim from the seed42/seed43
-  training artifacts.
+- No WOB detection-performance, cross-game, or action-conditioning claim from the current
+  training-artifact and pipeline-preparation evidence.
 
 ## Required Checks
 ```powershell

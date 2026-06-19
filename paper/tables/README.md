@@ -9,6 +9,7 @@ Current scaffolded tables:
 - `claim_map.tex`
 - `dataset_inventory.tex`
 - `literature_matrix.tex`
+- `r5_wob_results.tex`
 
 Only populate or revise these tables from verified repository evidence. Do not add fake metrics,
 locked-test results, unsupported superiority language, or unverified citations.
