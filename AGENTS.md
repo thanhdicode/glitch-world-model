@@ -28,8 +28,9 @@ Current verified status:
 - Controlled World of Bugs expansion is `LOCAL_WOB_P0_STATUS=BLOCKED_MISSING_INPUTS`,
   `WOB_P0_KAGGLE_STATUS=PASSED`, `WOB_STATUS=WOB_P1_SEED42_TRAINING_VALIDATED`,
   `WOB_P1_TRAINING_STATUS=SEED42_VALIDATED`, `WOB_EVALUATION_STATUS=NOT_STARTED`.
-- The next WOB gate is seed42 non-locked evaluation readiness; seed43/44 and WOB evaluation remain
-  separately closed.
+- The seed42 non-locked WOB evaluation-readiness gate is frozen, and robust seed43/44 Kaggle
+  training runners are prepared. Human Kaggle execution for seed43 comes next; WOB evaluation
+  remains separately closed.
 - Locked test is closed.
 - LeWM gameplay evaluation now includes the earlier one-buggy-episode window pilot plus the
   completed non-locked TempGlitch R5 identical-episode family.
@@ -37,10 +38,10 @@ Current verified status:
 Safe claims include bounded normal-only CUDA training and the exact qualified Gate 7-9 pilot
 metrics, research-source readiness, the validated 500-update GPU profile, artifact-backed R4
 rerun seed43/44 training evidence, the exact qualified R5 TempGlitch family results, and the
-narrow WOB-P1 seed42 validator-passed training-artifact claim. Do not claim broad LeWM
-glitch-detection performance, superiority, state of the art, temporal localization, SIGReg
-benefit, WOB evaluation performance, cross-game generalization, action-conditioning benefit, or a
-neural locked-test result.
+narrow WOB-P1 seed42 validator-passed training-artifact claim plus the seed43/44 runner-prep
+reproducibility claim. Do not claim broad LeWM glitch-detection performance, superiority, state
+of the art, temporal localization, SIGReg benefit, WOB evaluation performance, cross-game
+generalization, action-conditioning benefit, or a neural locked-test result.
 
 ## Agent Operating Mode
 

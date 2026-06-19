@@ -908,9 +908,9 @@ granularity, negative results, and lessons for reproducible game-QA anomaly rese
 | 10, complete | ML Research Engineers | Verify the `WOB-P1` seed42 real-action train-normal Kaggle training artifact | Roadmap v3 WOB section, verified WOB-P0 bundle, seed42 cloud package, artifact validator, context docs, report 72 | seed42 artifact SHA256 verified and validator-passed, train-normal/validation-normal only, validation-buggy excluded from fit/select, locked test closed | no WOB evaluation result |
 | 11 | Locked Test Release Officer | Keep locked test closed pending a frozen validation decision and separate direct command | release workflow | no materialization/scoring before frozen decision | schedule pressure |
 
-Current recommended task: use the verified `WOB-P1` seed42 training artifact to run a non-locked
-evaluation-readiness gate. Do not execute WOB evaluation, open seed43/44, or touch locked test
-without a later explicit command.
+Current recommended task: run the prepared human Kaggle seed43 robust training cell first, then
+verify the uploaded seed43 artifacts locally before running seed44. Do not execute WOB evaluation
+or touch locked test yet.
 
 ## 29. Maintenance Rules For This Playbook
 

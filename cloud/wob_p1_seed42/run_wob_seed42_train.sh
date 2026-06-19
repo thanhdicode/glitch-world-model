@@ -5,13 +5,15 @@ set -euo pipefail
 : "${WOB_LANCE_ROOT:?Set WOB_LANCE_ROOT to the WOB Lance root.}"
 : "${WOB_OUTPUT_ROOT:?Set WOB_OUTPUT_ROOT to the WOB output directory.}"
 : "${WOB_P1_METADATA_ROOT:?Set WOB_P1_METADATA_ROOT to the WOB metadata directory.}"
+export WOB_SEED="${WOB_SEED:-42}"
+export WOB_SEED_NAME="${WOB_SEED_NAME:-wob_seed${WOB_SEED}}"
 
 cd "$LEWM_REPO_ROOT"
 
 TRAIN_DATASET="$WOB_LANCE_ROOT/wob_train_normal.lance"
 VALIDATION_DATASET="$WOB_LANCE_ROOT/wob_validation_normal.lance"
-OUTPUT_ROOT="$WOB_OUTPUT_ROOT/wob_seed42"
-RUN_CONFIG="$WOB_P1_METADATA_ROOT/wob_seed42_run_config.json"
+OUTPUT_ROOT="$WOB_OUTPUT_ROOT/$WOB_SEED_NAME"
+RUN_CONFIG="$WOB_P1_METADATA_ROOT/${WOB_SEED_NAME}_run_config.json"
 
 if [[ ! -d "$TRAIN_DATASET" ]]; then
   echo "Missing WOB train-normal Lance dataset: $TRAIN_DATASET" >&2
@@ -31,35 +33,35 @@ mkdir -p "$OUTPUT_ROOT"
 export WOB_BATCH_SIZE="$(python - <<'PY'
 import json, os
 from pathlib import Path
-payload = json.loads(Path(os.environ["WOB_P1_METADATA_ROOT"]).joinpath("wob_seed42_run_config.json").read_text(encoding="utf-8"))
+payload = json.loads(Path(os.environ["WOB_P1_METADATA_ROOT"]).joinpath(f"{os.environ['WOB_SEED_NAME']}_run_config.json").read_text(encoding="utf-8"))
 print(payload["batch_size"])
 PY
 )"
 export WOB_TARGET_UPDATES="$(python - <<'PY'
 import json, os
 from pathlib import Path
-payload = json.loads(Path(os.environ["WOB_P1_METADATA_ROOT"]).joinpath("wob_seed42_run_config.json").read_text(encoding="utf-8"))
+payload = json.loads(Path(os.environ["WOB_P1_METADATA_ROOT"]).joinpath(f"{os.environ['WOB_SEED_NAME']}_run_config.json").read_text(encoding="utf-8"))
 print(payload["target_optimizer_updates"])
 PY
 )"
 export WOB_EVAL_INTERVAL="$(python - <<'PY'
 import json, os
 from pathlib import Path
-payload = json.loads(Path(os.environ["WOB_P1_METADATA_ROOT"]).joinpath("wob_seed42_run_config.json").read_text(encoding="utf-8"))
+payload = json.loads(Path(os.environ["WOB_P1_METADATA_ROOT"]).joinpath(f"{os.environ['WOB_SEED_NAME']}_run_config.json").read_text(encoding="utf-8"))
 print(payload["evaluation_interval_updates"])
 PY
 )"
 export WOB_CHECKPOINT_INTERVAL="$(python - <<'PY'
 import json, os
 from pathlib import Path
-payload = json.loads(Path(os.environ["WOB_P1_METADATA_ROOT"]).joinpath("wob_seed42_run_config.json").read_text(encoding="utf-8"))
+payload = json.loads(Path(os.environ["WOB_P1_METADATA_ROOT"]).joinpath(f"{os.environ['WOB_SEED_NAME']}_run_config.json").read_text(encoding="utf-8"))
 print(payload["checkpoint_interval_updates"])
 PY
 )"
 export WOB_EARLY_STOPPING="$(python - <<'PY'
 import json, os
 from pathlib import Path
-payload = json.loads(Path(os.environ["WOB_P1_METADATA_ROOT"]).joinpath("wob_seed42_run_config.json").read_text(encoding="utf-8"))
+payload = json.loads(Path(os.environ["WOB_P1_METADATA_ROOT"]).joinpath(f"{os.environ['WOB_SEED_NAME']}_run_config.json").read_text(encoding="utf-8"))
 print(payload["early_stopping_patience"])
 PY
 )"
@@ -73,7 +75,7 @@ python scripts/run_kaggle_lewm.py \
   --device cuda \
   --run-kind research \
   --batch-size "$WOB_BATCH_SIZE" \
-  --seed 42 \
+  --seed "$WOB_SEED" \
   --num-workers 0 \
   --pin-memory \
   --mixed-precision \

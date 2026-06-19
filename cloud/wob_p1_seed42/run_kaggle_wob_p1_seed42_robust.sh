@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Hardened WOB-P1 seed42 Kaggle runner — interruption-safe and rerun-safe.
+# Hardened WOB-P1 Kaggle runner - interruption-safe and rerun-safe.
 #
 # Features vs the original run_kaggle_wob_p1_seed42_all.sh:
 #   - Log capture to /kaggle/working/wob_p1_seed42_logs/
@@ -14,7 +14,7 @@
 set -Eeuo pipefail
 
 # ---------------------------------------------------------------------------
-# Resolve repo root
+# Resolve repo root and seed-specific defaults
 # ---------------------------------------------------------------------------
 REPO_ROOT="${LEWM_REPO_ROOT:-$(pwd)}"
 if [[ ! -f "$REPO_ROOT/pyproject.toml" ]]; then
@@ -28,18 +28,37 @@ fi
 export LEWM_REPO_ROOT="$REPO_ROOT"
 cd "$LEWM_REPO_ROOT"
 
+export WOB_SEED="${WOB_SEED:-42}"
+export WOB_SEED_NAME="${WOB_SEED_NAME:-wob_seed${WOB_SEED}}"
+if [[ "$WOB_SEED" == "42" ]]; then
+  DEFAULT_METADATA_ROOT="/kaggle/working/wob_p1_metadata"
+  DEFAULT_TRAIN_ROOT="/kaggle/working/wob_p1_root"
+  DEFAULT_LANCE_ROOT="/kaggle/working/wob_lance"
+  DEFAULT_LOG_DIR="/kaggle/working/wob_p1_seed42_logs"
+else
+  DEFAULT_METADATA_ROOT="/kaggle/working/${WOB_SEED_NAME}_metadata"
+  DEFAULT_TRAIN_ROOT="/kaggle/working/${WOB_SEED_NAME}_root"
+  DEFAULT_LANCE_ROOT="/kaggle/working/${WOB_SEED_NAME}_lance"
+  DEFAULT_LOG_DIR="/kaggle/working/${WOB_SEED_NAME}_logs"
+fi
+export WOB_ACTION_MODE="${WOB_ACTION_MODE:-real}"
+export WOB_ACTION_DIM="${WOB_ACTION_DIM:-4}"
+export WOB_ARTIFACT_TARBALL="${WOB_ARTIFACT_TARBALL:-/kaggle/working/${WOB_SEED_NAME}_artifacts.tar.gz}"
+export WOB_FAILURE_DEBUG_TARBALL="${WOB_FAILURE_DEBUG_TARBALL:-/kaggle/working/${WOB_SEED_NAME}_failure_debug.tar.gz}"
+
 # ---------------------------------------------------------------------------
 # Output / log directories
 # ---------------------------------------------------------------------------
 INPUT_ROOT="${INPUT_ROOT:-/kaggle/input}"
 export WOB_OUTPUT_ROOT="${WOB_OUTPUT_ROOT:-/kaggle/working/wob_outputs}"
-export WOB_P1_METADATA_ROOT="${WOB_P1_METADATA_ROOT:-/kaggle/working/wob_p1_metadata}"
-export WOB_TRAIN_ROOT="${WOB_TRAIN_ROOT:-/kaggle/working/wob_p1_root}"
-export WOB_LANCE_ROOT="${WOB_LANCE_ROOT:-/kaggle/working/wob_lance}"
+export WOB_P1_METADATA_ROOT="${WOB_P1_METADATA_ROOT:-$DEFAULT_METADATA_ROOT}"
+export WOB_TRAIN_ROOT="${WOB_TRAIN_ROOT:-$DEFAULT_TRAIN_ROOT}"
+export WOB_LANCE_ROOT="${WOB_LANCE_ROOT:-$DEFAULT_LANCE_ROOT}"
 export WOB_SPLIT_CSV="$LEWM_REPO_ROOT/configs/wob_protocol/split.csv"
 export WOB_SELECTED_SPLIT_CSV="$WOB_P1_METADATA_ROOT/wob_p1_selected_split.csv"
 
-LOG_DIR="${WOB_LOG_DIR:-/kaggle/working/wob_p1_seed42_logs}"
+LOG_DIR="${WOB_LOG_DIR:-$DEFAULT_LOG_DIR}"
+export WOB_LOG_DIR="$LOG_DIR"
 STAGE_DIR="$LOG_DIR/stages"
 RUN_TS="$(date -u +%Y%m%dT%H%M%SZ 2>/dev/null || echo unknown)"
 LOG_FILE="$LOG_DIR/run_${RUN_TS}.log"
@@ -53,10 +72,11 @@ mkdir -p "$WOB_OUTPUT_ROOT" "$WOB_P1_METADATA_ROOT" "$WOB_TRAIN_ROOT" \
 exec > >(tee -a "$LOG_FILE") 2>&1
 
 echo "=========================================="
-echo "WOB-P1 seed42 ROBUST runner"
+echo "WOB-P1 ${WOB_SEED_NAME} ROBUST runner"
 echo "Started: $(date -u +%Y-%m-%dT%H:%M:%SZ 2>/dev/null || date)"
 echo "Log file: $LOG_FILE"
 echo "Repo root: $LEWM_REPO_ROOT"
+echo "Seed: $WOB_SEED"
 echo "=========================================="
 
 # ---------------------------------------------------------------------------
@@ -118,9 +138,11 @@ for env_name, prefix in [
 log_dir = Path(os.environ.get("WOB_LOG_DIR", "/kaggle/working/wob_p1_seed42_logs"))
 if log_dir.exists():
     roots.append((log_dir, "logs"))
-package_artifacts(Path("/kaggle/working/wob_seed42_failure_debug.tar.gz"), roots)
+output_path = Path(os.environ["WOB_FAILURE_DEBUG_TARBALL"])
+output_path.parent.mkdir(parents=True, exist_ok=True)
+package_artifacts(output_path, roots)
 PY
-  echo "Failure debug tarball written to /kaggle/working/wob_seed42_failure_debug.tar.gz"
+  echo "Failure debug tarball written to $WOB_FAILURE_DEBUG_TARBALL"
 }
 trap failure ERR
 
@@ -186,8 +208,9 @@ payload = {
     "normal_input_root": str(normal_root),
     "test_input_root": str(test_root),
     "phase": "p1_train_only",
-    "seed": 42,
-}
+    "seed": int(os.environ["WOB_SEED"]),
+    "seed_name": os.environ["WOB_SEED_NAME"],
+  }
 Path(os.environ["WOB_P1_METADATA_ROOT"]).mkdir(parents=True, exist_ok=True)
 Path(os.environ["WOB_P1_METADATA_ROOT"]).joinpath("detected_inputs.json").write_text(
     json.dumps(payload, indent=2) + "\n",
@@ -241,7 +264,7 @@ if ! stage_done "preflight"; then
   # Run the comprehensive Python preflight
   python cloud/wob_p1_seed42/preflight_robust.py \
     --repo-root "$LEWM_REPO_ROOT" \
-    --output-root "$WOB_OUTPUT_ROOT/wob_seed42" \
+    --output-root "$WOB_OUTPUT_ROOT/$WOB_SEED_NAME" \
     --log-dir "$LOG_DIR" 2>&1
   # Run the original preflight for split validation and config generation
   bash cloud/wob_p1_seed42/preflight.sh
@@ -284,8 +307,8 @@ fi
 # ---------------------------------------------------------------------------
 echo ""
 echo "=== STAGE 7: Training ==="
-CHECKPOINT_FILE="$WOB_OUTPUT_ROOT/wob_seed42/checkpoint_weights.pt"
-TRAINING_META="$WOB_OUTPUT_ROOT/wob_seed42/training_metadata.json"
+CHECKPOINT_FILE="$WOB_OUTPUT_ROOT/$WOB_SEED_NAME/checkpoint_weights.pt"
+TRAINING_META="$WOB_OUTPUT_ROOT/$WOB_SEED_NAME/training_metadata.json"
 RESUME_FLAG=""
 
 if [[ -f "$TRAINING_META" ]]; then
@@ -320,16 +343,17 @@ stop_heartbeat
 echo ""
 echo "=== STAGE 9: Artifact finalization ==="
 python cloud/wob_p1_seed42/finalize_artifacts.py \
-  --output-root "$WOB_OUTPUT_ROOT/wob_seed42" \
+  --output-root "$WOB_OUTPUT_ROOT/$WOB_SEED_NAME" \
   --metadata-root "$WOB_P1_METADATA_ROOT" \
   --log-dir "$LOG_DIR" \
-  --tarball-path "/kaggle/working/wob_seed42_artifacts.tar.gz" \
-  --failure-debug-path "/kaggle/working/wob_seed42_failure_debug.tar.gz"
+  --tarball-path "$WOB_ARTIFACT_TARBALL" \
+  --seed "$WOB_SEED" \
+  --failure-debug-path "$WOB_FAILURE_DEBUG_TARBALL"
 
-if [[ -f /kaggle/working/wob_seed42_artifacts.tar.gz ]]; then
-  sha256sum /kaggle/working/wob_seed42_artifacts.tar.gz > /kaggle/working/wob_seed42_artifacts.tar.gz.sha256
+if [[ -f "$WOB_ARTIFACT_TARBALL" ]]; then
+  sha256sum "$WOB_ARTIFACT_TARBALL" > "${WOB_ARTIFACT_TARBALL}.sha256"
   echo "Tarball SHA256:"
-  cat /kaggle/working/wob_seed42_artifacts.tar.gz.sha256
+  cat "${WOB_ARTIFACT_TARBALL}.sha256"
 fi
 
 # ---------------------------------------------------------------------------
@@ -337,7 +361,7 @@ fi
 # ---------------------------------------------------------------------------
 echo ""
 echo "=========================================="
-echo "WOB-P1 seed42 ROBUST runner completed"
+echo "WOB-P1 $WOB_SEED_NAME ROBUST runner completed"
 echo "Finished: $(date -u +%Y-%m-%dT%H:%M:%SZ 2>/dev/null || date)"
 echo "Log file: $LOG_FILE"
 echo "=========================================="
@@ -347,7 +371,7 @@ import json
 import os
 from pathlib import Path
 
-preflight_path = Path(os.environ["WOB_OUTPUT_ROOT"]) / "wob_seed42" / "preflight_passed.json"
+preflight_path = Path(os.environ["WOB_OUTPUT_ROOT"]) / os.environ["WOB_SEED_NAME"] / "preflight_passed.json"
 if preflight_path.is_file():
     preflight = json.loads(preflight_path.read_text(encoding="utf-8"))
     print(
