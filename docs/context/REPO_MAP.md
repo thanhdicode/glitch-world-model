@@ -1,7 +1,7 @@
 # REPO_MAP.md
 
-Generated: 2026-06-19T16:04:26+00:00
-Commit: `647e20a4da492e0105c62442505d717d24294394`
+Generated: 2026-06-20T10:26:26+00:00
+Commit: `30c4ffbbd800c4e6858512c305bcd1b4175960c1`
 Generator: `scripts/update_context_cache.py`
 
 ## Top-Level Map
@@ -79,6 +79,10 @@ Generator: `scripts/update_context_cache.py`
 | `scripts/run_lewm_scoring.py` | build_parser, _git_commit, main | Python module. |
 | `scripts/run_phase6e_kaggle_automation.py` | build_parser, build_config, main | Python module. |
 | `scripts/run_r5_tempglitch_identical_episode_evaluation.py` | main | Python module. |
+| `scripts/run_r5_wob_identical_episode_evaluation.py` | - | Python module. |
+| `scripts/run_r5_xgame_comparison.py` | _load_metrics, _validate_wob_output, _extract_best_rows, build_comparison_table, write_comparison_csv, write_provenance, build_parser, main | R5-XGAME: Cross-dataset comparison of TempGlitch R5 and WOB R5 results. |
+| `scripts/run_r6_tempglitch_ablations.py` | run_aggregation_ablation, run_cpu_ablation, build_parser, main | R6 TempGlitch ablation runner. |
+| `scripts/run_r6_wob_ablations.py` | build_parser, main | R6 WOB ablation runner. |
 | `scripts/run_synthetic_demo.py` | write_synthetic_frames, write_synthetic_labels, main | Python module. |
 | `scripts/run_tempglitch_repeated_grouped_splits.py` | _require_file, _clear_score_files, _write_split_artifacts, _write_partitions, _format_metric, _write_locked_summary, _metric_summary, _write_repeated_summary, run_repeated_grouped_experiments, build_parser, main | Python module. |
 | `scripts/run_tempglitch_smoke_test.py` | build_parser, main | Python module. |
@@ -97,10 +101,14 @@ Generator: `scripts/update_context_cache.py`
 | `scripts/validate_lewm_kaggle_artifacts.py` | main | Python module. |
 | `scripts/validate_lewm_r3_seed_artifacts.py` | _read_json, _assert, _finite_numbers, validate_artifacts, main | Python module. |
 | `scripts/validate_lewm_research_mvp_config.py` | _require, validate_research_mvp_config, build_parser, main | Python module. |
+| `scripts/validate_r5_wob_evaluation.py` | _read_json, _read_csv, _assert, _finite_or_blank, validate_r5_wob, hashlib_sha256, build_parser, main | Python module. |
+| `scripts/validate_r5_xgame_comparison.py` | validate_r5_xgame, build_parser, main | Validate an R5-XGAME cross-dataset comparison output directory. |
+| `scripts/validate_r6_ablations.py` | validate_r6, build_parser, main | Validate R6 ablation outputs. |
 | `scripts/validate_research_release.py` | git_tracked_files, validate_tracked_files, validate_required_paths, validate_playbook_structure, validate_release, working_tree_errors, build_parser, main | Python module. |
 | `scripts/validate_wob_expansion_readiness.py` | _read_json, _assert, _sha256_bytes, _read_manifest_rows, validate_readiness, build_parser, main | Validate the frozen seed42 non-locked World of Bugs evaluation-readiness bundle. |
 | `scripts/validate_wob_seed42_artifacts.py` | main | Python module. |
 | `scripts/validate_wob_seed_artifacts.py` | seed_name, validator_status, phase_name, tarball_prefix, required_tarball_files, _read_json, _assert, _assert_false_if_present, _finite_numbers, _sha256_file, _sha256_tar_member, _parse_sha256_sidecar | Python module. |
+| `scripts/verify_r5_wob_upload.py` | _sha256_file, _read_expected_hash, _safe_extract, _run_validator, verify, build_parser, main | Verify an uploaded R5-WOB output tarball and run the R5-WOB validator. |
 | `scripts/verify_wob_p0_kaggle_evidence.py` | sha256_file, parse_sha256_sidecar, _read_text_member, _read_json_member, verify_wob_p0_kaggle_evidence, build_parser, main | Python module. |
 | `src/glitch_detection/__init__.py` | - | Glitch detection research pipeline. |
 | `src/glitch_detection/analysis.py` | _split_metadata, load_scores_with_labels, prediction_rows, _group_rows, binary_metrics_by_group, top_errors, _percentile, score_distribution_summary, write_json, write_rows_csv, write_markdown_table, _format_markdown_value | Python module. |
@@ -138,6 +146,7 @@ Generator: `scripts/update_context_cache.py`
 | `src/glitch_detection/plot_scores.py` | read_score_series, plot_scores, build_parser, main | Python module. |
 | `src/glitch_detection/preprocess.py` | list_frame_files, resize_and_save_frame, preprocess_frames, extract_video_frames, preprocess_input, build_parser, main | Python module. |
 | `src/glitch_detection/r5_tempglitch_eval.py` | _read_json, _load_script_module, _write_json, _write_sha256, _percentile, _aggregate, _float_text, _fpr_at_95_tpr, refuse_locked_test_path, parse_seed_artifact_roots, resolve_seed_artifact, planned_output_paths | Python module. |
+| `src/glitch_detection/r5_wob_eval.py` | _load_script_module, _read_json, _read_csv_rows, _write_json, _write_report, _parse_keyed_paths, _render_eval_manifest, _validate_readiness_and_manifest, _load_train_rows, _resolve_source_path, summarize_source_coverage, _build_lance_from_rows | Python module. |
 | `src/glitch_detection/repeated_eval.py` | FittedScorer, train_normal_records, fit_scorer_for_split, score_fitted_scorer, clip_score_rows, write_clip_scores_csv, split_rows_as_dicts, source_labels_for_split, build_video_rows | Python module. |
 | `src/glitch_detection/run_baseline.py` | run_baseline, build_parser, main | Python module. |
 | `src/glitch_detection/score_clips.py` | _frame_diff_scorer, available_scorers, run_scorer, build_parser, main | Python module. |
@@ -199,6 +208,10 @@ Generator: `scripts/update_context_cache.py`
 | `scripts/run_lewm_scoring.py` | CLI/helper script. | Gate 5 |
 | `scripts/run_phase6e_kaggle_automation.py` | CLI/helper script. | Gate 5 |
 | `scripts/run_r5_tempglitch_identical_episode_evaluation.py` | CLI/helper script. | general |
+| `scripts/run_r5_wob_identical_episode_evaluation.py` | CLI/helper script. | general |
+| `scripts/run_r5_xgame_comparison.py` | R5-XGAME: Cross-dataset comparison of TempGlitch R5 and WOB R5 results. | general |
+| `scripts/run_r6_tempglitch_ablations.py` | R6 TempGlitch ablation runner. | general |
+| `scripts/run_r6_wob_ablations.py` | R6 WOB ablation runner. | general |
 | `scripts/run_synthetic_demo.py` | CLI/helper script. | general |
 | `scripts/run_tempglitch_repeated_grouped_splits.py` | CLI/helper script. | general |
 | `scripts/run_tempglitch_smoke_test.py` | CLI/helper script. | general |
@@ -217,10 +230,14 @@ Generator: `scripts/update_context_cache.py`
 | `scripts/validate_lewm_kaggle_artifacts.py` | CLI/helper script. | Gate 5 |
 | `scripts/validate_lewm_r3_seed_artifacts.py` | CLI/helper script. | Gate 5 |
 | `scripts/validate_lewm_research_mvp_config.py` | CLI/helper script. | Gate 5 |
+| `scripts/validate_r5_wob_evaluation.py` | CLI/helper script. | general |
+| `scripts/validate_r5_xgame_comparison.py` | Validate an R5-XGAME cross-dataset comparison output directory. | general |
+| `scripts/validate_r6_ablations.py` | Validate R6 ablation outputs. | general |
 | `scripts/validate_research_release.py` | CLI/helper script. | general |
 | `scripts/validate_wob_expansion_readiness.py` | Validate the frozen seed42 non-locked World of Bugs evaluation-readiness bundle. | general |
 | `scripts/validate_wob_seed42_artifacts.py` | CLI/helper script. | general |
 | `scripts/validate_wob_seed_artifacts.py` | CLI/helper script. | general |
+| `scripts/verify_r5_wob_upload.py` | Verify an uploaded R5-WOB output tarball and run the R5-WOB validator. | general |
 | `scripts/verify_wob_p0_kaggle_evidence.py` | CLI/helper script. | Gate 5 |
 
 ## Tests
@@ -279,11 +296,13 @@ Generator: `scripts/update_context_cache.py`
 | `tests/test_pairs.py` | pairs |
 | `tests/test_phase6e_kaggle_automation_cli.py` | phase6e_kaggle_automation_cli |
 | `tests/test_phase6e_kaggle_docs.py` | phase6e_kaggle_docs |
+| `tests/test_post_r5_scaffold_gates.py` | post_r5_scaffold_gates |
 | `tests/test_prepare_phase6e_kaggle_dataset.py` | prepare_phase6e_kaggle_dataset |
 | `tests/test_preprocess.py` | preprocess |
 | `tests/test_protocol_splits.py` | protocol_splits |
 | `tests/test_r3_seed_runner.py` | r3_seed_runner |
 | `tests/test_r5_tempglitch_eval.py` | r5_tempglitch_eval |
+| `tests/test_r5_wob_eval.py` | r5_wob_eval |
 | `tests/test_repeated_eval.py` | repeated_eval |
 | `tests/test_repeated_grouped_runner.py` | repeated_grouped_runner |
 | `tests/test_research_release_tools.py` | research_release_tools |
@@ -294,6 +313,7 @@ Generator: `scripts/update_context_cache.py`
 | `tests/test_statistics.py` | statistics |
 | `tests/test_tempglitch.py` | tempglitch |
 | `tests/test_tempglitch_split_runner.py` | tempglitch_split_runner |
+| `tests/test_validate_r5_wob_evaluation.py` | validate_r5_wob_evaluation |
 | `tests/test_verify_wob_p0_kaggle_evidence.py` | verify_wob_p0_kaggle_evidence |
 | `tests/test_video_autoencoder.py` | video_autoencoder |
 | `tests/test_video_eval.py` | video_eval |
@@ -304,6 +324,7 @@ Generator: `scripts/update_context_cache.py`
 | `tests/test_wob_p1_seed42_runner.py` | wob_p1_seed42_runner |
 | `tests/test_wob_p1_seeds43_44_runner.py` | wob_p1_seeds43_44_runner |
 | `tests/test_wob_protocol.py` | wob_protocol |
+| `tests/test_wob_r5_runner.py` | wob_r5_runner |
 | `tests/test_wob_seed_artifact_validator.py` | wob_seed_artifact_validator |
 
 ## Docs

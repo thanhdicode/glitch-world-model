@@ -23,8 +23,13 @@ locked test. It does not support any WOB performance claim.
 
 - `scripts/run_r5_wob_identical_episode_evaluation.py`
 - `scripts/validate_r5_wob_evaluation.py`
+- `scripts/run_r5_wob_stage.py`
+- `scripts/validate_r5_wob_stage_outputs.py`
+- `scripts/assemble_r5_wob_from_stages.py`
 - `src/glitch_detection/r5_wob_eval.py`
+- `src/glitch_detection/r5_wob_staged.py`
 - `cloud/wob_r5_eval/run_kaggle_r5_wob_eval.sh`
+- `cloud/wob_r5_eval/run_kaggle_r5_wob_staged.sh`
 - `cloud/wob_r5_eval/README.md`
 - Focused tests for the runner, validator, and Kaggle shell entrypoint
 
@@ -61,11 +66,14 @@ state. The accurate status label is:
 
 - `BLOCKED_NEEDS_HUMAN_KAGGLE_R5_WOB`
 
+The repository now also includes a staged retry path for Kaggle runs so the next attempt can
+resume from successful phases and retain structured failure diagnostics.
+
 ## Exact Next Action
 
-Run the Kaggle notebook cell described in `cloud/wob_r5_eval/README.md` on the frozen evaluation
-commit so the official WOB normal/test inputs and the verified seed42/seed43/seed44 training
-artifacts are all mounted together.
+Run the staged Kaggle notebook cell described in `cloud/wob_r5_eval/README.md` on the chosen
+retry commit so the official WOB normal/test inputs and the verified seed42/seed43/seed44
+training artifacts are all mounted together.
 
 ## Claim Boundary
 
