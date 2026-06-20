@@ -1,0 +1,15 @@
+\begin{table}[t]
+\caption{Bounded dataset inventory for the current paper scaffold.}
+\label{tab:dataset-inventory}
+\centering
+\small
+\begin{tabularx}{\textwidth}{@{}lcccX@{}}
+\toprule
+Surface & Train-normal & Validation-normal & Validation-buggy & Notes \\
+\midrule
+TempGlitch research MVP source & 36 episodes & 14 episodes & 22 episodes & Current paper-facing empirical inventory across five categories; two validation-normal episodes are used for calibration and 12 for evaluation. \\
+R5 identical-episode evaluation pool & fit only from train-normal & 12 evaluation-normal plus 2 calibration-normal & 22 evaluation-buggy & Non-locked validation-only family with a frozen manifest of 30,549 windows. \\
+World of Bugs expansion track & not opened here & not opened here & not opened here & Status-only mention; WOB training and evaluation claims remain out of scope for this draft. \\
+\bottomrule
+\end{tabularx}
+\end{table}

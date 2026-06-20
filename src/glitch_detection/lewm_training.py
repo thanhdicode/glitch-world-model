@@ -307,6 +307,7 @@ def _train_lewm_by_updates(
     config: LeWMTrainConfig,
     *,
     device: str,
+    resume: bool = False,
 ) -> dict[str, Any]:
     torch, instantiate = _require_runtime()
     random.seed(config.seed)
@@ -365,22 +366,55 @@ def _train_lewm_by_updates(
     best_weights_path = output_root / "best_weights.pt"
     best_metadata_path = output_root / "best_checkpoint_metadata.json"
     weights_path = output_root / "weights.pt"
+    training_history_path = output_root / "loss_history.json"
+    validation_history_path = output_root / "validation_history.json"
     training_history: list[dict[str, Any]] = []
     validation_history: list[dict[str, Any]] = []
     best_validation_loss = float("inf")
     best_update = 0
     evaluations_without_improvement = 0
     stopped_early = False
-    train_batches = iter(train_loader)
-    started = time.perf_counter()
-    started_at = _utc_now()
+    start_update = 1
     assert config.target_optimizer_updates is not None
     assert config.evaluation_interval_updates is not None
     assert config.checkpoint_interval_updates is not None
-    final_embeddings = None
-    updates_completed = 0
 
-    for update in range(1, config.target_optimizer_updates + 1):
+    # Resume from checkpoint if requested and available
+    if resume:
+        if not checkpoint_path.is_file():
+            raise LeWMTrainingError("Resume requested but checkpoint_weights.pt is missing.")
+        checkpoint = torch.load(checkpoint_path, map_location="cpu", weights_only=False)
+        if (
+            checkpoint["config_hash"] != config_hash
+            or checkpoint["dataset_hashes"] != dataset_hashes
+        ):
+            raise LeWMTrainingError("Resume checkpoint config/dataset hashes do not match.")
+        model.load_state_dict(checkpoint["model"], strict=True)
+        optimizer.load_state_dict(checkpoint["optimizer"])
+        start_update = int(checkpoint["global_step"]) + 1
+        evaluations_without_improvement = int(checkpoint.get("evaluations_without_improvement", 0))
+        if best_metadata_path.is_file():
+            best_meta = json.loads(best_metadata_path.read_text(encoding="utf-8"))
+            best_validation_loss = float(best_meta["validation_loss"])
+            best_update = int(best_meta["update"])
+        if training_history_path.is_file():
+            training_history = json.loads(training_history_path.read_text(encoding="utf-8"))
+        if validation_history_path.is_file():
+            validation_history = json.loads(validation_history_path.read_text(encoding="utf-8"))
+        print(
+            f"lewm_resume start_update={start_update} "
+            f"best_update={best_update} "
+            f"best_validation_loss={best_validation_loss:.8f}",
+            flush=True,
+        )
+
+    train_batches = iter(train_loader)
+    started = time.perf_counter()
+    started_at = _utc_now()
+    final_embeddings = None
+    updates_completed = start_update - 1
+
+    for update in range(start_update, config.target_optimizer_updates + 1):
         try:
             batch = next(train_batches)
         except StopIteration:
@@ -589,6 +623,7 @@ def train_lewm(
             output_root,
             config,
             device=device,
+            resume=resume,
         )
     torch, instantiate = _require_runtime()
     random.seed(config.seed)

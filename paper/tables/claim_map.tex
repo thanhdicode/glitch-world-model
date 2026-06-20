@@ -1,0 +1,20 @@
+\begin{table}[t]
+\caption{Current paper-facing claim map.}
+\label{tab:claim-map}
+\centering
+\small
+\begin{tabularx}{\textwidth}{@{}XlX@{}}
+\toprule
+Claim surface & Status & Evidence anchor \\
+\midrule
+The repository contains a full provenance-bound non-locked R5 TempGlitch identical-episode evaluation bundle. & allowed & \path{docs/research/69_r5_tempglitch_identical_episode_results.md} \\
+The best observed AUROC and AUPRC rows in the frozen R5 family came from seed44 LeWM variants. & allowed with exact wording & \path{docs/research/69_r5_tempglitch_identical_episode_results.md} \\
+Thresholds were derived from the 95th percentile of two calibration-normal episode scores. & allowed & \path{docs/research/69_r5_tempglitch_identical_episode_results.md} \\
+\texttt{locked\_test\_materialized = false} and \texttt{locked\_test\_scored = false}. & required boundary & \path{docs/research/69_r5_tempglitch_identical_episode_results.md}, \path{docs/research/16_claim_registry.md} \\
+\texttt{validation\_buggy\_used\_for\_fit\_select = false}. & required boundary & \path{docs/research/69_r5_tempglitch_identical_episode_results.md} \\
+World of Bugs is a controlled expansion track and not part of the bounded results section. & allowed status statement & \path{PLAYBOOK.md}, \path{docs/research/16_claim_registry.md} \\
+LeWM is state of the art or broadly superior. & forbidden & \path{docs/research/16_claim_registry.md}, \path{PLAYBOOK.md} \\
+The paper reports locked-test or WOB evaluation performance. & forbidden & \path{docs/research/16_claim_registry.md}, \path{PLAYBOOK.md} \\
+\bottomrule
+\end{tabularx}
+\end{table}

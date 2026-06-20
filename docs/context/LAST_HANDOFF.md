@@ -1,77 +1,58 @@
 # LAST_HANDOFF.md
 
-Last completed task: R3/R4 multi-seed evidence audit and claim-boundary refresh
-Commit: pending
-Date: 2026-06-17
+Last completed task: R5-WOB staged Lance directory marker fix
+Commit: pending task commit
+Date: 2026-06-21
 
 ## What Changed
 
-- Audited current git state, current branch, recent commits, ignored/untracked paths, and local
-  Kaggle-downloaded output folders.
-- Searched for the expected R3/R4 archives:
-  `r3_seed42_artifacts.tar.gz`, `r3_seed43_artifacts.tar.gz`,
-  `r3_seed44_artifacts.tar.gz`, and `r4_seed43_44_artifacts_bundle.tar.gz`.
-- Found Kaggle output folders containing repo snapshots from the failed saved-version rerun, but
-  no matching training archive files to hash-verify.
-- Updated project state, next action, claim registry, and result-claim boundary to preserve the
-  distinction between live-log validation and artifact-backed validation.
-- Added ignore rules for Kaggle output/download folders, LeWM local output/data roots, archive
-  files, checkpoints, Lance directories, and the root Kaggle package path.
+- Fixed staged R5-WOB marker recording for `.lance` outputs, which are directories on Kaggle.
+- Added directory inventory hashing to `_file_record` and matching directory validation for stage
+  resume checks.
+- Added a regression test covering a fake Lance directory marker.
+- Updated the R5-WOB failure-audit note with the exact failure mode.
 
 ## Checks Passed
 
-- `python -m pytest -q`
-- `python -m ruff check .`
-- `python -m ruff format --check .`
-- `python scripts/check_claim_registry.py`
-- `python scripts/validate_research_release.py --ci`
-- `python scripts/doctor.py`
-- `python scripts/validate_context_cache.py`
-- `git diff --check`
-- `pre-commit run --all-files`
+- Focused staged-runner regression tests passed.
+- Full repository validation is recorded in the task final report.
 
 ## Safety Status
 
-- No cloud/Kaggle training was launched.
-- No locked-test materialization or scoring was attempted.
-- No validation-buggy fit/select claim was added.
-- No R5, WOB, detection-performance, AUROC, AUPRC, temporal-localization, SIGReg-benefit, or
-  locked-test claim was added.
-- The failed Kaggle Version 1 save remains classified as artifact-persistence failure caused by
-  rerunning an old notebook cell without runtime setup and hitting
-  `ModuleNotFoundError: No module named 'glitch_detection'`.
-- Do not rerun training unless artifact recovery fails and a new run is explicitly documented.
-- Do not commit the Kaggle output snapshots or any archives/checkpoints if they are later
-  recovered.
+- No R5-XGAME, R6, or WOB evaluation execution occurred locally.
+- No WOB metric, cross-game, action-conditioning, SIGReg, superiority, or locked-test claim was
+  added.
+- No artifact, checkpoint, Kaggle log, raw data, tarball, or credential was added.
 - Locked test remains closed, unmaterialized, and unscored.
 
 ## Gate Status After Task
 
-- FIX-0 GPU capability guard: DONE.
-- R3 seed42: human-provided validation summary exists, but local archive hash verification is
-  still needed in this repo state.
-- R4 seed43/44: live-log validated, but artifact persistence is unresolved.
-- R4 bundle: live-log created, but artifact persistence is unresolved.
-- R5: NOT_STARTED.
-- WOB expansion: NOT_STARTED.
-- Locked test: UNTOUCHED / NOT_MATERIALIZED / NOT_SCORED.
+- R5-WOB: staged retry should now pass the previous `IsADirectoryError` in `materialize_lance`;
+  Kaggle result remains unverified until the downloaded success pair passes local intake.
+- R5-XGAME: fail-closed pending validated R5-WOB metrics plus receipt.
+- R6 TempGlitch CPU-safe queue: PREPARABLE_NOT_RUN.
+- R6 WOB queue: BLOCKED_R5_WOB_VALIDATION.
+- Locked test: CLOSED.
 
 ## Open Blockers
 
-- Recover the actual R4 seed43/44 archive files and bundle, then verify their SHA256 hashes.
-- Recover or re-verify the R3 seed42 archive locally before using local artifact-backed wording.
-- If R4 archives cannot be recovered, decide whether to rerun seed43/44 under the frozen protocol
-  and document the new fingerprints.
+- A new Kaggle retry on the latest `main` is still required.
+- A downloaded R5-WOB success pair or failure-debug pair is still required after retry.
+- R5-XGAME and all WOB ablations depend on validated R5-WOB evidence.
+- GPU ablations require later protocol and execution decisions.
 
 ## Next Recommended Task
 
-- Recover/persist R4 artifacts before R5. Do not rerun training unless artifact recovery fails.
+- Rerun the staged R5-WOB Kaggle notebook using the latest `main` commit.
+- On success, download the success tarball and sidecar and run the offline intake gate.
+- On failure, download the failure-debug tarball and sidecar and classify the failed stage.
 
 ## Files Likely Relevant Next
 
-- `artifacts/kaggle_kernel_output/`
-- `artifacts/kaggle_kernel_pull/`
-- `docs/context/PROJECT_STATE.md`
+- `scripts/verify_r5_wob_upload.py`
+- `src/glitch_detection/r5_wob_staged.py`
+- `tests/test_r5_wob_stage.py`
+- `scripts/validate_r5_wob_evaluation.py`
+- `docs/research/88_r5_wob_postrun_workflow.md`
+- `configs/r6_ablation_queue.json`
 - `docs/context/NEXT_ACTION.md`
-- `docs/research/67_r3_r4_multiseed_status.md`
-- `docs/research/16_claim_registry.md`

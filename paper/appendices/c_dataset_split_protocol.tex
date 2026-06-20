@@ -1,0 +1,13 @@
+\section{Dataset Split Protocol}
+\label{app:dataset-split-protocol}
+
+The repository's protocol requires source-aware split hygiene before windowing and forbids
+train-dependent fitting on buggy evaluation material. For the current bounded R5 family:
+\begin{itemize}[leftmargin=*]
+\item train-normal data are the only allowed source for train-dependent fitting;
+\item two validation-normal episodes define the calibration surface;
+\item the evaluation pool contains 12 validation-normal and 22 validation-buggy episodes;
+\item locked-test materialization and scoring remain disabled.
+\end{itemize}
+
+This appendix exists so that later prose cannot silently widen the split contract.

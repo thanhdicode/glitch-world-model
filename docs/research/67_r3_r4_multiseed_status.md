@@ -2,83 +2,94 @@
 
 Date: 2026-06-17
 
-Evidence class: repository and local-artifact audit
+Evidence class: repository, local-artifact, and validator audit
 
 ## Summary
 
-This audit reconciles the current repository state, local Kaggle-downloaded folders, and the
-human-provided R3/R4 live-run summary. It does not rerun training, open locked test, score locked
-test, or use validation-buggy data for fit/select.
+This record supersedes the earlier R4 live-log-only status for the 2026-06-17 rerun of seeds 43
+and 44. The downloaded local archives are now present under ignored paths, their `.sha256` sidecar
+files match the computed SHA256 values, and both extracted seed roots pass
+`scripts/validate_lewm_r3_seed_artifacts.py`.
 
-The important boundary is artifact persistence. The R4 seed43/44 live logs reportedly validated
-training success and created archives, but the actual `.tar.gz` files were not present locally
-during this audit. Therefore R4 remains live-log validated but not fully artifact-backed.
+This confirms that the R4 rerun seed43/44 training artifacts are artifact-backed. The later R5
+episode-level evidence is recorded separately in
+`docs/research/69_r5_tempglitch_identical_episode_results.md`; this note remains focused on the
+multi-seed training artifact status.
 
-## Evidence Search
+## Local Archive Verification
 
-| Expected file | Local availability | Expected SHA256 | Audit result |
-|---|---:|---|---|
-| `r3_seed42_artifacts.tar.gz` | not found | `a51fa19517b69cadcd96273e37094fed50bd14440d854ce0dac521b78a580d48` | LOG_VERIFIED_BUT_ARTIFACT_MISSING / NEEDS_ARTIFACT_VERIFICATION |
-| `r3_seed43_artifacts.tar.gz` | not found | `ec75a1df25801c61f12d0a4cbead0d024aa6413e3d2ae9341362478b92a0e1ad` | LIVE_LOG_VALIDATED_BUT_ARTIFACT_PERSISTENCE_UNRESOLVED |
-| `r3_seed44_artifacts.tar.gz` | not found | `55037ef74d98965c0fe60ae2bc029d92b7364c42c8c89acecbd04537936f36fc` | LIVE_LOG_VALIDATED_BUT_ARTIFACT_PERSISTENCE_UNRESOLVED |
-| `r4_seed43_44_artifacts_bundle.tar.gz` | not found | `8e66bfdb27b2b908b151b9404f16a83a8e2c63eaa9a129ac5bef57ac2c103de1` | LIVE_LOG_CREATED_BUT_ARTIFACT_PERSISTENCE_UNRESOLVED |
+Local archive destination:
 
-Local folders under `artifacts/kaggle_kernel_output/` contain repo snapshots from Kaggle output,
-not the expected tar archives.
+- `artifacts/downloads/r4_rerun_2026_06_17/`
+
+Local extraction destination:
+
+- `artifacts/verified/r4_rerun_2026_06_17/`
+
+| Artifact | Local availability | SHA256 | Local verification | Notes |
+|---|---:|---|---|---|
+| `r3_seed43_artifacts.tar.gz` | yes | `3ec2fa25b2b2b952bcd1087aeb755c2b0c413fa95b9ec9a71a320f5df9dd33f7` | matched `.sha256` and `Get-FileHash` | Extracted and validator-passed. |
+| `r3_seed44_artifacts.tar.gz` | yes | `ffd6d917f134f3cce37cd0a1e666b10ab1122678d9c3f483936f9b1ad69efa83` | matched `.sha256` and `Get-FileHash` | Extracted and validator-passed. |
+| `r4_seed43_44_artifacts_bundle.tar.gz` | yes | `4d4575679a91ab54ae58005bae6a483bdf63e06750336400f3448873ee0afd01` | matched `.sha256` and `Get-FileHash` | Bundle integrity verified. |
+
+## Validator Commands
+
+```powershell
+python scripts/validate_lewm_r3_seed_artifacts.py `
+  --artifact-root artifacts/verified/r4_rerun_2026_06_17/r3_seed43 `
+  --expected-seed 43 `
+  --expected-target-updates 15000
+
+python scripts/validate_lewm_r3_seed_artifacts.py `
+  --artifact-root artifacts/verified/r4_rerun_2026_06_17/r3_seed44 `
+  --expected-seed 44 `
+  --expected-target-updates 15000
+```
+
+Both commands passed locally with:
+
+- `locked_test_materialized: false`
+- `locked_test_scored: false`
 
 ## Seed Table
 
-| Seed | Stage | Target optimizer updates | Updates completed | Early-stopped | Best update | Best validation loss | Checkpoint reload | Leakage / locked-test flags | Status |
-|---:|---|---:|---:|---|---:|---:|---|---|---|
-| 42 | R3 | 15000 | 3000 | true | 500 | `0.657468929663858` | reported valid in handoff context | validation-buggy fit/select false; locked test not materialized/scored | LOG_VERIFIED_BUT_ARTIFACT_MISSING / NEEDS_ARTIFACT_VERIFICATION |
-| 43 | R4 | 15000 | 3000 | true | 500 | `0.615883181833121` | live-log verified | validation-buggy fit/select false; locked test not materialized/scored | LIVE_LOG_VALIDATED_BUT_ARTIFACT_PERSISTENCE_UNRESOLVED |
-| 44 | R4 | 15000 | 8000 | true | 5500 | `0.6347979751979919` | live-log verified | validation-buggy fit/select false; locked test not materialized/scored | LIVE_LOG_VALIDATED_BUT_ARTIFACT_PERSISTENCE_UNRESOLVED |
-
-## Failed Persistence Event
-
-Kaggle Version 1 later failed before successful artifact persistence because it reran an old
-notebook cell without `setup_runtime.sh` and hit:
-
-```text
-ModuleNotFoundError: No module named 'glitch_detection'
-```
-
-This is an artifact-persistence / saved-version rerun failure, not evidence that the live seed43
-or seed44 training logs were invalid. It also does not create artifact-backed status.
+| Seed | Stage | Target optimizer updates | Updates completed | Early-stopped | Reason | Best update | Best validation loss | Checkpoint reload | Leakage / locked-test flags | Status |
+|---:|---|---:|---:|---|---|---:|---:|---|---|---|
+| 42 | R3 | 15000 | 3000 | true | previously documented | 500 | `0.657468929663858` | separately documented | validation-buggy fit/select false; locked test not materialized/scored | LOCAL_EXTRACT_PRESENT / ARCHIVE_PROVENANCE_SEPARATE |
+| 43 | R4 rerun | 15000 | 3000 | true | `early_stopping_patience` | 500 | `0.615883181833121` | validator passed | validation-buggy fit/select false; locked test not materialized/scored | ARTIFACT_BACKED_RERUN |
+| 44 | R4 rerun | 15000 | 8000 | true | `early_stopping_patience` | 5500 | `0.6347979751979919` | validator passed | validation-buggy fit/select false; locked test not materialized/scored | ARTIFACT_BACKED_RERUN |
 
 ## Phase Status
 
 | Item | Status |
 |---|---|
 | FIX-0 GPU capability guard | DONE |
-| R3 seed42 | LOG_VERIFIED_BUT_ARTIFACT_MISSING / NEEDS_ARTIFACT_VERIFICATION |
-| R4 seed43 | LIVE_LOG_VALIDATED_BUT_ARTIFACT_PERSISTENCE_UNRESOLVED |
-| R4 seed44 | LIVE_LOG_VALIDATED_BUT_ARTIFACT_PERSISTENCE_UNRESOLVED |
-| R4 bundle | LIVE_LOG_CREATED_BUT_ARTIFACT_PERSISTENCE_UNRESOLVED |
-| R5 | NOT_STARTED |
-| WOB expansion | NOT_STARTED |
+| R3 seed42 | LOCAL_EXTRACT_PRESENT / ARCHIVE_PROVENANCE_SEPARATE |
+| R4 seed43 | ARTIFACT_BACKED_RERUN |
+| R4 seed44 | ARTIFACT_BACKED_RERUN |
+| R4 bundle | ARTIFACT_BACKED_RERUN |
+| R5 | COMPLETED_NONLOCKED / REPORTED_SEPARATELY |
+| WOB expansion | READY_TO_PLAN / NOT_STARTED |
 | Locked test | UNTOUCHED / NOT_MATERIALIZED / NOT_SCORED |
 
 ## Safe Claims
 
-- FIX-0 GPU capability guard exists on `main`.
-- R4 seed43/44 were live-log validated, but artifact persistence is unresolved.
-- R3/R4 runs used validation-normal for checkpoint selection according to the provided run
-  summaries, and validation-buggy was not used for fit/select.
+- The exact 500-update GPU profile completed as engineering evidence only.
+- R4 rerun seed43/44 training artifacts are artifact-backed after local SHA256 verification and
+  per-seed validator checks.
+- R4 rerun seed43 stopped early at update 3000 and seed44 stopped early at update 8000 under the
+  frozen non-locked protocol.
+- Validation-buggy data was not used for fit or selection in the validated rerun artifacts.
 - Locked test remained unmaterialized and unscored.
-- R5 not started.
-- No detection metrics yet.
+- R5 is recorded separately in the dedicated results note.
 
 ## Unsafe Claims
 
-- R4 is fully artifact-backed.
-- All seeds completed 15,000 optimizer updates.
-- R5 episode-level evaluation has started.
 - LeWM detects glitches, outperforms baselines, or is state of the art.
 - SIGReg benefit, temporal localization, WOB expansion, or neural locked-test performance.
+- R4 rerun training artifacts imply AUROC, AUPRC, or paper-grade detection performance.
 
 ## Next Action
 
-Recover/persist the R4 archives and bundle before R5. Do not rerun training unless artifact
-recovery fails. After recovery, compute SHA256 for each archive and update this record only if the
-hashes match the expected values above.
+Use the completed R5 bundle as the prerequisite evidence for a controlled WOB planning pass. Do
+not open WOB or touch locked test without a separate explicit command.

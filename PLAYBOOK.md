@@ -1,10 +1,9 @@
 # PLAYBOOK.md - LeWM-Glitch Research Operating Bible
 
-Last updated: 2026-06-12
+Last updated: 2026-06-19
 Status owner: repository owner / technical program lead
 Canonical branch at update: `main`
-Evidence cutoff: Gate 7-9 artifacts generated from commit
-`f22e1be92fed098752069616deb7ed2b26b8fcc1`
+Evidence cutoff: post-WOB-P1 seed44 artifact verification
 
 ## 0. How To Use This Playbook
 
@@ -62,11 +61,11 @@ under 200 lines without hiding safety rules.
 | Current venue format | Springer LNICST, anonymized English PDF |
 | Regular paper length | 12-15 pages, excluding appendices, references, acknowledgements |
 | Main research method | LeWM/JEPA latent prediction surprise |
-| Current gate state | Gates 1-8 passed; Gate 9 passed as a limited non-locked window pilot; Gate 10 closed |
+| Current gate state | Gates 1-8 passed; Gate 9 passed as a limited non-locked window pilot; R5 completed for the non-locked TempGlitch family; Gate 10 closed |
 | Locked test | Closed, unmaterialized, unscored for the LeWM path |
 
-LeWM integration engineering and a limited gameplay evaluation exist. The current evaluation is
-validation-only, window-level, and contains one non-locked buggy episode.
+LeWM integration engineering exists together with a limited one-buggy-episode window pilot and a
+completed validation-only, non-locked TempGlitch R5 identical-episode family.
 
 ## 2. One-Page Executive Summary
 
@@ -101,7 +100,12 @@ Gate 5 passed strict CUDA/resume artifact validation. Gate 6 v8 then completed t
 normal-only TempGlitch pilot on CUDA, verified checkpoint reload and finite validation encoding,
 and passed the strict validator with locked-test flags false. Gates 7-9 then produced 10,081
 real frozen-checkpoint scores, same-manifest baselines, and validation-only pilot metrics. The
-next evidence task is broader non-locked buggy validation, not locked-test release.
+exact 500-update GPU profile is complete as engineering evidence only, the R4 rerun seed43/44
+artifacts are now SHA256-verified and validator-backed, R5 has completed a provenance-bound
+non-locked TempGlitch identical-episode evaluation family, and WOB-P1 seed42/seed43/seed44 now
+have SHA256-verified validator-passed training artifacts. World of Bugs remains a controlled
+post-R5 expansion track, with non-locked WOB evaluation still closed pending a separate explicit
+human command.
 
 ## 3. Why This Project Exists
 
@@ -232,7 +236,7 @@ described as components of the audited method, but their gameplay detection bene
 
 ## 8. Current Verified Status
 
-Status date: 2026-06-12.
+Status date: 2026-06-19.
 
 | Gate | Status | Evidence | Missing | Paper claim impact |
 | --- | --- | --- | --- | --- |
@@ -247,7 +251,14 @@ Status date: 2026-06-12.
 | 9 | passed pilot | AUROC/AUPRC and grouped-normal-P95 F1 for eight scorers | multi-episode evidence and working LeWM calibration | Only the qualified one-episode pilot result is allowed. |
 | 10 | closed | no materialization or scoring | frozen decision and explicit direct user command | No neural locked-test claim. |
 
-The LeWM TempGlitch private dataset is ready and matched the local approved Lance inventory by
+The exact 500-update non-locked GPU profile completed and passed strict artifact validation as
+engineering evidence only. The 2026-06-17 R4 rerun archives for seed43 and seed44 are now local
+SHA256-verified and pass the per-seed artifact validators; R5 is complete for the non-locked
+TempGlitch identical-episode family, local WOB replay remains `BLOCKED_MISSING_INPUTS`, the
+Kaggle-native `WOB-P0` pass is now verified from a downloaded evidence bundle, and the WOB-P1
+seed42/seed43/seed44 training artifacts are now validator-backed under the train-normal /
+validation-normal protocol. The LeWM
+TempGlitch private dataset is ready and matched the local approved Lance inventory by
 name and size. One exact fingerprint-approved kernel push on 2026-06-11 returned HTTP 409 before
 a run was established; its one-time approval is consumed. The local cause was a kernel slug equal
 to the dataset slug. A second exact approval for the corrected v2 package was then consumed for
@@ -472,8 +483,9 @@ The adapter must validate:
 
 `mini_latent` is a PCA/linear transition proxy. It is never LeWM, JEPA, or SIGReg.
 
-Current missing evidence remains a validated CUDA resume artifact and gameplay-scale validation
-metrics.
+Current missing evidence is no longer CUDA resume or profile feasibility. The missing evidence is
+R5 identical-episode TempGlitch metrics, frozen validation reporting at episode level, and any
+post-R5 WOB expansion artifacts.
 
 ## 14. Baseline Strategy
 
@@ -891,13 +903,16 @@ granularity, negative results, and lessons for reproducible game-QA anomaly rese
 | 3, complete | Dataset protocol engineer | Audit Gate 6 normal-only pilot source | reports 40 and 45, frozen split | normal-only source/pair-disjoint Lance inventories | none |
 | 4, complete | LeWM Integration + ML Research Engineers | Run standing-authorized Gate 6 pilot | config and reports 45-46 | gameplay checkpoint, reload, finite diagnostics, validation encoding | none |
 | 5, complete | ML Research Engineers | Run Gates 7-9 non-locked evaluation | reports 47-50 | finite same-manifest scores and pilot metrics | none |
-| 6 | Kaggle GPU + ML Research Engineers | Implement and validate the exact 500-update non-locked GPU profile | Roadmap v3 R0-R1, profile package and validator | strict profile artifacts pass; resource envelope recorded | packaging/runtime failure |
-| 7 | ML Research Engineers | Freeze and execute the three-seed main protocol | Roadmap v3 R2-R6 | validated episode-level multi-seed evidence, baselines, and ablations | weak signal/calibration |
-| 8 | Locked Test Release Officer | Keep locked test closed pending a frozen validation decision and separate direct command | release workflow | no materialization/scoring before frozen decision | schedule pressure |
+| 6, complete | Kaggle GPU + ML Research Engineers | Validate the exact 500-update non-locked GPU profile | Roadmap v3 R0-R1, profile package and validator | strict profile artifacts pass; resource envelope recorded | none |
+| 7, complete | ML Research Engineers | Confirm artifact-backed R4 rerun seed43/44 training archives | report 67, local SHA256 verification, per-seed validator outputs | local hashes match and both validators pass | none |
+| 8, complete | ML Research Engineers | Complete R5 identical-episode evaluation on the non-locked research MVP | Roadmap v3 R5, reports 67-69, scoring and evaluation scripts | frozen inputs, provenance-bound outputs, no locked-test access | none |
+| 9, complete | ML Research Engineers | Execute and verify the Kaggle-native `WOB-P0` audit | Roadmap v3 WOB section, reports 40, 67-71, downloaded Kaggle audit bundle, claim registry, context docs | verified bundle reports `READY_FOR_WOB_P1`, 120/120 non-locked rows resolved, 59 locked rows skipped, locked test remains closed | none |
+| 10, complete | ML Research Engineers | Verify the `WOB-P1` seed42 real-action train-normal Kaggle training artifact | Roadmap v3 WOB section, verified WOB-P0 bundle, seed42 cloud package, artifact validator, context docs, report 72 | seed42 artifact SHA256 verified and validator-passed, train-normal/validation-normal only, validation-buggy excluded from fit/select, locked test closed | no WOB evaluation result |
+| 11 | Locked Test Release Officer | Keep locked test closed pending a frozen validation decision and separate direct command | release workflow | no materialization/scoring before frozen decision | schedule pressure |
 
-Current recommended task: execute Roadmap v3 Stages R0-R1 by implementing and validating the
-exact 500-update non-locked Kaggle GPU profile before freezing the main multi-seed schedule.
-Keep locked test closed.
+Current recommended task: preserve the frozen WOB evaluation-readiness metadata and do not open
+the non-locked `R5-WOB` evaluation path until a separate explicit human command authorizes it. Do
+not touch locked test.
 
 ## 29. Maintenance Rules For This Playbook
 

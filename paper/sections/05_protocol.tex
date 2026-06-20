@@ -1,0 +1,28 @@
+\section{Evaluation Protocol}
+\label{sec:protocol}
+
+The protocol is the core scientific contribution of the current scaffold. All train-dependent
+fitting and threshold selection must respect split hygiene. In particular, train-dependent methods
+fit on allowed train-normal data only, while the bounded R5 evaluation uses a frozen
+identical-episode manifest with two calibration-normal episodes and a held evaluation pool of
+normal and buggy episodes. This separation follows the general learn-predict and leakage-avoidance
+concerns raised in prior work \cite{kaufman2011leakage,kapoor2023leakage}; the exact split
+contract, however, is repository evidence rather than an external benchmark claim.
+
+For the qualified R5 family, thresholds are derived from the $95^{\text{th}}$ percentile of the
+two calibration-normal episode scores. Primary metrics are AUROC and AUPRC, while F1 at the
+normal-calibrated threshold and FPR@95TPR are secondary. Grouped episode-bootstrap intervals are
+used for uncertainty reporting in the current bounded table.
+
+Calibration is used here in the narrow sense of selecting a threshold from designated
+calibration-normal episodes. It should not be confused with neural probability calibration such as
+temperature scaling \cite{guo2017calibration}.
+
+Three protocol flags are especially important and remain fixed throughout the current paper phase:
+\begin{itemize}[leftmargin=*]
+\item \texttt{locked\_test\_materialized = false}
+\item \texttt{locked\_test\_scored = false}
+\item \texttt{validation\_buggy\_used\_for\_fit\_select = false}
+\end{itemize}
+
+These controls are repeated in the appendices because they define what the paper is allowed to say.

@@ -19,13 +19,31 @@ Current verified status:
   same canonical Lance manifest.
 - A separate research MVP source is ready with 36 train-normal, 14 validation-normal, and 22
   validation-buggy episodes across all five categories.
+- The exact 500-update non-locked GPU profile completed as engineering evidence only.
+- R4 rerun seed43/44 training artifacts are local SHA256-verified and pass per-seed validators.
+- R5 TempGlitch non-locked identical-episode evaluation completed and produced
+  provenance-bound episode-level outputs under the frozen validation-only protocol.
+- Kaggle-native `WOB-P0` passed with a verified downloaded evidence bundle; WOB-P1 seed42,
+  seed43, and seed44 training artifact verification are complete, while WOB evaluation remains
+  unopened.
+- Controlled World of Bugs expansion is `LOCAL_WOB_P0_STATUS=BLOCKED_MISSING_INPUTS`,
+  `WOB_P0_KAGGLE_STATUS=PASSED`, `WOB_STATUS=WOB_P1_SEED44_TRAINING_VALIDATED`,
+  `WOB_P1_TRAINING_STATUS=SEED44_VALIDATED`, `WOB_EVALUATION_STATUS=NOT_STARTED`.
+- The seed42 non-locked WOB evaluation-readiness gate is frozen, the seed42/seed43/seed44
+  artifacts are validator-backed, and the next empirical WOB gate is the frozen non-locked
+  `R5-WOB` evaluation path, which remains separately closed until explicitly authorized.
 - Locked test is closed.
-- LeWM gameplay evaluation exists only for one non-locked buggy episode with correlated windows.
+- LeWM gameplay evaluation now includes the earlier one-buggy-episode window pilot plus the
+  completed non-locked TempGlitch R5 identical-episode family.
 
 Safe claims include bounded normal-only CUDA training and the exact qualified Gate 7-9 pilot
-metrics and research-source readiness. The new GPU profile and main multi-seed training remain
-pending. Do not claim broad LeWM glitch-detection performance, superiority, state of the art,
-temporal localization, SIGReg benefit, or a neural locked-test result.
+metrics, research-source readiness, the validated 500-update GPU profile, artifact-backed R4
+rerun seed43/44 training evidence, the exact qualified R5 TempGlitch family results, the narrow
+WOB-P1 seed42/seed43/seed44 validator-passed training-artifact claims, and the seed43/44
+runner-prep reproducibility claim. Do not claim broad LeWM glitch-detection performance,
+superiority, state of the art, temporal localization, SIGReg benefit, WOB evaluation
+performance, cross-game generalization, action-conditioning benefit, or a neural locked-test
+result.
 
 ## Agent Operating Mode
 

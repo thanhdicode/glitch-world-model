@@ -1,0 +1,18 @@
+\begin{table}[t]
+\caption{Non-locked TempGlitch validation-only identical-episode family. Best observed rows within
+the frozen R5 family.}
+\label{tab:r5-bounded-results}
+\centering
+\small
+\begin{tabularx}{\textwidth}{@{}lXccccX@{}}
+\toprule
+Family & Configuration & AUROC & AUPRC & F1 & FPR@95TPR & 95\% CI \\
+\midrule
+LeWM best AUROC & seed44 \texttt{lewm\_l2\_max} + episode \texttt{mean} & 0.696970 & 0.796125 & 0.723404 & 0.75 & AUROC [0.479152, 0.878319]; F1 [0.536585, 0.851984] \\
+LeWM best AUPRC & seed44 \texttt{lewm\_l2\_top2\_mean} + episode \texttt{mean} & 0.670455 & 0.797118 & 0.711111 & 0.75 & AUROC [0.450536, 0.857792]; F1 [0.526316, 0.844487] \\
+Baseline best AUROC & \texttt{feature\_distance} + episode \texttt{top2\_mean} & 0.617424 & 0.746156 & 0.086957 & 0.833333 & AUROC [0.397633, 0.810653]; F1 [0, 0.260870] \\
+Baseline best AUPRC & \texttt{feature\_distance} + episode \texttt{mean} & 0.602273 & 0.777896 & 0.240000 & 1.00 & AUROC [0.407068, 0.800000]; F1 [0, 0.444444] \\
+Baseline best F1 & \texttt{frame\_diff} + episode \texttt{mean} & 0.530303 & 0.701055 & 0.785714 & 0.833333 & AUROC [0.321329, 0.754941]; F1 [0.666667, 0.885246] \\
+\bottomrule
+\end{tabularx}
+\end{table}
