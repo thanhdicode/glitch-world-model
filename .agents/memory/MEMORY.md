@@ -1,0 +1,2 @@
+- [LAST_HANDOFF structure rules](last_handoff_rules.md) — strict required headings + forbidden patterns; validate before commit.
+- [R5 baseline sentinel](r5_baseline_sentinel.md) — "n/a" is valid window_aggregation for baseline scorers; exclude from placeholder checks.
