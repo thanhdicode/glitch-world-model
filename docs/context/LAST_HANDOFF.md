@@ -1,104 +1,78 @@
 # LAST_HANDOFF.md
 
-Last completed task: R6 TempGlitch CPU-safe ablation runner (A1–A4)
-Commit: `d6c0d92b07706d2de1547445131dc70bfd250bfd`
+Last completed task: Fix R5-WOB baseline_scores stage — calibration episode count mismatch
+Commit: `4f0b755239bcc8f5cd23c1352cd0c1c927573e1b`
 Date: 2026-06-20
 
 ## What Changed
 
-- Created `scripts/run_r6_tempglitch_cpu_ablations.py`: full CPU-safe implementation of
-  ablations A1 (aggregation comparison), A2 (surprise-distance comparison), A3 (threshold
-  calibration summary), and A4 (failure-mode analysis). The runner fails closed when required
-  R5 TempGlitch score files are missing, prints exactly which files are needed, writes outputs
-  only under the nominated output dir, and marks `paper_valid=True` only when all inputs exist
-  and all ablations complete successfully. Provenance includes input hashes, protocol notes,
-  locked-test flags, and claim-boundary list.
+- Fixed `scripts/run_gate8_baselines_from_lance.py`:
+  - Added constant `_WOB_CALIBRATION_EPISODE_COUNT = 12` (WOB expansion protocol has 12 unique
+    calibration_normal episodes, not the default 2 used for TempGlitch).
+  - Changed `validate_manifest_rows(manifest_rows)` to
+    `validate_manifest_rows(manifest_rows, expected_calibration_episode_count=_WOB_CALIBRATION_EPISODE_COUNT)`.
 
-- Rewrote `scripts/validate_r6_ablations.py`: validates all four TempGlitch ablation output
-  files (a1–a4); checks locked-test flags, wob_dependency_used flags, placeholder strings
-  (TODO/TBD/PLACEHOLDER), and numeric field finiteness; gated WOB ablation validation behind
-  a required R5-WOB receipt.
+## Root Cause Analysis (from Kaggle log)
 
-- Created `tests/test_r6_tempglitch_cpu_ablations.py`: 42 tests covering check_r5_inputs,
-  all four ablation functions, run_all_ablations, validate_r6, and CLI smoke tests.
+Stage 1 (preflight) and Stage 2 (materialize_lance) both passed cleanly.
+Stage 3 (baseline_scores) failed with:
 
-- Created `docs/research/90_r6_tempglitch_cpu_ablation_plan_and_runner.md`: ablation plan,
-  input file requirements, per-ablation method notes, how-to-run/validate commands, claim
-  safety, and limitations.
+```
+ValueError: Canonical Gate 7 manifest has an invalid calibration episode count: 12.
+```
 
-- Updated `docs/context/NEXT_ACTION.md`: added Track B (R6 CPU ablations) alongside the
-  existing Track A (R5-WOB Kaggle retry).
+The `validate_manifest_rows()` function in `lewm_lance_eval.py` has
+`expected_calibration_episode_count: int = 2` as its default — correct for the TempGlitch
+protocol but wrong for WOB expansion. The WOB expansion eval manifest has:
+- 72 total rows
+- 12 `calibration_normal` episodes (unique `source_episode_id` values)
+- 60 `evaluation_buggy` episodes
 
-- Updated `paper/tables/r6_ablation_results.tex`: cleaned scaffold with MSE vs L2 rows,
-  cosine marked not available, WOB rows and GPU-only rows marked as blocked.
+The call site in `run_gate8_baselines_from_lance.py` used the bare default and triggered the
+mismatch.
 
 ## Checks Passed
 
-- Focused R6 tests: 42 pass, 0 fail.
-- Full repository test suite: 504 pass, 1 pre-existing failure in test_doctor (unrelated).
-- Ruff check: all new files clean.
-- Ruff format check: all new files already formatted.
-- Claim registry check: 78 claims, no errors.
-- Context cache validation: passes after LAST_HANDOFF fix.
-- Doctor script: passes (pre-existing test_doctor failure is environment-only).
-- Research release CI validator: see note.
+- Full test suite: 505 pass, 0 new failures.
+- Ruff check: clean.
+- Context cache validation: passes.
+- Research release CI validator: passes.
 
 ## Safety Status
 
-- No R5-XGAME, R6 WOB, or locked-test execution occurred.
-- No WOB metric, cross-game, action-conditioning, SIGReg, superiority, or locked-test claim
-  was added.
-- No artifact, checkpoint, raw data, tarball, Lance directory, env file, or credential
-  was added or committed.
-- Locked test remains closed, unmaterialized, and unscored.
-- `paper_valid=True` is only set by the runner when all required R5 inputs exist and pass.
-
-## A1–A4 Execution Readiness
-
-| Ablation | Runner ready | Inputs locally present | Runnable now |
-|---|---|---|---|
-| A1 aggregation | YES | NO — R5 output dir missing | NO |
-| A2 surprise distance | YES | NO — R5 output dir missing | NO |
-| A3 threshold calibration | YES (single-point only) | NO — R5 output dir missing | NO |
-| A4 failure mode | YES (category-level only) | NO — R5 output dir missing | NO |
+- No locked test touched.
+- No WOB ablation A7–A11 claim made.
+- No fabricated metric or placeholder added.
+- Fix is structural (wrong constant), not a protocol or data change.
 
 ## Gate Status After Task
 
-- R5 TempGlitch: COMPLETED (unchanged).
-- R5-WOB: AWAITING_KAGGLE_OUTPUT (unchanged); retry on latest `main` still needed.
-- R5-XGAME: fail-closed pending validated R5-WOB metrics plus receipt (unchanged).
-- R6 TempGlitch CPU-safe (A1–A4): INFRASTRUCTURE_READY — runner implemented and tested.
-- R6 WOB (A7–A11): BLOCKED_R5_WOB_VALIDATION (unchanged).
-- Locked test: CLOSED (unchanged).
+- R5-WOB: AWAITING_KAGGLE_RERUN — fix committed, Kaggle retry required on latest `main`.
+- All other gates unchanged.
 
 ## Open Blockers
 
-- R5 TempGlitch output directory not present locally (needed to execute A1–A4).
-- R5-WOB Kaggle retry still required; success or failure-debug bundle still required.
-- R5-XGAME and all WOB ablations depend on validated R5-WOB evidence.
-- GPU ablations require later protocol and execution decisions.
+- Kaggle notebook must be rerun on the latest `main` commit so the fix is picked up.
+- R5 TempGlitch output directory not present locally (needed for R6 A1–A4 execution).
+- R5-XGAME and WOB ablations A7–A11 still blocked on validated R5-WOB evidence.
 
 ## Next Recommended Task
 
-**Option 1 (highest priority):** Rerun the staged R5-WOB Kaggle notebook on latest `main`.
-  On success: run the offline intake gate.
-  On failure: classify the failed stage.
+**Rerun the Kaggle R5-WOB staged notebook on latest `main`.** The fix is a one-line change
+at the call site. If Stage 3 passes, continue through Stages 4–7 (LEWM scores, threshold,
+eval, pack). On success run `scripts/verify_r5_wob_upload.py` with the output tarball.
 
-**Option 2 (parallel, local):** Download the R5 TempGlitch output directory locally and
-  execute the R6 CPU-safe ablations:
-  ```bash
-  python scripts/run_r6_tempglitch_cpu_ablations.py \
-      --r5-output-dir <r5_output_dir> \
-      --output-dir <r6_output_dir> \
-      --ablation all
-  ```
+```bash
+# After downloading the success tarball + .sha256 sidecar:
+python scripts/verify_r5_wob_upload.py \
+    --tarball r5_wob_identical_episode_outputs.tar.gz \
+    --sha256  r5_wob_identical_episode_outputs.tar.gz.sha256
+```
 
 ## Files Likely Relevant Next
 
-- `scripts/run_r6_tempglitch_cpu_ablations.py`
-- `scripts/validate_r6_ablations.py`
-- `tests/test_r6_tempglitch_cpu_ablations.py`
-- `docs/research/90_r6_tempglitch_cpu_ablation_plan_and_runner.md`
+- `scripts/run_gate8_baselines_from_lance.py` (patched)
+- `src/glitch_detection/lewm_lance_eval.py` (validate_manifest_rows signature)
+- `src/glitch_detection/r5_wob_staged.py` (Stage 3 caller)
 - `scripts/verify_r5_wob_upload.py`
-- `src/glitch_detection/r5_wob_staged.py`
 - `docs/context/NEXT_ACTION.md`
