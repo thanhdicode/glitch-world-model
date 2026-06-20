@@ -9,6 +9,11 @@ current post-run intake and failure-classification workflow is documented in
 [88_r5_wob_postrun_workflow.md](88_r5_wob_postrun_workflow.md). This is infrastructure evidence,
 not a WOB result.
 
+Second post-run update: the next Kaggle run reached `materialize_lance` and failed while recording
+the stage marker because `.lance` datasets are directories, not regular files. The fix records a
+directory inventory hash for Lance paths and validates that hash in later resume checks. This is
+again retry infrastructure only; it adds no WOB metric or paper result.
+
 ## Executive Summary
 
 The previous Kaggle `R5-WOB` retry did not produce a valid evaluation bundle and the downloaded

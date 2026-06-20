@@ -81,10 +81,19 @@ def _stage_marker_path(output_dir: Path, stage: str) -> Path:
     return output_dir / f"stage_{stage}.json"
 
 
+def _path_sha256(path: Path) -> str:
+    if path.is_dir():
+        return FingerprintBuilder.inventory_sha256(path)
+    return sha256_file(path)
+
+
 def _file_record(path: Path) -> dict[str, str]:
+    if not path.exists():
+        raise FileNotFoundError(f"Cannot record missing path: {path}")
     return {
         "path": str(path),
-        "sha256": sha256_file(path),
+        "path_type": "directory" if path.is_dir() else "file",
+        "sha256": _path_sha256(path),
     }
 
 
@@ -255,9 +264,16 @@ def _validate_stage_marker(
         )
     for item in payload.get("files", {}).values():
         path = Path(item["path"])
-        if not path.is_file():
-            raise FileNotFoundError(f"Stage {stage} missing output file: {path}")
-        if item.get("sha256") and sha256_file(path) != item["sha256"]:
+        if not path.exists():
+            raise FileNotFoundError(f"Stage {stage} missing output path: {path}")
+        expected_type = item.get("path_type")
+        if expected_type == "file" and not path.is_file():
+            raise ValueError(f"Stage {stage} expected file but found non-file path: {path}")
+        if expected_type == "directory" and not path.is_dir():
+            raise ValueError(
+                f"Stage {stage} expected directory but found non-directory path: {path}"
+            )
+        if item.get("sha256") and _path_sha256(path) != item["sha256"]:
             raise ValueError(f"Stage {stage} hash mismatch for {path}")
     return payload
 

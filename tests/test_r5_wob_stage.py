@@ -55,6 +55,34 @@ def test_validate_stage_outputs_accepts_complete_marker(tmp_path: Path):
     assert result["stages"]["preflight"]["summary_status"] == "preflight_complete"
 
 
+def test_file_record_and_stage_validation_accept_lance_directory(tmp_path: Path):
+    lance_dir = tmp_path / "_wob_train_normal.lance"
+    (lance_dir / "data").mkdir(parents=True)
+    (lance_dir / "data" / "part-0.bin").write_bytes(b"lance bytes")
+
+    record = r5_wob_staged._file_record(lance_dir)
+    assert record["path_type"] == "directory"
+
+    marker_path = tmp_path / "stage_materialize_lance.json"
+    marker_path.write_text(
+        json.dumps(
+            {
+                "stage": "materialize_lance",
+                "schema_version": 1,
+                "status": "materialize_lance_complete",
+                "smoke": False,
+                "files": {"train_lance": record},
+            },
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
+
+    result = r5_wob_staged.validate_stage_outputs(tmp_path, smoke=False)
+
+    assert result["stages"]["materialize_lance"]["status"] == "complete"
+
+
 def test_validate_stage_outputs_rejects_smoke_mismatch(tmp_path: Path):
     marker_path = tmp_path / "stage_preflight.json"
     marker_path.write_text(

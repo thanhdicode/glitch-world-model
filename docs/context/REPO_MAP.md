@@ -1,7 +1,7 @@
 # REPO_MAP.md
 
-Generated: 2026-06-20T17:08:16+00:00
-Commit: `c13ae90c6a530e6532f2cf21a82646eec5455f7c`
+Generated: 2026-06-20T17:28:50+00:00
+Commit: `f3fb5c3bd7ae004684888960b516d6895246dc5d`
 Generator: `scripts/update_context_cache.py`
 
 ## Top-Level Map
@@ -150,7 +150,7 @@ Generator: `scripts/update_context_cache.py`
 | `src/glitch_detection/preprocess.py` | list_frame_files, resize_and_save_frame, preprocess_frames, extract_video_frames, preprocess_input, build_parser, main | Python module. |
 | `src/glitch_detection/r5_tempglitch_eval.py` | _read_json, _load_script_module, _write_json, _write_sha256, _percentile, _aggregate, _float_text, _fpr_at_95_tpr, refuse_locked_test_path, parse_seed_artifact_roots, resolve_seed_artifact, planned_output_paths | Python module. |
 | `src/glitch_detection/r5_wob_eval.py` | _load_script_module, _read_json, _read_csv_rows, _write_json, _write_report, _parse_keyed_paths, _render_eval_manifest, _validate_readiness_and_manifest, _load_train_rows, _resolve_source_path, summarize_source_coverage, _build_lance_from_rows | Python module. |
-| `src/glitch_detection/r5_wob_staged.py` | _stage_marker_path, _file_record, _check_runtime_imports, _find_unique, _find_extracted_seed_root, _repack_seed_artifact, _resolve_seed_inputs, _build_window_manifest, _release_cuda_memory, _smoke_eval_rows, _write_stage_marker, _load_stage_marker | Python module. |
+| `src/glitch_detection/r5_wob_staged.py` | _stage_marker_path, _path_sha256, _file_record, _check_runtime_imports, _find_unique, _find_extracted_seed_root, _repack_seed_artifact, _resolve_seed_inputs, _build_window_manifest, _release_cuda_memory, _smoke_eval_rows, _write_stage_marker | Python module. |
 | `src/glitch_detection/repeated_eval.py` | FittedScorer, train_normal_records, fit_scorer_for_split, score_fitted_scorer, clip_score_rows, write_clip_scores_csv, split_rows_as_dicts, source_labels_for_split, build_video_rows | Python module. |
 | `src/glitch_detection/run_baseline.py` | run_baseline, build_parser, main | Python module. |
 | `src/glitch_detection/score_clips.py` | _frame_diff_scorer, available_scorers, run_scorer, build_parser, main | Python module. |
@@ -309,6 +309,7 @@ Generator: `scripts/update_context_cache.py`
 | `tests/test_r3_seed_runner.py` | r3_seed_runner |
 | `tests/test_r5_tempglitch_eval.py` | r5_tempglitch_eval |
 | `tests/test_r5_wob_eval.py` | r5_wob_eval |
+| `tests/test_r5_wob_postrun.py` | r5_wob_postrun |
 | `tests/test_r5_wob_stage.py` | r5_wob_stage |
 | `tests/test_repeated_eval.py` | repeated_eval |
 | `tests/test_repeated_grouped_runner.py` | repeated_grouped_runner |
