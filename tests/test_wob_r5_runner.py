@@ -23,3 +23,14 @@ def test_wob_r5_cloud_runner_validates_artifacts_before_eval():
     assert "run_r5_wob_identical_episode_evaluation.py" in script
     assert "validate_r5_wob_evaluation.py" in script
     assert "locked test" not in script.lower()
+
+
+def test_wob_r5_cloud_runner_captures_failures_before_output_exists():
+    repo_root = Path(__file__).resolve().parents[1]
+    script = (repo_root / "cloud" / "wob_r5_eval" / "run_kaggle_r5_wob_eval.sh").read_text(
+        encoding="utf-8"
+    )
+    assert "R5_WOB_FAILURE_DEBUG_DIR" in script
+    assert "runner.log" in script
+    assert "failure_summary.json" in script
+    assert 'write_failure_debug "$?" "$LINENO" "$BASH_COMMAND"' in script
