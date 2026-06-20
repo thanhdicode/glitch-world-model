@@ -9,13 +9,19 @@ from typing import Any
 
 from cloud.wob_kaggle_native.common import detect_kaggle_roots
 
+from .kaggle_automation import FingerprintBuilder
 from .lewm_adapter import ActionMode, LeWMAdapter, LeWMCheckpointSpec, sha256_file
 from .lewm_lance_eval import (
     BUGGY_DATASET_NAME,
     MANIFEST_FIELDS,
+    METADATA_KEYS,
     NORMAL_DATASET_NAME,
+    _lance_dataset,
+    _score_dataset,
+    canonical_rows_from_samples,
     read_csv_rows,
     runtime_provenance,
+    validate_manifest_rows,
     validate_score_alignment,
     write_csv_rows,
 )
@@ -157,40 +163,38 @@ def _build_window_manifest(
     eval_rows: list[dict[str, str]],
     output_path: Path,
 ) -> tuple[list[dict[str, str]], dict[str, str]]:
-    lance_module = _load_script_module("run_gate8_baselines_from_lance")
-    lewm_eval_module = _load_script_module("run_gate7_lance_scoring")
-    normal_dataset = lewm_eval_module._lance_dataset(normal_lance, include_metadata=True)
-    buggy_dataset = lewm_eval_module._lance_dataset(buggy_lance, include_metadata=True)
+    normal_dataset = _lance_dataset(normal_lance, include_metadata=True)
+    buggy_dataset = _lance_dataset(buggy_lance, include_metadata=True)
     normal_samples = [
-        {key: str(normal_dataset[index][key]) for key in lewm_eval_module.METADATA_KEYS}
+        {key: str(normal_dataset[index][key]) for key in METADATA_KEYS}
         for index in range(len(normal_dataset))
     ]
     buggy_samples = [
-        {key: str(buggy_dataset[index][key]) for key in lewm_eval_module.METADATA_KEYS}
+        {key: str(buggy_dataset[index][key]) for key in METADATA_KEYS}
         for index in range(len(buggy_dataset))
     ]
     calibration_episodes = {
         row["episode_id"] for row in eval_rows if row["evaluation_role"] == "calibration_normal"
     }
     fingerprints = {
-        NORMAL_DATASET_NAME: lance_module.FingerprintBuilder.inventory_sha256(normal_lance),
-        BUGGY_DATASET_NAME: lance_module.FingerprintBuilder.inventory_sha256(buggy_lance),
+        NORMAL_DATASET_NAME: FingerprintBuilder.inventory_sha256(normal_lance),
+        BUGGY_DATASET_NAME: FingerprintBuilder.inventory_sha256(buggy_lance),
     }
     manifest_rows = [
-        *lewm_eval_module.canonical_rows_from_samples(
+        *canonical_rows_from_samples(
             dataset_name=NORMAL_DATASET_NAME,
             dataset_fingerprint=fingerprints[NORMAL_DATASET_NAME],
             samples=normal_samples,
             calibration_episodes=calibration_episodes,
         ),
-        *lewm_eval_module.canonical_rows_from_samples(
+        *canonical_rows_from_samples(
             dataset_name=BUGGY_DATASET_NAME,
             dataset_fingerprint=fingerprints[BUGGY_DATASET_NAME],
             samples=buggy_samples,
             calibration_episodes=calibration_episodes,
         ),
     ]
-    lewm_eval_module.validate_manifest_rows(
+    validate_manifest_rows(
         manifest_rows,
         expected_calibration_episode_count=len(calibration_episodes),
     )
@@ -510,17 +514,16 @@ def run_lewm_seed_stage(
     buggy_ids = [
         row["window_id"] for row in manifest_rows if row["dataset_name"] == BUGGY_DATASET_NAME
     ]
-    lewm_eval_module = _load_script_module("run_gate7_lance_scoring")
     try:
         raw_score_rows = [
-            *lewm_eval_module._score_dataset(
+            *_score_dataset(
                 Path(materialize["files"][NORMAL_LANCE_NAME]["path"]),
                 normal_ids,
                 adapter,
                 batch_size=lewm_batch_size,
                 device=device,
             ),
-            *lewm_eval_module._score_dataset(
+            *_score_dataset(
                 Path(materialize["files"][BUGGY_LANCE_NAME]["path"]),
                 buggy_ids,
                 adapter,

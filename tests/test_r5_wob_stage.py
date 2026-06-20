@@ -75,3 +75,8 @@ def test_validate_stage_outputs_rejects_smoke_mismatch(tmp_path: Path):
 
     assert result["stages"]["preflight"]["status"] == "invalid"
     assert "smoke mismatch" in result["stages"]["preflight"]["error"]
+
+
+def test_staged_pipeline_uses_core_lance_eval_module_not_cli_wrapper():
+    source = Path("src/glitch_detection/r5_wob_staged.py").read_text(encoding="utf-8")
+    assert '_load_script_module("run_gate7_lance_scoring")' not in source
