@@ -22,6 +22,18 @@ def test_detect_kaggle_roots_finds_nested_dataset_layout(tmp_path: Path):
     assert detected_test == test.parent
 
 
+def test_detect_kaggle_roots_accepts_train_named_dataset_slug(tmp_path: Path):
+    normal = tmp_path / "kaggle" / "input" / "world-of-bugs-train" / "NORMAL-TRAIN"
+    test = tmp_path / "kaggle" / "input" / "world-of-bugs-test" / "TEST"
+    normal.mkdir(parents=True)
+    test.mkdir(parents=True)
+
+    detected_normal, detected_test = MODULE.detect_kaggle_roots(tmp_path / "kaggle" / "input")
+
+    assert detected_normal == normal.parent
+    assert detected_test == test.parent
+
+
 def test_resolve_split_csv_prefers_tracked_config(tmp_path: Path):
     repo = tmp_path
     tracked = repo / "configs/wob_protocol"

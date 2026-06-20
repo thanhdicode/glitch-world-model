@@ -23,6 +23,7 @@ paper-safe only if it is covered here or by a later verified update.
 | `locked_test_scored = false`. | allowed now; required flag | `docs/research/16_claim_registry.md`, `docs/research/69_r5_tempglitch_identical_episode_results.md` | exact flag value | any locked-test score |
 | `validation_buggy_used_for_fit_select = false`. | allowed now; required flag | `docs/research/69_r5_tempglitch_identical_episode_results.md` | exact flag value | validation-buggy used for threshold or fit |
 | World of Bugs is a controlled expansion track and is not part of the current bounded results section. | allowed now | `PLAYBOOK.md`, `docs/research/16_claim_registry.md` | "status-only controlled expansion track" | WOB training/evaluation result |
+| The repository provides a non-locked `R5-WOB` runner/validator bundle, but no validated WOB evaluation outputs exist yet in the current paper state. | allowed now | `docs/research/82_r5_wob_nonlocked_evaluation_pipeline.md` | "pipeline-ready controlled expansion track" | any WOB metric or outcome statement |
 | Final FISAT abstract. | pending evidence | final claim audit, source matrix, validated manuscript compile | TODO only | final performance summary before evidence freeze |
 | Ablation results. | pending evidence | future validated ablation artifacts | TODO only | ablation effect, SIGReg benefit, or causal mechanism claim |
 | WOB-P1 seed42 results. | pending evidence | future seed42 artifact bundle and validator | separate empirical gate only | WOB evaluation or multi-seed result |

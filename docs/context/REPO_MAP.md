@@ -1,7 +1,7 @@
 # REPO_MAP.md
 
-Generated: 2026-06-19T04:37:58+00:00
-Commit: `32717340369d1d5e49f05859e95f0f33bb22f0ba`
+Generated: 2026-06-19T16:04:26+00:00
+Commit: `647e20a4da492e0105c62442505d717d24294394`
 Generator: `scripts/update_context_cache.py`
 
 ## Top-Level Map
@@ -100,6 +100,7 @@ Generator: `scripts/update_context_cache.py`
 | `scripts/validate_research_release.py` | git_tracked_files, validate_tracked_files, validate_required_paths, validate_playbook_structure, validate_release, working_tree_errors, build_parser, main | Python module. |
 | `scripts/validate_wob_expansion_readiness.py` | _read_json, _assert, _sha256_bytes, _read_manifest_rows, validate_readiness, build_parser, main | Validate the frozen seed42 non-locked World of Bugs evaluation-readiness bundle. |
 | `scripts/validate_wob_seed42_artifacts.py` | main | Python module. |
+| `scripts/validate_wob_seed_artifacts.py` | seed_name, validator_status, phase_name, tarball_prefix, required_tarball_files, _read_json, _assert, _assert_false_if_present, _finite_numbers, _sha256_file, _sha256_tar_member, _parse_sha256_sidecar | Python module. |
 | `scripts/verify_wob_p0_kaggle_evidence.py` | sha256_file, parse_sha256_sidecar, _read_text_member, _read_json_member, verify_wob_p0_kaggle_evidence, build_parser, main | Python module. |
 | `src/glitch_detection/__init__.py` | - | Glitch detection research pipeline. |
 | `src/glitch_detection/analysis.py` | _split_metadata, load_scores_with_labels, prediction_rows, _group_rows, binary_metrics_by_group, top_errors, _percentile, score_distribution_summary, write_json, write_rows_csv, write_markdown_table, _format_markdown_value | Python module. |
@@ -219,6 +220,7 @@ Generator: `scripts/update_context_cache.py`
 | `scripts/validate_research_release.py` | CLI/helper script. | general |
 | `scripts/validate_wob_expansion_readiness.py` | Validate the frozen seed42 non-locked World of Bugs evaluation-readiness bundle. | general |
 | `scripts/validate_wob_seed42_artifacts.py` | CLI/helper script. | general |
+| `scripts/validate_wob_seed_artifacts.py` | CLI/helper script. | general |
 | `scripts/verify_wob_p0_kaggle_evidence.py` | CLI/helper script. | Gate 5 |
 
 ## Tests
@@ -300,7 +302,9 @@ Generator: `scripts/update_context_cache.py`
 | `tests/test_wob_kaggle_native_prepare.py` | wob_kaggle_native_prepare |
 | `tests/test_wob_p0_audit.py` | wob_p0_audit |
 | `tests/test_wob_p1_seed42_runner.py` | wob_p1_seed42_runner |
+| `tests/test_wob_p1_seeds43_44_runner.py` | wob_p1_seeds43_44_runner |
 | `tests/test_wob_protocol.py` | wob_protocol |
+| `tests/test_wob_seed_artifact_validator.py` | wob_seed_artifact_validator |
 
 ## Docs
 | Doc | Purpose |

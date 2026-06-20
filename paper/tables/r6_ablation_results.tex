@@ -1,0 +1,36 @@
+﻿% R6 ablation results table.
+% SCAFFOLD ONLY — do not replace placeholders until R6 ablations complete.
+\begin{table}[t]
+\centering
+\caption{Ablation study results (R6). All ablation rows contain placeholders
+until validated ablation outputs exist. No SIGReg benefit, action-conditioning
+benefit, or superiority claim is supported by this scaffold.}
+\label{tab:r6-ablation-results}
+\begin{tabular}{lllll}
+\toprule
+Ablation & Variant & Dataset & AUROC & AUPRC \\
+\midrule
+\multicolumn{5}{l}{\textit{Aggregation (A1/A7)}} \\
+mean & LeWM & TempGlitch & TODO & TODO \\
+max & LeWM & TempGlitch & TODO & TODO \\
+top2\_mean & LeWM & TempGlitch & TODO & TODO \\
+mean & LeWM & World of Bugs & TODO & TODO \\
+max & LeWM & World of Bugs & TODO & TODO \\
+top2\_mean & LeWM & World of Bugs & TODO & TODO \\
+\midrule
+\multicolumn{5}{l}{\textit{Surprise distance (A2/A8)}} \\
+L2 & LeWM & TempGlitch & TODO & TODO \\
+cosine & LeWM & TempGlitch & TODO & TODO \\
+L2 & LeWM & World of Bugs & TODO & TODO \\
+cosine & LeWM & World of Bugs & TODO & TODO \\
+\midrule
+\multicolumn{5}{l}{\textit{SIGReg (A5) — requires GPU}} \\
+default & LeWM & TempGlitch & TODO & TODO \\
+zero & LeWM & TempGlitch & TODO & TODO \\
+\midrule
+\multicolumn{5}{l}{\textit{Action conditioning (A11) — requires GPU}} \\
+real-action & LeWM & World of Bugs & TODO & TODO \\
+zero-action & LeWM & World of Bugs & TODO & TODO \\
+\bottomrule
+\end{tabular}
+\end{table}

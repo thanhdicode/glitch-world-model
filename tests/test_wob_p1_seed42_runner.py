@@ -147,6 +147,17 @@ def test_wob_p1_preflight_checks_reject_sm60_runtime():
     assert "--min-vram-gb 14" in script
 
 
+def test_robust_runner_invokes_preflight_as_module():
+    script = (
+        Path(__file__).resolve().parents[1]
+        / "cloud"
+        / "wob_p1_seed42"
+        / "run_kaggle_wob_p1_seed42_robust.sh"
+    ).read_text(encoding="utf-8")
+    assert "python -m cloud.wob_p1_seed42.preflight_robust" in script
+    assert "python cloud/wob_p1_seed42/preflight_robust.py" not in script
+
+
 def test_robust_preflight_uses_total_memory_cuda_property(monkeypatch):
     module = _load_preflight_robust()
 
@@ -198,6 +209,22 @@ def test_robust_preflight_detects_nested_kaggle_inputs(tmp_path: Path):
     assert report["ok"] is True
     assert report["normal_input_root"].endswith("world-of-bugs-normal")
     assert report["test_input_root"].endswith("world-of-bugs-test")
+
+
+def test_robust_preflight_accepts_explicit_input_overrides(tmp_path: Path, monkeypatch):
+    module = _load_preflight_robust()
+    normal = tmp_path / "mounted" / "world-of-bugs-train"
+    test = tmp_path / "mounted" / "world-of-bugs-test"
+    (normal / "NORMAL-TRAIN").mkdir(parents=True)
+    (test / "TEST").mkdir(parents=True)
+    monkeypatch.setenv("NORMAL_INPUT_ROOT", str(normal))
+    monkeypatch.setenv("TEST_INPUT_ROOT", str(test))
+
+    report = module._check_kaggle_inputs(str(tmp_path / "unused"))
+
+    assert report["ok"] is True
+    assert report["normal_input_root"] == str(normal)
+    assert report["test_input_root"] == str(test)
 
 
 def test_finalize_removes_stale_failure_debug_after_success(tmp_path: Path):
