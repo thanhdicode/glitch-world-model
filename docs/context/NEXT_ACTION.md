@@ -1,18 +1,25 @@
 # NEXT_ACTION.md
 
-Last updated: 2026-06-19T16:04:26+00:00
-Commit: `647e20a4da492e0105c62442505d717d24294394`
+Last updated: 2026-06-20T13:30:00+00:00
+Commit: current task commit
 
 ## Current Priority
-Use the frozen WOB evaluation-readiness path under Ambitious Plan A. The seed42 non-locked WOB
-evaluation-readiness gate is frozen, seed42/seed43/seed44 local artifact verification is
-complete, and the repository-side `R5-WOB` pipeline is now prepared. Keep the locked test closed
-throughout.
+The first R5-WOB non-locked Kaggle attempt stopped before producing an evaluation output bundle.
+Its downloaded failure-debug archive was SHA256-verified but empty, so it does not identify the
+root cause. Retry only with commit `2fb87f0c744a35cec3858faf36da52037bcf14a3`, which records a
+runner log and structured failure summary in every future debug archive. Keep the locked test
+closed throughout.
 
 ## Sequenced Steps
-1. Preserve the frozen seed42 non-locked WOB evaluation manifest and reporting path unchanged.
-2. Keep seed42/seed43/seed44 training-artifact hashes bound to the current claim scope.
-3. Run the prepared Kaggle `R5-WOB` path rather than attempting invalid local replay.
+1. Retry the frozen non-locked R5-WOB Kaggle evaluation at commit `2fb87f0c744a35cec3858faf36da52037bcf14a3`.
+2. On success, download `r5_wob_identical_episode_outputs.tar.gz` + `.sha256` sidecar.
+3. On failure, download `r5_wob_identical_episode_failure_debug.tar.gz` + `.sha256` sidecar.
+4. Run `python scripts/verify_r5_wob_upload.py` only when the main output bundle exists.
+4. If VALID_OUTPUT_BUNDLE: ingest results, update claims, run R5-XGAME comparison.
+5. Run CPU-safe R6 ablations (aggregation, distance, calibration, failure-mode).
+6. If GPU budget permits: run Kaggle-required R6 ablations (SIGReg, action-conditioning).
+7. R7 validation decision and locked-test go/no-go recommendation.
+8. R8 paper completion with all evidence-backed tables.
 
 ## Success Criteria
 - Preserve the completed R5 manifest, score, metric, and provenance hashes.
@@ -37,5 +44,5 @@ R5 is complete for the non-locked TempGlitch family and the WOB evaluation-readi
 frozen. The Kaggle-native `WOB-P0` bundle and the WOB-P1 seed42/seed43/seed44 training artifacts
 are validator-backed, and the `R5-WOB` runner/validator bundle is prepared. The current blocker is
 environmental: the local workstation still lacks the full raw WOB tar coverage required for a
-valid real run, so execution must move to Kaggle and still does not justify opening the locked
-test.
+valid real run. The first Kaggle attempt stopped early with an empty debug archive, so the retry
+must use the diagnostics-preserving runner; neither attempt justifies opening the locked test.
