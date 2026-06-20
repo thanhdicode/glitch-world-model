@@ -1,18 +1,27 @@
 # NEXT_ACTION.md
 
-Last updated: 2026-06-20T10:26:26+00:00
-Commit: `30c4ffbbd800c4e6858512c305bcd1b4175960c1`
+Last updated: 2026-06-20T17:08:16+00:00
+Commit: `c13ae90c6a530e6532f2cf21a82646eec5455f7c`
 
 ## Current Priority
-Use the frozen WOB evaluation-readiness path under Ambitious Plan A. The seed42 non-locked WOB
-evaluation-readiness gate is frozen, seed42/seed43/seed44 local artifact verification is
-complete, and the repository-side `R5-WOB` pipeline is now prepared. Keep the locked test closed
-throughout.
+Wait for the staged non-locked R5-WOB Kaggle run to finish, then take exactly one offline intake
+path below. The repository has no validated WOB evaluation result yet. Keep R5-XGAME, WOB R6,
+and locked test closed until the named prerequisites pass.
 
-## Sequenced Steps
-1. Preserve the frozen seed42 non-locked WOB evaluation manifest and reporting path unchanged.
-2. Keep seed42/seed43/seed44 training-artifact hashes bound to the current claim scope.
-3. Run the prepared Kaggle `R5-WOB` path rather than attempting invalid local replay.
+## Success Next Action
+1. Download `r5_wob_identical_episode_outputs.tar.gz` and its `.sha256` sidecar.
+2. Run `scripts/verify_r5_wob_upload.py` with an empty `--extract-dir` outside the repository.
+3. Require `VALID_OUTPUT_BUNDLE`, a direct `validate_r5_wob_evaluation.py` pass, and the generated
+   `r5_wob_validation_receipt.json` before summarizing metrics or updating claims.
+4. Only then prepare a separately authorized R5-XGAME run using the validated metrics and receipt.
+
+## Failure Next Action
+1. Download `r5_wob_identical_episode_failure_debug.tar.gz` and its `.sha256` sidecar plus the
+   Kaggle console tail if available.
+2. Run `scripts/verify_r5_wob_upload.py` with `--failure-debug-tarball` and
+   `--failure-debug-sha256-file`.
+3. Record `failed_stage`, `failure_class`, and the last completed stage marker.
+4. Patch and test only the direct cause; do not reuse partial outputs as evidence.
 
 ## Success Criteria
 - Preserve the completed R5 manifest, score, metric, and provenance hashes.
@@ -31,11 +40,11 @@ throughout.
 - Keep locked-test materialization/scoring false.
 - Make no WOB performance, cross-game, action-conditioning, or SIGReg-benefit claim until the
   corresponding evaluation or ablation artifacts exist.
+- Keep TempGlitch CPU-safe R6 items at `PREPARABLE_NOT_RUN` and every WOB R6 item at
+  `BLOCKED_R5_WOB_VALIDATION`.
 
 ## Current Known Blocker
-R5 is complete for the non-locked TempGlitch family and the WOB evaluation-readiness gate is
-frozen. The Kaggle-native `WOB-P0` bundle and the WOB-P1 seed42/seed43/seed44 training artifacts
-are validator-backed, and the `R5-WOB` runner/validator bundle is prepared. The current blocker is
-environmental: the local workstation still lacks the full raw WOB tar coverage required for a
-valid real run, so execution must move to Kaggle and still does not justify opening the locked
-test.
+R5 is complete for the non-locked TempGlitch family. R5-WOB remains unverified until a downloaded
+success bundle passes SHA256, safe extraction, and the frozen validator. Without that receipt,
+R5-XGAME, all WOB ablations, WOB paper metrics, and WOB performance claims remain blocked. A
+failure bundle opens only a minimal repair/retry path, not a result path. Locked test stays closed.

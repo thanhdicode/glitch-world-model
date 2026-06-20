@@ -38,6 +38,9 @@ def validate_r5_xgame(output_dir: Path) -> dict:
             errors.append("CRITICAL: locked_test_scored is True")
         if prov.get("wob_status") != "VALIDATED":
             errors.append(f"WOB status is {prov.get('wob_status')!r}, not VALIDATED")
+        receipt_hash = prov.get("wob_validation_receipt_sha256")
+        if not receipt_hash or receipt_hash == "NOT_AVAILABLE":
+            errors.append("WOB validation receipt hash is missing")
 
     # Check comparison CSV
     datasets_seen: set[str] = set()

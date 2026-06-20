@@ -1,7 +1,7 @@
 # BOOT.md - Fast Start Context For Agents
 
-Generated: 2026-06-20T10:26:26+00:00
-Commit: `30c4ffbbd800c4e6858512c305bcd1b4175960c1`
+Generated: 2026-06-20T17:08:16+00:00
+Commit: `c13ae90c6a530e6532f2cf21a82646eec5455f7c`
 
 ## Read Order
 1. `RULES.md`
@@ -33,19 +33,19 @@ The current execution roadmap is `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v3.md`
   verified from the downloaded evidence bundle, and WOB-P1 seed42/seed43/seed44 training
   artifact verification is complete.
 - The seed42 non-locked WOB evaluation-readiness gate is frozen, all three planned WOB-P1
-  training artifacts are now validator-backed, and the non-locked `R5-WOB` evaluation path is
-  now authorized at the pipeline-preparation level.
+  training artifacts are now validator-backed, and a staged non-locked `R5-WOB` Kaggle run is
+  awaiting local success/failure intake. No WOB result is verified yet.
 - Gate 10 is closed.
 - Locked test is closed.
 - LeWM gameplay evaluation now exists for the non-locked TempGlitch research MVP only; locked
   test remains unopened, and WOB remains limited to audit-plus-training-artifact evidence.
 
 ## Immediate Next Task
-- Preserve the verified Kaggle-native `WOB-P0` bundle, the seed42/seed43/seed44 training artifact
-  hashes, and the frozen evaluation-readiness metadata.
-- Use the prepared `R5-WOB` Kaggle runner for any real execution because the current workstation
-  still lacks full raw WOB tar coverage for a valid local replay.
-- Do not touch locked test.
+- If Kaggle succeeds, download the R5-WOB output tarball plus SHA256 sidecar and pass the offline
+  intake validator before recording any metric.
+- If Kaggle fails, download the failure-debug tarball plus SHA256 sidecar, classify the failed
+  stage, and make only the smallest tested fix.
+- Keep R5-XGAME, WOB R6, and locked test closed until their prerequisites pass.
 
 ## Safety
 - Non-locked-test Kaggle actions use standing Kaggle authorization after security, license,

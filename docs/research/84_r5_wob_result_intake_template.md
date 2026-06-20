@@ -3,6 +3,8 @@
 Date: 2026-06-20
 Status: `AWAITING_KAGGLE_OUTPUT`
 
+Canonical command checklist: [R5-WOB post-run workflow](88_r5_wob_postrun_workflow.md).
+
 ## Purpose
 
 This document provides the step-by-step procedure for ingesting, verifying, and recording the
@@ -41,26 +43,27 @@ not fabricate metrics. It does not touch locked test.
 ```powershell
 python scripts/verify_r5_wob_upload.py `
     --tarball path/to/r5_wob_identical_episode_outputs.tar.gz `
-    --sha256-file path/to/r5_wob_identical_episode_outputs.tar.gz.sha256
+    --sha256-file path/to/r5_wob_identical_episode_outputs.tar.gz.sha256 `
+    --extract-dir path/to/empty/local/intake
 ```
 
 ### 3. Interpret the Result
 
 | Status | Meaning | Next Action |
 |---|---|---|
-| `VALID_OUTPUT_BUNDLE` | SHA256 matches, extraction OK, validator passed | Proceed to ingestion |
+| `VALID_OUTPUT_BUNDLE` | SHA256 matches, extraction and validator pass, receipt written | Proceed to evidence intake |
 | `HASH_MISMATCH` | SHA256 does not match sidecar | Re-download from Kaggle |
 | `VALIDATOR_FAILURE` | Extracted output fails R5-WOB validator | Inspect validator errors; check for missing rows, manifest mismatch, or locked-test contamination |
 | `INCOMPLETE_KAGGLE_OUTPUT` | Missing expected files (metrics, comparison, provenance) | Check Kaggle logs for runtime errors |
 | `MISSING_TARBALL` | Tarball file not found at specified path | Check download location |
 | `MISSING_SHA256` | SHA256 sidecar not found | Re-download sidecar from Kaggle |
-| `EXTRACTION_FAILED` | Tarball is corrupted or contains path traversal | Re-download from Kaggle |
+| `EXTRACTION_OR_INTAKE_FAILED` | Bundle, sidecar, or extraction destination is invalid | Inspect the exact detail; re-download if corrupted |
 
 ### 4. Ingest Results (only after VALID_OUTPUT_BUNDLE)
 
 ```powershell
-# Copy validated outputs to the canonical location
-# Do NOT commit raw outputs — record hashes only
+# Keep the validated extraction outside Git-tracked paths.
+# Do NOT commit raw outputs or the validation receipt — record hashes only.
 
 # Record the tarball SHA256 in the claim registry
 # Update docs/research/ with the actual results note
@@ -71,7 +74,7 @@ python scripts/verify_r5_wob_upload.py `
 ### 5. Update Claim Registry
 
 Add the next available claim-registry ID recording:
-- The exact R5-WOB evaluation completed on Kaggle at commit `fb0f06b`
+- The exact R5-WOB evaluation commit reported by the validated provenance
 - The tarball SHA256
 - The number of evaluation episodes scored
 - The methods evaluated (LeWM seeds 42/43/44, frame_diff, feature_distance)
@@ -87,7 +90,8 @@ Do not infer, extrapolate, or fabricate any metric value.
 If the Kaggle run produced a failure-debug bundle:
 
 1. Download `r5_wob_identical_episode_failure_debug.tar.gz` separately.
-2. Pass it via `--failure-debug-tarball` to the verification script.
+2. Pass it with its sidecar via `--failure-debug-tarball` and
+   `--failure-debug-sha256-file` to the verification script.
 3. Inspect the debug logs for:
    - OOM errors
    - Missing WOB data rows

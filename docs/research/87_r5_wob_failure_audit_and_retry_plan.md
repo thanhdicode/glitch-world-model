@@ -3,6 +3,12 @@
 Date: 2026-06-20
 Status: `R5_WOB_STAGED_RETRY_READY`
 
+Post-run update: commit `c13ae90` corrected the staged Lance integration to use the reusable
+`glitch_detection.lewm_lance_eval` functions instead of private attributes on a CLI wrapper. The
+current post-run intake and failure-classification workflow is documented in
+[88_r5_wob_postrun_workflow.md](88_r5_wob_postrun_workflow.md). This is infrastructure evidence,
+not a WOB result.
+
 ## Executive Summary
 
 The previous Kaggle `R5-WOB` retry did not produce a valid evaluation bundle and the downloaded

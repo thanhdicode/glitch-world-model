@@ -1,67 +1,55 @@
-﻿# LAST_HANDOFF.md
+# LAST_HANDOFF.md
 
-Last completed task: R5-WOB staged retry pipeline and failure audit
-Commit: current task commit
+Last completed task: R5-WOB offline post-run workflow preparation
+Commit: pending task commit
 Date: 2026-06-20
 
 ## What Changed
 
-- Added the staged retry core in `src/glitch_detection/r5_wob_staged.py`.
-- Added staged CLI entrypoints:
-  `scripts/run_r5_wob_stage.py`,
-  `scripts/validate_r5_wob_stage_outputs.py`,
-  `scripts/assemble_r5_wob_from_stages.py`.
-- Added Kaggle staged runner `cloud/wob_r5_eval/run_kaggle_r5_wob_staged.sh`.
-- Updated `cloud/wob_r5_eval/README.md` to recommend the staged retry path.
-- Added failure-audit note `docs/research/87_r5_wob_failure_audit_and_retry_plan.md`.
-- Updated the claim registry and context handoff files with a narrow retry-infrastructure claim.
+- Hardened the R5-WOB intake gate with SHA256 verification, safe extraction, direct validation,
+  persistent local ingestion, and a hash-bound validation receipt.
+- Added structured staged failure-bundle classification with the failed stage and minimal-fix
+  guidance.
+- Made the R5-XGAME skeleton require both direct R5-WOB validation and the matching receipt.
+- Added a dependency-aware R6 queue and kept every item unexecuted.
+- Updated success/failure checklists, paper placeholders, claim boundaries, and next actions.
 
 ## Checks Passed
 
-- `python scripts/update_context_cache.py --refresh-boot`
-- `python -m pytest -q`
-- `python -m ruff check .`
-- `python -m ruff format --check .`
-- `python scripts/validate_research_release.py --ci`
-- `python scripts/check_claim_registry.py`
-- `python scripts/doctor.py`
-- `python scripts/validate_context_cache.py`
-- `python -m pre_commit run --all-files`
-- `git diff --check`
+- Focused post-run and existing scaffold gate tests passed.
+- Full repository validation is recorded in the task final report.
 
 ## Safety Status
 
-- No R5-XGAME run, R6 run, WOB evaluation claim, GPU experiment, or locked-test action was performed.
-- No WOB performance, cross-game, action-conditioning, SIGReg, superiority, or locked-test claim was added.
-- No raw data, output bundle, checkpoint, credential, or large file was committed.
+- No R5-XGAME or R6 execution occurred.
+- No WOB metric, cross-game, action-conditioning, SIGReg, superiority, or locked-test claim was
+  added.
+- No artifact, checkpoint, Kaggle log, raw data, tarball, or credential was added.
 - Locked test remains closed, unmaterialized, and unscored.
 
 ## Gate Status After Task
 
-- R5-WOB: STAGED_RETRY_READY; the previous Kaggle failure remains root-cause-unknown because its
-  SHA256-verified debug archive was empty, and the next retry should use the staged runner.
-- R5-XGAME: SKELETON_ONLY (awaiting R5-WOB validation).
-- R6: SCAFFOLD_ONLY (awaiting R5-WOB + R5-XGAME).
-- R7: NOT_STARTED.
-- R8: paper scaffold with placeholders only.
+- R5-WOB: Kaggle result remains unverified until the downloaded success pair passes local intake.
+- R5-XGAME: fail-closed pending validated R5-WOB metrics plus receipt.
+- R6 TempGlitch CPU-safe queue: PREPARABLE_NOT_RUN.
+- R6 WOB queue: BLOCKED_R5_WOB_VALIDATION.
 - Locked test: CLOSED.
 
 ## Open Blockers
 
-- R5-WOB still needs a real staged Kaggle retry plus downloaded success/failure artifacts.
-- R6 GPU ablations require Kaggle GPU budget.
-- Locked test requires a separate direct user command after R7.
+- A downloaded R5-WOB success pair or failure-debug pair is still required.
+- R5-XGAME and all WOB ablations depend on validated R5-WOB evidence.
+- GPU ablations require later protocol and execution decisions.
 
 ## Next Recommended Task
 
-- Retry R5-WOB with the staged Kaggle runner on the newest staged-retry commit.
-- Download and verify the output bundle, or upload the populated failure-debug bundle.
-- Follow `docs/research/87_r5_wob_failure_audit_and_retry_plan.md` for the retry flow.
+- On Kaggle success, download the success tarball and sidecar and run the offline intake gate.
+- On Kaggle failure, download the failure-debug tarball and sidecar and classify the failed stage.
 
 ## Files Likely Relevant Next
 
-- `cloud/wob_r5_eval/run_kaggle_r5_wob_staged.sh`
-- `scripts/run_r5_wob_stage.py`
-- `scripts/validate_r5_wob_stage_outputs.py`
-- `scripts/assemble_r5_wob_from_stages.py`
-- `docs/research/87_r5_wob_failure_audit_and_retry_plan.md`
+- `scripts/verify_r5_wob_upload.py`
+- `scripts/validate_r5_wob_evaluation.py`
+- `docs/research/88_r5_wob_postrun_workflow.md`
+- `configs/r6_ablation_queue.json`
+- `docs/context/NEXT_ACTION.md`

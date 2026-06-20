@@ -3,6 +3,9 @@
 Date: 2026-06-20
 Status: `AWAITING_KAGGLE_OUTPUT`
 
+The exact current commands and dependency gates are in
+[R5-WOB post-run workflow](88_r5_wob_postrun_workflow.md).
+
 ## Purpose
 
 Step-by-step decision tree for handling the Kaggle R5-WOB evaluation output, whether it succeeds
@@ -22,7 +25,8 @@ not touch locked test.
 ```powershell
 python scripts/verify_r5_wob_upload.py `
     --tarball path\to\r5_wob_identical_episode_outputs.tar.gz `
-    --sha256-file path\to\r5_wob_identical_episode_outputs.tar.gz.sha256
+    --sha256-file path\to\r5_wob_identical_episode_outputs.tar.gz.sha256 `
+    --extract-dir path\to\empty\local\intake
 ```
 
 ### After VALID_OUTPUT_BUNDLE
@@ -30,7 +34,7 @@ python scripts/verify_r5_wob_upload.py `
 1. Record tarball SHA256 under the next available claim-registry ID.
 2. Ingest metrics into `docs/research/` as a new results note.
 3. Update `paper/tables/r5_wob_results.tex` with validated numbers only.
-4. Run R5-XGAME comparison: `python scripts/run_r5_xgame_comparison.py`.
+4. Keep R5-XGAME closed until its direct validator and hash-bound intake receipt both pass.
 5. Update `docs/context/PROJECT_STATE.md` and `NEXT_ACTION.md`.
 6. Proceed to R6 CPU-safe ablations.
 
@@ -46,9 +50,9 @@ python scripts/verify_r5_wob_upload.py `
 
 ```powershell
 python scripts/verify_r5_wob_upload.py `
-    --tarball path\to\r5_wob_identical_episode_outputs.tar.gz `
-    --sha256-file path\to\r5_wob_identical_episode_outputs.tar.gz.sha256 `
-    --failure-debug-tarball path\to\r5_wob_identical_episode_failure_debug.tar.gz
+    --failure-debug-tarball path\to\r5_wob_identical_episode_failure_debug.tar.gz `
+    --failure-debug-sha256-file `
+        path\to\r5_wob_identical_episode_failure_debug.tar.gz.sha256
 ```
 
 ## Failure Classification

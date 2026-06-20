@@ -6,15 +6,18 @@ Status: `SCAFFOLD_ONLY`
 ## Purpose
 
 This document defines the R6 minimal decision-relevant ablation plan for both TempGlitch and
-World of Bugs. R6 ablations run only after R5-WOB validates and R5-XGAME completes. No ablation
-result claim is made until actual outputs exist.
+World of Bugs. TempGlitch CPU-safe work may be prepared from existing validated R5 inputs, but no
+R6 item is executed in the current task. WOB items remain blocked until R5-WOB validates, and GPU
+items remain separately gated. No ablation-result claim is made until validated outputs exist.
+
+The machine-readable dependency queue is `configs/r6_ablation_queue.json`.
 
 ## Ablation Categories
 
 ### Category 1: CPU-Safe Ablations From Existing Score Files
 
-These ablations reuse existing R5 raw scores and require no GPU. They can run locally after
-R5-WOB outputs are ingested.
+These ablations reuse existing TempGlitch R5 raw scores and require no GPU. Their code and input
+checks can be prepared now; execution remains a later explicit task.
 
 | ID | Ablation | Question | Input | Compute |
 |---|---|---|---|---|
@@ -44,10 +47,10 @@ These require retraining or re-scoring on GPU and must run on Kaggle.
 
 ## Execution Order
 
-1. **Immediate after R5-WOB validation**: A1–A4 (CPU-safe TempGlitch ablations)
-2. **After R5-WOB ingestion**: A7–A10 (CPU-safe WOB ablations)
-3. **After R5-XGAME**: A5–A6 (GPU TempGlitch ablations, if budget permits)
-4. **Last**: A11 (action-conditioning, requires separate WOB zero-action training)
+1. **Prepare now, do not run**: A1-A4 CPU-safe TempGlitch input/runner checks.
+2. **After R5-WOB ingestion**: A7-A10 CPU-safe WOB ablations become eligible.
+3. **After validated R5-XGAME and a separate GPU decision**: A5-A6 may be considered.
+4. **Last and separately gated**: A11 requires a frozen WOB zero-action protocol and training.
 
 ## Scripts
 

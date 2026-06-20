@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "status": "PREPARED_NOT_RUN",
+  "claim_scope": "planning_only_no_ablation_results",
+  "locked_test_materialized": false,
+  "locked_test_scored": false,
+  "items": [
+    {
+      "id": "A1",
+      "dataset": "TempGlitch",
+      "ablation": "aggregation",
+      "compute": "cpu",
+      "status": "PREPARABLE_NOT_RUN",
+      "dependencies": ["validated_r5_tempglitch_scores"]
+    },
+    {
+      "id": "A2",
+      "dataset": "TempGlitch",
+      "ablation": "surprise_distance",
+      "compute": "cpu",
+      "status": "PREPARABLE_NOT_RUN",
+      "dependencies": ["validated_r5_tempglitch_scores"]
+    },
+    {
+      "id": "A3",
+      "dataset": "TempGlitch",
+      "ablation": "threshold_calibration",
+      "compute": "cpu",
+      "status": "PREPARABLE_NOT_RUN",
+      "dependencies": ["validated_r5_tempglitch_scores"]
+    },
+    {
+      "id": "A4",
+      "dataset": "TempGlitch",
+      "ablation": "failure_mode",
+      "compute": "cpu",
+      "status": "PREPARABLE_NOT_RUN",
+      "dependencies": ["validated_r5_tempglitch_scores"]
+    },
+    {
+      "id": "A5",
+      "dataset": "TempGlitch",
+      "ablation": "sigreg",
+      "compute": "kaggle_gpu",
+      "status": "BLOCKED_R5_XGAME_AND_AUTHORIZATION",
+      "dependencies": ["validated_r5_xgame", "separate_gpu_execution_decision"]
+    },
+    {
+      "id": "A6",
+      "dataset": "TempGlitch",
+      "ablation": "training_budget",
+      "compute": "kaggle_gpu",
+      "status": "BLOCKED_R5_XGAME_AND_AUTHORIZATION",
+      "dependencies": ["validated_r5_xgame", "separate_gpu_execution_decision"]
+    },
+    {
+      "id": "A7",
+      "dataset": "WorldOfBugs",
+      "ablation": "aggregation",
+      "compute": "cpu",
+      "status": "BLOCKED_R5_WOB_VALIDATION",
+      "dependencies": ["validated_r5_wob_output"]
+    },
+    {
+      "id": "A8",
+      "dataset": "WorldOfBugs",
+      "ablation": "surprise_distance",
+      "compute": "cpu",
+      "status": "BLOCKED_R5_WOB_VALIDATION",
+      "dependencies": ["validated_r5_wob_output"]
+    },
+    {
+      "id": "A9",
+      "dataset": "WorldOfBugs",
+      "ablation": "threshold_calibration",
+      "compute": "cpu",
+      "status": "BLOCKED_R5_WOB_VALIDATION",
+      "dependencies": ["validated_r5_wob_output"]
+    },
+    {
+      "id": "A10",
+      "dataset": "WorldOfBugs",
+      "ablation": "failure_mode",
+      "compute": "cpu",
+      "status": "BLOCKED_R5_WOB_VALIDATION",
+      "dependencies": ["validated_r5_wob_output"]
+    },
+    {
+      "id": "A11",
+      "dataset": "WorldOfBugs",
+      "ablation": "action_conditioning",
+      "compute": "kaggle_gpu",
+      "status": "BLOCKED_R5_WOB_VALIDATION",
+      "dependencies": [
+        "validated_r5_wob_output",
+        "frozen_zero_action_protocol",
+        "separate_gpu_execution_decision"
+      ]
+    }
+  ]
+}
