@@ -100,5 +100,5 @@ Kaggle R5-WOB completes
 - [ ] Locked test remains unmaterialized and unscored.
 - [ ] No WOB performance claim until VALID_OUTPUT_BUNDLE.
 - [ ] No fabricated metrics in any update.
-- [ ] Kaggle commit SHA matches `fb0f06bcb7c22628ef4ee0200185bf1fd772198c`.
+- [ ] Kaggle commit SHA matches the exact staged-retry commit used for the run.
 - [ ] All retry attempts are recorded with failure classification.

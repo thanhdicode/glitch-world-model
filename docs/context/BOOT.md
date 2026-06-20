@@ -1,7 +1,7 @@
 # BOOT.md - Fast Start Context For Agents
 
-Generated: 2026-06-19T16:04:26+00:00
-Commit: `647e20a4da492e0105c62442505d717d24294394`
+Generated: 2026-06-20T10:26:26+00:00
+Commit: `30c4ffbbd800c4e6858512c305bcd1b4175960c1`
 
 ## Read Order
 1. `RULES.md`

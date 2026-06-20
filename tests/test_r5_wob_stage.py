@@ -1,0 +1,77 @@
+from __future__ import annotations
+
+import json
+import tarfile
+from pathlib import Path
+
+from glitch_detection import r5_wob_staged
+
+
+def test_resolve_seed_inputs_repacks_extracted_seed_folder(tmp_path: Path):
+    input_root = tmp_path / "input"
+    extracted_root = input_root / "dataset" / "wob_seed42_artifacts" / "wob_outputs" / "wob_seed42"
+    extracted_root.mkdir(parents=True)
+    (extracted_root / "training_metadata.json").write_text("{}", encoding="utf-8")
+    repack_root = tmp_path / "repacked"
+
+    result = r5_wob_staged._resolve_seed_inputs(input_root, seed=42, repack_root=repack_root)
+
+    assert result["mode"] == "repacked_extracted_folder"
+    tarball = Path(result["tarball"])
+    sidecar = Path(result["sidecar"])
+    assert tarball.is_file()
+    assert sidecar.is_file()
+    with tarfile.open(tarball, "r:gz") as archive:
+        assert "wob_outputs/wob_seed42/training_metadata.json" in archive.getnames()
+
+
+def test_validate_stage_outputs_reports_missing_markers(tmp_path: Path):
+    result = r5_wob_staged.validate_stage_outputs(tmp_path, smoke=False)
+    assert result["stages"]["preflight"]["status"] == "missing"
+    assert result["stages"]["validate_package"]["status"] == "missing"
+
+
+def test_validate_stage_outputs_accepts_complete_marker(tmp_path: Path):
+    file_path = tmp_path / "artifact.txt"
+    file_path.write_text("ok", encoding="utf-8")
+    marker_path = tmp_path / "stage_preflight.json"
+    marker_path.write_text(
+        json.dumps(
+            {
+                "stage": "preflight",
+                "schema_version": 1,
+                "status": "preflight_complete",
+                "smoke": False,
+                "files": {"artifact": r5_wob_staged._file_record(file_path)},
+            },
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
+
+    result = r5_wob_staged.validate_stage_outputs(tmp_path, smoke=False)
+
+    assert result["stages"]["preflight"]["status"] == "complete"
+    assert result["stages"]["preflight"]["summary_status"] == "preflight_complete"
+
+
+def test_validate_stage_outputs_rejects_smoke_mismatch(tmp_path: Path):
+    marker_path = tmp_path / "stage_preflight.json"
+    marker_path.write_text(
+        json.dumps(
+            {
+                "stage": "preflight",
+                "schema_version": 1,
+                "status": "preflight_complete",
+                "smoke": True,
+                "files": {},
+            },
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
+
+    result = r5_wob_staged.validate_stage_outputs(tmp_path, smoke=False)
+
+    assert result["stages"]["preflight"]["status"] == "invalid"
+    assert "smoke mismatch" in result["stages"]["preflight"]["error"]
