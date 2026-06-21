@@ -172,7 +172,9 @@ def run_gate8_baselines(
     batch_size: int = 64,
 ) -> dict[str, Any]:
     manifest_rows = read_csv_rows(manifest_path)
-    validate_manifest_rows(manifest_rows, expected_calibration_episode_count=_WOB_CALIBRATION_EPISODE_COUNT)
+    validate_manifest_rows(
+        manifest_rows, expected_calibration_episode_count=_WOB_CALIBRATION_EPISODE_COUNT
+    )
     fingerprints = _validate_fingerprints(manifest_rows, normal_lance, buggy_lance)
     centroid = _fit_train_centroid(train_lance, batch_size=batch_size)
     normal_rows = [row for row in manifest_rows if row["dataset_name"] == NORMAL_DATASET_NAME]
