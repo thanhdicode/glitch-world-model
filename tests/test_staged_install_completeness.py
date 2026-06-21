@@ -1,15 +1,23 @@
-"""Regression test: the staged Kaggle shell script installs all packages needed
+"""Regression tests: the staged Kaggle shell script installs all packages needed
 by every pipeline stage, including the LeWM model-loading stages (lewm_seed42/43/44).
 
-Root cause of previous failure: stable-pretraining==0.1.7 was present in
-requirements/lewm-runtime.txt but absent from the pip install block in
-run_kaggle_r5_wob_staged.sh. Stages 1-3 (preflight, materialize_lance,
-baseline_scores) do not import stable_pretraining, so they passed. Stage 5
-(lewm_seed42) is the first to call LeWMAdapter.load() → hydra instantiate →
-stable_pretraining.backbone.utils.vit_hf → ModuleNotFoundError, exit code 1.
+Two layered failures were fixed in this area:
 
-This test parses the shell script to verify the install block explicitly lists
-every package whose absence would silently break a downstream stage.
+Failure 1 — stable-pretraining absent:
+  stable-pretraining==0.1.7 was in requirements/lewm-runtime.txt but missing from
+  the pip install block entirely. Stages 1-3 pass because they never import
+  stable_pretraining. Stage 5 (lewm_seed42) is the first to call
+  LeWMAdapter.load() → hydra instantiate → stable_pretraining.backbone.utils.vit_hf
+  → ModuleNotFoundError, exit code 1.
+
+Failure 2 — stable-pretraining installed with --no-deps (same symptom):
+  After adding stable-pretraining to the --no-deps block (fixing failure 1 at the
+  name level), its 24 transitive dependencies (lightning, timm, torchmetrics, etc.)
+  were still absent. The first missing dep encountered at import time was:
+    stable_pretraining/data/datasets.py → import lightning as pl
+    ModuleNotFoundError: No module named 'lightning'
+  Fix: install stable-pretraining in a SEPARATE pip install call WITHOUT --no-deps
+  so pip resolves its full dependency tree automatically.
 """
 
 from __future__ import annotations
@@ -18,25 +26,6 @@ import re
 from pathlib import Path
 
 SCRIPT = Path(__file__).parent.parent / "cloud" / "wob_r5_eval" / "run_kaggle_r5_wob_staged.sh"
-
-
-def _extract_pip_packages(script_text: str) -> set[str]:
-    """Return the set of bare package names found in the pip install block."""
-    install_match = re.search(
-        r"pip install.*?(?=\n\s*python -m pip install -e|\nrun_stage|\Z)",
-        script_text,
-        re.DOTALL,
-    )
-    assert install_match, "Could not locate pip install block in shell script"
-    block = install_match.group()
-    names: set[str] = set()
-    for token in re.findall(r'"([A-Za-z0-9_\-]+)==[^"]*"', block):
-        names.add(token.lower().replace("-", "_").replace("_", "-").lower())
-    return names
-
-
-def _normalise(pkg: str) -> str:
-    return pkg.lower().replace("_", "-")
 
 
 def test_script_exists():
@@ -117,4 +106,37 @@ def test_stable_pretraining_matches_lewm_runtime():
         f"Version mismatch: shell script has stable-pretraining=={actual_version} "
         f"but lewm-runtime.txt requires =={expected_version}. "
         "Keep both files in sync."
+    )
+
+
+def test_stable_pretraining_not_in_no_deps_block():
+    """stable-pretraining must NOT be inside the --no-deps install block.
+
+    stable-pretraining==0.1.7 has 24 transitive dependencies (lightning, timm,
+    torchmetrics, submitit, wandb, …). Installing with --no-deps leaves them
+    all absent. The first one encountered at import time is:
+
+        stable_pretraining/data/datasets.py:28  import lightning as pl
+        ModuleNotFoundError: No module named 'lightning'
+
+    Fix: install stable-pretraining in a SEPARATE pip install call (without
+    --no-deps) so pip resolves the full dependency tree automatically.
+    """
+    text = SCRIPT.read_text(encoding="utf-8")
+
+    # Find the --no-deps block (everything between pip install --no-deps and the
+    # separate stable-pretraining install or the next pip install -e)
+    no_deps_match = re.search(
+        r"pip install[^\n]*--no-deps(.*?)(?=\npython -m pip install|\nrun_stage|\Z)",
+        text,
+        re.DOTALL,
+    )
+    assert no_deps_match, "Expected a --no-deps pip install block in the shell script"
+    no_deps_block = no_deps_match.group(1)
+
+    assert "stable-pretraining" not in no_deps_block, (
+        "stable-pretraining must NOT be inside the --no-deps pip install block. "
+        "It has 24 transitive dependencies (lightning, timm, torchmetrics, etc.) "
+        "that --no-deps would skip, causing ModuleNotFoundError at runtime. "
+        "Install it in a separate 'pip install stable-pretraining==X.Y.Z' call."
     )
