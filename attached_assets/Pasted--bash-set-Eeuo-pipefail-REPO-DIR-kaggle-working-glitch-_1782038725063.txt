@@ -1,0 +1,78 @@
+%%bash
+set -Eeuo pipefail
+
+REPO_DIR="/kaggle/working/glitch-world-model"
+cd "$REPO_DIR"
+
+export PYTHONPATH="$REPO_DIR/src:$REPO_DIR:${PYTHONPATH:-}"
+
+echo "=== A. Confirm pinned commit before full run ==="
+EXPECTED_SHA="47ba2a6223029ea6f13e79af044a44610b64ff09"
+ACTUAL_SHA="$(git rev-parse HEAD)"
+echo "EXPECTED_SHA=$EXPECTED_SHA"
+echo "ACTUAL_SHA=$ACTUAL_SHA"
+
+if [[ "$ACTUAL_SHA" != "$EXPECTED_SHA" ]]; then
+  echo "ERROR: wrong repo SHA, refusing to run full WOB R5"
+  exit 1
+fi
+
+echo
+echo "=== B. Full R5-WOB config ==="
+export R5_WOB_SMOKE=0
+
+# Use FORCE=0 because Cell 4 already completed preflight.
+# If you want a totally fresh rerun later, change this to 1.
+export R5_WOB_FORCE=0
+
+export R5_WOB_BASELINE_BATCH_SIZE=4
+export R5_WOB_LEWM_BATCH_SIZE=2
+export R5_WOB_DEVICE=cuda
+export R5_WOB_N_BOOTSTRAP=1000
+export R5_WOB_BOOTSTRAP_SEED=42
+
+export R5_WOB_LOG="/kaggle/working/r5_wob_staged.log"
+export R5_WOB_OUTPUT_DIR="$REPO_DIR/outputs/r5_wob_identical_episode"
+export R5_WOB_SUCCESS_TARBALL="/kaggle/working/r5_wob_identical_episode_outputs.tar.gz"
+export R5_WOB_FAILURE_DEBUG="/kaggle/working/r5_wob_identical_episode_failure_debug.tar.gz"
+export R5_WOB_FAILURE_DEBUG_DIR="/kaggle/working/r5_wob_identical_episode_failure_debug"
+
+echo "R5_WOB_SMOKE=$R5_WOB_SMOKE"
+echo "R5_WOB_FORCE=$R5_WOB_FORCE"
+echo "R5_WOB_BASELINE_BATCH_SIZE=$R5_WOB_BASELINE_BATCH_SIZE"
+echo "R5_WOB_LEWM_BATCH_SIZE=$R5_WOB_LEWM_BATCH_SIZE"
+echo "R5_WOB_DEVICE=$R5_WOB_DEVICE"
+echo "R5_WOB_N_BOOTSTRAP=$R5_WOB_N_BOOTSTRAP"
+echo "R5_WOB_OUTPUT_DIR=$R5_WOB_OUTPUT_DIR"
+echo "R5_WOB_LOG=$R5_WOB_LOG"
+
+echo
+echo "=== C. Run full staged R5-WOB evaluation ==="
+if bash cloud/wob_r5_eval/run_kaggle_r5_wob_staged.sh; then
+  echo
+  echo "=== SUCCESS — download these files ==="
+  echo "/kaggle/working/r5_wob_identical_episode_outputs.tar.gz"
+  echo "/kaggle/working/r5_wob_identical_episode_outputs.tar.gz.sha256"
+  echo
+  ls -lh /kaggle/working/r5_wob_identical_episode_outputs.tar.gz /kaggle/working/r5_wob_identical_episode_outputs.tar.gz.sha256
+else
+  echo
+  echo "=== FAILURE — download these files for diagnosis ==="
+  echo "/kaggle/working/r5_wob_identical_episode_failure_debug.tar.gz"
+  echo "/kaggle/working/r5_wob_identical_episode_failure_debug.tar.gz.sha256"
+  echo "/kaggle/working/r5_wob_staged.log"
+  echo
+  ls -lh \
+    /kaggle/working/r5_wob_identical_episode_failure_debug.tar.gz \
+    /kaggle/working/r5_wob_identical_episode_failure_debug.tar.gz.sha256 \
+    /kaggle/working/r5_wob_staged.log \
+    2>/dev/null || true
+  exit 1
+fi
+
+echo
+echo "=== D. Final working dir check ==="
+ls -lh /kaggle/working | grep -E "r5_wob|r5_wob_staged" || true
+
+echo
+echo "CELL_5_FULL_R5_WOB_DONE"
