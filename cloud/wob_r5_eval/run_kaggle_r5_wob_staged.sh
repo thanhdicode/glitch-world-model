@@ -110,6 +110,7 @@ python -m pip install -q --no-cache-dir --no-deps \
   "lance-namespace-urllib3-client==0.7.7" \
   "loguru==0.7.3" \
   "hydra-core==1.3.3"
+python -m pip install -q --no-cache-dir "stable-pretraining==0.1.7"
 python -m pip install -e "$REPO_DIR" --no-deps -q
 
 run_stage() {
