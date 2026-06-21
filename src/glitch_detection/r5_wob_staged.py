@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import gc
 import json
+import shutil
 import tarfile
 from pathlib import Path
 from typing import Any
@@ -400,6 +401,10 @@ def run_materialize_lance(
     cached = _maybe_skip(output_dir, "materialize_lance", smoke=smoke, force=force)
     if cached is not None:
         return cached
+    for _stale_name in (TRAIN_LANCE_NAME, NORMAL_LANCE_NAME, BUGGY_LANCE_NAME):
+        _stale_path = output_dir / _stale_name
+        if _stale_path.exists():
+            shutil.rmtree(_stale_path)
     preflight = _validate_stage_marker(output_dir, "preflight", expected_smoke=smoke)
     readiness, eval_rows = _validate_readiness_and_manifest(readiness_json, eval_manifest)
     train_rows = _load_train_rows(split_csv)
