@@ -1,0 +1,79 @@
+============================================================
+R5-WOB OVERNIGHT START
+time_utc=Sun Jun 21 06:27:45 PM UTC 2026
+============================================================
+
+=== A. Kaggle environment ===
+Python 3.12.13
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/loop1       20G   92K   20G   1% /kaggle/working
+/dev/loop1       20G   92K   20G   1% /kaggle/input
+Sun Jun 21 18:27:45 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 580.159.04             Driver Version: 580.159.04     CUDA Version: 13.0     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  Tesla T4                       Off |   00000000:00:04.0 Off |                    0 |
+| N/A   44C    P8             11W /   70W |       0MiB /  15360MiB |      0%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+|   1  Tesla T4                       Off |   00000000:00:05.0 Off |                    0 |
+| N/A   44C    P8              9W /   70W |       0MiB /  15360MiB |      0%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+
+=== B. Clone pinned repo ===
+fatal: reference is not a tree: 83ef156f1cd1c71493c4461563bfa01072bc8985
+---------------------------------------------------------------------------
+CalledProcessError                        Traceback (most recent call last)
+/tmp/ipykernel_58/2057705042.py in <cell line: 0>()
+----> 1 get_ipython().run_cell_magic('bash', '', 'set -Eeuo pipefail\nexport PYTHONUNBUFFERED=1\nexport TOKENIZERS_PARALLELISM=false\nexport HF_HUB_DISABLE_TELEMETRY=1\n\nREPO_URL="https://github.com/thanhdicode/glitch-world-model.git"\nREPO_SHA="83ef156f1cd1c71493c4461563bfa01072bc8985"\nREPO_DIR="/kaggle/working/glitch-world-model"\n\nKAGGLE_INPUT_ROOT="/kaggle/input"\nOUTPUT_DIR="$REPO_DIR/outputs/r5_wob_identical_episode"\nSUCCESS_TAR="/kaggle/working/r5_wob_identical_episode_outputs.tar.gz"\nFAILURE_TAR="/kaggle/working/r5_wob_identical_episode_failure_debug.tar.gz"\nFAILURE_DEBUG_DIR="/kaggle/working/r5_wob_identical_episode_failure_debug"\nLOG_FILE="/kaggle/working/r5_wob_staged.log"\n\necho "============================================================"\necho "R5-WOB OVERNIGHT START"\necho "time_utc=$(date -u)"\necho "============================================================"\n\necho\necho "=== A. Kaggle environment ==="\npython --version\ndf -h /kaggle/working /kaggle/input || true\nnvidia-smi || true\n\necho\necho "=== B. Clone pinned repo ==="\nrm -rf "$REPO_DIR"\ngit clone --quiet "$REPO_URL" "$REPO_DIR"\ncd "$REPO_DIR"\ngit checkout --quiet "$REPO_SHA"\ngit reset --hard "$REPO_SHA" --quiet\n\nACTUAL_SHA="$(git rev-parse HEAD)"\necho "EXPECTED_SHA=$REPO_SHA"\necho "ACTUAL_SHA=$ACTUAL_SHA"\nif [[ "$ACTUAL_SHA" != "$REPO_SHA" ]]; then\n  echo "ERROR: wrong repo SHA checked out"; exit 1\nfi\n\nexport PYTHONPATH="$REPO_DIR/src:$REPO_DIR:${PYTHONPATH:-}"\n\necho\necho "=== C. Pre-install runtime ==="\npython -m pip install -q --no-cache-dir --no-deps \\\n  "stable-worldmodel==0.1.1" \\\n  "lancedb==0.25.3" \\\n  "pylance==0.39.0" \\\n  "lance-namespace==0.7.7" \\\n  "lance-namespace-urllib3-client==0.7.7" \\\n  "loguru==0.7.3" \\\n  "hydra-core==1.3.3"\npython -m pip install -q --no-cache-dir \\\n  "stable-pretraining==0.1.7" \\\n  "transformers==4.57.6"\npython -m pip install -q --no-cache-dir -e "$REPO_DIR" --no-deps\n\necho\necho "=== D. Import verification ==="\npython - <<\'PYCHECK\'\nimport sys\nerrors = []\n\ntry:\n    import torch\n    cuda_ok = torch.cuda.is_available()\n    print(f"  torch=={torch.__version__}  cuda={cuda_ok}  devices={torch.cuda.device_count()}")\n    if not cuda_ok:\n        errors.append("CUDA not available — set Accelerator to GPU T4 x2")\nexcept Exception as e:\n    errors.append(f"torch: {e}")\n\ntry:\n    from stable_worldmodel.data import LanceDataset, LanceWriter\n    print("  stable_worldmodel.data: OK")\nexcept Exception as e:\n    errors.append(f"stable_worldmodel: {e}")\n\ntry:\n    from hydra._internal.utils import _locate\n    _locate("stable_pretraining.backbone.utils.vit_hf")\n    print("  hydra/stable_pretraining: OK")\nexcept Exception as e:\n    errors.append(f"hydra/stable_pretraining: {e}")\n\ntry:\n    import lightning\n    print(f"  lightning=={lightning.__version__}: OK")\nexcept Exception as e:\n    errors.append(f"lightning: {e}")\n\ntry:\n    import glitch_detection.r5_wob_staged as s\n    print(f"  r5_wob_staged: OK  stages={s.STAGE_ORDER}")\nexcept Exception as e:\n    errors.append(f"r5_wob_staged: {e}")\n\ntry:\n    from cloud.wob_kaggle_native.common import detect_kaggle_roots, write_debug_tarball\n    print("  cloud.wob_kaggle_native.common: OK")\nexcept Exception as e:\n    errors.append(f"cloud.wob_kaggle_native.common: {e}")\n\nif errors:\n    print("\\nIMPORT_ERRORS:")\n    for err in errors:\n        print(f"  !! {err}")\n    sys.exit(1)\nprint("\\nIMPORT_VERIFICATION: ALL OK")\nPYCHECK\n\necho\necho "=== E. Configure run ==="\nexport REPO_DIR="$REPO_DIR"\nexport KAGGLE_INPUT_ROOT="$KAGGLE_INPUT_ROOT"\nexport R5_WOB_OUTPUT_DIR="$OUTPUT_DIR"\nexport R5_WOB_SUCCESS_TARBALL="$SUCCESS_TAR"\nexport R5_WOB_FAILURE_DEBUG="$FAILURE_TAR"\nexport R5_WOB_FAILURE_DEBUG_DIR="$FAILURE_DEBUG_DIR"\nexport R5_WOB_LOG="$LOG_FILE"\nexport R5_WOB_DEVICE="cuda"\nexport R5_WOB_BASELINE_BATCH_SIZE="4"\nexport R5_WOB_LEWM_BATCH_SIZE="2"\nexport R5_WOB_BOOTSTRAP_SEED="42"\nexport R5_WOB_N_BOOTSTRAP="1000"\nexport R5_WOB_FORCE="1"\nexport R5_WOB_SMOKE="0"\n\nrm -f "$SUCCESS_TAR" "${SUCCESS_TAR}.sha256" "$FAILURE_TAR" "${FAILURE_TAR}.sha256" "$LOG_FILE"\nrm -rf "$FAILURE_DEBUG_DIR"\n\necho\necho "=== F. Run canonical staged script ==="\nset +e\ntimeout 41400 bash cloud/wob_r5_eval/run_kaggle_r5_wob_staged.sh\nRUN_CODE=$?\nset -e\n\nif [[ "$RUN_CODE" -ne 0 ]]; then\n  echo "R5-WOB FAILED: exit_code=$RUN_CODE  time_utc=$(date -u)"\n  echo "Download failure debug: $FAILURE_TAR"\n  exit "$RUN_CODE"\nfi\n\necho\necho "=== G. Final locked-test check ==="\npython - "$SUCCESS_TAR" <<\'PYLOCK\'\nimport json, sys, tarfile\nfrom pathlib import Path\ntar_path = Path(sys.argv[1])\nif not tar_path.is_file():\n    print(f"ERROR: tarball not found: {tar_path}"); sys.exit(1)\nwith tarfile.open(tar_path, "r:gz") as tf:\n    for m in tf.getmembers():\n        if not m.name.endswith(".json"):\n            continue\n        f = tf.extractfile(m)\n        if f is None:\n            continue\n        try:\n            c = json.loads(f.read().decode("utf-8"))\n        except Exception:\n            continue\n        if isinstance(c, dict) and (c.get("locked_test_materialized") or c.get("locked_test_scored")):\n            print(f"ERROR: locked_test flag in {m.name}"); sys.exit(1)\nprint("LOCKED_TEST_FINAL: clean — locked_test_materialized=false locked_test_scored=false")\nPYLOCK\n\necho ""\necho "============================================================"\necho "R5_WOB_OVERNIGHT_DONE"\necho "Download from Kaggle Output tab:"\necho "  $SUCCESS_TAR"\necho "  ${SUCCESS_TAR}.sha256"\necho "  $LOG_FILE"\necho "Completed: $(date -u)"\necho "============================================================"\n')
+
+/usr/local/lib/python3.12/dist-packages/IPython/core/interactiveshell.py in run_cell_magic(self, magic_name, line, cell)
+   2471             with self.builtin_trap:
+   2472                 args = (magic_arg_s, cell)
+-> 2473                 result = fn(*args, **kwargs)
+   2474             return result
+   2475 
+
+/usr/local/lib/python3.12/dist-packages/IPython/core/magics/script.py in named_script_magic(line, cell)
+    140             else:
+    141                 line = script
+--> 142             return self.shebang(line, cell)
+    143 
+    144         # write a basic docstring:
+
+/usr/local/lib/python3.12/dist-packages/decorator/__init__.py in fun(*args, **kw)
+    245             if not kwsyntax:
+    246                 args, kw = fix(args, kw, sig)
+--> 247             return caller(func, *(extras + args), **kw)
+    248 
+    249     fun.__doc__ = func.__doc__
+
+/usr/local/lib/python3.12/dist-packages/IPython/core/magic.py in <lambda>(f, *a, **k)
+    185     # but it's overkill for just that one bit of state.
+    186     def magic_deco(arg):
+--> 187         call = lambda f, *a, **k: f(*a, **k)
+    188 
+    189         if callable(arg):
+
+/usr/local/lib/python3.12/dist-packages/IPython/core/magics/script.py in shebang(self, line, cell)
+    243             sys.stderr.flush()
+    244         if args.raise_error and p.returncode!=0:
+--> 245             raise CalledProcessError(p.returncode, cell, output=out, stderr=err)
+    246 
+    247     def _run_script(self, p, cell, to_close):
+
+CalledProcessError: Command 'b'set -Eeuo pipefail\nexport PYTHONUNBUFFERED=1\nexport TOKENIZERS_PARALLELISM=false\nexport HF_HUB_DISABLE_TELEMETRY=1\n\nREPO_URL="https://github.com/thanhdicode/glitch-world-model.git"\nREPO_SHA="83ef156f1cd1c71493c4461563bfa01072bc8985"\nREPO_DIR="/kaggle/working/glitch-world-model"\n\nKAGGLE_INPUT_ROOT="/kaggle/input"\nOUTPUT_DIR="$REPO_DIR/outputs/r5_wob_identical_episode"\nSUCCESS_TAR="/kaggle/working/r5_wob_identical_episode_outputs.tar.gz"\nFAILURE_TAR="/kaggle/working/r5_wob_identical_episode_failure_debug.tar.gz"\nFAILURE_DEBUG_DIR="/kaggle/working/r5_wob_identical_episode_failure_debug"\nLOG_FILE="/kaggle/working/r5_wob_staged.log"\n\necho "============================================================"\necho "R5-WOB OVERNIGHT START"\necho "time_utc=$(date -u)"\necho "============================================================"\n\necho\necho "=== A. Kaggle environment ==="\npython --version\ndf -h /kaggle/working /kaggle/input || true\nnvidia-smi || true\n\necho\necho "=== B. Clone pinned repo ==="\nrm -rf "$REPO_DIR"\ngit clone --quiet "$REPO_URL" "$REPO_DIR"\ncd "$REPO_DIR"\ngit checkout --quiet "$REPO_SHA"\ngit reset --hard "$REPO_SHA" --quiet\n\nACTUAL_SHA="$(git rev-parse HEAD)"\necho "EXPECTED_SHA=$REPO_SHA"\necho "ACTUAL_SHA=$ACTUAL_SHA"\nif [[ "$ACTUAL_SHA" != "$REPO_SHA" ]]; then\n  echo "ERROR: wrong repo SHA checked out"; exit 1\nfi\n\nexport PYTHONPATH="$REPO_DIR/src:$REPO_DIR:${PYTHONPATH:-}"\n\necho\necho "=== C. Pre-install runtime ==="\npython -m pip install -q --no-cache-dir --no-deps \\\n  "stable-worldmodel==0.1.1" \\\n  "lancedb==0.25.3" \\\n  "pylance==0.39.0" \\\n  "lance-namespace==0.7.7" \\\n  "lance-namespace-urllib3-client==0.7.7" \\\n  "loguru==0.7.3" \\\n  "hydra-core==1.3.3"\npython -m pip install -q --no-cache-dir \\\n  "stable-pretraining==0.1.7" \\\n  "transformers==4.57.6"\npython -m pip install -q --no-cache-dir -e "$REPO_DIR" --no-deps\n\necho\necho "=== D. Import verification ==="\npython - <<\'PYCHECK\'\nimport sys\nerrors = []\n\ntry:\n    import torch\n    cuda_ok = torch.cuda.is_available()\n    print(f"  torch=={torch.__version__}  cuda={cuda_ok}  devices={torch.cuda.device_count()}")\n    if not cuda_ok:\n        errors.append("CUDA not available \xe2\x80\x94 set Accelerator to GPU T4 x2")\nexcept Exception as e:\n    errors.append(f"torch: {e}")\n\ntry:\n    from stable_worldmodel.data import LanceDataset, LanceWriter\n    print("  stable_worldmodel.data: OK")\nexcept Exception as e:\n    errors.append(f"stable_worldmodel: {e}")\n\ntry:\n    from hydra._internal.utils import _locate\n    _locate("stable_pretraining.backbone.utils.vit_hf")\n    print("  hydra/stable_pretraining: OK")\nexcept Exception as e:\n    errors.append(f"hydra/stable_pretraining: {e}")\n\ntry:\n    import lightning\n    print(f"  lightning=={lightning.__version__}: OK")\nexcept Exception as e:\n    errors.append(f"lightning: {e}")\n\ntry:\n    import glitch_detection.r5_wob_staged as s\n    print(f"  r5_wob_staged: OK  stages={s.STAGE_ORDER}")\nexcept Exception as e:\n    errors.append(f"r5_wob_staged: {e}")\n\ntry:\n    from cloud.wob_kaggle_native.common import detect_kaggle_roots, write_debug_tarball\n    print("  cloud.wob_kaggle_native.common: OK")\nexcept Exception as e:\n    errors.append(f"cloud.wob_kaggle_native.common: {e}")\n\nif errors:\n    print("\\nIMPORT_ERRORS:")\n    for err in errors:\n        print(f"  !! {err}")\n    sys.exit(1)\nprint("\\nIMPORT_VERIFICATION: ALL OK")\nPYCHECK\n\necho\necho "=== E. Configure run ==="\nexport REPO_DIR="$REPO_DIR"\nexport KAGGLE_INPUT_ROOT="$KAGGLE_INPUT_ROOT"\nexport R5_WOB_OUTPUT_DIR="$OUTPUT_DIR"\nexport R5_WOB_SUCCESS_TARBALL="$SUCCESS_TAR"\nexport R5_WOB_FAILURE_DEBUG="$FAILURE_TAR"\nexport R5_WOB_FAILURE_DEBUG_DIR="$FAILURE_DEBUG_DIR"\nexport R5_WOB_LOG="$LOG_FILE"\nexport R5_WOB_DEVICE="cuda"\nexport R5_WOB_BASELINE_BATCH_SIZE="4"\nexport R5_WOB_LEWM_BATCH_SIZE="2"\nexport R5_WOB_BOOTSTRAP_SEED="42"\nexport R5_WOB_N_BOOTSTRAP="1000"\nexport R5_WOB_FORCE="1"\nexport R5_WOB_SMOKE="0"\n\nrm -f "$SUCCESS_TAR" "${SUCCESS_TAR}.sha256" "$FAILURE_TAR" "${FAILURE_TAR}.sha256" "$LOG_FILE"\nrm -rf "$FAILURE_DEBUG_DIR"\n\necho\necho "=== F. Run canonical staged script ==="\nset +e\ntimeout 41400 bash cloud/wob_r5_eval/run_kaggle_r5_wob_staged.sh\nRUN_CODE=$?\nset -e\n\nif [[ "$RUN_CODE" -ne 0 ]]; then\n  echo "R5-WOB FAILED: exit_code=$RUN_CODE  time_utc=$(date -u)"\n  echo "Download failure debug: $FAILURE_TAR"\n  exit "$RUN_CODE"\nfi\n\necho\necho "=== G. Final locked-test check ==="\npython - "$SUCCESS_TAR" <<\'PYLOCK\'\nimport json, sys, tarfile\nfrom pathlib import Path\ntar_path = Path(sys.argv[1])\nif not tar_path.is_file():\n    print(f"ERROR: tarball not found: {tar_path}"); sys.exit(1)\nwith tarfile.open(tar_path, "r:gz") as tf:\n    for m in tf.getmembers():\n        if not m.name.endswith(".json"):\n            continue\n        f = tf.extractfile(m)\n        if f is None:\n            continue\n        try:\n            c = json.loads(f.read().decode("utf-8"))\n        except Exception:\n            continue\n        if isinstance(c, dict) and (c.get("locked_test_materialized") or c.get("locked_test_scored")):\n            print(f"ERROR: locked_test flag in {m.name}"); sys.exit(1)\nprint("LOCKED_TEST_FINAL: clean \xe2\x80\x94 locked_test_materialized=false locked_test_scored=false")\nPYLOCK\n\necho ""\necho "============================================================"\necho "R5_WOB_OVERNIGHT_DONE"\necho "Download from Kaggle Output tab:"\necho "  $SUCCESS_TAR"\necho "  ${SUCCESS_TAR}.sha256"\necho "  $LOG_FILE"\necho "Completed: $(date -u)"\necho "============================================================"\n'' returned non-zero exit status 128.
+add Codeadd Markdown
