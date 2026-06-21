@@ -1,0 +1,136 @@
+%%bash
+set -Eeuo pipefail
+
+REPO_DIR="/kaggle/working/glitch-world-model"
+cd "$REPO_DIR"
+
+export PYTHONPATH="$REPO_DIR/src:$REPO_DIR:${PYTHONPATH:-}"
+
+export KAGGLE_INPUT_ROOT="/kaggle/input"
+export R5_WOB_OUTPUT_DIR="$REPO_DIR/outputs/r5_wob_identical_episode"
+export R5_WOB_SUCCESS_TARBALL="/kaggle/working/r5_wob_identical_episode_outputs.tar.gz"
+export R5_WOB_FAILURE_DEBUG="/kaggle/working/r5_wob_identical_episode_failure_debug.tar.gz"
+export R5_WOB_FAILURE_DEBUG_DIR="/kaggle/working/r5_wob_identical_episode_failure_debug"
+export R5_WOB_LOG="/kaggle/working/r5_wob_remaining_after_stable_pretraining.log"
+
+export R5_WOB_BASELINE_BATCH_SIZE=4
+export R5_WOB_LEWM_BATCH_SIZE=2
+export R5_WOB_DEVICE=cuda
+export R5_WOB_N_BOOTSTRAP=1000
+export R5_WOB_BOOTSTRAP_SEED=42
+
+rm -f "$R5_WOB_LOG" "$R5_WOB_FAILURE_DEBUG" "${R5_WOB_FAILURE_DEBUG}.sha256"
+exec > >(tee -a "$R5_WOB_LOG") 2>&1
+
+package_failure() {
+  local failed_stage="${1:-unknown}"
+  local exit_code="${2:-1}"
+
+  echo
+  echo "=== R5-WOB FAILED ==="
+  echo "failed_stage=$failed_stage"
+  echo "exit_code=$exit_code"
+
+  rm -rf "$R5_WOB_FAILURE_DEBUG_DIR"
+  mkdir -p "$R5_WOB_FAILURE_DEBUG_DIR"
+
+  cp "$R5_WOB_LOG" "$R5_WOB_FAILURE_DEBUG_DIR/r5_wob_remaining_after_stable_pretraining.log" || true
+
+  cat > "$R5_WOB_FAILURE_DEBUG_DIR/failure_summary.json" <<EOF
+{
+  "schema_version": 1,
+  "failure_class": "STAGE_FAILURE",
+  "phase": "$failed_stage",
+  "exit_code": $exit_code,
+  "git_sha": "$(git rev-parse HEAD)",
+  "output_dir_exists": $(test -d "$R5_WOB_OUTPUT_DIR" && echo true || echo false),
+  "locked_test_materialized": false,
+  "locked_test_scored": false
+}
+EOF
+
+  if [[ -d "$R5_WOB_OUTPUT_DIR" ]]; then
+    mkdir -p "$R5_WOB_FAILURE_DEBUG_DIR/stage_markers"
+    find "$R5_WOB_OUTPUT_DIR" -maxdepth 1 -name "stage_*.json" -type f -exec cp {} "$R5_WOB_FAILURE_DEBUG_DIR/stage_markers/" \; || true
+    find "$R5_WOB_OUTPUT_DIR" -maxdepth 3 -print | sort > "$R5_WOB_FAILURE_DEBUG_DIR/output_tree.txt" || true
+  fi
+
+  tar -czf "$R5_WOB_FAILURE_DEBUG" -C "$R5_WOB_FAILURE_DEBUG_DIR" .
+  sha256sum "$R5_WOB_FAILURE_DEBUG" > "${R5_WOB_FAILURE_DEBUG}.sha256"
+
+  echo
+  echo "=== DOWNLOAD FAILURE FILES ==="
+  echo "$R5_WOB_FAILURE_DEBUG"
+  echo "${R5_WOB_FAILURE_DEBUG}.sha256"
+  echo "$R5_WOB_LOG"
+}
+
+run_stage() {
+  local stage="$1"
+
+  echo
+  echo "================================================================"
+  echo "START_STAGE=$stage"
+  echo "TIME_UTC=$(date -u)"
+  echo "================================================================"
+
+  free -h || true
+  df -h /kaggle/working || true
+  nvidia-smi || true
+
+  set +e
+  python scripts/run_r5_wob_stage.py \
+    --stage "$stage" \
+    --input-root "$KAGGLE_INPUT_ROOT" \
+    --output-dir "$R5_WOB_OUTPUT_DIR" \
+    --success-tarball "$R5_WOB_SUCCESS_TARBALL" \
+    --baseline-batch-size "$R5_WOB_BASELINE_BATCH_SIZE" \
+    --lewm-batch-size "$R5_WOB_LEWM_BATCH_SIZE" \
+    --device "$R5_WOB_DEVICE" \
+    --bootstrap-seed "$R5_WOB_BOOTSTRAP_SEED" \
+    --n-bootstrap "$R5_WOB_N_BOOTSTRAP"
+  code=$?
+  set -e
+
+  if [[ "$code" -ne 0 ]]; then
+    package_failure "$stage" "$code"
+    exit "$code"
+  fi
+
+  echo
+  echo "END_STAGE=$stage"
+  ls -lh "$R5_WOB_OUTPUT_DIR/stage_${stage}.json" || true
+}
+
+echo "=== A. Confirm current state ==="
+echo "HEAD=$(git rev-parse HEAD)"
+python - <<'PY'
+from hydra._internal.utils import _locate
+target = "stable_pretraining.backbone.utils.vit_hf"
+print("Hydra locate:", _locate(target))
+PY
+
+for marker in stage_preflight.json stage_materialize_lance.json stage_baseline_scores.json; do
+  test -f "$R5_WOB_OUTPUT_DIR/$marker" || { echo "Missing $marker"; exit 1; }
+  echo "FOUND $marker"
+done
+
+echo
+echo "=== B. Run remaining R5-WOB stages ==="
+run_stage lewm_seed42
+run_stage lewm_seed43
+run_stage lewm_seed44
+run_stage aggregate_metrics
+run_stage validate_package
+
+echo
+echo "=== SUCCESS — download these files ==="
+echo "$R5_WOB_SUCCESS_TARBALL"
+echo "${R5_WOB_SUCCESS_TARBALL}.sha256"
+echo "$R5_WOB_LOG"
+
+ls -lh "$R5_WOB_SUCCESS_TARBALL" "${R5_WOB_SUCCESS_TARBALL}.sha256"
+cat "${R5_WOB_SUCCESS_TARBALL}.sha256"
+
+echo
+echo "R5_WOB_REMAINING_AFTER_STABLE_PRETRAINING_DONE"
