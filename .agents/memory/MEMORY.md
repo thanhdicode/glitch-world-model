@@ -2,3 +2,4 @@
 - [R5 baseline sentinel](r5_baseline_sentinel.md) — "n/a" is valid window_aggregation for baseline scorers; exclude from placeholder checks.
 - [R5-WOB calibration count bug](r5_wob_calibration_count_bug.md) — WOB expansion needs expected_calibration_episode_count=12, not default 2 (TempGlitch).
 - [WOB window-manifest builders](wob_manifest_builders.md) — three triplicated builders; manifests must be metadata-only/single-read/sequential; keep protocol invariants + error strings in lockstep.
+- [Kaggle launcher runtime scaffolding](kaggle_launcher_runtime_scaffolding.md) — new staged launchers must install isolated LeWM runtime + fail-fast import check, not just `pip install -e .`.

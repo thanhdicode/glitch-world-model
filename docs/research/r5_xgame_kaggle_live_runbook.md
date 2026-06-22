@@ -15,10 +15,20 @@ cd /kaggle/working/glitch-world-model
 bash cloud/wob_r5_xgame/run_kaggle_r5_xgame_staged.sh
 ```
 
-The script validates the frozen manifest, runs preflight, materializes only the 120 non-locked
-manifest rows, trains fresh seed42/43/44 checkpoints from the 36 train-normal rows, scores
-calibration plus held-out evaluation rows, computes binary metrics, packages outputs, writes a
-SHA256 sidecar, and validates the bundle.
+The script is self-contained: before running any stage it installs the isolated LeWM runtime
+(`stable-worldmodel==0.1.1`, `lancedb==0.30.0`, `pylance==4.0.0`, `lance-namespace`, `loguru`,
+`hydra-core` with `--no-deps`, then `stable-pretraining==0.1.7` + `transformers==4.57.6` with full
+dependencies, then the repo as an editable install). It then verifies the runtime imports cleanly
+(`stable_worldmodel.data`, the `stable_pretraining` Hydra target, `lightning`, and the R5-XGame
+runner modules) and exits immediately with a clear message if anything is missing — so a missing
+dependency surfaces in seconds rather than after the materialize stage. A plain `pip install -e .`
+is **not** sufficient; without this runtime the materialize stage fails with
+`ModuleNotFoundError: No module named 'stable_worldmodel'`.
+
+After the runtime is verified, the script validates the frozen manifest, runs preflight,
+materializes only the 120 non-locked manifest rows, trains fresh seed42/43/44 checkpoints from the
+36 train-normal rows, scores calibration plus held-out evaluation rows, computes binary metrics,
+packages outputs, writes a SHA256 sidecar, and validates the bundle.
 
 ## Expected Outputs
 
