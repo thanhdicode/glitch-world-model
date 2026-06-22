@@ -1,20 +1,26 @@
 # LAST_HANDOFF.md
 
-Last completed task: R5-WOB staged Lance directory marker fix
+Last completed task: R5-WOB staged LanceDB runtime compatibility fix
 Commit: pending task commit
-Date: 2026-06-21
+Date: 2026-06-22
 
 ## What Changed
 
-- Fixed staged R5-WOB marker recording for `.lance` outputs, which are directories on Kaggle.
-- Added directory inventory hashing to `_file_record` and matching directory validation for stage
-  resume checks.
-- Added a regression test covering a fake Lance directory marker.
-- Updated the R5-WOB failure-audit note with the exact failure mode.
+- Fast-forwarded local `main` from `47ba2a6` to `1d98ad5` before debugging the new Kaggle failure.
+- Classified the downloaded failure-debug bundle as a `materialize_lance` stop with
+  `AttributeError: 'LanceDBConnection' object has no attribute 'list_tables'`.
+- Traced the root cause to a staged Kaggle runtime mismatch: `stable-worldmodel==0.1.1` was being
+  paired with `lancedb==0.25.3` and `pylance==0.39.0`, below the package metadata floor.
+- Raised the staged runtime pins to `lancedb==0.30.0` and `pylance==4.0.0` in both
+  `cloud/wob_r5_eval/run_kaggle_r5_wob_staged.sh` and `requirements/kaggle_runtime.txt`.
+- Added regression tests that fail if the staged shell script drifts below the required LanceDB /
+  PyLance floors or falls out of sync with `requirements/kaggle_runtime.txt`.
+- Appended the new failure bucket to `docs/workflows/failure_modes_registry.md`.
 
 ## Checks Passed
 
-- Focused staged-runner regression tests passed.
+- Focused staged-runtime regression tests passed:
+  `python -m pytest tests/test_staged_install_completeness.py tests/test_kaggle_runtime_environment.py tests/test_materialize_lance_stale_cleanup.py`
 - Full repository validation is recorded in the task final report.
 
 ## Safety Status
@@ -27,8 +33,9 @@ Date: 2026-06-21
 
 ## Gate Status After Task
 
-- R5-WOB: staged retry should now pass the previous `IsADirectoryError` in `materialize_lance`;
-  Kaggle result remains unverified until the downloaded success pair passes local intake.
+- R5-WOB: staged retry should now avoid both the prior stale-Lance-directory failure and the new
+  `list_tables` API mismatch during `materialize_lance`; Kaggle result remains unverified until the
+  downloaded success pair passes local intake.
 - R5-XGAME: fail-closed pending validated R5-WOB metrics plus receipt.
 - R6 TempGlitch CPU-safe queue: PREPARABLE_NOT_RUN.
 - R6 WOB queue: BLOCKED_R5_WOB_VALIDATION.
@@ -36,7 +43,8 @@ Date: 2026-06-21
 
 ## Open Blockers
 
-- A new Kaggle retry on the latest `main` is still required.
+- A new Kaggle retry on the latest `main` is still required to confirm the compatibility fix under
+  the real Kaggle image.
 - A downloaded R5-WOB success pair or failure-debug pair is still required after retry.
 - R5-XGAME and all WOB ablations depend on validated R5-WOB evidence.
 - GPU ablations require later protocol and execution decisions.

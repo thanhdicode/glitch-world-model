@@ -104,8 +104,8 @@ echo "=== 1. Install lean staged R5-WOB runtime ==="
 CURRENT_PHASE="install_runtime"
 python -m pip install -q --no-cache-dir --no-deps \
   "stable-worldmodel==0.1.1" \
-  "lancedb==0.25.3" \
-  "pylance==0.39.0" \
+  "lancedb==0.30.0" \
+  "pylance==4.0.0" \
   "lance-namespace==0.7.7" \
   "lance-namespace-urllib3-client==0.7.7" \
   "loguru==0.7.3" \

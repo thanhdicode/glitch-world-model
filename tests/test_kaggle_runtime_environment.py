@@ -16,8 +16,8 @@ def test_kaggle_runtime_pins_are_optional_and_parseable():
     assert pins["stable-worldmodel"] == "0.1.1"
     assert pins["stable-pretraining"] == "0.1.7"
     assert pins["transformers"] == "4.57.6"
-    assert "lancedb" in pins
-    assert "pylance" in pins
+    assert pins["lancedb"] == "0.30.0"
+    assert pins["pylance"] == "4.0.0"
 
     project = tomllib.loads((repo / "pyproject.toml").read_text(encoding="utf-8"))
     assert all(

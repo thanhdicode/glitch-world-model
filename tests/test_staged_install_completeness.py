@@ -26,6 +26,26 @@ import re
 from pathlib import Path
 
 SCRIPT = Path(__file__).parent.parent / "cloud" / "wob_r5_eval" / "run_kaggle_r5_wob_staged.sh"
+KAGGLE_RUNTIME = Path(__file__).parent.parent / "requirements" / "kaggle_runtime.txt"
+_LANCEDB_MIN_VERSION = "0.30.0"
+_PYLANCE_MIN_VERSION = "4.0.0"
+
+
+def _parse_pin(text: str, package: str) -> str:
+    match = re.search(rf'"{re.escape(package)}==([^"]+)"', text)
+    assert match, f"{package} must be version-pinned in run_kaggle_r5_wob_staged.sh"
+    return match.group(1)
+
+
+def _parse_runtime_pin(package: str) -> str:
+    text = KAGGLE_RUNTIME.read_text(encoding="utf-8")
+    match = re.search(rf"^{re.escape(package)}==([^\s#]+)$", text, re.MULTILINE)
+    assert match, f"{package} must be version-pinned in requirements/kaggle_runtime.txt"
+    return match.group(1)
+
+
+def _version_tuple(version: str) -> tuple[int, ...]:
+    return tuple(int(part) for part in version.split("."))
 
 
 def test_script_exists():
@@ -69,6 +89,32 @@ def test_lancedb_installed():
     assert "lancedb" in text, (
         "lancedb must appear in the pip install block of run_kaggle_r5_wob_staged.sh"
     )
+
+
+def test_lancedb_pin_meets_stable_worldmodel_floor():
+    """stable-worldmodel 0.1.1 expects a LanceDB API with DBConnection.list_tables()."""
+    version = _parse_pin(SCRIPT.read_text(encoding="utf-8"), "lancedb")
+    assert _version_tuple(version) >= _version_tuple(_LANCEDB_MIN_VERSION), (
+        f"lancedb=={version} is too old for stable-worldmodel 0.1.1. "
+        f"Pin at least {_LANCEDB_MIN_VERSION} so LanceWriter.__enter__ can call "
+        "DBConnection.list_tables()."
+    )
+
+
+def test_pylance_pin_meets_stable_worldmodel_floor():
+    """stable-worldmodel 0.1.1 metadata requires pylance>=4.0.0."""
+    version = _parse_pin(SCRIPT.read_text(encoding="utf-8"), "pylance")
+    assert _version_tuple(version) >= _version_tuple(_PYLANCE_MIN_VERSION), (
+        f"pylance=={version} is below the stable-worldmodel 0.1.1 metadata floor "
+        f"of {_PYLANCE_MIN_VERSION}."
+    )
+
+
+def test_lancedb_and_pylance_match_optional_runtime_file():
+    """Keep the staged shell script aligned with requirements/kaggle_runtime.txt."""
+    script_text = SCRIPT.read_text(encoding="utf-8")
+    assert _parse_pin(script_text, "lancedb") == _parse_runtime_pin("lancedb")
+    assert _parse_pin(script_text, "pylance") == _parse_runtime_pin("pylance")
 
 
 def test_stable_pretraining_version_pinned():
