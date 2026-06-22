@@ -38,12 +38,12 @@ outputType = "console"
 name = "Sync from GitHub"
 author = "agent"
 
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "bash scripts/sync_from_github.sh"
-
 [workflows.workflow.metadata]
 outputType = "console"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "bash scripts/schedule_sync.sh"
 
 [deployment]
 deploymentTarget = "vm"

@@ -1,4 +1,4 @@
-.PHONY: install install-research lint format format-check test test-cov synthetic phase0-check sync-github sync-github-dry
+.PHONY: install install-research lint format format-check test test-cov synthetic phase0-check sync-github sync-github-dry sync-github-schedule sync-github-once
 
 install:
 	python -m pip install -e ".[dev]"
@@ -33,3 +33,9 @@ sync-github:
 
 sync-github-dry:
 	bash scripts/sync_from_github.sh --dry-run
+
+sync-github-schedule:
+	bash scripts/schedule_sync.sh
+
+sync-github-once:
+	bash scripts/schedule_sync.sh --once

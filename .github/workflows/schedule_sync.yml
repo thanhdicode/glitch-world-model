@@ -1,0 +1,73 @@
+name: Scheduled Replit Sync
+
+# Runs hourly and POSTs to a Replit webhook so the Replit environment
+# automatically pulls the latest commits from GitHub.
+#
+# Setup (one-time):
+#   1. In your Replit project add a Secret named REPLIT_SYNC_WEBHOOK_URL
+#      pointing at your deployed Replit app's /sync webhook endpoint
+#      (or any HTTP endpoint that triggers `bash scripts/sync_from_github.sh`).
+#   2. Add that same URL as a GitHub repository secret named REPLIT_SYNC_WEBHOOK_URL
+#      (Settings → Secrets and variables → Actions → New repository secret).
+#
+# Without the secret the schedule job skips the network call and logs a
+# reminder — CI is still green, nothing breaks.
+
+on:
+  schedule:
+    # Runs at the top of every hour (UTC).
+    - cron: "0 * * * *"
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: "Reason for manual trigger"
+        required: false
+        default: "manual"
+
+jobs:
+  trigger-replit-sync:
+    name: Trigger Replit sync
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Notify run start
+        run: |
+          echo "=== Scheduled Replit sync trigger ==="
+          echo "Triggered by : ${{ github.event_name }}"
+          echo "Ref          : ${{ github.ref }}"
+          echo "SHA          : ${{ github.sha }}"
+          echo "Time (UTC)   : $(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+
+      - name: POST to Replit sync webhook
+        if: ${{ env.REPLIT_SYNC_WEBHOOK_URL != '' }}
+        env:
+          REPLIT_SYNC_WEBHOOK_URL: ${{ secrets.REPLIT_SYNC_WEBHOOK_URL }}
+        run: |
+          echo "Posting to Replit sync webhook ..."
+          HTTP_STATUS=$(curl -s -o /tmp/webhook_response.txt -w "%{http_code}" \
+            -X POST "$REPLIT_SYNC_WEBHOOK_URL" \
+            -H "Content-Type: application/json" \
+            -d "{\"event\":\"scheduled_sync\",\"sha\":\"${{ github.sha }}\",\"ref\":\"${{ github.ref }}\"}" \
+            --max-time 30)
+          echo "HTTP status: $HTTP_STATUS"
+          cat /tmp/webhook_response.txt || true
+          if [[ "$HTTP_STATUS" -lt 200 || "$HTTP_STATUS" -ge 300 ]]; then
+            echo "[ERROR] Webhook returned non-2xx status: $HTTP_STATUS" >&2
+            exit 1
+          fi
+          echo "[OK] Webhook accepted."
+
+      - name: Webhook not configured (skipping)
+        if: ${{ env.REPLIT_SYNC_WEBHOOK_URL == '' }}
+        env:
+          REPLIT_SYNC_WEBHOOK_URL: ${{ secrets.REPLIT_SYNC_WEBHOOK_URL }}
+        run: |
+          echo "[INFO] REPLIT_SYNC_WEBHOOK_URL secret is not set."
+          echo "       To enable automatic GitHub→Replit sync from Actions:"
+          echo "         1. Add REPLIT_SYNC_WEBHOOK_URL as a GitHub repository secret."
+          echo "         2. Point it at an HTTP endpoint that runs sync_from_github.sh."
+          echo "       For now, use the 'Sync from GitHub' workflow inside Replit directly,"
+          echo "       or run:  make sync-github"
+          echo "       This job will succeed so CI is not blocked."
