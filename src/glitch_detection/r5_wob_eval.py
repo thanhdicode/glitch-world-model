@@ -5,7 +5,7 @@ import csv
 import json
 import tarfile
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 from .kaggle_automation import FingerprintBuilder
 from .lewm_adapter import ActionMode, LeWMAdapter, LeWMCheckpointSpec, sha256_file
@@ -273,10 +273,13 @@ def _resolve_seed_artifacts(
     seed_tarballs: dict[int, Path],
     seed_sidecars: dict[int, Path],
     extract_root: Path,
+    progress: Callable[[str], None] | None = None,
 ) -> list[dict[str, Any]]:
     validator_module = _load_script_module("validate_wob_seed_artifacts")
     artifacts: list[dict[str, Any]] = []
     for seed in SUPPORTED_SEEDS:
+        if progress is not None:
+            progress(f"preflight: validating seed{seed} artifact bundle")
         tarball = seed_tarballs.get(seed)
         sidecar = seed_sidecars.get(seed)
         if tarball is None or sidecar is None:
@@ -289,9 +292,13 @@ def _resolve_seed_artifacts(
         )
         seed_extract_root = extract_root / f"seed{seed}"
         seed_extract_root.mkdir(parents=True, exist_ok=True)
+        if progress is not None:
+            progress(f"preflight: extracting seed{seed} artifact bundle")
         with tarfile.open(tarball, "r:gz") as archive:
             archive.extractall(seed_extract_root)
         artifact_root = seed_extract_root / "wob_outputs" / f"wob_seed{seed}"
+        if progress is not None:
+            progress(f"preflight: validating extracted seed{seed} artifact tree")
         validator_module.validate_artifacts(
             artifact_root,
             expected_seed=seed,

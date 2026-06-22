@@ -113,6 +113,22 @@ python -m pip install -q --no-cache-dir --no-deps \
 python -m pip install -q --no-cache-dir "stable-pretraining==0.1.7"
 python -m pip install -e "$REPO_DIR" --no-deps -q
 
+echo "=== 2. Detect mounted inputs ==="
+CURRENT_PHASE="detect_inputs"
+while IFS='=' read -r key value; do
+  export "$key=$value"
+  echo "$key=$value"
+done < <(python - "$KAGGLE_INPUT_ROOT" <<'PY'
+from pathlib import Path
+import sys
+
+from glitch_detection.wob_kaggle_common import discover_r5_wob_input_overrides
+
+for key, value in discover_r5_wob_input_overrides(Path(sys.argv[1])).items():
+    print(f"{key}={value}")
+PY
+)
+
 run_stage() {
   local stage="$1"
   CURRENT_PHASE="$stage"
@@ -130,25 +146,25 @@ run_stage() {
     "${smoke_arg[@]}"
 }
 
-echo "=== 2. Preflight ==="
+echo "=== 3. Preflight ==="
 run_stage preflight
 
-echo "=== 3. Materialize Lance datasets ==="
+echo "=== 4. Materialize Lance datasets ==="
 run_stage materialize_lance
 
-echo "=== 4. Baseline scores ==="
+echo "=== 5. Baseline scores ==="
 run_stage baseline_scores
 
-echo "=== 5. LeWM seed42 ==="
+echo "=== 6. LeWM seed42 ==="
 run_stage lewm_seed42
 
-echo "=== 6. LeWM seed43 ==="
+echo "=== 7. LeWM seed43 ==="
 run_stage lewm_seed43
 
-echo "=== 7. LeWM seed44 ==="
+echo "=== 8. LeWM seed44 ==="
 run_stage lewm_seed44
 
-echo "=== 8. Aggregate metrics ==="
+echo "=== 9. Aggregate metrics ==="
 run_stage aggregate_metrics
 
 if [[ "$R5_WOB_SMOKE" == "1" ]]; then
@@ -158,10 +174,10 @@ if [[ "$R5_WOB_SMOKE" == "1" ]]; then
   exit 0
 fi
 
-echo "=== 9. Validate and package ==="
+echo "=== 10. Validate and package ==="
 run_stage validate_package
 
-echo "=== 10. Validate stage markers ==="
+echo "=== 11. Validate stage markers ==="
 CURRENT_PHASE="validate_stage_outputs"
 python scripts/validate_r5_wob_stage_outputs.py --output-dir "$R5_WOB_OUTPUT_DIR"
 

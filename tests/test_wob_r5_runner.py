@@ -40,6 +40,8 @@ def test_wob_r5_staged_runner_uses_stage_entrypoints():
     assert "lewm_seed44" in script
     assert "R5_WOB_BASELINE_BATCH_SIZE" in script
     assert "R5_WOB_LEWM_BATCH_SIZE" in script
+    assert "discover_r5_wob_input_overrides" in script
+    assert 'export "$key=$value"' in script
 
 
 def test_wob_r5_cloud_runner_captures_failures_before_output_exists():

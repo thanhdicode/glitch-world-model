@@ -53,7 +53,7 @@ from .r5_wob_eval import (
     build_r5_wob_report,
     summarize_source_coverage,
 )
-from .wob_kaggle_common import detect_kaggle_roots
+from .wob_kaggle_common import detect_kaggle_roots, resolve_wob_seed_input
 
 DEFAULT_INPUT_ROOT = Path("/kaggle/input")
 DEFAULT_SUCCESS_TAR = Path("/kaggle/working/r5_wob_identical_episode_outputs.tar.gz")
@@ -108,18 +108,8 @@ def _check_runtime_imports() -> dict[str, str]:
     }
 
 
-def _find_unique(root: Path, pattern: str) -> Path | None:
-    matches = sorted(path for path in root.rglob(pattern) if path.is_file())
-    return matches[0] if matches else None
-
-
-def _find_extracted_seed_root(input_root: Path, seed: int) -> Path | None:
-    expected = f"wob_seed{seed}_artifacts"
-    candidates = sorted(path for path in input_root.rglob(expected) if path.is_dir())
-    for candidate in candidates:
-        if (candidate / "wob_outputs" / f"wob_seed{seed}").is_dir():
-            return candidate
-    return None
+def _progress(message: str) -> None:
+    print(f"[r5_wob] {message}", flush=True)
 
 
 def _repack_seed_artifact(
@@ -137,20 +127,20 @@ def _repack_seed_artifact(
 
 
 def _resolve_seed_inputs(input_root: Path, *, seed: int, repack_root: Path) -> dict[str, str]:
-    tarball = _find_unique(input_root, f"wob_seed{seed}_artifacts.tar.gz")
-    sidecar = _find_unique(input_root, f"wob_seed{seed}_artifacts.tar.gz.sha256")
-    if tarball is not None and sidecar is not None:
+    resolved = resolve_wob_seed_input(input_root, seed=seed)
+    mode = str(resolved["mode"])
+    if mode == "direct_tarball":
+        tarball = Path(resolved["tarball"])
+        sidecar = Path(resolved["sidecar"])
         return {
             "seed": str(seed),
             "mode": "direct_tarball",
             "tarball": str(tarball),
             "sidecar": str(sidecar),
         }
-    extracted_root = _find_extracted_seed_root(input_root, seed)
-    if extracted_root is None:
-        raise FileNotFoundError(
-            f"Could not locate wob_seed{seed} artifact tarball or extracted artifact folder under {input_root}."
-        )
+    if mode != "extracted_root":
+        raise ValueError(f"Unsupported seed {seed} input mode: {mode}")
+    extracted_root = Path(resolved["source_root"])
     repacked_tarball, repacked_sidecar = _repack_seed_artifact(
         extracted_root,
         seed=seed,
@@ -324,28 +314,40 @@ def run_preflight(
 ) -> dict[str, Any]:
     cached = _maybe_skip(output_dir, "preflight", smoke=smoke, force=force)
     if cached is not None:
+        _progress("preflight: using cached stage marker")
         return cached
     output_dir.mkdir(parents=True, exist_ok=True)
+    _progress("preflight: validating frozen readiness and evaluation manifest")
     readiness, eval_rows = _validate_readiness_and_manifest(readiness_json, eval_manifest)
+    _progress("preflight: loading frozen train-normal split rows")
     train_rows = _load_train_rows(split_csv)
     resolved_eval_rows = _smoke_eval_rows(eval_rows) if smoke else eval_rows
+    _progress("preflight: resolving Kaggle normal/test dataset roots")
     normal_root, test_root = detect_kaggle_roots(input_root)
+    _progress(f"preflight: normal_root={normal_root}")
+    _progress(f"preflight: test_root={test_root}")
+    _progress("preflight: verifying staged runtime imports")
     runtime_imports = _check_runtime_imports()
     repack_root = output_dir / REPACK_ROOT_NAME
-    seed_inputs = {
-        seed: _resolve_seed_inputs(input_root, seed=seed, repack_root=repack_root)
-        for seed in SUPPORTED_SEEDS
-    }
+    seed_inputs: dict[int, dict[str, str]] = {}
+    for seed in SUPPORTED_SEEDS:
+        _progress(f"preflight: locating seed{seed} inputs")
+        seed_inputs[seed] = _resolve_seed_inputs(input_root, seed=seed, repack_root=repack_root)
+        _progress(f"preflight: seed{seed} mode={seed_inputs[seed]['mode']}")
+    _progress("preflight: validating and extracting seed artifacts")
     artifact_infos = _resolve_seed_artifacts(
         seed_tarballs={seed: Path(info["tarball"]) for seed, info in seed_inputs.items()},
         seed_sidecars={seed: Path(info["sidecar"]) for seed, info in seed_inputs.items()},
         extract_root=output_dir / EXTRACT_ROOT_NAME,
+        progress=_progress,
     )
+    _progress("preflight: verifying train-normal source coverage")
     train_coverage = summarize_source_coverage(
         train_rows,
         normal_root=normal_root,
         test_root=test_root,
     )
+    _progress("preflight: verifying frozen evaluation source coverage")
     eval_coverage = summarize_source_coverage(
         resolved_eval_rows,
         normal_root=normal_root,
@@ -385,6 +387,7 @@ def run_preflight(
         "locked_test_materialized": False,
         "locked_test_scored": False,
     }
+    _progress("preflight: writing stage marker")
     return _write_stage_marker(output_dir, stage="preflight", payload=payload)
 
 

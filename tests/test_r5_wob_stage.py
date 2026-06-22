@@ -25,6 +25,25 @@ def test_resolve_seed_inputs_repacks_extracted_seed_folder(tmp_path: Path):
         assert "wob_outputs/wob_seed42/training_metadata.json" in archive.getnames()
 
 
+def test_resolve_seed_inputs_direct_tarball_avoids_recursive_scan(tmp_path: Path, monkeypatch):
+    input_root = tmp_path / "input"
+    artifact_root = input_root / "wob-artifacts"
+    artifact_root.mkdir(parents=True)
+    (artifact_root / "wob_seed42_artifacts.tar.gz").write_bytes(b"seed42")
+    (artifact_root / "wob_seed42_artifacts.tar.gz.sha256").write_text("hash\n", encoding="utf-8")
+    repack_root = tmp_path / "repacked"
+
+    def explode(self: Path, pattern: str):
+        raise AssertionError(f"unexpected recursive scan for {self} / {pattern}")
+
+    monkeypatch.setattr(Path, "rglob", explode)
+
+    result = r5_wob_staged._resolve_seed_inputs(input_root, seed=42, repack_root=repack_root)
+
+    assert result["mode"] == "direct_tarball"
+    assert result["tarball"].endswith("wob_seed42_artifacts.tar.gz")
+
+
 def test_validate_stage_outputs_reports_missing_markers(tmp_path: Path):
     result = r5_wob_staged.validate_stage_outputs(tmp_path, smoke=False)
     assert result["stages"]["preflight"]["status"] == "missing"
