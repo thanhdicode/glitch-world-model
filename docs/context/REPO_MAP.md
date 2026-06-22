@@ -1,7 +1,7 @@
 # REPO_MAP.md
 
-Generated: 2026-06-22T17:38:45+00:00
-Commit: `2996309643abc7b1679c349634c1010af9455574`
+Generated: 2026-06-22T17:47:43+00:00
+Commit: `88f4211dfeda13404101172c8cb1504dbeb59c3d`
 Generator: `scripts/update_context_cache.py`
 
 ## Top-Level Map
@@ -35,6 +35,7 @@ Generator: `scripts/update_context_cache.py`
 | `scripts/assemble_r5_wob_from_stages.py` | build_parser, main | Python module. |
 | `scripts/audit_gate6_tempglitch_source.py` | build_parser, main | Python module. |
 | `scripts/audit_lewm_research_source.py` | build_parser, main | Python module. |
+| `scripts/audit_r5_xgame_split.py` | audit, build_parser, main | Audit an R5-XGame manifest and emit a machine-readable leakage report. |
 | `scripts/build_lewm_lance_dataset.py` | _read_split, build_lewm_lance_dataset, build_parser, main | Python module. |
 | `scripts/build_lewm_split.py` | _read_rows, _read_exposed, build_parser, main | Python module. |
 | `scripts/build_tempglitch_lewm_lance.py` | build_parser, main | Python module. |
@@ -51,6 +52,7 @@ Generator: `scripts/update_context_cache.py`
 | `scripts/download_glitchbench_subset.py` | fetch_rows, download_image, save_resized, main | Python module. |
 | `scripts/download_tempglitch.py` | build_parser, main | Python module. |
 | `scripts/evaluate_tempglitch_locked_test.py` | format_metric, read_video_rows, validate_locked_test_release, write_locked_metrics_markdown, build_parser, main | Python module. |
+| `scripts/freeze_r5_xgame_split.py` | build_r5_xgame_rows, write_rows, build_parser, main | Freeze a deterministic, non-locked R5-XGame manifest from the WOB source split. |
 | `scripts/freeze_tempglitch_protocol.py` | _sha256, _exposed_groups, build_parser, main | Python module. |
 | `scripts/freeze_wob_protocol.py` | _kaggle_csv, _sha256, build_parser, main | Python module. |
 | `scripts/ingest_phase6e_kaggle_artifacts.py` | _read_json, _validate_required_artifacts, _read_and_validate_scores, _write_report, ingest_phase6e_kaggle_artifacts, build_parser, main | Python module. |
@@ -172,6 +174,7 @@ Generator: `scripts/update_context_cache.py`
 | `scripts/assemble_r5_wob_from_stages.py` | CLI/helper script. | general |
 | `scripts/audit_gate6_tempglitch_source.py` | CLI/helper script. | general |
 | `scripts/audit_lewm_research_source.py` | CLI/helper script. | Gate 5 |
+| `scripts/audit_r5_xgame_split.py` | Audit an R5-XGame manifest and emit a machine-readable leakage report. | general |
 | `scripts/build_lewm_lance_dataset.py` | CLI/helper script. | Gate 5 |
 | `scripts/build_lewm_split.py` | CLI/helper script. | Gate 5 |
 | `scripts/build_tempglitch_lewm_lance.py` | CLI/helper script. | Gate 5 |
@@ -188,6 +191,7 @@ Generator: `scripts/update_context_cache.py`
 | `scripts/download_glitchbench_subset.py` | CLI/helper script. | general |
 | `scripts/download_tempglitch.py` | CLI/helper script. | general |
 | `scripts/evaluate_tempglitch_locked_test.py` | CLI/helper script. | general |
+| `scripts/freeze_r5_xgame_split.py` | Freeze a deterministic, non-locked R5-XGame manifest from the WOB source split. | general |
 | `scripts/freeze_tempglitch_protocol.py` | CLI/helper script. | general |
 | `scripts/freeze_wob_protocol.py` | CLI/helper script. | general |
 | `scripts/ingest_phase6e_kaggle_artifacts.py` | CLI/helper script. | Gate 5 |
@@ -244,8 +248,6 @@ Generator: `scripts/update_context_cache.py`
 | `scripts/validate_r5_wob_evaluation.py` | CLI/helper script. | general |
 | `scripts/validate_r5_wob_stage_outputs.py` | CLI/helper script. | general |
 | `scripts/validate_r5_xgame_comparison.py` | Validate an R5-XGAME cross-dataset comparison output directory. | general |
-| `scripts/validate_r6_ablations.py` | Validate R6 ablation outputs. | general |
-| `scripts/validate_research_release.py` | CLI/helper script. | general |
 
 ## Tests
 | Test | Coverage |
