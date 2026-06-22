@@ -35,11 +35,18 @@ def evaluate_r5_xgame_binary_scores(
         )
     predictions = [int(score >= threshold) for score in scores]
     classification = binary_metrics(list(labels), predictions)
+    true_positive = classification["true_positive"]
+    false_positive = classification["false_positive"]
+    false_negative = classification["false_negative"]
+    true_negative = classification["true_negative"]
+    true_positive_rate = true_positive / (true_positive + false_negative)
+    true_negative_rate = true_negative / (true_negative + false_positive)
     return {
         "auroc": float(auroc(list(labels), list(scores))),
         "auprc": float(average_precision(list(labels), list(scores))),
         "f1": float(classification["f1"]),
         "precision": float(classification["precision"]),
         "recall": float(classification["recall"]),
+        "balanced_accuracy": (true_positive_rate + true_negative_rate) / 2,
         "fpr_at_95_tpr": _fpr_at_95_tpr(labels, scores),
     }

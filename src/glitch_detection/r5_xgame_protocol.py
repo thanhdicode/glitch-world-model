@@ -39,12 +39,14 @@ def validate_r5_xgame_manifest(rows: Iterable[Mapping[str, str]]) -> dict[str, i
     counts: dict[str, int] = defaultdict(int)
     seen_episodes: dict[str, str] = {}
     seen_groups: dict[str, str] = {}
+    seen_sources: dict[str, str] = {}
     for row in materialized_rows:
         role = row["evaluation_role"].strip()
         label = row["label"].strip()
         split = row["split"].strip()
         episode_id = row["episode_id"].strip()
         group_id = row["pair_id"].strip() or episode_id
+        source = row["source"].strip()
         if role not in NONLOCKED_ROLES:
             raise ValueError(f"R5-XGame forbids role {role!r} in its non-locked manifest.")
         if split == "test" or role == LOCKED_ROLE:
@@ -55,7 +57,13 @@ def validate_r5_xgame_manifest(rows: Iterable[Mapping[str, str]]) -> dict[str, i
             raise ValueError(f"Role {role} must contain only Normal rows.")
         if role == BUGGY_EVAL_ROLE and label != "Buggy":
             raise ValueError("evaluation_buggy_positive must contain only Buggy rows.")
-        for key, seen in ((episode_id, seen_episodes), (group_id, seen_groups)):
+        if not source:
+            raise ValueError("R5-XGame rows require a non-empty source.")
+        for key, seen in (
+            (episode_id, seen_episodes),
+            (group_id, seen_groups),
+            (source, seen_sources),
+        ):
             previous_role = seen.get(key)
             if previous_role is not None and previous_role != role:
                 raise ValueError(

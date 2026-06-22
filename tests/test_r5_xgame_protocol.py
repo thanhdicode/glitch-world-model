@@ -64,6 +64,28 @@ def test_r5_xgame_protocol_rejects_calibration_evaluation_overlap():
         validate_r5_xgame_manifest(rows)
 
 
+def test_r5_xgame_protocol_rejects_source_overlap():
+    rows = _rows()
+    rows[2]["source"] = "cal"
+    with pytest.raises(ValueError, match="leakage"):
+        validate_r5_xgame_manifest(rows)
+
+
+def test_r5_xgame_protocol_rejects_pair_overlap():
+    rows = _rows()
+    rows[2]["pair_id"] = "p2"
+    with pytest.raises(ValueError, match="leakage"):
+        validate_r5_xgame_manifest(rows)
+
+
+@pytest.mark.parametrize("role", ["train_normal", "calibration_normal"])
+def test_r5_xgame_protocol_rejects_buggy_fit_rows(role: str):
+    rows = _rows()
+    next(row for row in rows if row["evaluation_role"] == role)["label"] = "Buggy"
+    with pytest.raises(ValueError, match="must contain only Normal"):
+        validate_r5_xgame_manifest(rows)
+
+
 def test_r5_xgame_protocol_rejects_locked_test_row():
     rows = _rows()
     rows[3]["split"] = "test"

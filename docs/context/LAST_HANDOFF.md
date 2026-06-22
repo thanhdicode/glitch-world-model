@@ -1,10 +1,18 @@
 # LAST_HANDOFF.md
 
-Last completed task: validated R5-WOB success intake and R5-XGame protocol preparation
+Last completed task: R5-XGame metadata split freeze and leakage audit
 Commit: pending task commit
 Date: 2026-06-22
 
 ## What Changed
+
+- Completed Phase B metadata preparation: froze `configs/wob_protocol/r5_xgame_split.csv` from the audited WOB source split with 36 train-normal, 12 calibration-normal, 12 held-out normal-negative, and 60 buggy-positive rows.
+- Added deterministic split freezing and leakage audit scripts. The audit reports zero cross-role episode, pair, and source conflicts; all 59 WOB test rows remain excluded.
+- Extended R5-XGame protocol checks for source overlap and added balanced accuracy to the guarded binary-metric wrapper.
+- Added input triage, split freeze, leakage audit, metrics contract, runbook, and Phase B execution report documentation; registered the metadata-only claim as C-080.
+- No data was materialized or scored. Existing R5-WOB checkpoints cannot be reused because they trained on the 12 newly held-out normal negatives; fresh normal-only seed42/43/44 artifacts are required.
+
+## Prior R5-WOB Intake Context
 
 - Verified the downloaded R5-WOB success tarball SHA256 and passed the repository offline intake validator. The validated bundle hash is `6b08c2cf07ed71a55f71fb0e288a445f460309b98f479e21eba13f8722ba2274`.
 - Confirmed the frozen 72-row manifest has 12 calibration-normal and 60 buggy-positive episodes, with zero normal evaluation negatives; locked test remains unmaterialized and unscored.
