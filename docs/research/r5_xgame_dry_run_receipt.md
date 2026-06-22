@@ -2,8 +2,8 @@
 
 ## Result
 
-`SAFE_TO_RUN_KAGGLE=false`.
+Local dry-run result: `SAFE_TO_RUN_KAGGLE=false` because this workstation does not have Kaggle-mounted WOB tar archives.
 
-The frozen manifest and leakage audit pass, but no live scoring path exists. The exact missing inputs are: a staged R5-XGame materialize/train/score implementation; fresh seed42/43/44 artifacts trained on the frozen 36-row train partition; and Kaggle-mounted WOB archives resolving every frozen non-locked source.
+The frozen manifest and leakage audit pass, and the staged live scorer now exists. The remaining local missing input is Kaggle-mounted WOB archive coverage resolving every frozen non-locked source.
 
 No data was materialized, no checkpoint was loaded, no score was computed, and locked test remained untouched.

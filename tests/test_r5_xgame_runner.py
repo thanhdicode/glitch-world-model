@@ -1,7 +1,11 @@
 from __future__ import annotations
 
 import importlib.util
+import json
+import tarfile
 from pathlib import Path
+
+import pytest
 
 
 def _runner():
@@ -39,3 +43,62 @@ def test_preflight_resolves_all_sources_from_a_matching_root(tmp_path: Path):
     result = runner.preflight(manifest, tmp_path, tmp_path / "out", [42, 43, 44])
     assert result["status"] == "preflight_complete"
     assert not any(result["missing_by_role"].values())
+
+
+def test_preflight_rejects_old_r5_wob_artifact_roots(tmp_path: Path):
+    runner = _runner()
+    input_root = tmp_path / "input"
+    (input_root / "r5_wob_seed42_artifacts").mkdir(parents=True)
+    with pytest.raises(ValueError, match="R5-WOB"):
+        runner.preflight(
+            Path("configs/wob_protocol/r5_xgame_split.csv"),
+            input_root,
+            tmp_path / "out",
+            [42, 43, 44],
+        )
+
+
+def test_package_writes_tarball_and_sidecar(tmp_path: Path, monkeypatch):
+    runner = _runner()
+    manifest = Path("configs/wob_protocol/r5_xgame_split.csv")
+    output = tmp_path / "out"
+    output.mkdir()
+    for name in runner.PLANNED_OUTPUTS:
+        if name.endswith(".tar.gz") or name.endswith(".sha256"):
+            continue
+        (output / name).write_text("x\n", encoding="utf-8")
+    (output / "r5_xgame_metrics.json").write_text(
+        json.dumps(
+            {
+                "summary_row": {
+                    "method": "frame_diff",
+                    "seed": "",
+                    "window_scorer": "frame_diff",
+                    "episode_aggregation": "mean",
+                }
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(
+        runner,
+        "runtime_provenance",
+        lambda include_lewm: {"git_sha": "abc"} if not include_lewm else {"git_sha": "abc"},
+    )
+    result = runner.run_package(manifest=manifest, output_dir=output)
+    assert result["status"] == "package_complete"
+    assert (output / "r5_xgame_outputs.tar.gz").is_file()
+    assert (output / "r5_xgame_outputs.tar.gz.sha256").is_file()
+    with tarfile.open(output / "r5_xgame_outputs.tar.gz", "r:gz") as archive:
+        assert "r5_xgame_manifest.csv" in archive.getnames()
+
+
+def test_kaggle_launch_script_and_required_input_doc_exist():
+    script = Path("cloud/wob_r5_xgame/run_kaggle_r5_xgame_staged.sh")
+    doc = Path("docs/research/r5_xgame_required_kaggle_inputs.md")
+    assert script.is_file()
+    text = doc.read_text(encoding="utf-8")
+    assert "benedictwilkinsai/world-of-bugs-normal" in text
+    assert "benedictwilkinsai/world-of-bugs-test" in text
+    assert "NORMAL-TRAIN/" in text
+    assert "TEST/" in text

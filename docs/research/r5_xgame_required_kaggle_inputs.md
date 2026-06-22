@@ -1,25 +1,41 @@
 # R5-XGame Required Kaggle Inputs
 
-## Required Mounted Roots
+R5-XGame is a fresh four-role World of Bugs validation run. It must not mount or reuse any old
+R5-WOB seed artifacts, checkpoints, or output bundles.
 
-- Attach Kaggle dataset `benedictwilkinsai/world-of-bugs-normal`, expected below `/kaggle/input/.../NORMAL-TRAIN/`.
-- Attach Kaggle dataset `benedictwilkinsai/world-of-bugs-test`, expected below `/kaggle/input/.../TEST/`.
+## Required Kaggle Datasets
 
-## Role Resolution
+| Purpose | Kaggle dataset slug | Expected root under `/kaggle/input` | Required path pattern |
+| --- | --- | --- | --- |
+| Normal train/calibration/evaluation rows | `benedictwilkinsai/world-of-bugs-normal` | A mounted root containing `NORMAL-TRAIN/` | `NORMAL-TRAIN/ep-*/ep-*.tar` |
+| Buggy validation-positive rows | `benedictwilkinsai/world-of-bugs-test` | A mounted root containing `TEST/` | `TEST/ep-*/ep-*.tar` |
 
-| Role | Root | Archive count |
-| --- | --- | ---: |
-| train-normal | normal | 36 |
-| calibration-normal | normal | 12 |
-| evaluation-normal-negative | normal | 12 |
-| evaluation-buggy-positive | test dataset, validation rows only | 60 |
+The resolver also honors `NORMAL_INPUT_ROOT` and `TEST_INPUT_ROOT` environment overrides when a
+Kaggle mount layout is unusual.
 
-The frozen manifest excludes all 59 WOB `test` rows. Locked-test inputs are neither required nor
-permitted. Fresh checkpoints are outputs of the future Kaggle run, not mounted inputs; old
-R5-WOB artifacts must not be attached.
+## Frozen Manifest Coverage
 
-## Kaggle Preflight
+| Role | Label | Source root | Archive count | Used for |
+| --- | --- | --- | ---: | --- |
+| `train_normal` | Normal | `NORMAL-TRAIN/` | 36 | Fresh seed42/43/44 LeWM training only |
+| `calibration_normal` | Normal | `NORMAL-TRAIN/` | 12 | Threshold calibration only |
+| `evaluation_normal_negative` | Normal | `NORMAL-TRAIN/` | 12 | Binary evaluation negatives |
+| `evaluation_buggy_positive` | Buggy | `TEST/` | 60 | Binary evaluation positives |
+
+The 59 excluded WOB test rows are not needed. Locked test is not needed and must not be attached,
+materialized, or scored.
+
+## Kaggle Preflight Command
 
 ```bash
-python scripts/run_r5_xgame_staged.py --manifest configs/wob_protocol/r5_xgame_split.csv --input-root /kaggle/input --stage preflight
+cd /kaggle/working/glitch-world-model
+python scripts/run_r5_xgame_staged.py \
+  --manifest configs/wob_protocol/r5_xgame_split.csv \
+  --input-root /kaggle/input \
+  --output-dir /kaggle/working/r5_xgame \
+  --stage preflight
 ```
+
+Expected success: `status` is `preflight_complete`, role counts are `36/12/12/60`, and every
+`missing_count` is zero. If any old `r5_wob`, `wob_seed*_artifacts`, or checkpoint-looking dataset is
+mounted, the run must stop before training.

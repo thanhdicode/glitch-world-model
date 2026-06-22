@@ -1,7 +1,7 @@
 # REPO_MAP.md
 
-Generated: 2026-06-22T17:47:43+00:00
-Commit: `88f4211dfeda13404101172c8cb1504dbeb59c3d`
+Generated: 2026-06-22T18:22:56+00:00
+Commit: `e09f596f98427daefc709b081dc8f5effd628ee7`
 Generator: `scripts/update_context_cache.py`
 
 ## Top-Level Map
@@ -85,7 +85,7 @@ Generator: `scripts/update_context_cache.py`
 | `scripts/run_r5_wob_identical_episode_evaluation.py` | - | Python module. |
 | `scripts/run_r5_wob_stage.py` | - | Python module. |
 | `scripts/run_r5_xgame_comparison.py` | _load_metrics, _sha256_file, _validate_wob_output, _extract_best_rows, build_comparison_table, write_comparison_csv, write_provenance, build_parser, main | R5-XGAME: Cross-dataset comparison of TempGlitch R5 and WOB R5 results. |
-| `scripts/run_r5_xgame_staged.py` | build_parser, main | Validate the R5-XGame split contract before any live evaluation is authorized. |
+| `scripts/run_r5_xgame_staged.py` | _sha256, _read_manifest, _role_hash, _validate_counts, _normalize_rows, _resolve_source_path, _coverage, _reject_old_r5_wob_inputs, _stage_marker_path, _file_record, _write_stage_marker, _load_stage_marker | Fail-closed staged entrypoint for the four-role R5-XGame protocol. |
 | `scripts/run_r6_tempglitch_ablations.py` | run_aggregation_ablation, run_cpu_ablation, build_parser, main | R6 TempGlitch ablation runner. |
 | `scripts/run_r6_wob_ablations.py` | build_parser, main | R6 WOB ablation runner. |
 | `scripts/run_synthetic_demo.py` | write_synthetic_frames, write_synthetic_labels, main | Python module. |
@@ -109,6 +109,7 @@ Generator: `scripts/update_context_cache.py`
 | `scripts/validate_r5_wob_evaluation.py` | _read_json, _read_csv, _assert, _finite_or_blank, validate_r5_wob, hashlib_sha256, build_parser, main | Python module. |
 | `scripts/validate_r5_wob_stage_outputs.py` | build_parser, main | Python module. |
 | `scripts/validate_r5_xgame_comparison.py` | validate_r5_xgame, build_parser, main | Validate an R5-XGAME cross-dataset comparison output directory. |
+| `scripts/validate_r5_xgame_output_bundle.py` | sha256, _expected_sha256, _verify_sidecar, _safe_extract, _read_csv, _require_metrics, _validate_evaluation_classes, _validate_provenance, validate_output_dir, validate_tarball, build_parser, main | Fail-closed validator for a completed R5-XGame output directory or tarball. |
 | `scripts/validate_r6_ablations.py` | validate_r6, build_parser, main | Validate R6 ablation outputs. |
 | `scripts/validate_research_release.py` | git_tracked_files, validate_tracked_files, validate_required_paths, validate_playbook_structure, validate_release, working_tree_errors, build_parser, main | Python module. |
 | `scripts/validate_wob_expansion_readiness.py` | _read_json, _assert, _sha256_bytes, _read_manifest_rows, validate_readiness, build_parser, main | Validate the frozen seed42 non-locked World of Bugs evaluation-readiness bundle. |
@@ -154,6 +155,7 @@ Generator: `scripts/update_context_cache.py`
 | `src/glitch_detection/r5_tempglitch_eval.py` | _read_json, _load_script_module, _write_json, _write_sha256, _percentile, _aggregate, _float_text, _fpr_at_95_tpr, refuse_locked_test_path, parse_seed_artifact_roots, resolve_seed_artifact, planned_output_paths | Python module. |
 | `src/glitch_detection/r5_wob_eval.py` | _load_script_module, _read_json, _read_csv_rows, _write_json, _write_report, _parse_keyed_paths, _render_eval_manifest, _validate_readiness_and_manifest, _load_train_rows, _resolve_source_path, summarize_source_coverage, _build_lance_from_rows | Python module. |
 | `src/glitch_detection/r5_wob_staged.py` | _stage_marker_path, _path_sha256, _file_record, _check_runtime_imports, _progress, _repack_seed_artifact, _resolve_seed_inputs, _build_window_manifest, _release_cuda_memory, _smoke_eval_rows, _write_stage_marker, _load_stage_marker | Python module. |
+| `src/glitch_detection/r5_xgame_live.py` | partition_manifest_rows, training_roles, train_fresh_seed | Four-role R5-XGame materialization contracts used by the staged runner. |
 | `src/glitch_detection/r5_xgame_metrics.py` | _fpr_at_95_tpr, evaluate_r5_xgame_binary_scores | Binary episode-level metrics guarded against one-class evaluation. |
 | `src/glitch_detection/r5_xgame_protocol.py` | validate_r5_xgame_manifest | Fail-closed protocol checks for the non-locked R5-XGame evaluation. |
 | `src/glitch_detection/repeated_eval.py` | FittedScorer, train_normal_records, fit_scorer_for_split, score_fitted_scorer, clip_score_rows, write_clip_scores_csv, split_rows_as_dicts, source_labels_for_split, build_video_rows | Python module. |
@@ -224,7 +226,7 @@ Generator: `scripts/update_context_cache.py`
 | `scripts/run_r5_wob_identical_episode_evaluation.py` | CLI/helper script. | general |
 | `scripts/run_r5_wob_stage.py` | CLI/helper script. | general |
 | `scripts/run_r5_xgame_comparison.py` | R5-XGAME: Cross-dataset comparison of TempGlitch R5 and WOB R5 results. | general |
-| `scripts/run_r5_xgame_staged.py` | Validate the R5-XGame split contract before any live evaluation is authorized. | general |
+| `scripts/run_r5_xgame_staged.py` | Fail-closed staged entrypoint for the four-role R5-XGame protocol. | general |
 | `scripts/run_r6_tempglitch_ablations.py` | R6 TempGlitch ablation runner. | general |
 | `scripts/run_r6_wob_ablations.py` | R6 WOB ablation runner. | general |
 | `scripts/run_synthetic_demo.py` | CLI/helper script. | general |
@@ -316,8 +318,10 @@ Generator: `scripts/update_context_cache.py`
 | `tests/test_r5_wob_postrun.py` | r5_wob_postrun |
 | `tests/test_r5_wob_script_entrypoints.py` | r5_wob_script_entrypoints |
 | `tests/test_r5_wob_stage.py` | r5_wob_stage |
+| `tests/test_r5_xgame_live.py` | r5_xgame_live |
 | `tests/test_r5_xgame_metrics.py` | r5_xgame_metrics |
 | `tests/test_r5_xgame_protocol.py` | r5_xgame_protocol |
+| `tests/test_r5_xgame_runner.py` | r5_xgame_runner |
 | `tests/test_repeated_eval.py` | repeated_eval |
 | `tests/test_repeated_grouped_runner.py` | repeated_grouped_runner |
 | `tests/test_research_release_tools.py` | research_release_tools |
@@ -330,6 +334,7 @@ Generator: `scripts/update_context_cache.py`
 | `tests/test_tempglitch.py` | tempglitch |
 | `tests/test_tempglitch_split_runner.py` | tempglitch_split_runner |
 | `tests/test_validate_r5_wob_evaluation.py` | validate_r5_wob_evaluation |
+| `tests/test_validate_r5_xgame_output_bundle.py` | validate_r5_xgame_output_bundle |
 | `tests/test_verify_wob_p0_kaggle_evidence.py` | verify_wob_p0_kaggle_evidence |
 | `tests/test_video_autoencoder.py` | video_autoencoder |
 | `tests/test_video_eval.py` | video_eval |

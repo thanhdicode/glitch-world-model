@@ -47,5 +47,6 @@ def test_train_fresh_seed_uses_role_specific_paths(tmp_path, monkeypatch):
     )
     assert result["status"] == "ok"
     assert captured["config"].seed == 42
+    assert captured["config"].target_optimizer_updates == 15000
     assert captured["calibration"].name == "calibration.lance"
     assert captured["resume"] is True

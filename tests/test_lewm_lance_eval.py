@@ -166,9 +166,7 @@ def test_score_alignment_rejects_reordered_or_non_finite_scores():
 
 
 def test_iter_metadata_samples_reads_each_window_once_without_pixels():
-    dataset = _FakeDataset(
-        [_full_sample("normal-a", "Normal"), _full_sample("normal-b", "Normal")]
-    )
+    dataset = _FakeDataset([_full_sample("normal-a", "Normal"), _full_sample("normal-b", "Normal")])
 
     samples = list(iter_metadata_samples(dataset))
 
@@ -261,7 +259,9 @@ def test_build_canonical_manifest_streams_metadata_only(monkeypatch):
         return (normal, True) if "normal" in str(path) else (buggy, True)
 
     monkeypatch.setattr(lewm, "open_metadata_dataset", fake_open)
-    monkeypatch.setattr(lewm.FingerprintBuilder, "inventory_sha256", staticmethod(lambda path: "fp"))
+    monkeypatch.setattr(
+        lewm.FingerprintBuilder, "inventory_sha256", staticmethod(lambda path: "fp")
+    )
 
     rows, fingerprints = build_canonical_manifest(
         Path("normal.lance"),
@@ -274,7 +274,9 @@ def test_build_canonical_manifest_streams_metadata_only(monkeypatch):
     assert buggy.read_indices == [0]
     assert "pixels" not in normal.accessed_keys + buggy.accessed_keys
     assert "action" not in normal.accessed_keys + buggy.accessed_keys
-    calibration = {row["source_episode_id"] for row in rows if row["evaluation_role"] == "calibration_normal"}
+    calibration = {
+        row["source_episode_id"] for row in rows if row["evaluation_role"] == "calibration_normal"
+    }
     assert len(calibration) == 2
     assert all(row["evaluation_role"] == "evaluation" for row in rows if row["label"] == "Buggy")
     assert set(fingerprints) == {"normal_validation", "buggy_probe"}
@@ -298,5 +300,5 @@ def test_resource_telemetry_records_and_persists(tmp_path):
 def test_capture_resource_usage_returns_bounded_snapshot():
     snapshot = capture_resource_usage()
 
-    assert snapshot["source"] in {"psutil", "resource.getrusage"}
+    assert snapshot["source"] in {"psutil", "resource.getrusage", "tracemalloc"}
     assert any(key in snapshot for key in ("rss_bytes", "max_rss_kib"))

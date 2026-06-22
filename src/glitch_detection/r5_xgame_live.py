@@ -61,9 +61,10 @@ def train_fresh_seed(
     config = LeWMTrainConfig(
         seed=seed,
         run_kind="research",
-        target_optimizer_updates=500,
-        evaluation_interval_updates=50,
-        checkpoint_interval_updates=50,
+        target_optimizer_updates=15000,
+        evaluation_interval_updates=500,
+        checkpoint_interval_updates=500,
+        early_stopping_patience=5,
         mixed_precision=device == "cuda",
     )
     return train_lewm(

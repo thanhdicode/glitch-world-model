@@ -1,27 +1,26 @@
 # NEXT_ACTION.md
 
-Last updated: 2026-06-22T17:47:43+00:00
-Commit: `88f4211dfeda13404101172c8cb1504dbeb59c3d`
+Last updated: 2026-06-22T18:22:56+00:00
+Commit: `e09f596f98427daefc709b081dc8f5effd628ee7`
 
 ## Current Priority
-Wait for the staged non-locked R5-WOB Kaggle run to finish, then take exactly one offline intake
-path below. The repository has no validated WOB evaluation result yet. Keep R5-XGAME, WOB R6,
-and locked test closed until the named prerequisites pass.
+Run the staged non-locked R5-XGame Kaggle package with the required World of Bugs normal/test
+datasets mounted, then validate the downloaded success bundle locally before recording any metric.
+The repository has no validated R5-XGame result yet. Keep WOB R6 and locked test closed until the
+named prerequisites pass.
 
-## Success Next Action
-1. Download `r5_wob_identical_episode_outputs.tar.gz` and its `.sha256` sidecar.
-2. Run `scripts/verify_r5_wob_upload.py` with an empty `--extract-dir` outside the repository.
-3. Require `VALID_OUTPUT_BUNDLE`, a direct `validate_r5_wob_evaluation.py` pass, and the generated
-   `r5_wob_validation_receipt.json` before summarizing metrics or updating claims.
-4. Only then prepare a separately authorized R5-XGAME run using the validated metrics and receipt.
+## Kaggle Run Next Action
+1. Open Kaggle with GPU enabled.
+2. Attach `benedictwilkinsai/world-of-bugs-normal` and `benedictwilkinsai/world-of-bugs-test`.
+3. Run `bash cloud/wob_r5_xgame/run_kaggle_r5_xgame_staged.sh` from the repository root.
+4. Download `r5_xgame_outputs.tar.gz`, `r5_xgame_outputs.tar.gz.sha256`, and the Kaggle log.
 
-## Failure Next Action
-1. Download `r5_wob_identical_episode_failure_debug.tar.gz` and its `.sha256` sidecar plus the
-   Kaggle console tail if available.
-2. Run `scripts/verify_r5_wob_upload.py` with `--failure-debug-tarball` and
-   `--failure-debug-sha256-file`.
-3. Record `failed_stage`, `failure_class`, and the last completed stage marker.
-4. Patch and test only the direct cause; do not reuse partial outputs as evidence.
+## Intake Next Action
+1. Run `scripts/validate_r5_xgame_output_bundle.py` with the downloaded tarball, sidecar, and
+   `configs/wob_protocol/r5_xgame_split.csv`.
+2. Require `r5_xgame_tarball_validated` before summarizing metrics or updating claims.
+3. On failure, keep the bundle out of evidence, preserve the Kaggle log, classify the failed stage,
+   and patch only the direct cause.
 
 ## Success Criteria
 - Preserve the completed R5 manifest, score, metric, and provenance hashes.
@@ -35,16 +34,16 @@ and locked test closed until the named prerequisites pass.
   `c5b3178cdb75a0c1f9bcca78eba8beaaf21ffa703917a3f42c476563849fd041`.
 - Keep the seed42 non-locked WOB evaluation manifest, reporting paths, and claim boundary frozen
   during evaluation execution.
-- Use Kaggle-mounted official WOB inputs for real `R5-WOB` execution because the current local
+- Use Kaggle-mounted official WOB inputs for real `R5-XGame` execution because the current local
   machine lacks the full raw tar coverage required for a valid run.
 - Keep locked-test materialization/scoring false.
-- Make no WOB performance, cross-game, action-conditioning, or SIGReg-benefit claim until the
-  corresponding evaluation or ablation artifacts exist.
+- Make no R5-XGame/WOB performance, cross-game, action-conditioning, or SIGReg-benefit claim until
+  the corresponding evaluation or ablation artifacts exist.
 - Keep TempGlitch CPU-safe R6 items at `PREPARABLE_NOT_RUN` and every WOB R6 item at
-  `BLOCKED_R5_WOB_VALIDATION`.
+  `BLOCKED_R5_XGAME_VALIDATION`.
 
 ## Current Known Blocker
-R5 is complete for the non-locked TempGlitch family. R5-WOB remains unverified until a downloaded
-success bundle passes SHA256, safe extraction, and the frozen validator. Without that receipt,
-R5-XGAME, all WOB ablations, WOB paper metrics, and WOB performance claims remain blocked. A
-failure bundle opens only a minimal repair/retry path, not a result path. Locked test stays closed.
+R5 is complete for the non-locked TempGlitch family. R5-XGame remains unverified until a human-run
+Kaggle success bundle passes SHA256, safe extraction, and the frozen validator. Without that
+receipt, all WOB ablations, WOB paper metrics, and WOB/R5-XGame performance claims remain blocked.
+A failure bundle opens only a minimal repair/retry path, not a result path. Locked test stays closed.

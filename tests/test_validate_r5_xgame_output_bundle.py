@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import csv
 import importlib.util
 import json
 import shutil
+import tarfile
 from pathlib import Path
 
 import pytest
@@ -18,6 +20,7 @@ def _load_validator():
 
 
 def _valid_output(tmp_path: Path) -> tuple[Path, Path]:
+    validator = _load_validator()
     frozen = Path("configs/wob_protocol/r5_xgame_split.csv")
     output = tmp_path / "output"
     output.mkdir()
@@ -25,15 +28,73 @@ def _valid_output(tmp_path: Path) -> tuple[Path, Path]:
     for name in (
         "r5_xgame_window_manifest.csv",
         "r5_xgame_baseline_scores.csv",
-        "r5_xgame_episode_scores.csv",
         "r5_xgame_comparison.csv",
     ):
         (output / name).write_text("value\n", encoding="utf-8")
     for seed in (42, 43, 44):
-        (output / f"r5_xgame_lewm_scores_seed{seed}.csv").write_text("value\n", encoding="utf-8")
+        (output / f"r5_xgame_lewm_scores_seed{seed}.csv").write_text(
+            "window_id,mse_t1,mse_t2,mse_t3,l2_t1,l2_t2,l2_t3\n",
+            encoding="utf-8",
+        )
+    with (output / "r5_xgame_episode_scores.csv").open("w", encoding="utf-8", newline="") as handle:
+        writer = csv.DictWriter(
+            handle,
+            fieldnames=[
+                "method_family",
+                "method",
+                "window_scorer",
+                "seed",
+                "episode_aggregation",
+                "source_episode_id",
+                "source",
+                "pair_id",
+                "category",
+                "label",
+                "dataset_name",
+                "evaluation_role",
+                "window_count",
+                "score",
+            ],
+        )
+        writer.writeheader()
+        writer.writerow(
+            {
+                "method_family": "baseline",
+                "method": "frame_diff",
+                "window_scorer": "frame_diff",
+                "seed": "",
+                "episode_aggregation": "mean",
+                "source_episode_id": "normal/eval",
+                "source": "NORMAL-TRAIN/eval.tar",
+                "pair_id": "normal/eval",
+                "category": "world_of_bugs",
+                "label": "Normal",
+                "dataset_name": "normal_validation",
+                "evaluation_role": "evaluation",
+                "window_count": "1",
+                "score": "0.1",
+            }
+        )
+        writer.writerow(
+            {
+                "method_family": "baseline",
+                "method": "frame_diff",
+                "window_scorer": "frame_diff",
+                "seed": "",
+                "episode_aggregation": "mean",
+                "source_episode_id": "buggy/eval",
+                "source": "TEST/eval.tar",
+                "pair_id": "buggy/eval",
+                "category": "world_of_bugs",
+                "label": "Buggy",
+                "dataset_name": "buggy_probe",
+                "evaluation_role": "evaluation",
+                "window_count": "1",
+                "score": "0.9",
+            }
+        )
     (output / "R5_XGAME_REPORT.md").write_text("report\n", encoding="utf-8")
-    (output / "stage_preflight.json").write_text("{}\n", encoding="utf-8")
-    manifest_hash = _load_validator().sha256(frozen)
+    manifest_hash = validator.sha256(frozen)
     (output / "r5_xgame_metrics.json").write_text(
         json.dumps(
             {
@@ -44,6 +105,10 @@ def _valid_output(tmp_path: Path) -> tuple[Path, Path]:
                 "recall": 0.5,
                 "fpr_at_95_tpr": 0.5,
                 "balanced_accuracy": 0.5,
+                "results": [{"method": "frame_diff"}],
+                "locked_test_materialized": False,
+                "locked_test_scored": False,
+                "validation_buggy_used_for_fit_select": False,
             }
         ),
         encoding="utf-8",
@@ -53,7 +118,12 @@ def _valid_output(tmp_path: Path) -> tuple[Path, Path]:
             {
                 "git_commit": "abc",
                 "manifest_sha256": manifest_hash,
-                "role_counts": {"train_normal": 36},
+                "role_counts": {
+                    "train_normal": 36,
+                    "calibration_normal": 12,
+                    "evaluation_normal_negative": 12,
+                    "evaluation_buggy_positive": 60,
+                },
                 "seeds": [42, 43, 44],
                 "train_role_sha256": "a",
                 "calibration_role_sha256": "b",
@@ -64,6 +134,18 @@ def _valid_output(tmp_path: Path) -> tuple[Path, Path]:
                 "old_r5_wob_checkpoint_reused": False,
             }
         ),
+        encoding="utf-8",
+    )
+    for name in validator.REQUIRED_STAGE_MARKERS:
+        (output / name).write_text("{}\n", encoding="utf-8")
+    tarball = output / "r5_xgame_outputs.tar.gz"
+    with tarfile.open(tarball, "w:gz") as archive:
+        for path in sorted(output.iterdir()):
+            if path.name == tarball.name or path.suffix == ".sha256":
+                continue
+            archive.add(path, arcname=path.name)
+    (output / "r5_xgame_outputs.tar.gz.sha256").write_text(
+        f"{validator.sha256(tarball)}  {tarball.name}\n",
         encoding="utf-8",
     )
     return output, frozen
@@ -82,6 +164,20 @@ def test_validator_accepts_minimal_safe_structure(tmp_path: Path):
     assert result["status"] == "r5_xgame_output_validated"
 
 
+def test_validator_rejects_one_class_evaluation(tmp_path: Path):
+    validator = _load_validator()
+    output, frozen = _valid_output(tmp_path)
+    rows = list(csv.DictReader((output / "r5_xgame_episode_scores.csv").open(encoding="utf-8")))
+    for row in rows:
+        row["label"] = "Normal"
+    with (output / "r5_xgame_episode_scores.csv").open("w", encoding="utf-8", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=rows[0].keys())
+        writer.writeheader()
+        writer.writerows(rows)
+    with pytest.raises(ValueError, match="both evaluation classes"):
+        validator.validate_output_dir(output, frozen)
+
+
 def test_validator_rejects_unsafe_provenance(tmp_path: Path):
     validator = _load_validator()
     output, frozen = _valid_output(tmp_path)
@@ -91,3 +187,14 @@ def test_validator_rejects_unsafe_provenance(tmp_path: Path):
     provenance_path.write_text(json.dumps(provenance), encoding="utf-8")
     with pytest.raises(ValueError, match="Old R5-WOB"):
         validator.validate_output_dir(output, frozen)
+
+
+def test_validator_accepts_tarball_pair(tmp_path: Path):
+    validator = _load_validator()
+    output, frozen = _valid_output(tmp_path)
+    result = validator.validate_tarball(
+        output / "r5_xgame_outputs.tar.gz",
+        output / "r5_xgame_outputs.tar.gz.sha256",
+        frozen,
+    )
+    assert result["status"] == "r5_xgame_tarball_validated"

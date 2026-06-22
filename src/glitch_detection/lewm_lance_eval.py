@@ -303,8 +303,20 @@ def capture_resource_usage() -> dict[str, Any]:
     try:
         import psutil
     except ImportError:
-        import resource
+        try:
+            import resource
+        except ImportError:
+            import tracemalloc
 
+            started_here = not tracemalloc.is_tracing()
+            if started_here:
+                tracemalloc.start()
+            current, peak = tracemalloc.get_traced_memory()
+            return {
+                "source": "tracemalloc",
+                "rss_bytes": int(current),
+                "peak_bytes": int(peak),
+            }
         max_rss = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
         return {"source": "resource.getrusage", "max_rss_kib": int(max_rss)}
     return {"source": "psutil", "rss_bytes": int(psutil.Process().memory_info().rss)}
