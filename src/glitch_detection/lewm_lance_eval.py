@@ -263,9 +263,15 @@ def open_metadata_dataset(path: Path) -> tuple[Any, bool]:
 
     Returns ``(dataset, metadata_only)``. The primary path requests a
     metadata-only ``keys_to_load`` so the ``pixels``/``action`` image tensors
-    are never decoded while a window manifest is built. If the isolated runtime
-    rejects a metadata-only load, it falls back to the full ``keys_to_load``
-    (pixels + action + metadata).
+    are never decoded while a window manifest is built. If constructing that
+    metadata-only dataset fails because the isolated runtime rejects the
+    projection, it falls back to the full ``keys_to_load`` (pixels + action +
+    metadata).
+
+    No window rows are read here: the metadata-only projection is validated at
+    construction time only, so that ``iter_metadata_samples`` can read each
+    window exactly once. ``RuntimeError`` (the LeWM runtime is missing) is
+    re-raised unchanged rather than downgraded to a full-pixel load.
 
     Both paths go through ``swm.data.LanceDataset`` on purpose: ``window_id`` and
     ``dataset_window_index`` are defined by the ``num_steps``/``frameskip``
@@ -274,12 +280,7 @@ def open_metadata_dataset(path: Path) -> tuple[Any, bool]:
     used here.
     """
     try:
-        dataset = _lance_dataset(path, include_metadata=True, metadata_only=True)
-        if len(dataset) > 0:
-            probe = dataset[0]
-            for key in METADATA_KEYS:
-                _ = probe[key]
-        return dataset, True
+        return _lance_dataset(path, include_metadata=True, metadata_only=True), True
     except RuntimeError:
         raise
     except Exception:

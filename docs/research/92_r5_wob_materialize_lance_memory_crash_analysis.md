@@ -58,11 +58,12 @@ all three previously divergent copies so the pipeline does not regress through a
 
 1. **Metadata-only reader.** `lewm_lance_eval._lance_dataset` gained a `metadata_only` parameter that
    sets `keys_to_load` to the metadata columns only (no `pixels`/`action`).
-   `open_metadata_dataset(path)` requests that projection, probes the metadata keys on the first
-   window to confirm support, and returns `(dataset, metadata_only_flag)`. If the isolated runtime
-   raises `RuntimeError` (the LeWM runtime is missing) the error is re-raised unchanged; any other
-   failure to honor the metadata-only projection falls back to the full `keys_to_load`, recording
-   `metadata_only=False`. Both paths still go through `swm.data.LanceDataset` on purpose: `window_id`
+   `open_metadata_dataset(path)` requests that projection at construction time and returns
+   `(dataset, metadata_only_flag)` without reading any window rows, so the single-read guarantee is
+   preserved. If the isolated runtime raises `RuntimeError` (the LeWM runtime is missing) the error
+   is re-raised unchanged; if constructing the metadata-only dataset fails for any other reason the
+   builder falls back to the full `keys_to_load`, recording `metadata_only=False`. Both paths still
+   go through `swm.data.LanceDataset` on purpose: `window_id`
    and `dataset_window_index` are defined by the `num_steps`/`frameskip` windowing and must match
    `_score_dataset`. A native `lance` column scan iterates raw rows that do not align with that
    windowing, so it is intentionally not used. `INFERRED` that `stable_worldmodel.data.LanceDataset`

@@ -194,6 +194,27 @@ def test_open_metadata_dataset_prefers_metadata_only(monkeypatch):
     assert opened is dataset
     assert metadata_only is True
     assert calls == [True]
+    assert dataset.read_indices == []
+    assert dataset.accessed_keys == []
+
+
+def test_open_metadata_dataset_then_iter_reads_each_window_exactly_once(monkeypatch):
+    dataset = _FakeDataset(
+        [
+            _full_sample("normal-a", "Normal"),
+            _full_sample("normal-b", "Normal"),
+            _full_sample("normal-c", "Normal"),
+        ]
+    )
+    monkeypatch.setattr(
+        lewm, "_lance_dataset", lambda path, *, include_metadata, metadata_only=False: dataset
+    )
+
+    opened, _metadata_only = open_metadata_dataset(Path("normal.lance"))
+    list(iter_metadata_samples(opened))
+
+    assert dataset.read_indices == [0, 1, 2]
+    assert dataset.read_indices.count(0) == 1
     assert "pixels" not in dataset.accessed_keys
     assert "action" not in dataset.accessed_keys
 
