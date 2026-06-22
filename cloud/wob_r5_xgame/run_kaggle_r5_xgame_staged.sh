@@ -24,7 +24,11 @@ if find "$INPUT_ROOT" -maxdepth 3 \( -iname '*r5_wob*' -o -iname '*wob_seed*arti
   exit 2
 fi
 
-python scripts/audit_r5_xgame_split.py --manifest "$MANIFEST"
+mkdir -p "$OUTPUT_DIR"
+
+python scripts/audit_r5_xgame_split.py \
+  --manifest "$MANIFEST" \
+  --output "${OUTPUT_DIR}/r5_xgame_leakage_audit.json"
 
 python scripts/run_r5_xgame_staged.py \
   --manifest "$MANIFEST" \

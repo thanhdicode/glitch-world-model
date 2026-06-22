@@ -102,3 +102,13 @@ def test_kaggle_launch_script_and_required_input_doc_exist():
     assert "benedictwilkinsai/world-of-bugs-test" in text
     assert "NORMAL-TRAIN/" in text
     assert "TEST/" in text
+
+
+def test_kaggle_launch_script_passes_audit_output_path():
+    script_text = Path(
+        "cloud/wob_r5_xgame/run_kaggle_r5_xgame_staged.sh"
+    ).read_text(encoding="utf-8")
+    assert "scripts/audit_r5_xgame_split.py" in script_text
+    assert "--output" in script_text
+    assert "r5_xgame_leakage_audit.json" in script_text
+    assert 'mkdir -p "$OUTPUT_DIR"' in script_text
