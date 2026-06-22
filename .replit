@@ -52,3 +52,8 @@ run = ["python", "-m", "pytest", "tests/test_imports.py", "-v"]
 [postMerge]
 path = "scripts/post-merge.sh"
 timeoutMs = 60000
+
+[userenv]
+
+[userenv.shared]
+GITHUB_TOKEN = "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"
