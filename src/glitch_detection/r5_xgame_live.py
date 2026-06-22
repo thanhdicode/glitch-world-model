@@ -3,7 +3,10 @@
 from __future__ import annotations
 
 from collections import defaultdict
+from pathlib import Path
 from typing import Iterable
+
+from .lewm_training import LeWMTrainConfig, train_lewm
 
 ROLE_DATASETS = {
     "train_normal": "train_normal",
@@ -39,3 +42,30 @@ def training_roles(
     if any(row["label"] != "Normal" for row in [*train, *calibration]):
         raise ValueError("R5-XGame training and calibration must remain normal-only.")
     return train, calibration
+
+
+def train_fresh_seed(
+    train_lance: Path,
+    calibration_lance: Path,
+    output_dir: Path,
+    *,
+    seed: int,
+    device: str,
+    resume: bool,
+) -> dict[str, object]:
+    """Train one new R5-XGame seed from frozen role-specific Lance datasets."""
+    if seed not in {42, 43, 44}:
+        raise ValueError("R5-XGame supports only fresh seeds 42, 43, and 44.")
+    if "r5_wob" in str(output_dir).lower():
+        raise ValueError("R5-XGame refuses to write into an R5-WOB artifact path.")
+    config = LeWMTrainConfig(
+        seed=seed,
+        run_kind="research",
+        target_optimizer_updates=500,
+        evaluation_interval_updates=50,
+        checkpoint_interval_updates=50,
+        mixed_precision=device == "cuda",
+    )
+    return train_lewm(
+        train_lance, calibration_lance, output_dir, config, device=device, resume=resume
+    )
