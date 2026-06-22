@@ -170,7 +170,7 @@ def resolve_wob_seed_input(input_root: Path, *, seed: int) -> dict[str, Path | s
         if (root / extracted_name / "wob_outputs" / f"wob_seed{seed}").is_dir()
     ]
 
-    if tar_candidates or sha_candidates:
+    if tar_candidates and sha_candidates:
         tarball = _select_candidate(
             tar_candidates,
             description=f"seed {seed} tarball",
@@ -189,6 +189,16 @@ def resolve_wob_seed_input(input_root: Path, *, seed: int) -> dict[str, Path | s
             keywords=(f"seed{seed}", "artifact", "wob"),
         )
         return {"mode": "extracted_root", "source_root": source_root}
+    if tar_candidates or sha_candidates:
+        missing_parts: list[str] = []
+        if not tar_candidates:
+            missing_parts.append("tarball")
+        if not sha_candidates:
+            missing_parts.append("sha256 sidecar")
+        raise FileNotFoundError(
+            f"Found only a partial seed {seed} artifact bundle under {input_root}; "
+            f"missing {' and '.join(missing_parts)}."
+        )
 
     raise FileNotFoundError(
         f"Could not locate seed {seed} artifact tarball, sidecar, or extracted root under {input_root}. "

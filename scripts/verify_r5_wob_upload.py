@@ -321,8 +321,41 @@ def _find_member_text(root: Path, filename: str) -> str:
     return matches[0].read_text(encoding="utf-8-sig", errors="replace")
 
 
-def _classify_failure(text: str) -> tuple[str, str]:
+def _classify_failure(
+    text: str,
+    *,
+    failed_stage: str | None = None,
+    exit_code: int | None = None,
+) -> tuple[str, str]:
     lowered = text.lower()
+    has_traceback = "traceback (most recent call last):" in lowered
+    if failed_stage == "materialize_lance" and not has_traceback:
+        explicit_error_signatures = (
+            "runtimeerror",
+            "attributeerror",
+            "typeerror",
+            "valueerror",
+            "modulenotfounderror",
+            "importerror",
+            "no module named",
+            "filenotfounderror",
+            "validationerror",
+        )
+        if any(signature in lowered for signature in explicit_error_signatures):
+            for failure_class, patterns, minimal_fix in FAILURE_PATTERNS:
+                if any(pattern in lowered for pattern in patterns):
+                    return failure_class, minimal_fix
+        if exit_code in {120, 137, 143}:
+            return (
+                "possible_resource_exhaustion",
+                "Stream or further chunk only the materialize_lance stage, then retry that stage "
+                "while keeping the already validated seed artifacts mounted as-is.",
+            )
+        return (
+            "materialize_lance_no_traceback",
+            "Inspect the staged materialize_lance logs and resource usage, then retry only that "
+            "stage without changing the frozen manifest or validated seed artifacts.",
+        )
     for failure_class, patterns, minimal_fix in FAILURE_PATTERNS:
         if any(pattern in lowered for pattern in patterns):
             return failure_class, minimal_fix
@@ -359,7 +392,11 @@ def inspect_failure_debug(
             log_text = _find_member_text(root, "r5_wob_staged.log")
             summary = json.loads(summary_text) if summary_text else {}
             diagnostic_text = log_text[-20000:] if log_text else summary_text
-            failure_class, minimal_fix = _classify_failure(diagnostic_text)
+            failure_class, minimal_fix = _classify_failure(
+                diagnostic_text,
+                failed_stage=str(summary.get("phase", "unknown")),
+                exit_code=summary.get("exit_code"),
+            )
             status.update(
                 {
                     "overall": "FAILURE_CLASSIFIED",

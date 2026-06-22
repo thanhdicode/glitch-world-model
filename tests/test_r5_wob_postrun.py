@@ -111,6 +111,41 @@ def test_inspect_failure_debug_classifies_stage_and_runtime_error(tmp_path: Path
     assert result["locked_test_scored"] is False
 
 
+def test_inspect_failure_debug_flags_materialize_no_traceback_as_resource_risk(tmp_path: Path):
+    source = tmp_path / "debug"
+    (source / "failure_debug").mkdir(parents=True)
+    (source / "working_logs").mkdir(parents=True)
+    (source / "failure_debug" / "failure_summary.json").write_text(
+        json.dumps(
+            {
+                "phase": "materialize_lance",
+                "exit_code": 120,
+                "git_sha": "abc123",
+                "locked_test_materialized": False,
+                "locked_test_scored": False,
+            }
+        ),
+        encoding="utf-8",
+    )
+    (source / "working_logs" / "r5_wob_staged.log").write_text(
+        "=== 3. Preflight ===\n"
+        '"sha256": "already validated"\n'
+        "=== 4. Materialize Lance datasets ===\n",
+        encoding="utf-8",
+    )
+    tarball = tmp_path / "failure.tar.gz"
+    with tarfile.open(tarball, "w:gz") as archive:
+        archive.add(source / "failure_debug", arcname="failure_debug")
+        archive.add(source / "working_logs", arcname="working_logs")
+
+    result = verify_r5_wob_upload.inspect_failure_debug(tarball)
+
+    assert result["overall"] == "FAILURE_CLASSIFIED"
+    assert result["failed_stage"] == "materialize_lance"
+    assert result["failure_class"] == "possible_resource_exhaustion"
+    assert "re-downloading" not in result["minimal_fix"].lower()
+
+
 def test_r6_queue_keeps_wob_items_blocked():
     queue_path = Path("configs/r6_ablation_queue.json")
     queue = json.loads(queue_path.read_text(encoding="utf-8"))

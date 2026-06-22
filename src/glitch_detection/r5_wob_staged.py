@@ -402,6 +402,7 @@ def run_materialize_lance(
 ) -> dict[str, Any]:
     cached = _maybe_skip(output_dir, "materialize_lance", smoke=smoke, force=force)
     if cached is not None:
+        _progress("materialize_lance: using cached stage marker")
         return cached
     for _stale_name in (TRAIN_LANCE_NAME, NORMAL_LANCE_NAME, BUGGY_LANCE_NAME):
         _stale_path = output_dir / _stale_name
@@ -416,33 +417,68 @@ def run_materialize_lance(
     output_dir.mkdir(parents=True, exist_ok=True)
     frozen_manifest_path = output_dir / "r5_wob_manifest.csv"
     frozen_manifest_path.write_text(_render_eval_manifest(selected_eval_rows), encoding="utf-8")
+    normal_rows = [
+        row for row in selected_eval_rows if row["evaluation_role"] == "calibration_normal"
+    ]
+    buggy_rows = [row for row in selected_eval_rows if row["evaluation_role"] == "evaluation_buggy"]
+    _progress(
+        f"materialize_lance: train lance start rows={len(train_rows)} "
+        f"output={output_dir / TRAIN_LANCE_NAME}"
+    )
     train_lance = _build_lance_from_rows(
         train_rows,
         normal_root=normal_root,
         test_root=test_root,
         output_path=output_dir / TRAIN_LANCE_NAME,
+        progress=_progress,
+        progress_label="materialize_lance/train",
     )
-    normal_rows = [
-        row for row in selected_eval_rows if row["evaluation_role"] == "calibration_normal"
-    ]
-    buggy_rows = [row for row in selected_eval_rows if row["evaluation_role"] == "evaluation_buggy"]
+    _progress(
+        f"materialize_lance: train lance complete rows={len(train_rows)} output={train_lance}"
+    )
+    _progress(
+        f"materialize_lance: normal lance start rows={len(normal_rows)} "
+        f"output={output_dir / NORMAL_LANCE_NAME}"
+    )
     normal_lance = _build_lance_from_rows(
         normal_rows,
         normal_root=normal_root,
         test_root=test_root,
         output_path=output_dir / NORMAL_LANCE_NAME,
+        progress=_progress,
+        progress_label="materialize_lance/normal",
+    )
+    _progress(
+        f"materialize_lance: normal lance complete rows={len(normal_rows)} output={normal_lance}"
+    )
+    _progress(
+        f"materialize_lance: buggy lance start rows={len(buggy_rows)} "
+        f"output={output_dir / BUGGY_LANCE_NAME}"
     )
     buggy_lance = _build_lance_from_rows(
         buggy_rows,
         normal_root=normal_root,
         test_root=test_root,
         output_path=output_dir / BUGGY_LANCE_NAME,
+        progress=_progress,
+        progress_label="materialize_lance/buggy",
+    )
+    _progress(
+        f"materialize_lance: buggy lance complete rows={len(buggy_rows)} output={buggy_lance}"
+    )
+    _progress(
+        f"materialize_lance: window manifest start normal={normal_lance} "
+        f"buggy={buggy_lance} output={output_dir / WINDOW_MANIFEST_NAME}"
     )
     manifest_rows, dataset_fingerprints = _build_window_manifest(
         normal_lance=normal_lance,
         buggy_lance=buggy_lance,
         eval_rows=selected_eval_rows,
         output_path=output_dir / WINDOW_MANIFEST_NAME,
+    )
+    _progress(
+        f"materialize_lance: window manifest complete rows={len(manifest_rows)} "
+        f"output={output_dir / WINDOW_MANIFEST_NAME}"
     )
     payload = {
         "status": "materialize_complete",
@@ -462,6 +498,7 @@ def run_materialize_lance(
         "locked_test_materialized": False,
         "locked_test_scored": False,
     }
+    _progress("materialize_lance: writing stage marker")
     return _write_stage_marker(output_dir, stage="materialize_lance", payload=payload)
 
 
