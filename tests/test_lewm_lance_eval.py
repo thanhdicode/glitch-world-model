@@ -13,7 +13,6 @@ from glitch_detection.lewm_lance_eval import (
     capture_resource_usage,
     iter_metadata_samples,
     open_metadata_dataset,
-    read_csv_rows,
     runtime_provenance,
     select_calibration_episodes,
     validate_manifest_rows,
