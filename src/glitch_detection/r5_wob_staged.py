@@ -8,8 +8,6 @@ import tarfile
 from pathlib import Path
 from typing import Any
 
-from cloud.wob_kaggle_native.common import detect_kaggle_roots
-
 from .kaggle_automation import FingerprintBuilder
 from .lewm_adapter import ActionMode, LeWMAdapter, LeWMCheckpointSpec, sha256_file
 from .lewm_lance_eval import (
@@ -55,6 +53,7 @@ from .r5_wob_eval import (
     build_r5_wob_report,
     summarize_source_coverage,
 )
+from .wob_kaggle_common import detect_kaggle_roots
 
 DEFAULT_INPUT_ROOT = Path("/kaggle/input")
 DEFAULT_SUCCESS_TAR = Path("/kaggle/working/r5_wob_identical_episode_outputs.tar.gz")
