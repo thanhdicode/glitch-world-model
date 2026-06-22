@@ -1,0 +1,257 @@
+# ROLE
+You are a senior ML research engineer, reproducibility auditor, and research project strategist.
+
+Repository:
+https://github.com/thanhdicode/glitch-world-model.git
+
+Reasoning effort: HIGH.
+
+# MISSION
+Read and audit the entire repository, then determine the correct next direction of the LeWM-Glitch project.
+
+This is an audit/planning task first, not a coding or training task.
+Do NOT launch GPU training.
+Do NOT touch locked test.
+Do NOT update scientific claims unless the evidence and claim registry justify it.
+Do NOT weaken validators, gates, safety rules, or tests.
+Do NOT delete artifacts or remote resources.
+
+# PRIMARY OBJECTIVE
+Produce a clear, evidence-based project direction report answering:
+
+1. What is the real current state of the project?
+2. Which gates/phases are completed, partial, blocked, or unsafe to claim?
+3. What is the immediate next action?
+4. Should the project recover R4 artifacts, rerun R4 seeds, proceed to R5, or do something else?
+5. What exact commands should the human run next on local/Kaggle?
+6. What claims are safe, unsafe, experiment-pending, or future-work?
+7. What files/scripts/tests/docs must be changed before the next experiment?
+8. What is the shortest path to paper-grade evidence?
+
+# READ ORDER — MUST FOLLOW
+First read the fast context and governance files:
+
+1. RULES.md
+2. AGENTS.md
+3. docs/context/BOOT.md
+4. docs/context/PROJECT_STATE.md
+5. docs/context/NEXT_ACTION.md
+6. docs/context/TASK_ROUTER.md
+7. docs/context/REPO_MAP.md
+8. docs/context/LAST_HANDOFF.md
+9. PLAYBOOK.md, only after reading the context cache
+10. docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v3.md
+11. docs/research/16_claim_registry.md
+12. docs/workflows/failure_modes_registry.md
+
+Then inspect all relevant project areas:
+
+- src/
+- scripts/
+- tests/
+- configs/
+- cloud/
+- kaggle/
+- docs/research/
+- docs/roadmap/
+- docs/workflows/
+- paper/
+- README.md
+- pyproject.toml
+
+Use:
+git status --short
+git log --oneline -n 10
+git ls-files
+find docs -maxdepth 4 -type f | sort
+find scripts -maxdepth 2 -type f | sort
+find tests -maxdepth 3 -type f | sort
+rg -n "R3|R4|R5|seed42|seed43|seed44|locked|artifact|Kaggle|preflight|validator|TODO|TBD|unsafe|claim|AUROC|AUPRC|early stop|checkpoint|hash|SHA256" .
+
+# HARD SAFETY RULES
+Follow these rules strictly:
+
+1. Locked-test materialization/scoring requires a separate direct user command.
+2. Do not use synthetic, fixture, smoke, or scaffold output as paper metrics.
+3. Do not claim LeWM detects glitches, beats baselines, is SOTA, benefits from SIGReg, performs temporal localization, or has locked-test results unless direct validated evidence exists.
+4. Separate engineering readiness, validation-only pilot evidence, non-locked evaluation, and locked-test evidence.
+5. If R4 artifacts are live-log validated but archive files are missing, classify them as NOT artifact-backed until archives are recovered and SHA256 verified.
+6. If artifact recovery fails, recommend rerun only after documenting the recovery failure.
+7. Do not change training logic while doing direction analysis.
+8. Do not commit raw data, processed data, outputs, Lance datasets, checkpoints, caches, credentials, .env, kaggle.json, or private keys.
+
+# ANALYSIS TASKS
+After reading the repo, produce a structured audit.
+
+## A. Current State Summary
+Report:
+- current branch and HEAD SHA
+- roadmap authority
+- latest project-state timestamp
+- next-action authority
+- gate status summary
+- current blocker
+- locked-test status
+- artifact status
+- Kaggle/GPU status
+- current safe and unsafe claims
+
+## B. Evidence Map
+Create a table:
+
+| Area | Evidence file/path | Status | What it proves | What it does NOT prove |
+|---|---|---|---|---|
+
+Include at least:
+- R3 seed42
+- R4 seed43
+- R4 seed44
+- R4 bundle
+- R5
+- locked test
+- Gate 7-9 pilot
+- research MVP source
+- GPU runtime guard
+- claim registry
+- validators
+
+## C. Contradiction Check
+Find contradictions between:
+- README.md
+- AGENTS.md
+- PROJECT_STATE.md
+- NEXT_ACTION.md
+- roadmap v3
+- transition/handoff docs
+- claim registry
+- paper files
+
+If contradictions exist, identify which file should be treated as authority.
+
+## D. Next Direction Decision
+Choose exactly one primary next direction:
+
+Option 1: Recover and hash-verify R4 artifacts before R5.
+Option 2: Rerun R4 seeds 43/44 because recovery failed.
+Option 3: Proceed to R5 because all R3/R4 artifacts are artifact-backed.
+Option 4: Fix infrastructure/tests before any experiment.
+Option 5: Pause experimental work and update docs/claims only.
+
+For the chosen option, explain:
+- why this is the correct next step
+- what evidence supports it
+- what must NOT be done yet
+- what risk remains
+
+## E. Concrete Execution Plan
+Give a step-by-step command plan.
+
+If the answer is artifact recovery:
+- list expected artifact filenames
+- list expected SHA256 values if present in repo
+- give commands to locate, copy, hash, verify, and document artifacts
+- give commands to run validators
+- give criteria for upgrading R4 to artifact-backed status
+- give criteria for proceeding to R5
+
+If the answer is rerun:
+- give preflight commands
+- give seed43 and seed44 Kaggle commands
+- give validator commands
+- give tar.gz packaging commands
+- give sha256sum commands
+- give download/persistence checklist
+- include warning not to use locked test
+
+If the answer is R5:
+- give exact R5 evaluation scope
+- confirm non-locked validation-only status
+- list baseline/model comparisons
+- list metrics
+- list validator/reporting requirements
+
+## F. Files That May Need Updates
+List files that may need updates, grouped by:
+- context cache
+- roadmap/docs
+- tests
+- scripts
+- claim registry
+- paper
+- workflows
+
+Do NOT edit them unless the user explicitly asked for implementation.
+This task should end with a report, not a commit, unless the repo rules require context-cache updates for an audit report.
+
+## G. Verification Commands
+Run safe local checks only if dependencies are available:
+
+python -m pytest -q
+python -m ruff check .
+python -m ruff format --check .
+python scripts/validate_research_release.py --ci
+python scripts/check_claim_registry.py
+python scripts/doctor.py
+python scripts/validate_context_cache.py
+
+If a command cannot run because of missing optional GPU dependencies or environment constraints, report it honestly and do not fake success.
+
+# OUTPUT FORMAT
+Return the report in this structure:
+
+# LeWM-Glitch Repository Direction Audit
+
+## 1. Executive Decision
+One paragraph only. State the chosen next direction clearly.
+
+## 2. Current State
+Table with gates/phases and status.
+
+## 3. Evidence-Based Findings
+Bullet list with file paths and evidence.
+
+## 4. Blockers
+Ranked list:
+P0 = blocks next action
+P1 = blocks paper-grade evidence
+P2 = cleanup/improvement
+
+## 5. Safe Claims / Unsafe Claims
+Two tables.
+
+## 6. Recommended Next Action
+Choose one:
+- recover R4 artifacts
+- rerun R4
+- proceed R5
+- fix infra
+- docs-only
+
+Explain why.
+
+## 7. Step-by-Step Commands for Human
+Give copy-pasteable commands.
+
+## 8. Do-Not-Do List
+State what must not be done yet.
+
+## 9. Checks Run
+List commands run and pass/fail/skipped.
+
+## 10. Final Recommendation
+Give the shortest path from current state to paper-grade evidence.
+
+# IMPORTANT FINAL REPORT REQUIREMENTS
+Mention:
+- branch/SHA
+- files inspected
+- files changed, if any
+- commands run
+- claim status
+- Kaggle status
+- locked-test status
+- artifact/credential safety
+- unresolved risks
+- next gate
+
+Be strict, evidence-first, and conservative. Do not overclaim.

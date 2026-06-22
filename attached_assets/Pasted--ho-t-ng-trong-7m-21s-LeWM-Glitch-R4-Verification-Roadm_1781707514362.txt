@@ -1,0 +1,155 @@
+Đã hoạt động trong 7m 21s
+
+
+
+LeWM-Glitch R4 Verification + Roadmap Alignment Report
+1. Executive Result
+R4 seed43/44 is now artifact-backed: the local archives matched the provided SHA256 values, the .sha256 sidecars matched, and both per-seed validators passed.
+Roadmap v3 was not fully aligned before this turn. I updated it to make the approved strategy explicit: TempGlitch R5 is the core path, and World of Bugs is a controlled post-R5 expansion only if the R5 checkpoint passes.
+Current project phase: R5 TempGlitch identical-episode evaluation preparation.
+Next phase: execute R5 only on explicit command; WOB remains closed until the R5 gate is satisfied.
+Branch / HEAD / tree:
+Branch: main
+HEAD: d1cf3ac444b0d7a87a404bedd78c6f0ed03b6e27
+Working tree: not fully clean because of one unrelated untracked local file, docs/research/56_project_status_report_2026_06_17.md
+2. Artifact Verification
+File	Size	SHA256	Local hash verified	Validator
+r3_seed43_artifacts.tar.gz	332,321,342 B	3ec2fa25b2b2b952bcd1087aeb755c2b0c413fa95b9ec9a71a320f5df9dd33f7	yes	passed
+r3_seed44_artifacts.tar.gz	333,081,642 B	ffd6d917f134f3cce37cd0a1e666b10ab1122678d9c3f483936f9b1ad69efa83	yes	passed
+r4_seed43_44_artifacts_bundle.tar.gz	665,405,304 B	4d4575679a91ab54ae58005bae6a483bdf63e06750336400f3448873ee0afd01	yes	n/a
+
+Seed summary:
+Seed 43: 3000 / 15000 updates, early stop true, reason early_stopping_patience, best update 500
+Seed 44: 8000 / 15000 updates, early stop true, reason early_stopping_patience, best update 5500
+Locked test flags stayed false in validated artifacts
+3. Current Project State
+Stage	Status	Evidence	Next
+R0	complete	exact 500-update GPU profile and frozen protocol family already documented	maintain
+R1	complete	validated 500-update engineering profile	maintain
+R2	complete	frozen main-run schedule exists in roadmap/protocol docs	maintain
+R3	complete with separate provenance note	seed42 training evidence exists; archive provenance remains separately documented	preserve and use cautiously
+R4	artifact-backed	seed43/44 rerun archives verified locally and validator-passed	preserve hashes and use for R5 inputs
+R5	not started	no identical-episode score/metric artifacts yet	prepare, then execute only on explicit command
+WOB	not started, post-R5 gated	protocol and reduced conversion exist, but no WOB run family is open	keep closed until R5 checkpoint passes
+Locked test	closed	unmaterialized, unscored	keep closed
+
+Roadmap authority remains [MASTER_ROADMAP_LeWM_Glitch_v3.md](/C:/Users/ADMIN/Desktop/glitch-world-model/docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v3.md).
+4. Master Roadmap V3 Alignment
+What was stale:
+v3 still reflected a pre-verification state for the profile/main-run path
+WOB was present mostly as a future-side note, not as a gated expansion strategy
+the TempGlitch-to-WOB checkpoint logic was not explicit enough
+What I updated:
+marked the 500-update profile as completed engineering evidence
+marked R4 seed43/44 as artifact-backed
+made the strategy explicit: “solid core + controlled expansion”
+added explicit checkpoint criteria for opening WOB
+added WOB stage definitions: R3-WOB, R5-WOB, R5-XGAME, R6-WOB, and conditional R8 paper upgrade
+added fallback behavior: if TempGlitch R5 is weak or late, WOB stays future work and the paper remains a leakage-aware TempGlitch study
+Why this preserves integrity:
+it keeps TempGlitch as the required core evidence path
+it prevents post hoc scope creep
+it preserves the claim boundary: no WOB claim before WOB artifacts exist, and no locked-test access without separate authorization
+5. Files Updated
+[AGENTS.md](/C:/Users/ADMIN/Desktop/glitch-world-model/AGENTS.md)
+[PLAYBOOK.md](/C:/Users/ADMIN/Desktop/glitch-world-model/PLAYBOOK.md)
+[README.md](/C:/Users/ADMIN/Desktop/glitch-world-model/README.md)
+[docs/context/BOOT.md](/C:/Users/ADMIN/Desktop/glitch-world-model/docs/context/BOOT.md)
+[docs/context/LAST_HANDOFF.md](/C:/Users/ADMIN/Desktop/glitch-world-model/docs/context/LAST_HANDOFF.md)
+[docs/context/NEXT_ACTION.md](/C:/Users/ADMIN/Desktop/glitch-world-model/docs/context/NEXT_ACTION.md)
+[docs/context/PROJECT_STATE.md](/C:/Users/ADMIN/Desktop/glitch-world-model/docs/context/PROJECT_STATE.md)
+[docs/context/README.md](/C:/Users/ADMIN/Desktop/glitch-world-model/docs/context/README.md)
+[docs/context/REPO_MAP.md](/C:/Users/ADMIN/Desktop/glitch-world-model/docs/context/REPO_MAP.md)
+[docs/research/16_claim_registry.md](/C:/Users/ADMIN/Desktop/glitch-world-model/docs/research/16_claim_registry.md)
+[docs/research/67_r3_r4_multiseed_status.md](/C:/Users/ADMIN/Desktop/glitch-world-model/docs/research/67_r3_r4_multiseed_status.md)
+[docs/research/68_r5_identical_episode_eval_plan.md](/C:/Users/ADMIN/Desktop/glitch-world-model/docs/research/68_r5_identical_episode_eval_plan.md)
+[docs/research/68_r5_tempglitch_and_wob_expansion_plan.md](/C:/Users/ADMIN/Desktop/glitch-world-model/docs/research/68_r5_tempglitch_and_wob_expansion_plan.md)
+[docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v3.md](/C:/Users/ADMIN/Desktop/glitch-world-model/docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v3.md)
+[paper/main.tex](/C:/Users/ADMIN/Desktop/glitch-world-model/paper/main.tex)
+[scripts/update_context_cache.py](/C:/Users/ADMIN/Desktop/glitch-world-model/scripts/update_context_cache.py)
+6. Safe Claims Now Allowed
+R4 rerun seed43/44 artifacts are local SHA256-verified and pass per-seed artifact validators.
+R4 rerun seed43 stopped at 3000 updates and seed44 stopped at 8000 updates under the frozen non-locked protocol.
+R5 has not started.
+WOB is a controlled post-R5 expansion plan only; it has not started.
+Locked test remains closed, unmaterialized, and unscored.
+7. Claims Still Forbidden
+Any R5 AUROC, AUPRC, F1, or baseline-comparison claim
+Any WOB result claim
+Broad LeWM glitch-detection claims
+SOTA or superiority claims
+SIGReg-benefit claims
+Temporal-localization claims
+Any locked-test result claim
+8. Checks Run
+python scripts/validate_lewm_r3_seed_artifacts.py --artifact-root artifacts/verified/r4_rerun_2026_06_17/r3_seed43 --expected-seed 43 --expected-target-updates 15000 — passed
+python scripts/validate_lewm_r3_seed_artifacts.py --artifact-root artifacts/verified/r4_rerun_2026_06_17/r3_seed44 --expected-seed 44 --expected-target-updates 15000 — passed
+python scripts/update_context_cache.py --refresh-boot — passed
+python -m pytest -q — passed
+python -m ruff check . — passed
+python -m ruff format --check . — passed
+python scripts/check_claim_registry.py — passed
+python scripts/validate_context_cache.py — passed
+python scripts/doctor.py — passed
+python scripts/validate_research_release.py --ci — passed
+pre-commit run --all-files — passed
+git diff --check — passed aside from LF/CRLF warnings only
+9. Commit / Push
+Committed and pushed to main.
+Commit: d1cf3ac444b0d7a87a404bedd78c6f0ed03b6e27
+Push status: origin/main updated successfully
+10. Next Prompt Recommendation
+Use this next:
+Read RULES.md, AGENTS.md, docs/context/BOOT.md, docs/context/PROJECT_STATE.md, docs/context/NEXT_ACTION.md, docs/research/68_r5_tempglitch_and_wob_expansion_plan.md, docs/research/67_r3_r4_multiseed_status.md, scripts/run_gate7_lance_scoring.py, scripts/run_gate7_lewm_evaluation.py, scripts/run_gate8_baselines_from_lance.py, and scripts/run_gate9_ablations.py.
+
+Then implement the missing R5 identical-episode orchestration for TempGlitch without running locked test. Do not fabricate CLI. Freeze one exact evaluation manifest, define the provenance-bound output structure, add focused tests, run the repo verification suite, and stop before any live R5 execution unless explicitly told to run it.
+
+AGENTS.mdTài liệu · MDMở bản xem trướcMở trong
+PLAYBOOK.mdTài liệu · MDMở bản xem trướcMở trong
+README.mdTài liệu · MDMở bản xem trướcMở trong
+Hiện thêm 11
+Đã chỉnh sửa 13 tệp+329-83Xem lại thay đổiHoàn tácXem xét
+
+AGENTS.md+4-2
+PLAYBOOK.md+19-11
+README.md+7-3
+docs/context/LAST_HANDOFF.md+5-3
+docs/context/NEXT_ACTION.md+15-14
+docs/context/PROJECT_STATE.md+16-6
+docs/research/16_claim_registry.md+1-1
+docs/research/67_r3_r4_multiseed_status.md+2-1
+docs/research/68_r5_identical_episode_eval_plan.md+4-0
+docs/research/68_r5_tempglitch_and_wob_expansion_plan.md+128-0
+docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v3.md+83-13
+paper/main.tex+7-5
+scripts/update_context_cache.py+38-24
+Thu gọn tệp
+
+
+
+21:22
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Toàn quyền tiếp cận
+
+5.4Cao

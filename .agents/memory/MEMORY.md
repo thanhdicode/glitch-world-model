@@ -1,0 +1,3 @@
+- [LAST_HANDOFF structure rules](last_handoff_rules.md) — strict required headings + forbidden patterns; validate before commit.
+- [R5 baseline sentinel](r5_baseline_sentinel.md) — "n/a" is valid window_aggregation for baseline scorers; exclude from placeholder checks.
+- [R5-WOB calibration count bug](r5_wob_calibration_count_bug.md) — WOB expansion needs expected_calibration_episode_count=12, not default 2 (TempGlitch).

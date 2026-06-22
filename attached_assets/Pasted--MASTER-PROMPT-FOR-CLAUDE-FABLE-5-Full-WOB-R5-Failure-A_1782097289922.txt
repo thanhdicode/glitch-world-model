@@ -1,0 +1,782 @@
+# MASTER PROMPT FOR CLAUDE FABLE 5
+
+## Full WOB R5 Failure Audit + Clean-Code Repair + FISAT-Grade Research Recovery Plan
+
+## Project: Latent World Models for Video Game Glitch Detection: A JEPA-based Approach
+
+## GitHub: https://github.com/thanhdicode/glitch-world-model
+
+You are Claude Fable 5 operating as an elite AI research and engineering agent.
+
+You must act as:
+
+1. Senior ML Research Engineer specializing in world models, JEPA, video anomaly detection, and game QA automation
+2. Senior Python engineer specializing in clean code, reproducible ML pipelines, Kaggle execution, artifact validation, and failure triage
+3. Research reproducibility auditor for international ML conference submissions
+4. FISAT/EAI reviewer who knows how to evaluate novelty, methodology, experiments, limitations, and claims
+5. Scientific research competition strategist for FPT University’s Scientific Research Competition
+6. Long-term research architect helping turn this project into the foundation of my future research career
+
+Your mission is to deeply audit the WOB R5 phase, explain why the project keeps getting stuck there, fix the root cause if code changes are needed, and produce a clean execution plan that keeps the project on track toward:
+
+* passing/winning the FPT Scientific Research Competition,
+* producing a FISAT-ready paper,
+* building an internationally respectable research foundation,
+* and preserving the original research direction:
+
+“Latent World Models for Video Game Glitch Detection: A JEPA-based Approach.”
+
+---
+
+# 0. CORE RESEARCH DIRECTION — DO NOT CHANGE THIS TOPIC
+
+The research topic is fixed:
+
+## Proposed strongest topic
+
+**Latent World Models for Video Game Glitch Detection: A JEPA-based Approach**
+
+## Dataset direction
+
+Primary datasets may include:
+
+* VideoGlitch / VideoGlitchBench
+* GlitchBench
+* World of Bugs
+* TempGlitch
+* Atari / ALE / Procgen only as supporting dynamics benchmarks, not as the main topic unless necessary
+
+## Research hypothesis
+
+Video game bugs/glitches create abnormal deviations in latent dynamics compared with normal gameplay. A latent world model trained or adapted on normal gameplay can detect glitches by measuring latent prediction error / surprise score.
+
+## Method direction
+
+Train or fine-tune LeWM on normal gameplay, compute latent prediction error, and use thresholding or a lightweight classifier to detect glitch events.
+
+## Baselines
+
+Consider at least:
+
+* frame difference
+* feature distance
+* mini_latent / lightweight latent dynamics proxy
+* CNN-LSTM
+* video autoencoder
+* TimeSformer / VideoMAE small
+* VLM-based detector only if feasible and properly bounded
+
+## Strategic reason
+
+This topic is strong because it connects:
+
+* automated game testing,
+* temporal video anomaly detection,
+* world models,
+* self-supervised representation learning,
+* benchmark-based evaluation,
+* and practical QA value for the game industry.
+
+Do not replace the project with a generic anomaly detection paper. Do not shift to unrelated GUI testing, robotics, or pure RL unless used only as background or future work.
+
+---
+
+# 1. NON-NEGOTIABLE SAFETY AND CLAIM RULES
+
+You must follow strict research integrity.
+
+Do not invent metrics.
+
+Do not claim WOB detection performance unless the WOB R5 success bundle passes the offline validator.
+
+Do not claim cross-game generalization unless there is validated cross-game evidence.
+
+Do not claim SIGReg benefit unless there is a validated ablation.
+
+Do not claim SOTA unless there is direct benchmark comparison against strong baselines and a literature review supports it.
+
+Do not claim that “LeWM detects all glitches.” The safe claim is:
+
+“We evaluate latent dynamics / latent surprise as a candidate signal for temporal game glitch detection.”
+
+If the current code only supports a proxy model, say “lightweight latent dynamics proxy,” not full LeWM.
+
+Do not materialize, score, inspect, or use locked test data unless I give a separate explicit instruction. Locked test must remain closed.
+
+Do not commit raw data, Kaggle secrets, checkpoints, outputs, tarballs, `.env`, `kaggle.json`, Lance datasets, or cache files.
+
+Do not use partial Kaggle outputs as evidence. A failed R5-WOB run opens only a failure-triage path, not a result path.
+
+If fixing code, make the smallest clean fix that directly addresses the root cause. Do not rewrite the whole pipeline unless the architecture is fundamentally broken and you can justify it.
+
+---
+
+# 2. FIRST ACTION — READ PROJECT CONTEXT PROPERLY
+
+Use Deep Research and repository inspection.
+
+Clone or inspect:
+
+https://github.com/thanhdicode/glitch-world-model
+
+Start with this read order:
+
+1. `RULES.md`
+2. `AGENTS.md`
+3. `CLAUDE.md` if present
+4. `README.md`
+5. `docs/context/BOOT.md`
+6. `docs/context/PROJECT_STATE.md`
+7. `docs/context/NEXT_ACTION.md`
+8. `docs/context/LAST_HANDOFF.md`
+9. `docs/context/TASK_ROUTER.md`
+10. `docs/context/REPO_MAP.md`
+11. current roadmap file, especially `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v3.md`
+12. `PLAYBOOK.md` only if needed for roadmap, claim boundary, locked test, or ambiguous gate status
+13. claim registry
+14. WOB R5 scripts, validators, tests, and Kaggle notebooks
+
+Then inspect all WOB R5-related files.
+
+Likely relevant files include, but are not limited to:
+
+* `scripts/run_r5_wob_stage.py`
+* `src/glitch_detection/r5_wob_staged.py`
+* `src/glitch_detection/wob_kaggle_common.py`
+* `cloud/wob_kaggle_native/common.py`
+* `cloud/wob_r5_eval/run_kaggle_r5_wob_staged.sh`
+* `cloud/wob_r5_eval/README.md`
+* `scripts/verify_r5_wob_upload.py`
+* `scripts/validate_r5_wob_evaluation.py`
+* `scripts/prepare_wob_expansion_readiness.py`
+* `scripts/run_r5_wob_identical_episode_evaluation.py`
+* `scripts/assemble_r5_wob_from_stages.py`
+* `tests/test_r5_wob_stage.py`
+* `tests/test_r5_wob_script_entrypoints.py`
+* `tests/test_wob_r5_runner.py`
+* `tests/test_wob_kaggle_native_common.py`
+* `docs/research/88_r5_wob_postrun_workflow.md`
+* `docs/research/89_r5_wob_kaggle_phase_audit.md`
+* `docs/workflows/failure_modes_registry.md`
+* `configs/r6_ablation_queue.json`
+* Kaggle notebook files if present
+* any uploaded or generated logs, especially `r5_wob_staged.log`
+* any failure-debug bundle logic
+
+Use targeted search commands such as:
+
+```bash
+rg -n "R5-WOB|r5_wob|wob_r5|World of Bugs|failure_debug|failure_summary|locked_test|materialize_lance|LanceDB|pylance|cloud|detect_kaggle_roots|validate_package|VALID_OUTPUT_BUNDLE|sha256|success_tarball|failure_class" .
+```
+
+---
+
+# 3. MAIN QUESTION TO ANSWER
+
+The central question is:
+
+**Why does WOB R5 keep failing or getting stuck, and what exact engineering changes are required to finish it safely?**
+
+You must reconstruct the entire failure chain, not only the latest error.
+
+Your analysis must separate:
+
+1. Historical solved failures
+2. Current unsolved blocker
+3. Kaggle environment problems
+4. Repo architecture problems
+5. Notebook/user-operation problems
+6. Data/dataset attachment problems
+7. Validator/package/intake problems
+8. Claim-safety blockers
+
+For every issue, provide:
+
+* symptom
+* evidence path
+* root cause
+* why it keeps recurring
+* whether the current code already fixed it
+* whether the fix was validated locally
+* whether it was validated on Kaggle
+* minimal clean fix if still unresolved
+* exact test required
+* whether it blocks FISAT paper
+* whether it blocks the FPT research competition defense
+
+---
+
+# 4. WOB R5 PHASE AUDIT REQUIREMENTS
+
+Audit the WOB R5 pipeline end to end.
+
+The intended staged flow should be checked:
+
+1. preflight
+2. materialize_lance
+3. baseline_scores
+4. lewm_seed42
+5. lewm_seed43
+6. lewm_seed44
+7. aggregate_metrics
+8. validate_package
+9. success tarball + sha256 sidecar
+10. offline local intake
+11. `VALID_OUTPUT_BUNDLE`
+12. `r5_wob_validation_receipt.json`
+13. only then unlock R5-XGAME planning
+
+For each stage, answer:
+
+* What does this stage do?
+* What input files does it require?
+* What Kaggle datasets must be attached?
+* What output files does it produce?
+* What marker file proves completion?
+* What validator checks it?
+* How can it fail?
+* What logs show failure?
+* What is the minimal fix?
+* What must not be claimed until this stage passes?
+
+The target success outputs are:
+
+* `r5_wob_identical_episode_outputs.tar.gz`
+* `r5_wob_identical_episode_outputs.tar.gz.sha256`
+
+The target failure outputs are:
+
+* `r5_wob_identical_episode_failure_debug.tar.gz`
+* `r5_wob_identical_episode_failure_debug.tar.gz.sha256`
+
+If the run fails without producing a failure-debug bundle, that is itself a packaging failure that must be fixed.
+
+---
+
+# 5. ENGINEERING REPAIR RULES
+
+If you find code problems, you are allowed to propose or implement code improvements, but only under these rules:
+
+## 5.1 Clean-code standards
+
+Code must be:
+
+* simple
+* readable
+* typed where practical
+* small functions
+* explicit errors
+* deterministic
+* testable
+* no hidden global state unless justified
+* no notebook-only assumptions
+* no repo-root import assumptions
+* no hardcoded Kaggle paths without override
+* no silent partial success
+* no swallowing fatal errors
+* no broad `except Exception` unless the exception is re-raised or classified clearly
+
+## 5.2 ML engineering standards
+
+The pipeline must preserve:
+
+* train-normal only fitting/selection
+* validation buggy excluded from fit/selection
+* locked test closed
+* frozen manifest integrity
+* artifact SHA256 verification
+* seed artifact provenance
+* safe extraction
+* reproducible output paths
+* Kaggle/local path separation
+* failure classification
+* no partial result reuse
+
+## 5.3 Required tests after fix
+
+At minimum, run or add tests for:
+
+* script entrypoints with `PYTHONPATH=src`
+* Kaggle-like subprocess execution
+* missing dataset failure classification
+* missing seed artifact failure classification
+* stale Lance directory cleanup
+* success bundle packaging
+* failure bundle packaging
+* offline intake of success bundle
+* offline intake of failure bundle
+* locked-test flags remaining false
+* claim registry check
+
+Required verification commands:
+
+```bash
+python -m pytest tests/test_r5_wob_script_entrypoints.py tests/test_wob_kaggle_native_common.py tests/test_r5_wob_stage.py tests/test_wob_r5_runner.py
+python -m pytest
+python -m ruff check .
+python -m ruff format --check .
+python scripts/validate_research_release.py --ci
+python scripts/check_claim_registry.py
+python scripts/doctor.py
+python scripts/validate_context_cache.py
+pre-commit run --all-files
+```
+
+If some commands cannot run, explain exactly why and what substitute evidence is acceptable.
+
+---
+
+# 6. KAGGLE EXECUTION AUDIT
+
+Audit the Kaggle notebook / runner.
+
+Check whether the notebook:
+
+* uses a real branch or commit, not placeholder text
+* clones the correct repo
+* uses latest `main` or a specific validated commit
+* confirms current commit SHA
+* checks GPU availability
+* checks attached datasets
+* checks WOB normal and test datasets
+* checks seed42/43/44 artifacts and sidecars
+* runs unbuffered enough to see logs
+* writes both success and failure bundles
+* writes log tail on failure
+* avoids requiring manual environment variables unless necessary
+* handles pip conflicts as warning unless fatal
+* produces download instructions
+
+If needed, rewrite the notebook into a safer staged execution notebook with cells:
+
+1. environment and GPU check
+2. clone repo
+3. list attached datasets
+4. check seed artifact dataset
+5. run staged WOB R5
+6. tail logs
+7. list success/failure artifacts
+8. download instructions
+9. optional failure classification cell
+
+Do not make the notebook hide errors. It must fail loudly and preserve failure-debug outputs.
+
+---
+
+# 7. ROOT-CAUSE ANALYSIS OUTPUT
+
+You must produce a root-cause tree.
+
+Use this structure:
+
+```text
+WOB R5 stuck
+├── Category A: Environment/runtime
+│   ├── pip dependency conflict
+│   ├── GPU/cuda availability
+│   └── Kaggle dataset attachment
+├── Category B: Packaging/import boundary
+│   ├── repo-root imports
+│   ├── top-level cloud module not installed
+│   └── subprocess context mismatch
+├── Category C: Data/materialization
+│   ├── missing WOB tar files locally
+│   ├── Kaggle-mounted official WOB inputs
+│   ├── stale .lance directory handling
+│   └── LanceDB/PyLance mismatch
+├── Category D: Artifact/provenance
+│   ├── missing seed artifacts
+│   ├── hash mismatch
+│   ├── missing sidecar
+│   └── invalid output bundle
+├── Category E: Protocol/claim safety
+│   ├── locked test closed
+│   ├── no WOB metric before validator
+│   └── no R5-XGAME/R6 before receipt
+└── Category F: User operation/notebook
+    ├── placeholder commit
+    ├── wrong branch/ref
+    ├── incomplete log capture
+    └── missing output download
+```
+
+For each leaf node, classify:
+
+* solved
+* partially solved
+* current suspect
+* confirmed active blocker
+* not relevant
+
+---
+
+# 8. RESEARCH AND PAPER STRATEGY AFTER WOB R5
+
+After fixing WOB R5, define how it fits into the paper.
+
+You must produce two paper paths.
+
+## Path A — Conservative FISAT-safe path
+
+Use if WOB R5 remains blocked or results are incomplete.
+
+Position the project as:
+
+“A reproducible latent-dynamics evaluation pipeline for temporal video game glitch detection, with verified TempGlitch/non-locked evidence and WOB integration under validation.”
+
+Allowed contributions:
+
+* reproducible pipeline
+* benchmark protocol
+* leakage-aware evaluation design
+* baseline framework
+* failure-mode analysis
+* careful limitations
+* WOB R5 as ongoing validation if not complete
+
+Forbidden claims:
+
+* WOB detection performance
+* cross-game generalization
+* SOTA
+* SIGReg benefit
+* locked-test result
+
+## Path B — Strong FISAT / international paper path
+
+Use only if WOB R5 passes success bundle validation.
+
+Position the project as:
+
+“Latent world-model surprise scoring for temporal video game glitch detection with reproducible non-locked WOB evaluation.”
+
+Allowed contributions may include:
+
+* WOB non-locked evaluation metrics
+* seed42/43/44 consistency
+* comparison to baselines
+* confidence intervals
+* failure mode analysis
+* artifact-verified reproducibility
+* cross-dataset comparison only after R5-XGAME is separately validated
+
+Still forbidden unless separately validated:
+
+* locked test result
+* SOTA
+* broad cross-game claim
+* SIGReg benefit without ablation
+
+---
+
+# 9. FPT SCIENTIFIC RESEARCH COMPETITION STRATEGY
+
+The project must be prepared to score high in the FPT Scientific Research Competition.
+
+Build a strategy for a 10-minute English presentation + 10-minute Q&A.
+
+The strategy must be honest even if WOB R5 is not complete.
+
+Required slide story:
+
+1. Problem: manual game QA does not scale
+2. Research gap: glitches are temporal dynamics violations, not only static visual defects
+3. Core idea: learn normal gameplay dynamics, detect surprise
+4. Method: JEPA/LeWM-inspired latent prediction error
+5. Pipeline: video → clip/window → latent state → prediction → surprise score → evaluation
+6. Evidence: repo, tests, validators, Kaggle pipeline, existing TempGlitch/non-locked evidence, WOB R5 status
+7. Results: show only validated results
+8. WOB R5: show status as “validation in progress” if not passed
+9. Limitations: no locked test, no SOTA, no full studio deployment yet
+10. Impact: toward automated game QA and future research foundation
+
+Create:
+
+* 10-slide deck outline
+* 10-minute English script
+* 1-minute emergency script
+* 30-second elevator pitch
+* Q&A bank with at least 40 hard questions
+* judge-facing safe claims
+* forbidden claims
+* demo checklist
+* final pre-presentation checklist
+
+Make the presentation sound ambitious but honest.
+
+The committee must feel:
+
+* the topic is important,
+* the method is technically serious,
+* the student understands research integrity,
+* the repo is reproducible,
+* the project can become a paper,
+* the limitations are clear,
+* the next step is concrete.
+
+---
+
+# 10. INTERNATIONAL PAPER QUALITY AUDIT
+
+The paper must be built toward international standards.
+
+Evaluate the project as if reviewed by:
+
+* FISAT committee
+* EAI/Springer reviewer
+* IEEE-style technical program committee
+* ML reproducibility reviewer
+* software engineering / game testing reviewer
+
+Score from 1–10:
+
+* novelty
+* problem importance
+* methodology clarity
+* benchmark strength
+* baseline fairness
+* reproducibility
+* statistical validity
+* claim safety
+* writing readiness
+* practical game industry impact
+* long-term research potential
+
+For each score, provide:
+
+* current evidence
+* missing evidence
+* fastest improvement
+* what slide/paper section it affects
+
+Then produce:
+
+* final paper title options
+* strongest safe abstract
+* stronger abstract if WOB R5 succeeds
+* research questions
+* contributions
+* method section outline
+* experiments section outline
+* baseline table plan
+* ablation plan
+* figure plan
+* limitations section
+* risk register
+* timeline to FISAT submission
+
+The paper must be framed as a foundation for future research, not a one-off class project.
+
+---
+
+# 11. LONG-TERM GAME INDUSTRY CONTRIBUTION ROADMAP
+
+Design a long-term roadmap that can turn this into a significant contribution to game QA.
+
+Include:
+
+## Stage 1 — Research prototype
+
+* validated WOB/TempGlitch evaluation
+* clean repo
+* paper-ready figures
+* reproducible scripts
+
+## Stage 2 — Benchmark package
+
+* multi-game evaluation
+* standardized manifests
+* public leaderboards if possible
+* failure mode taxonomy
+
+## Stage 3 — Game QA tool
+
+* Unity/Unreal video capture integration
+* CI pipeline for nightly game builds
+* anomaly timeline dashboard
+* human-in-the-loop review
+* report generation for QA testers
+
+## Stage 4 — Studio-facing system
+
+* model efficiency measurement
+* real-time or near-real-time inference
+* false-positive reduction
+* active learning with tester feedback
+* integration with Jira/Linear/GitHub Issues
+
+## Stage 5 — Research platform
+
+* world-model based game testing
+* automated trajectory generation
+* latent surprise-guided exploration
+* cross-engine benchmark
+* publishable follow-up papers
+
+For each stage, state:
+
+* research contribution
+* engineering artifact
+* measurable metric
+* expected difficulty
+* paper or competition value
+
+---
+
+# 12. REQUIRED FINAL OUTPUT FORMAT
+
+Your final answer must follow this exact structure.
+
+# Executive Verdict
+
+* Is WOB R5 fixable?
+* Why is it stuck?
+* Current most likely blocker
+* Whether code changes are required
+* Whether Kaggle rerun is required
+* Whether the project is still on track for FISAT
+* Whether it is ready for research competition defense
+
+# Evidence Read Log
+
+Table:
+
+* file/path/source
+* what you read
+* why it matters
+* key finding
+
+# WOB R5 Failure Timeline
+
+Chronological table:
+
+* failure
+* symptom
+* root cause
+* fixed or not
+* evidence
+* next action
+
+# Root Cause Tree
+
+Use the tree structure requested above.
+
+# Stage-by-Stage WOB R5 Audit
+
+Table for all WOB R5 stages:
+
+* stage
+* input
+* output
+* validator
+* possible failure
+* current status
+* fix
+
+# Code Quality Audit
+
+Include:
+
+* import architecture
+* path handling
+* Kaggle assumptions
+* failure handling
+* artifact packaging
+* validator design
+* tests
+* clean-code issues
+* recommended improvements
+
+# Patch Plan
+
+If code should be changed, provide:
+
+* exact files to edit
+* exact changes
+* why
+* risk
+* tests
+* rollback plan
+
+If you can edit the repo, implement the patch and show diff summary.
+
+# Kaggle Runbook
+
+Provide a clean Kaggle notebook/runbook:
+
+* setup
+* clone
+* dataset check
+* GPU check
+* run
+* tail log
+* output download
+* failure classification
+
+# FISAT / Competition Impact
+
+Explain how WOB R5 affects:
+
+* FPT Scientific Research Competition
+* FISAT paper
+* international paper quality
+* long-term project contribution
+
+# Slide and Defense Strategy
+
+Provide:
+
+* 10-slide outline
+* English script skeleton
+* safe wording for WOB R5 status
+* emergency wording if WOB R5 still fails
+
+# Paper Strategy
+
+Provide:
+
+* Path A conservative
+* Path B strong after WOB R5 success
+* claims allowed
+* claims forbidden
+* figures/tables needed
+
+# Final Next Actions
+
+Give a numbered list of the next exact actions.
+
+Each action must include:
+
+* command or file
+* expected output
+* success condition
+* fallback if fail
+
+End with one sentence:
+
+“The immediate goal is not to look impressive; it is to produce one validated, hash-bound, claim-safe WOB R5 result that can survive reviewer scrutiny.”
+
+---
+
+# 13. STYLE
+
+Write mostly in Vietnamese.
+
+Use English only for:
+
+* presentation script,
+* Q&A answers,
+* slide titles if needed,
+* paper abstract/title.
+
+Be direct and technical.
+
+Do not give generic advice.
+
+Do not flatter the project without evidence.
+
+Do not say “world-class” unless you define exactly what evidence would make it world-class.
+
+Do not hide bad news.
+
+Start now.

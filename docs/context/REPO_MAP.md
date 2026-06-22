@@ -19,7 +19,6 @@ Generator: `scripts/update_context_cache.py`
 | `configs/` | Experiment and runtime configuration. |
 | `docs/` | Research evidence, workflows, context cache, and roadmap. |
 | `dvc.yaml/` | Tracked repository path. |
-| `kaggle/` | Validation-only launch packages. |
 | `paper/` | Cautious manuscript scaffold and generated tables. |
 | `pyproject.toml/` | Tracked repository path. |
 | `requirements/` | Optional runtime requirement pins. |
@@ -296,6 +295,7 @@ Generator: `scripts/update_context_cache.py`
 | `tests/test_lewm_training.py` | lewm_training |
 | `tests/test_locked_test_gate.py` | locked_test_gate |
 | `tests/test_manifest.py` | manifest |
+| `tests/test_materialize_lance_stale_cleanup.py` | materialize_lance_stale_cleanup |
 | `tests/test_mini_latent.py` | mini_latent |
 | `tests/test_model_selection.py` | model_selection |
 | `tests/test_neural_protocol.py` | neural_protocol |
@@ -318,6 +318,7 @@ Generator: `scripts/update_context_cache.py`
 | `tests/test_run_kaggle_lewm.py` | run_kaggle_lewm |
 | `tests/test_score_clips.py` | score_clips |
 | `tests/test_splits.py` | splits |
+| `tests/test_staged_install_completeness.py` | staged_install_completeness |
 | `tests/test_statistics.py` | statistics |
 | `tests/test_tempglitch.py` | tempglitch |
 | `tests/test_tempglitch_split_runner.py` | tempglitch_split_runner |

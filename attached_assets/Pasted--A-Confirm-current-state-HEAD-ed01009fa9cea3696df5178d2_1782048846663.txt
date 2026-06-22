@@ -1,0 +1,73 @@
+=== A. Confirm current state ===
+HEAD=ed01009fa9cea3696df5178d2a84506c53431a97
+13:33:09 | INFO  | __init__.py | NumExpr defaulting to 4 threads.
+Traceback (most recent call last):
+  File "<stdin>", line 3, in <module>
+  File "/usr/local/lib/python3.12/dist-packages/hydra/_internal/utils.py", line 644, in _locate
+    obj = getattr(obj, part)
+          ^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/stable_pretraining/__init__.py", line 248, in __getattr__
+    mod = importlib.import_module(f".{name}", __name__)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/importlib/__init__.py", line 90, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 999, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/usr/local/lib/python3.12/dist-packages/stable_pretraining/backbone/__init__.py", line 17, in <module>
+    from .patch_masking import (
+  File "/usr/local/lib/python3.12/dist-packages/stable_pretraining/backbone/patch_masking.py", line 12, in <module>
+    from stable_pretraining.data.masking import multi_block_mask
+  File "/usr/local/lib/python3.12/dist-packages/stable_pretraining/data/__init__.py", line 7, in <module>
+    from . import dataset_stats, sampler, synthetic_data, transforms
+  File "/usr/local/lib/python3.12/dist-packages/stable_pretraining/data/synthetic_data.py", line 15, in <module>
+    from .datasets import Dataset
+  File "/usr/local/lib/python3.12/dist-packages/stable_pretraining/data/datasets.py", line 28, in <module>
+    import lightning as pl
+ModuleNotFoundError: No module named 'lightning'
+---------------------------------------------------------------------------
+CalledProcessError                        Traceback (most recent call last)
+/tmp/ipykernel_58/2950652909.py in <cell line: 0>()
+----> 1 get_ipython().run_cell_magic('bash', '', 'set -Eeuo pipefail\n\nREPO_DIR="/kaggle/working/glitch-world-model"\ncd "$REPO_DIR"\n\nexport PYTHONPATH="$REPO_DIR/src:$REPO_DIR:${PYTHONPATH:-}"\n\nexport KAGGLE_INPUT_ROOT="/kaggle/input"\nexport R5_WOB_OUTPUT_DIR="$REPO_DIR/outputs/r5_wob_identical_episode"\nexport R5_WOB_SUCCESS_TARBALL="/kaggle/working/r5_wob_identical_episode_outputs.tar.gz"\nexport R5_WOB_FAILURE_DEBUG="/kaggle/working/r5_wob_identical_episode_failure_debug.tar.gz"\nexport R5_WOB_FAILURE_DEBUG_DIR="/kaggle/working/r5_wob_identical_episode_failure_debug"\nexport R5_WOB_LOG="/kaggle/working/r5_wob_remaining_after_stable_pretraining.log"\n\nexport R5_WOB_BASELINE_BATCH_SIZE=4\nexport R5_WOB_LEWM_BATCH_SIZE=2\nexport R5_WOB_DEVICE=cuda\nexport R5_WOB_N_BOOTSTRAP=1000\nexport R5_WOB_BOOTSTRAP_SEED=42\n\nrm -f "$R5_WOB_LOG" "$R5_WOB_FAILURE_DEBUG" "${R5_WOB_FAILURE_DEBUG}.sha256"\nexec > >(tee -a "$R5_WOB_LOG") 2>&1\n\npackage_failure() {\n  local failed_stage="${1:-unknown}"\n  local exit_code="${2:-1}"\n\n  echo\n  echo "=== R5-WOB FAILED ==="\n  echo "failed_stage=$failed_stage"\n  echo "exit_code=$exit_code"\n\n  rm -rf "$R5_WOB_FAILURE_DEBUG_DIR"\n  mkdir -p "$R5_WOB_FAILURE_DEBUG_DIR"\n\n  cp "$R5_WOB_LOG" "$R5_WOB_FAILURE_DEBUG_DIR/r5_wob_remaining_after_stable_pretraining.log" || true\n\n  cat > "$R5_WOB_FAILURE_DEBUG_DIR/failure_summary.json" <<EOF\n{\n  "schema_version": 1,\n  "failure_class": "STAGE_FAILURE",\n  "phase": "$failed_stage",\n  "exit_code": $exit_code,\n  "git_sha": "$(git rev-parse HEAD)",\n  "output_dir_exists": $(test -d "$R5_WOB_OUTPUT_DIR" && echo true || echo false),\n  "locked_test_materialized": false,\n  "locked_test_scored": false\n}\nEOF\n\n  if [[ -d "$R5_WOB_OUTPUT_DIR" ]]; then\n    mkdir -p "$R5_WOB_FAILURE_DEBUG_DIR/stage_markers"\n    find "$R5_WOB_OUTPUT_DIR" -maxdepth 1 -name "stage_*.json" -type f -exec cp {} "$R5_WOB_FAILURE_DEBUG_DIR/stage_markers/" \\; || true\n    find "$R5_WOB_OUTPUT_DIR" -maxdepth 3 -print | sort > "$R5_WOB_FAILURE_DEBUG_DIR/output_tree.txt" || true\n  fi\n\n  tar -czf "$R5_WOB_FAILURE_DEBUG" -C "$R5_WOB_FAILURE_DEBUG_DIR" .\n  sha256sum "$R5_WOB_FAILURE_DEBUG" > "${R5_WOB_FAILURE_DEBUG}.sha256"\n\n  echo\n  echo "=== DOWNLOAD FAILURE FILES ==="\n  echo "$R5_WOB_FAILURE_DEBUG"\n  echo "${R5_WOB_FAILURE_DEBUG}.sha256"\n  echo "$R5_WOB_LOG"\n}\n\nrun_stage() {\n  local stage="$1"\n\n  echo\n  echo "================================================================"\n  echo "START_STAGE=$stage"\n  echo "TIME_UTC=$(date -u)"\n  echo "================================================================"\n\n  free -h || true\n  df -h /kaggle/working || true\n  nvidia-smi || true\n\n  set +e\n  python scripts/run_r5_wob_stage.py \\\n    --stage "$stage" \\\n    --input-root "$KAGGLE_INPUT_ROOT" \\\n    --output-dir "$R5_WOB_OUTPUT_DIR" \\\n    --success-tarball "$R5_WOB_SUCCESS_TARBALL" \\\n    --baseline-batch-size "$R5_WOB_BASELINE_BATCH_SIZE" \\\n    --lewm-batch-size "$R5_WOB_LEWM_BATCH_SIZE" \\\n    --device "$R5_WOB_DEVICE" \\\n    --bootstrap-seed "$R5_WOB_BOOTSTRAP_SEED" \\\n    --n-bootstrap "$R5_WOB_N_BOOTSTRAP"\n  code=$?\n  set -e\n\n  if [[ "$code" -ne 0 ]]; then\n    package_failure "$stage" "$code"\n    exit "$code"\n  fi\n\n  echo\n  echo "END_STAGE=$stage"\n  ls -lh "$R5_WOB_OUTPUT_DIR/stage_${stage}.json" || true\n}\n\necho "=== A. Confirm current state ==="\necho "HEAD=$(git rev-parse HEAD)"\npython - <<\'PY\'\nfrom hydra._internal.utils import _locate\ntarget = "stable_pretraining.backbone.utils.vit_hf"\nprint("Hydra locate:", _locate(target))\nPY\n\nfor marker in stage_preflight.json stage_materialize_lance.json stage_baseline_scores.json; do\n  test -f "$R5_WOB_OUTPUT_DIR/$marker" || { echo "Missing $marker"; exit 1; }\n  echo "FOUND $marker"\ndone\n\necho\necho "=== B. Run remaining R5-WOB stages ==="\nrun_stage lewm_seed42\nrun_stage lewm_seed43\nrun_stage lewm_seed44\nrun_stage aggregate_metrics\nrun_stage validate_package\n\necho\necho "=== SUCCESS — download these files ==="\necho "$R5_WOB_SUCCESS_TARBALL"\necho "${R5_WOB_SUCCESS_TARBALL}.sha256"\necho "$R5_WOB_LOG"\n\nls -lh "$R5_WOB_SUCCESS_TARBALL" "${R5_WOB_SUCCESS_TARBALL}.sha256"\ncat "${R5_WOB_SUCCESS_TARBALL}.sha256"\n\necho\necho "R5_WOB_REMAINING_AFTER_STABLE_PRETRAINING_DONE"\n')
+
+/usr/local/lib/python3.12/dist-packages/IPython/core/interactiveshell.py in run_cell_magic(self, magic_name, line, cell)
+   2471             with self.builtin_trap:
+   2472                 args = (magic_arg_s, cell)
+-> 2473                 result = fn(*args, **kwargs)
+   2474             return result
+   2475 
+
+/usr/local/lib/python3.12/dist-packages/IPython/core/magics/script.py in named_script_magic(line, cell)
+    140             else:
+    141                 line = script
+--> 142             return self.shebang(line, cell)
+    143 
+    144         # write a basic docstring:
+
+/usr/local/lib/python3.12/dist-packages/decorator/__init__.py in fun(*args, **kw)
+    245             if not kwsyntax:
+    246                 args, kw = fix(args, kw, sig)
+--> 247             return caller(func, *(extras + args), **kw)
+    248 
+    249     fun.__doc__ = func.__doc__
+
+/usr/local/lib/python3.12/dist-packages/IPython/core/magic.py in <lambda>(f, *a, **k)
+    185     # but it's overkill for just that one bit of state.
+    186     def magic_deco(arg):
+--> 187         call = lambda f, *a, **k: f(*a, **k)
+    188 
+    189         if callable(arg):
+
+/usr/local/lib/python3.12/dist-packages/IPython/core/magics/script.py in shebang(self, line, cell)
+    243             sys.stderr.flush()
+    244         if args.raise_error and p.returncode!=0:
+--> 245             raise CalledProcessError(p.returncode, cell, output=out, stderr=err)
+    246 
+    247     def _run_script(self, p, cell, to_close):
+
+CalledProcessError: Command 'b'set -Eeuo pipefail\n\nREPO_DIR="/kaggle/working/glitch-world-model"\ncd "$REPO_DIR"\n\nexport PYTHONPATH="$REPO_DIR/src:$REPO_DIR:${PYTHONPATH:-}"\n\nexport KAGGLE_INPUT_ROOT="/kaggle/input"\nexport R5_WOB_OUTPUT_DIR="$REPO_DIR/outputs/r5_wob_identical_episode"\nexport R5_WOB_SUCCESS_TARBALL="/kaggle/working/r5_wob_identical_episode_outputs.tar.gz"\nexport R5_WOB_FAILURE_DEBUG="/kaggle/working/r5_wob_identical_episode_failure_debug.tar.gz"\nexport R5_WOB_FAILURE_DEBUG_DIR="/kaggle/working/r5_wob_identical_episode_failure_debug"\nexport R5_WOB_LOG="/kaggle/working/r5_wob_remaining_after_stable_pretraining.log"\n\nexport R5_WOB_BASELINE_BATCH_SIZE=4\nexport R5_WOB_LEWM_BATCH_SIZE=2\nexport R5_WOB_DEVICE=cuda\nexport R5_WOB_N_BOOTSTRAP=1000\nexport R5_WOB_BOOTSTRAP_SEED=42\n\nrm -f "$R5_WOB_LOG" "$R5_WOB_FAILURE_DEBUG" "${R5_WOB_FAILURE_DEBUG}.sha256"\nexec > >(tee -a "$R5_WOB_LOG") 2>&1\n\npackage_failure() {\n  local failed_stage="${1:-unknown}"\n  local exit_code="${2:-1}"\n\n  echo\n  echo "=== R5-WOB FAILED ==="\n  echo "failed_stage=$failed_stage"\n  echo "exit_code=$exit_code"\n\n  rm -rf "$R5_WOB_FAILURE_DEBUG_DIR"\n  mkdir -p "$R5_WOB_FAILURE_DEBUG_DIR"\n\n  cp "$R5_WOB_LOG" "$R5_WOB_FAILURE_DEBUG_DIR/r5_wob_remaining_after_stable_pretraining.log" || true\n\n  cat > "$R5_WOB_FAILURE_DEBUG_DIR/failure_summary.json" <<EOF\n{\n  "schema_version": 1,\n  "failure_class": "STAGE_FAILURE",\n  "phase": "$failed_stage",\n  "exit_code": $exit_code,\n  "git_sha": "$(git rev-parse HEAD)",\n  "output_dir_exists": $(test -d "$R5_WOB_OUTPUT_DIR" && echo true || echo false),\n  "locked_test_materialized": false,\n  "locked_test_scored": false\n}\nEOF\n\n  if [[ -d "$R5_WOB_OUTPUT_DIR" ]]; then\n    mkdir -p "$R5_WOB_FAILURE_DEBUG_DIR/stage_markers"\n    find "$R5_WOB_OUTPUT_DIR" -maxdepth 1 -name "stage_*.json" -type f -exec cp {} "$R5_WOB_FAILURE_DEBUG_DIR/stage_markers/" \\; || true\n    find "$R5_WOB_OUTPUT_DIR" -maxdepth 3 -print | sort > "$R5_WOB_FAILURE_DEBUG_DIR/output_tree.txt" || true\n  fi\n\n  tar -czf "$R5_WOB_FAILURE_DEBUG" -C "$R5_WOB_FAILURE_DEBUG_DIR" .\n  sha256sum "$R5_WOB_FAILURE_DEBUG" > "${R5_WOB_FAILURE_DEBUG}.sha256"\n\n  echo\n  echo "=== DOWNLOAD FAILURE FILES ==="\n  echo "$R5_WOB_FAILURE_DEBUG"\n  echo "${R5_WOB_FAILURE_DEBUG}.sha256"\n  echo "$R5_WOB_LOG"\n}\n\nrun_stage() {\n  local stage="$1"\n\n  echo\n  echo "================================================================"\n  echo "START_STAGE=$stage"\n  echo "TIME_UTC=$(date -u)"\n  echo "================================================================"\n\n  free -h || true\n  df -h /kaggle/working || true\n  nvidia-smi || true\n\n  set +e\n  python scripts/run_r5_wob_stage.py \\\n    --stage "$stage" \\\n    --input-root "$KAGGLE_INPUT_ROOT" \\\n    --output-dir "$R5_WOB_OUTPUT_DIR" \\\n    --success-tarball "$R5_WOB_SUCCESS_TARBALL" \\\n    --baseline-batch-size "$R5_WOB_BASELINE_BATCH_SIZE" \\\n    --lewm-batch-size "$R5_WOB_LEWM_BATCH_SIZE" \\\n    --device "$R5_WOB_DEVICE" \\\n    --bootstrap-seed "$R5_WOB_BOOTSTRAP_SEED" \\\n    --n-bootstrap "$R5_WOB_N_BOOTSTRAP"\n  code=$?\n  set -e\n\n  if [[ "$code" -ne 0 ]]; then\n    package_failure "$stage" "$code"\n    exit "$code"\n  fi\n\n  echo\n  echo "END_STAGE=$stage"\n  ls -lh "$R5_WOB_OUTPUT_DIR/stage_${stage}.json" || true\n}\n\necho "=== A. Confirm current state ==="\necho "HEAD=$(git rev-parse HEAD)"\npython - <<\'PY\'\nfrom hydra._internal.utils import _locate\ntarget = "stable_pretraining.backbone.utils.vit_hf"\nprint("Hydra locate:", _locate(target))\nPY\n\nfor marker in stage_preflight.json stage_materialize_lance.json stage_baseline_scores.json; do\n  test -f "$R5_WOB_OUTPUT_DIR/$marker" || { echo "Missing $marker"; exit 1; }\n  echo "FOUND $marker"\ndone\n\necho\necho "=== B. Run remaining R5-WOB stages ==="\nrun_stage lewm_seed42\nrun_stage lewm_seed43\nrun_stage lewm_seed44\nrun_stage aggregate_metrics\nrun_stage validate_package\n\necho\necho "=== SUCCESS \xe2\x80\x94 download these files ==="\necho "$R5_WOB_SUCCESS_TARBALL"\necho "${R5_WOB_SUCCESS_TARBALL}.sha256"\necho "$R5_WOB_LOG"\n\nls -lh "$R5_WOB_SUCCESS_TARBALL" "${R5_WOB_SUCCESS_TARBALL}.sha256"\ncat "${R5_WOB_SUCCESS_TARBALL}.sha256"\n\necho\necho "R5_WOB_REMAINING_AFTER_STABLE_PRETRAINING_DONE"\n'' returned non-zero exit status 1.
+add Codeadd Markdown

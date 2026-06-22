@@ -1,0 +1,121 @@
+You are Replit Agent helping me operate the Kaggle R5-WOB staged evaluation safely.
+
+Important update:
+PR #3 has already been merged into `main`.
+
+Merged PR:
+
+* PR title: `wob: fix gate8 calibration count for staged r5`
+* Merge commit SHA on main:
+  `47ba2a6223029ea6f13e79af044a44610b64ff09`
+
+Root cause fixed:
+Stage 3 `baseline_scores` previously failed because Gate8 baseline validation used the TempGlitch default calibration episode count = 2, while the WOB staged manifest has 12 calibration_normal episodes. PR #3 fixed this by passing WOB calibration count = 12 and added regression tests.
+
+Your task:
+Guide me step-by-step to rerun the Kaggle R5-WOB staged evaluation using the merged main commit.
+
+Strict rules:
+
+* Do not ask me to run `latest main` without a pinned SHA.
+* Use this exact `REPO_REF`:
+  `47ba2a6223029ea6f13e79af044a44610b64ff09`
+* Do not touch locked test.
+* Do not materialize locked rows.
+* Do not score locked rows.
+* Do not add WOB performance claims before validated output exists.
+* Do not ask me to upload or commit Kaggle outputs to GitHub.
+* Do not run R5-XGAME or R6-WOB yet.
+* Do not use local divergent Replit commits for Kaggle.
+* Kaggle must clone the GitHub repo and checkout the pinned merge commit.
+
+Current Kaggle setup:
+The notebook already has the 3 required datasets mounted:
+
+1. `benedictwilkinsai/world-of-bugs-normal`
+2. `benedictwilkinsai/world-of-bugs-test`
+3. my seed artifact dataset containing seed42/43/44 WOB artifacts
+
+Required Kaggle action:
+Give me one clean Kaggle cell that:
+
+1. Freshly clones the repo;
+2. Checks out:
+   `47ba2a6223029ea6f13e79af044a44610b64ff09`;
+3. Cleans old failed R5-WOB outputs;
+4. Uses full mode, not smoke:
+
+   * `R5_WOB_SMOKE=0`
+   * `R5_WOB_FORCE=1`
+   * `R5_WOB_BASELINE_BATCH_SIZE=4`
+   * `R5_WOB_LEWM_BATCH_SIZE=2`
+   * `R5_WOB_DEVICE=cuda`
+   * `R5_WOB_N_BOOTSTRAP=1000`
+   * `R5_WOB_BOOTSTRAP_SEED=42`
+5. Runs:
+   `bash cloud/wob_r5_eval/run_kaggle_r5_wob_staged.sh`
+6. Prints final success/failure download paths.
+
+The cell must print these paths on success:
+
+* `/kaggle/working/r5_wob_identical_episode_outputs.tar.gz`
+* `/kaggle/working/r5_wob_identical_episode_outputs.tar.gz.sha256`
+
+The cell must print these paths on failure:
+
+* `/kaggle/working/r5_wob_identical_episode_failure_debug.tar.gz`
+* `/kaggle/working/r5_wob_identical_episode_failure_debug.tar.gz.sha256`
+* `/kaggle/working/r5_wob_staged.log`
+
+Also give me a monitoring checklist:
+
+* which stage should now pass;
+* what stage failed previously;
+* what to watch after `baseline_scores`;
+* what to download if success;
+* what to download if failure.
+
+Expected behavior:
+
+* Stage 1 `preflight` should pass.
+* Stage 2 `materialize_lance` should pass.
+* Stage 3 `baseline_scores` should no longer fail with:
+  `invalid calibration episode count: 12`.
+* If Stage 3 passes, the run should proceed to:
+  `lewm_seed42`, `lewm_seed43`, `lewm_seed44`, `aggregate_metrics`, `validate_package`.
+
+Final response format:
+
+# Kaggle R5-WOB Rerun Instructions
+
+## 1. Confirmed Commit
+
+State the exact pinned commit SHA.
+
+## 2. What This Fix Addresses
+
+Explain the Stage 3 baseline calibration-count fix.
+
+## 3. Kaggle Cell
+
+Provide the complete cell.
+
+## 4. Monitoring Checklist
+
+Tell me what stages to watch.
+
+## 5. Success Files
+
+List exact files to download.
+
+## 6. Failure Files
+
+List exact files to download.
+
+## 7. What Not To Do
+
+Remind me:
+
+* do not run old commits;
+* do not run R5-XGAME yet;
+* do not make WOB claims before validation.
