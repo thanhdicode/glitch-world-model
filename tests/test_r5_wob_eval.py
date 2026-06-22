@@ -164,3 +164,79 @@ def test_r5_wob_dry_run_reports_missing_local_coverage(tmp_path: Path, monkeypat
     assert result["status"] == "dry_run"
     assert result["train_coverage"]["missing_count"] == 48
     assert result["eval_coverage"]["missing_count"] == 72
+
+
+def test_build_lance_from_rows_streams_episodes_into_writer(tmp_path: Path, monkeypatch):
+    normal_root = tmp_path / "normal"
+    test_root = tmp_path / "test"
+    first_tar = normal_root / "NORMAL-TRAIN" / "ep-0000" / "ep-0000.tar"
+    second_tar = test_root / "TEST" / "Bug" / "ep-0001" / "ep-0001.tar"
+    first_tar.parent.mkdir(parents=True)
+    second_tar.parent.mkdir(parents=True)
+    first_tar.write_bytes(b"normal")
+    second_tar.write_bytes(b"buggy")
+    rows = [
+        {
+            "source": "NORMAL-TRAIN/ep-0000/ep-0000.tar",
+            "episode_id": "normal/ep-0000",
+            "pair_id": "normal/ep-0000",
+            "category": "Normal",
+            "label": "Normal",
+            "split": "train",
+        },
+        {
+            "source": "TEST/Bug/ep-0001/ep-0001.tar",
+            "episode_id": "Bug/ep-0001",
+            "pair_id": "Bug/ep-0001",
+            "category": "Bug",
+            "label": "Buggy",
+            "split": "validation",
+        },
+    ]
+
+    captured: dict[str, object] = {}
+    messages: list[str] = []
+
+    def fake_episode_from_wob_tar(path: Path, **kwargs):
+        return {"path": path, **kwargs}
+
+    def fake_write_lance_dataset(
+        episodes,
+        output_path: Path,
+        *,
+        mode: str = "error",
+        batch_size: int = 1,
+        progress=None,
+    ) -> Path:
+        captured["episodes_is_list"] = isinstance(episodes, list)
+        captured["mode"] = mode
+        captured["batch_size"] = batch_size
+        collected = list(episodes)
+        captured["episodes"] = collected
+        if progress is not None:
+            progress(len(collected))
+        return output_path
+
+    monkeypatch.setattr(r5_wob_eval, "episode_from_wob_tar", fake_episode_from_wob_tar)
+    monkeypatch.setattr(r5_wob_eval, "write_lance_dataset", fake_write_lance_dataset)
+
+    output = r5_wob_eval._build_lance_from_rows(
+        rows,
+        normal_root=normal_root,
+        test_root=test_root,
+        output_path=tmp_path / "out.lance",
+        write_batch_size=3,
+        progress=messages.append,
+        progress_label="materialize/train",
+        progress_every=1,
+    )
+
+    assert output == tmp_path / "out.lance"
+    assert captured["episodes_is_list"] is False
+    assert captured["mode"] == "error"
+    assert captured["batch_size"] == 3
+    assert [item["episode_id"] for item in captured["episodes"]] == [
+        "normal/ep-0000",
+        "Bug/ep-0001",
+    ]
+    assert any("wrote 2/2 episodes" in message for message in messages)

@@ -1,7 +1,7 @@
 # NEXT_ACTION.md
 
-Last updated: 2026-06-22T03:15:03+00:00
-Commit: `3cc0929bbe7884c3ad856591a0dfc4428df550de`
+Last updated: 2026-06-20T17:28:50+00:00
+Commit: `f3fb5c3bd7ae004684888960b516d6895246dc5d`
 
 ## Current Priority
 Wait for the staged non-locked R5-WOB Kaggle run to finish, then take exactly one offline intake

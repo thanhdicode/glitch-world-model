@@ -169,18 +169,27 @@ def _build_lance_from_rows(
     test_root: Path,
     output_path: Path,
     max_steps: int | None = None,
+    write_batch_size: int = 1,
+    progress: Callable[[str], None] | None = None,
+    progress_label: str | None = None,
+    progress_every: int = 10,
 ) -> Path:
     dataset_ids = {
         "Normal": "benedictwilkinsai/world-of-bugs-normal",
         "Buggy": "benedictwilkinsai/world-of-bugs-test",
     }
-    episodes = []
-    for row in rows:
-        tar_path = _resolve_source_path(row, normal_root=normal_root, test_root=test_root)
-        if not tar_path.is_file():
-            raise FileNotFoundError(f"Missing WOB tar required for evaluation: {tar_path}")
-        episodes.append(
-            episode_from_wob_tar(
+    if progress_every < 1:
+        raise ValueError("progress_every must be positive.")
+
+    row_count = len(rows)
+    label = progress_label or output_path.name
+
+    def iter_episodes():
+        for row in rows:
+            tar_path = _resolve_source_path(row, normal_root=normal_root, test_root=test_root)
+            if not tar_path.is_file():
+                raise FileNotFoundError(f"Missing WOB tar required for evaluation: {tar_path}")
+            yield episode_from_wob_tar(
                 tar_path,
                 dataset_id=dataset_ids[row["label"]],
                 source=row["source"],
@@ -192,8 +201,19 @@ def _build_lance_from_rows(
                 action_dim=4,
                 max_steps=max_steps,
             )
-        )
-    return write_lance_dataset(episodes, output_path)
+
+    def on_progress(written_count: int) -> None:
+        if progress is None:
+            return
+        if written_count == row_count or written_count % progress_every == 0:
+            progress(f"{label}: wrote {written_count}/{row_count} episodes to {output_path}")
+
+    return write_lance_dataset(
+        iter_episodes(),
+        output_path,
+        batch_size=write_batch_size,
+        progress=on_progress if progress is not None else None,
+    )
 
 
 def _build_window_manifest(

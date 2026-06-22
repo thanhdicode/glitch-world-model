@@ -6,7 +6,7 @@ import re
 import tarfile
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any, Callable, Iterable
 
 import numpy as np
 from PIL import Image
@@ -229,6 +229,8 @@ def write_lance_dataset(
     output_path: Path,
     *,
     mode: str = "error",
+    batch_size: int = 1,
+    progress: Callable[[int], None] | None = None,
 ) -> Path:
     try:
         from stable_worldmodel.data import LanceWriter
@@ -236,12 +238,28 @@ def write_lance_dataset(
         raise LeWMDataUnavailableError(
             "Lance conversion requires the isolated LeWM runtime from requirements/lewm-runtime.txt."
         ) from exc
-    payloads = [episode.writer_payload() for episode in episodes]
-    if not payloads:
-        raise ValueError("Cannot write an empty LeWM dataset.")
+    if batch_size < 1:
+        raise ValueError("batch_size must be positive.")
     output_path.parent.mkdir(parents=True, exist_ok=True)
+    written_episode_count = 0
+    payload_batch: list[dict[str, Any]] = []
     with LanceWriter(output_path.resolve().as_posix(), mode=mode) as writer:
-        writer.write_episodes(payloads)
+        for episode in episodes:
+            payload_batch.append(episode.writer_payload())
+            if len(payload_batch) < batch_size:
+                continue
+            writer.write_episodes(payload_batch)
+            written_episode_count += len(payload_batch)
+            if progress is not None:
+                progress(written_episode_count)
+            payload_batch = []
+        if payload_batch:
+            writer.write_episodes(payload_batch)
+            written_episode_count += len(payload_batch)
+            if progress is not None:
+                progress(written_episode_count)
+    if written_episode_count == 0:
+        raise ValueError("Cannot write an empty LeWM dataset.")
     return output_path
 
 

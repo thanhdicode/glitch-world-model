@@ -1,36 +1,57 @@
 # LAST_HANDOFF.md
 
-Last completed task: WOB R5 Engineering Audit, Code Repair & Kaggle Runbook (Task #7)
+Last completed task: R5-WOB materialize_lance streaming fix and failure classification hardening
 Commit: pending task commit
 Date: 2026-06-22
 
 ## What Changed
 
-- Completed full WOB R5 master prompt audit: root cause tree, stage-by-stage audit table, and code
-  quality audit written to `docs/research/91_wob_r5_master_prompt_audit.md`.
-- Kaggle runbook with 9 cell groups written to `cloud/wob_r5_eval/KAGGLE_RUNBOOK.md`.
-- Confirmed `write_failure_debug` heredoc in `run_kaggle_r5_wob_staged.sh` is safe: PYTHONPATH
-  includes `$REPO_DIR` from line 7 before the ERR trap is registered at line 101; the shim at
-  `cloud/wob_kaggle_native/common.py` correctly re-exports `write_debug_tarball` from
-  `glitch_detection.wob_kaggle_common`. No migration needed.
-- Fixed three Python 3.10 compatibility issues that blocked full test-suite collection:
-  - `src/glitch_detection/failure_triage.py`: `StrEnum` (Python 3.11+) → version-gated shim.
-  - `scripts/repair_kaggle_kernel_write_path.py`: `datetime.UTC` (Python 3.11+) → `timezone.utc`.
-  - `tests/test_kaggle_runtime_environment.py`: `tomllib` (Python 3.11+) → `tomli` fallback.
-  - `tests/test_kaggle_submission_diagnostics.py`: Windows backslash path assertion → cross-platform
-    `str(Path(...))`.
-- Appended `python310_compat` row to `docs/workflows/failure_modes_registry.md`.
-- All 461 tests now pass; ruff lint and format checks pass clean.
+- Inspected the downloaded staged failure bundle and confirmed the current Kaggle retry now passes
+  `preflight`, validates all three seed artifacts, resolves 48/48 train rows and 72/72 eval rows,
+  then dies immediately after `=== 4. Materialize Lance datasets ===` with exit code `120` and no
+  traceback.
+- Confirmed the materialization hot path was double-buffering memory:
+  `src/glitch_detection/r5_wob_eval.py::_build_lance_from_rows()` built a full in-memory
+  `episodes` list and `src/glitch_detection/lewm_data.py::write_lance_dataset()` built a second
+  full `payloads` list before any Lance write occurred.
+- Reworked `write_lance_dataset()` to stream small episode batches directly to `LanceWriter`
+  without constructing a full payload list, and reworked `_build_lance_from_rows()` to yield
+  episodes lazily instead of building a full Python list first.
+- Added staged `materialize_lance` progress logging in `src/glitch_detection/r5_wob_staged.py` for
+  train/normal/buggy Lance start and completion boundaries, row counts, output paths, and window
+  manifest completion.
+- Hardened seed artifact discovery in `src/glitch_detection/wob_kaggle_common.py` so Kaggle
+  sidecar-only layouts with already extracted `wob_seed{seed}_artifacts/` roots now resolve the
+  extracted root automatically instead of failing tarball detection.
+- Improved staged failure summaries in
+  `cloud/wob_r5_eval/run_kaggle_r5_wob_staged.sh` to capture `traceback_present`, recent log
+  lines, log tail text, and a stage-aware initial `failure_class`.
+- Improved offline failure intake in `scripts/verify_r5_wob_upload.py` so
+  `materialize_lance` hard-kill / no-traceback bundles classify as
+  `possible_resource_exhaustion` or `materialize_lance_no_traceback` rather than artifact
+  integrity, and the minimal-fix guidance no longer suggests fetching already validated seed
+  artifacts again.
+- Added focused regression coverage for streaming Lance writes, non-list episode streaming into the
+  Lance builder, sidecar-only extracted-root seed detection, materialize-stage logging, and
+  no-traceback failure classification.
 
 ## Checks Passed
 
-- `python -m pytest` → 461 passed
-- `python -m ruff check .` → All checks passed
-- `python -m ruff format --check .` → 225 files already formatted
-- `python scripts/validate_research_release.py --ci` → Research release validation passed
-- `python scripts/check_claim_registry.py` → 78 claims validated
-- `python scripts/doctor.py` → All probes OK
-- `python scripts/validate_context_cache.py` → Context cache validation passed
+- Focused WOB/R5 regression suites passed:
+  `python -m pytest tests/test_r5_wob_script_entrypoints.py tests/test_wob_kaggle_native_common.py tests/test_r5_wob_stage.py tests/test_wob_r5_runner.py`
+- Additional focused streaming/failure tests passed:
+  `python -m pytest tests/test_r5_wob_eval.py tests/test_lewm_data.py tests/test_r5_wob_postrun.py tests/test_materialize_lance_stale_cleanup.py`
+- `python -m ruff check .`
+- `python -m ruff format --check .`
+- `python scripts/validate_research_release.py --ci`
+- `python scripts/check_claim_registry.py`
+- `python scripts/validate_context_cache.py`
+- `python scripts/doctor.py`
+- `pre-commit run --all-files`
+- Full `python -m pytest` is still red for an unrelated pre-existing docs gap:
+  `tests/test_phase6e_kaggle_docs.py` expects
+  `kaggle/phase6e_video_autoencoder/phase6e_kaggle_cells.md`, which is absent in the current
+  branch state.
 
 ## Safety Status
 
@@ -42,9 +63,10 @@ Date: 2026-06-22
 
 ## Gate Status After Task
 
-- R5-WOB: all known infrastructure blockers fixed and regression-tested; the staged pipeline is
-  ready for a clean Kaggle retry. Actual WOB result remains unverified until a Kaggle success pair
-  passes offline intake via `verify_r5_wob_upload.py`.
+- R5-WOB: staged retry now preserves the prior stale-Lance cleanup, exact-mount discovery, and
+  import hardening, while materially reducing peak `materialize_lance` RAM pressure and improving
+  no-traceback failure observability; the actual WOB result remains unverified until a new Kaggle
+  success pair passes local intake.
 - R5-XGAME: fail-closed pending validated R5-WOB metrics plus receipt.
 - R6 TempGlitch CPU-safe queue: PREPARABLE_NOT_RUN.
 - R6 WOB queue: BLOCKED_R5_WOB_VALIDATION.
@@ -52,25 +74,28 @@ Date: 2026-06-22
 
 ## Open Blockers
 
-- A new Kaggle retry on the latest `main` is still required to produce a verified WOB result.
-- A downloaded R5-WOB success pair or failure-debug pair is required after the retry.
+- A new Kaggle retry on the staged-fix branch is still required to confirm the streaming
+  `materialize_lance` behavior under the real Kaggle memory budget.
+- A downloaded R5-WOB success pair or failure-debug pair is still required after retry.
 - R5-XGAME and all WOB ablations depend on validated R5-WOB evidence.
-- Three failure registry rows (`lancedb_api_mismatch`, `repo_root_import_assumption`,
-  `unbounded_kaggle_input_scan`) still show `TBD` commit SHA; these were fixed in the GitHub repo
-  before Replit sync and the exact SHAs are in GitHub history but not locally resolvable.
+- Full repo `pytest` still has the unrelated `phase6e_video_autoencoder` docs failure described
+  above.
+- GPU ablations require later protocol and execution decisions.
 
 ## Next Recommended Task
 
-- Run the staged R5-WOB Kaggle notebook using the current `main` commit and the runbook at
-  `cloud/wob_r5_eval/KAGGLE_RUNBOOK.md`.
-- On success: download the tarball + sidecar, run `python scripts/verify_r5_wob_upload.py`.
-- On failure: download the failure-debug tarball, check `failure_summary.json` phase, classify.
+- Rerun the staged R5-WOB Kaggle notebook using the staged-fix branch commit from this task.
+- On success, download the success tarball and sidecar and run the offline intake gate.
+- On failure, download the failure-debug tarball and sidecar and classify the failed stage.
 
 ## Files Likely Relevant Next
 
-- `cloud/wob_r5_eval/KAGGLE_RUNBOOK.md`
+- `src/glitch_detection/lewm_data.py`
+- `src/glitch_detection/r5_wob_eval.py`
 - `scripts/verify_r5_wob_upload.py`
-- `docs/research/88_r5_wob_postrun_workflow.md`
 - `src/glitch_detection/r5_wob_staged.py`
+- `src/glitch_detection/wob_kaggle_common.py`
+- `tests/test_r5_wob_stage.py`
 - `scripts/validate_r5_wob_evaluation.py`
+- `docs/research/88_r5_wob_postrun_workflow.md`
 - `docs/context/NEXT_ACTION.md`
