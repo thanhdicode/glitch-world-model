@@ -130,13 +130,13 @@ def test_build_submission_variants_uses_absolute_unique_package_paths(tmp_path: 
     assert len({variant["package_root"] for variant in variants}) == 4
     assert all(Path(variant["package_root"]).is_absolute() for variant in variants)
     assert variants[0]["command"][:3] == [
-        str(Path("C:/Python/python.exe")),
+        "C:\\Python\\python.exe",
         "-c",
         "from kaggle.cli import main; main()",
     ]
     assert variants[1]["command"][1:3] == ["-m", "kaggle"]
-    assert variants[2]["command"][0] == str(Path("C:/Tools/kaggle.exe"))
-    assert variants[3]["command"][0] == str(Path("C:/Clean/python.exe"))
+    assert variants[2]["command"][0] == "C:\\Tools\\kaggle.exe"
+    assert variants[3]["command"][0] == "C:\\Clean\\python.exe"
 
 
 def test_repair_script_runs_as_direct_cli():

@@ -96,6 +96,10 @@ The staged path runs these phases:
 Each stage writes a `stage_<name>.json` marker inside the output directory. Re-running the same
 cell in the same Kaggle session will skip completed stages whose hashes still validate.
 
+Before `preflight`, the staged runner now prints the exact discovered `NORMAL_INPUT_ROOT`,
+`TEST_INPUT_ROOT`, and per-seed artifact locations so silent Kaggle mount discovery stalls are
+fail-fast and observable.
+
 ## Optional Smoke Mode
 
 For end-to-end sanity checking only:
