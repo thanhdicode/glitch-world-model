@@ -13,11 +13,11 @@ purpose, exact code, expected output, and how to recognize success or failure.
 
 | Slot | Dataset slug | Contents |
 |---|---|---|
-| 1 | `thanhdicode/world-of-bugs-normal` | WOB normal episodes with `NORMAL-TRAIN/` subdirectory |
-| 2 | `thanhdicode/world-of-bugs-test` | WOB test episodes with `TEST/` subdirectory |
-| 3 | `thanhdicode/wob-seed42-artifacts` | `wob_seed42_artifacts.tar.gz` + `.sha256` |
-| 4 | `thanhdicode/wob-seed43-artifacts` | `wob_seed43_artifacts.tar.gz` + `.sha256` |
-| 5 | `thanhdicode/wob-seed44-artifacts` | `wob_seed44_artifacts.tar.gz` + `.sha256` |
+| 1 | `phmnhtngha/world-of-bugs-normal` | WOB normal episodes with `NORMAL-TRAIN/` subdirectory |
+| 2 | `phmnhtngha/world-of-bugs-test` | WOB test episodes with `TEST/` subdirectory |
+| 3 | `phmnhtngha/wob-seed42-artifacts` | `wob_seed42_artifacts.tar.gz` + `.sha256` |
+| 4 | `phmnhtngha/wob-seed43-artifacts` | `wob_seed43_artifacts.tar.gz` + `.sha256` |
+| 5 | `phmnhtngha/wob-seed44-artifacts` | `wob_seed44_artifacts.tar.gz` + `.sha256` |
 
 Accelerator: **GPU T4 x2** (T4 or better; P100 is blocked — sm_60 is below cu128 compute floor).
 
