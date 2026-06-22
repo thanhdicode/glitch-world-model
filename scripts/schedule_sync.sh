@@ -32,9 +32,11 @@ while [[ $# -gt 0 ]]; do
     --once)      ONCE=true; shift ;;
     --remote|--branch)
                  PASSTHROUGH_ARGS+=("$1" "$2"); shift 2 ;;
+    --allow-dirty)
+                 PASSTHROUGH_ARGS+=("$1"); shift ;;
     *)
       echo "Unknown argument: $1" >&2
-      echo "Usage: $0 [--interval SECONDS] [--once] [--remote REMOTE] [--branch BRANCH]" >&2
+      echo "Usage: $0 [--interval SECONDS] [--once] [--remote REMOTE] [--branch BRANCH] [--allow-dirty]" >&2
       exit 1
       ;;
   esac

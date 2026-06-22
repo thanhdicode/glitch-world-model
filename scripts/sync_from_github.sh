@@ -19,16 +19,18 @@ set -euo pipefail
 REMOTE="origin"
 BRANCH=""
 DRY_RUN=false
+ALLOW_DIRTY=false
 
 # --- Parse arguments ---
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --remote)  REMOTE="$2"; shift 2 ;;
-    --branch)  BRANCH="$2"; shift 2 ;;
-    --dry-run) DRY_RUN=true; shift ;;
+    --remote)       REMOTE="$2"; shift 2 ;;
+    --branch)       BRANCH="$2"; shift 2 ;;
+    --dry-run)      DRY_RUN=true; shift ;;
+    --allow-dirty)  ALLOW_DIRTY=true; shift ;;
     *)
       echo "Unknown argument: $1" >&2
-      echo "Usage: $0 [--remote REMOTE] [--branch BRANCH] [--dry-run]" >&2
+      echo "Usage: $0 [--remote REMOTE] [--branch BRANCH] [--dry-run] [--allow-dirty]" >&2
       exit 1
       ;;
   esac
@@ -49,9 +51,13 @@ echo ""
 if ! git diff --quiet || ! git diff --cached --quiet; then
   if [[ "$DRY_RUN" == true ]]; then
     echo "[WARN] Uncommitted local changes detected (dry-run; continuing)."
+  elif [[ "$ALLOW_DIRTY" == true ]]; then
+    echo "[WARN] Uncommitted local changes detected (--allow-dirty; continuing)."
+    git status --short
   else
     echo "[ERROR] You have uncommitted local changes. Commit or stash them first." >&2
     echo "        Run with --dry-run to preview without making changes." >&2
+    echo "        Run with --allow-dirty to skip this check." >&2
     git status --short
     exit 1
   fi
@@ -93,17 +99,30 @@ if [[ "$BEFORE_SHA" == "$REMOTE_SHA" ]]; then
   exit 0
 fi
 
-# --- Merge (fast-forward only to keep linear history) ---
+# --- Clean stale git lock files ---
+GIT_DIR=$(git rev-parse --git-dir)
+for lockfile in ORIG_HEAD.lock MERGE_HEAD.lock index.lock; do
+  if [[ -f "$GIT_DIR/$lockfile" ]]; then
+    echo "[INFO] Removing stale lock file: $GIT_DIR/$lockfile"
+    rm -f "$GIT_DIR/$lockfile"
+  fi
+done
+
+# --- Merge (fast-forward preferred, fallback to merge commit) ---
 echo ""
-echo "Merging $REMOTE/$BRANCH into $BRANCH (fast-forward only) ..."
-if ! git merge --ff-only "$REMOTE/$BRANCH"; then
-  echo "" >&2
-  echo "[ERROR] Fast-forward merge failed — the remote and local branches have diverged." >&2
-  echo "        Options:" >&2
-  echo "          1. Rebase:  git rebase $REMOTE/$BRANCH" >&2
-  echo "          2. Merge:   git merge $REMOTE/$BRANCH  (creates a merge commit)" >&2
-  echo "        Resolve conflicts, then re-run this script." >&2
-  exit 1
+echo "Merging $REMOTE/$BRANCH into $BRANCH ..."
+if git merge --ff-only "$REMOTE/$BRANCH" 2>/dev/null; then
+  echo "Fast-forward merge succeeded."
+else
+  echo "[INFO] Branches have diverged — fast-forward not possible."
+  echo "       Falling back to merge commit ..."
+  if ! git merge --no-edit -m "sync: merge $REMOTE/$BRANCH into $BRANCH" "$REMOTE/$BRANCH"; then
+    echo "" >&2
+    echo "[ERROR] Merge failed — likely a conflict that requires manual resolution." >&2
+    echo "        Resolve conflicts, commit, then re-run this script." >&2
+    exit 1
+  fi
+  echo "Merge commit created successfully."
 fi
 
 AFTER_SHA=$(git rev-parse HEAD)
