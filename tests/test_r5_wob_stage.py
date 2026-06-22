@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import tarfile
 from pathlib import Path
+from unittest.mock import patch
 
 from glitch_detection import r5_wob_staged
 
@@ -127,3 +128,89 @@ def test_validate_stage_outputs_rejects_smoke_mismatch(tmp_path: Path):
 def test_staged_pipeline_uses_core_lance_eval_module_not_cli_wrapper():
     source = Path("src/glitch_detection/r5_wob_staged.py").read_text(encoding="utf-8")
     assert '_load_script_module("run_gate7_lance_scoring")' not in source
+
+
+def test_materialize_lance_logs_dataset_boundaries_and_counts(tmp_path: Path):
+    output_dir = tmp_path / "outputs"
+    output_dir.mkdir()
+    manifest_path = tmp_path / "eval_manifest.csv"
+    split_path = tmp_path / "split.csv"
+    readiness_path = tmp_path / "readiness.json"
+    preflight = {
+        "stage": "preflight",
+        "schema_version": 1,
+        "smoke": False,
+        "normal_root": str(tmp_path / "normal"),
+        "test_root": str(tmp_path / "test"),
+        "files": {},
+    }
+    eval_rows = [
+        {"evaluation_role": "calibration_normal", "episode_id": "n1"},
+        {"evaluation_role": "evaluation_buggy", "episode_id": "b1"},
+    ]
+    train_rows = [{"episode_id": "t1"}]
+    built_paths = {
+        r5_wob_staged.TRAIN_LANCE_NAME: output_dir / r5_wob_staged.TRAIN_LANCE_NAME,
+        r5_wob_staged.NORMAL_LANCE_NAME: output_dir / r5_wob_staged.NORMAL_LANCE_NAME,
+        r5_wob_staged.BUGGY_LANCE_NAME: output_dir / r5_wob_staged.BUGGY_LANCE_NAME,
+    }
+    for path in built_paths.values():
+        path.mkdir(parents=True)
+        (path / "part-0.bin").write_bytes(b"x")
+    window_manifest = output_dir / r5_wob_staged.WINDOW_MANIFEST_NAME
+    window_manifest.write_text("window_id\nw1\n", encoding="utf-8")
+
+    def fake_build_lance_from_rows(
+        rows,
+        *,
+        output_path: Path,
+        progress=None,
+        progress_label: str | None = None,
+        **kwargs,
+    ) -> Path:
+        output_path.mkdir(parents=True, exist_ok=True)
+        (output_path / "part-0.bin").write_bytes(b"x")
+        if progress is not None:
+            progress(f"{progress_label}: wrote {len(rows)}/{len(rows)} episodes to {output_path}")
+        return output_path
+
+    progress_messages: list[str] = []
+    with (
+        patch("glitch_detection.r5_wob_staged._maybe_skip", return_value=None),
+        patch(
+            "glitch_detection.r5_wob_staged._validate_stage_marker",
+            return_value=preflight,
+        ),
+        patch(
+            "glitch_detection.r5_wob_staged._validate_readiness_and_manifest",
+            return_value=({"eval_manifest_sha256": "abc"}, eval_rows),
+        ),
+        patch("glitch_detection.r5_wob_staged._load_train_rows", return_value=train_rows),
+        patch("glitch_detection.r5_wob_staged._render_eval_manifest", return_value="episode_id\n"),
+        patch(
+            "glitch_detection.r5_wob_staged._build_lance_from_rows",
+            side_effect=fake_build_lance_from_rows,
+        ),
+        patch(
+            "glitch_detection.r5_wob_staged._build_window_manifest",
+            return_value=([{"window_id": "w1"}], {"normal": "n", "buggy": "b"}),
+        ),
+        patch("glitch_detection.r5_wob_staged._progress", side_effect=progress_messages.append),
+    ):
+        result = r5_wob_staged.run_materialize_lance(
+            readiness_json=readiness_path,
+            eval_manifest=manifest_path,
+            split_csv=split_path,
+            output_dir=output_dir,
+            smoke=False,
+            force=False,
+        )
+
+    assert result["status"] == "materialize_complete"
+    assert any("train lance start rows=1" in message for message in progress_messages)
+    assert any("train lance complete rows=1" in message for message in progress_messages)
+    assert any("normal lance start rows=1" in message for message in progress_messages)
+    assert any("normal lance complete rows=1" in message for message in progress_messages)
+    assert any("buggy lance start rows=1" in message for message in progress_messages)
+    assert any("buggy lance complete rows=1" in message for message in progress_messages)
+    assert any("window manifest complete rows=1" in message for message in progress_messages)

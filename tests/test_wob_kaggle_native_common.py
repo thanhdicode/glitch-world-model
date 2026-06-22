@@ -113,6 +113,32 @@ def test_discover_r5_wob_input_overrides_reports_direct_seed_tarballs(tmp_path: 
     assert discovered["WOB_SEED44_SHA256"].endswith("wob_seed44_artifacts.tar.gz.sha256")
 
 
+def test_discover_r5_wob_input_overrides_prefers_extracted_root_when_sidecar_only_exists(
+    tmp_path: Path,
+):
+    input_root = tmp_path / "kaggle" / "input"
+    normal = input_root / "world-of-bugs-normal" / "NORMAL-TRAIN"
+    test = input_root / "world-of-bugs-test" / "TEST"
+    normal.mkdir(parents=True)
+    test.mkdir(parents=True)
+    artifacts = input_root / "wob-seed-artifacts"
+    artifacts.mkdir(parents=True)
+    for seed in (42, 43, 44):
+        (artifacts / f"wob_seed{seed}_artifacts.tar.gz.sha256").write_text(
+            "deadbeef\n", encoding="utf-8"
+        )
+        extracted = artifacts / f"wob_seed{seed}_artifacts" / "wob_outputs" / f"wob_seed{seed}"
+        extracted.mkdir(parents=True)
+        (extracted / "training_metadata.json").write_text("{}", encoding="utf-8")
+
+    discovered = MODULE.discover_r5_wob_input_overrides(input_root)
+
+    assert discovered["WOB_SEED42_EXTRACTED_ROOT"].endswith("wob_seed42_artifacts")
+    assert discovered["WOB_SEED43_EXTRACTED_ROOT"].endswith("wob_seed43_artifacts")
+    assert discovered["WOB_SEED44_EXTRACTED_ROOT"].endswith("wob_seed44_artifacts")
+    assert "WOB_SEED42_TARBALL" not in discovered
+
+
 def test_readme_references_one_section_entrypoint():
     readme = (
         Path(__file__).resolve().parents[1] / "cloud" / "wob_kaggle_native" / "README.md"

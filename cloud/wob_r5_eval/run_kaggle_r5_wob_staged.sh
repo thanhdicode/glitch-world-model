@@ -55,6 +55,17 @@ line_number = sys.argv[6]
 failed_command = sys.argv[7]
 run_log = Path(sys.argv[8])
 
+log_text = run_log.read_text(encoding="utf-8-sig", errors="replace") if run_log.exists() else ""
+log_tail = log_text[-4000:]
+traceback_present = "traceback (most recent call last):" in log_text.lower()
+last_log_lines = [line for line in log_tail.splitlines() if line.strip()][-20:]
+if phase == "materialize_lance" and exit_code in {120, 137, 143} and not traceback_present:
+    failure_class = "possible_resource_exhaustion"
+elif phase == "materialize_lance" and not traceback_present:
+    failure_class = "materialize_lance_no_traceback"
+else:
+    failure_class = "UNKNOWN_NEEDS_MORE_LOGS"
+
 debug_dir.mkdir(parents=True, exist_ok=True)
 git_sha = subprocess.run(
     ["git", "rev-parse", "HEAD"], capture_output=True, text=True, check=False
@@ -63,13 +74,16 @@ git_sha = subprocess.run(
     json.dumps(
         {
             "schema_version": 1,
-            "failure_class": "UNKNOWN_NEEDS_MORE_LOGS",
+            "failure_class": failure_class,
             "phase": phase,
             "exit_code": exit_code,
             "line_number": line_number,
             "failed_command": failed_command,
             "git_sha": git_sha,
             "output_dir_exists": output_dir.exists(),
+            "traceback_present": traceback_present,
+            "last_log_lines": last_log_lines,
+            "log_tail": log_tail,
             "locked_test_materialized": False,
             "locked_test_scored": False,
         },
