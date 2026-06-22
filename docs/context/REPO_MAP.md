@@ -1,7 +1,7 @@
 # REPO_MAP.md
 
-Generated: 2026-06-20T17:28:50+00:00
-Commit: `f3fb5c3bd7ae004684888960b516d6895246dc5d`
+Generated: 2026-06-22T03:15:03+00:00
+Commit: `3cc0929bbe7884c3ad856591a0dfc4428df550de`
 Generator: `scripts/update_context_cache.py`
 
 ## Top-Level Map
@@ -15,11 +15,11 @@ Generator: `scripts/update_context_cache.py`
 | `PLAYBOOK.md/` | Tracked repository path. |
 | `README.md/` | Tracked repository path. |
 | `RULES.md/` | Tracked repository path. |
+| `attached_assets/` | Tracked repository path. |
 | `cloud/` | Tracked repository path. |
 | `configs/` | Experiment and runtime configuration. |
 | `docs/` | Research evidence, workflows, context cache, and roadmap. |
 | `dvc.yaml/` | Tracked repository path. |
-| `kaggle/` | Validation-only launch packages. |
 | `paper/` | Cautious manuscript scaffold and generated tables. |
 | `pyproject.toml/` | Tracked repository path. |
 | `requirements/` | Optional runtime requirement pins. |
@@ -150,7 +150,7 @@ Generator: `scripts/update_context_cache.py`
 | `src/glitch_detection/preprocess.py` | list_frame_files, resize_and_save_frame, preprocess_frames, extract_video_frames, preprocess_input, build_parser, main | Python module. |
 | `src/glitch_detection/r5_tempglitch_eval.py` | _read_json, _load_script_module, _write_json, _write_sha256, _percentile, _aggregate, _float_text, _fpr_at_95_tpr, refuse_locked_test_path, parse_seed_artifact_roots, resolve_seed_artifact, planned_output_paths | Python module. |
 | `src/glitch_detection/r5_wob_eval.py` | _load_script_module, _read_json, _read_csv_rows, _write_json, _write_report, _parse_keyed_paths, _render_eval_manifest, _validate_readiness_and_manifest, _load_train_rows, _resolve_source_path, summarize_source_coverage, _build_lance_from_rows | Python module. |
-| `src/glitch_detection/r5_wob_staged.py` | _stage_marker_path, _path_sha256, _file_record, _check_runtime_imports, _find_unique, _find_extracted_seed_root, _repack_seed_artifact, _resolve_seed_inputs, _build_window_manifest, _release_cuda_memory, _smoke_eval_rows, _write_stage_marker | Python module. |
+| `src/glitch_detection/r5_wob_staged.py` | _stage_marker_path, _path_sha256, _file_record, _check_runtime_imports, _progress, _repack_seed_artifact, _resolve_seed_inputs, _build_window_manifest, _release_cuda_memory, _smoke_eval_rows, _write_stage_marker, _load_stage_marker | Python module. |
 | `src/glitch_detection/repeated_eval.py` | FittedScorer, train_normal_records, fit_scorer_for_split, score_fitted_scorer, clip_score_rows, write_clip_scores_csv, split_rows_as_dicts, source_labels_for_split, build_video_rows | Python module. |
 | `src/glitch_detection/run_baseline.py` | run_baseline, build_parser, main | Python module. |
 | `src/glitch_detection/score_clips.py` | _frame_diff_scorer, available_scorers, run_scorer, build_parser, main | Python module. |
@@ -159,6 +159,7 @@ Generator: `scripts/update_context_cache.py`
 | `src/glitch_detection/tempglitch.py` | TempGlitchVideoRef, TempGlitchSample, normalize_tempglitch_label, encode_tempglitch_video_url, parse_tempglitch_video_url, _load_json, fetch_tempglitch_dataset_info, fetch_tempglitch_rows, fetch_all_tempglitch_metadata, tempglitch_category_counts, _relative_video_path, _write_tempglitch_source_readme | Python module. |
 | `src/glitch_detection/video_autoencoder.py` | VideoAutoencoderUnavailableError, VideoAutoencoderConfig, require_torch, resolve_checkpoint, list_clip_frames, select_frame_paths, load_clip_array, ClipTensorDataset, build_model, _resolve_device, _set_deterministic_seed, _data_loader | Python module. |
 | `src/glitch_detection/video_eval.py` | _percentile, _aggregate, aggregate_scores_by_source, source_labels_from_intervals, _split_metadata, build_video_level_rows, compute_video_level_metrics, calibrate_video_threshold, evaluate_video_with_fixed_threshold, write_video_rows_csv, write_json, write_video_comparison | Python module. |
+| `src/glitch_detection/wob_kaggle_common.py` | resolve_existing_path, resolve_split_csv, resolve_protocol_audit, resolve_split_audit, _path_from_env, _keyword_score, _select_candidate, iter_kaggle_dataset_roots, detect_kaggle_roots, resolve_wob_seed_input, discover_r5_wob_input_overrides, add_tree_to_tar | Python module. |
 | `src/glitch_detection/wob_p0_audit.py` | WobP0Config, build_parser, sha256_file, load_csv_rows, load_json, detect_converter_scripts, detect_lance_outputs, resolve_source_path, source_exists, assert_safe_wob_root, build_manifest_rows, write_manifest_preview | Python module. |
 | `src/glitch_detection/wob_protocol.py` | parse_wob_inventory, inspect_wob_episode_tar | Python module. |
 
@@ -243,8 +244,6 @@ Generator: `scripts/update_context_cache.py`
 | `scripts/validate_research_release.py` | CLI/helper script. | general |
 | `scripts/validate_wob_expansion_readiness.py` | Validate the frozen seed42 non-locked World of Bugs evaluation-readiness bundle. | general |
 | `scripts/validate_wob_seed42_artifacts.py` | CLI/helper script. | general |
-| `scripts/validate_wob_seed_artifacts.py` | CLI/helper script. | general |
-| `scripts/verify_r5_wob_upload.py` | Verify and ingest an R5-WOB success bundle or inspect a failure bundle. | general |
 
 ## Tests
 | Test | Coverage |
@@ -296,6 +295,7 @@ Generator: `scripts/update_context_cache.py`
 | `tests/test_lewm_training.py` | lewm_training |
 | `tests/test_locked_test_gate.py` | locked_test_gate |
 | `tests/test_manifest.py` | manifest |
+| `tests/test_materialize_lance_stale_cleanup.py` | materialize_lance_stale_cleanup |
 | `tests/test_mini_latent.py` | mini_latent |
 | `tests/test_model_selection.py` | model_selection |
 | `tests/test_neural_protocol.py` | neural_protocol |
@@ -310,6 +310,7 @@ Generator: `scripts/update_context_cache.py`
 | `tests/test_r5_tempglitch_eval.py` | r5_tempglitch_eval |
 | `tests/test_r5_wob_eval.py` | r5_wob_eval |
 | `tests/test_r5_wob_postrun.py` | r5_wob_postrun |
+| `tests/test_r5_wob_script_entrypoints.py` | r5_wob_script_entrypoints |
 | `tests/test_r5_wob_stage.py` | r5_wob_stage |
 | `tests/test_repeated_eval.py` | repeated_eval |
 | `tests/test_repeated_grouped_runner.py` | repeated_grouped_runner |
@@ -318,6 +319,7 @@ Generator: `scripts/update_context_cache.py`
 | `tests/test_run_kaggle_lewm.py` | run_kaggle_lewm |
 | `tests/test_score_clips.py` | score_clips |
 | `tests/test_splits.py` | splits |
+| `tests/test_staged_install_completeness.py` | staged_install_completeness |
 | `tests/test_statistics.py` | statistics |
 | `tests/test_tempglitch.py` | tempglitch |
 | `tests/test_tempglitch_split_runner.py` | tempglitch_split_runner |
@@ -325,6 +327,7 @@ Generator: `scripts/update_context_cache.py`
 | `tests/test_verify_wob_p0_kaggle_evidence.py` | verify_wob_p0_kaggle_evidence |
 | `tests/test_video_autoencoder.py` | video_autoencoder |
 | `tests/test_video_eval.py` | video_eval |
+| `tests/test_wob_calibration_count_regression.py` | wob_calibration_count_regression |
 | `tests/test_wob_expansion_readiness.py` | wob_expansion_readiness |
 | `tests/test_wob_kaggle_native_common.py` | wob_kaggle_native_common |
 | `tests/test_wob_kaggle_native_prepare.py` | wob_kaggle_native_prepare |

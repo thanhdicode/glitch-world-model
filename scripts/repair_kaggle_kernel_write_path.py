@@ -7,8 +7,15 @@ import stat
 import subprocess
 import sys
 import time
-from datetime import UTC, datetime
+from datetime import datetime
 from pathlib import Path
+
+if sys.version_info >= (3, 11):
+    from datetime import UTC
+else:
+    from datetime import timezone
+
+    UTC = timezone.utc
 from typing import Any
 
 try:
