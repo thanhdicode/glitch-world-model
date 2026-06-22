@@ -1,4 +1,4 @@
-.PHONY: install install-research lint format format-check test test-cov synthetic phase0-check
+.PHONY: install install-research lint format format-check test test-cov synthetic phase0-check sync-github sync-github-dry
 
 install:
 	python -m pip install -e ".[dev]"
@@ -27,3 +27,9 @@ synthetic:
 phase0-check:
 	python scripts/run_synthetic_demo.py
 	python -m pytest
+
+sync-github:
+	bash scripts/sync_from_github.sh
+
+sync-github-dry:
+	bash scripts/sync_from_github.sh --dry-run
