@@ -1,9 +1,19 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 import pytest
 
+from glitch_detection import lewm_lance_eval as lewm
 from glitch_detection.lewm_lance_eval import (
+    METADATA_KEYS,
+    ResourceTelemetry,
+    build_canonical_manifest,
     canonical_rows_from_samples,
+    capture_resource_usage,
+    iter_metadata_samples,
+    open_metadata_dataset,
+    read_csv_rows,
     runtime_provenance,
     select_calibration_episodes,
     validate_manifest_rows,
@@ -21,6 +31,40 @@ def _sample(source: str, label: str) -> dict[str, str]:
         "split": "validation",
         "action_mode": "zero_action",
     }
+
+
+def _full_sample(source: str, label: str) -> dict[str, str]:
+    """Metadata sample plus the heavyweight pixel/action columns."""
+    sample = _sample(source, label)
+    sample["pixels"] = "PIXELS"
+    sample["action"] = "ACTION"
+    return sample
+
+
+class _RecordingSample:
+    def __init__(self, data: dict[str, str], accessed: list[str]) -> None:
+        self._data = data
+        self._accessed = accessed
+
+    def __getitem__(self, key: str) -> str:
+        self._accessed.append(key)
+        return self._data[key]
+
+
+class _FakeDataset:
+    """In-memory stand-in for ``swm.data.LanceDataset`` used in tests."""
+
+    def __init__(self, samples: list[dict[str, str]]) -> None:
+        self._samples = samples
+        self.read_indices: list[int] = []
+        self.accessed_keys: list[str] = []
+
+    def __len__(self) -> int:
+        return len(self._samples)
+
+    def __getitem__(self, index: int) -> _RecordingSample:
+        self.read_indices.append(index)
+        return _RecordingSample(self._samples[index], self.accessed_keys)
 
 
 def test_select_calibration_episodes_is_deterministic_and_grouped():
@@ -120,3 +164,119 @@ def test_score_alignment_rejects_reordered_or_non_finite_scores():
     scores[0]["mse_t1"] = "nan"
     with pytest.raises(ValueError, match="finite"):
         validate_score_alignment(manifest, scores)
+
+
+def test_iter_metadata_samples_reads_each_window_once_without_pixels():
+    dataset = _FakeDataset(
+        [_full_sample("normal-a", "Normal"), _full_sample("normal-b", "Normal")]
+    )
+
+    samples = list(iter_metadata_samples(dataset))
+
+    assert dataset.read_indices == [0, 1]
+    assert all(set(sample) == set(METADATA_KEYS) for sample in samples)
+    assert "pixels" not in dataset.accessed_keys
+    assert "action" not in dataset.accessed_keys
+
+
+def test_open_metadata_dataset_prefers_metadata_only(monkeypatch):
+    dataset = _FakeDataset([_full_sample("normal-a", "Normal")])
+    calls: list[bool] = []
+
+    def fake_lance(path, *, include_metadata, metadata_only=False):
+        calls.append(metadata_only)
+        return dataset
+
+    monkeypatch.setattr(lewm, "_lance_dataset", fake_lance)
+
+    opened, metadata_only = open_metadata_dataset(Path("normal.lance"))
+
+    assert opened is dataset
+    assert metadata_only is True
+    assert calls == [True]
+    assert "pixels" not in dataset.accessed_keys
+    assert "action" not in dataset.accessed_keys
+
+
+def test_open_metadata_dataset_falls_back_when_metadata_only_rejected(monkeypatch):
+    full = _FakeDataset([_full_sample("normal-a", "Normal")])
+    calls: list[bool] = []
+
+    def fake_lance(path, *, include_metadata, metadata_only=False):
+        calls.append(metadata_only)
+        if metadata_only:
+            raise KeyError("metadata-only projection not supported")
+        return full
+
+    monkeypatch.setattr(lewm, "_lance_dataset", fake_lance)
+
+    opened, metadata_only = open_metadata_dataset(Path("normal.lance"))
+
+    assert opened is full
+    assert metadata_only is False
+    assert calls == [True, False]
+
+
+def test_open_metadata_dataset_reraises_runtime_error(monkeypatch):
+    def fake_lance(path, *, include_metadata, metadata_only=False):
+        raise RuntimeError("Gate 7 Lance evaluation requires the isolated LeWM runtime.")
+
+    monkeypatch.setattr(lewm, "_lance_dataset", fake_lance)
+
+    with pytest.raises(RuntimeError, match="isolated LeWM runtime"):
+        open_metadata_dataset(Path("normal.lance"))
+
+
+def test_build_canonical_manifest_streams_metadata_only(monkeypatch):
+    normal = _FakeDataset(
+        [
+            _full_sample("normal-a", "Normal"),
+            _full_sample("normal-b", "Normal"),
+            _full_sample("normal-c", "Normal"),
+        ]
+    )
+    buggy = _FakeDataset([_full_sample("buggy-a", "Buggy")])
+
+    def fake_open(path):
+        return (normal, True) if "normal" in str(path) else (buggy, True)
+
+    monkeypatch.setattr(lewm, "open_metadata_dataset", fake_open)
+    monkeypatch.setattr(lewm.FingerprintBuilder, "inventory_sha256", staticmethod(lambda path: "fp"))
+
+    rows, fingerprints = build_canonical_manifest(
+        Path("normal.lance"),
+        Path("buggy.lance"),
+        calibration_episode_count=2,
+    )
+
+    assert len(rows) == 4
+    assert normal.read_indices == [0, 1, 2]
+    assert buggy.read_indices == [0]
+    assert "pixels" not in normal.accessed_keys + buggy.accessed_keys
+    assert "action" not in normal.accessed_keys + buggy.accessed_keys
+    calibration = {row["source_episode_id"] for row in rows if row["evaluation_role"] == "calibration_normal"}
+    assert len(calibration) == 2
+    assert all(row["evaluation_role"] == "evaluation" for row in rows if row["label"] == "Buggy")
+    assert set(fingerprints) == {"normal_validation", "buggy_probe"}
+
+
+def test_resource_telemetry_records_and_persists(tmp_path):
+    telemetry = ResourceTelemetry("materialize_lance_window_manifest")
+    telemetry.record("start")
+    telemetry.record("done", row_count=3)
+
+    payload = telemetry.to_dict()
+    assert payload["phase"] == "materialize_lance_window_manifest"
+    assert [point["checkpoint"] for point in payload["checkpoints"]] == ["start", "done"]
+    assert payload["checkpoints"][1]["row_count"] == 3
+
+    out = telemetry.write(tmp_path / "resource_telemetry.json")
+    assert out.exists()
+    assert "checkpoints" in out.read_text(encoding="utf-8")
+
+
+def test_capture_resource_usage_returns_bounded_snapshot():
+    snapshot = capture_resource_usage()
+
+    assert snapshot["source"] in {"psutil", "resource.getrusage"}
+    assert any(key in snapshot for key in ("rss_bytes", "max_rss_kib"))

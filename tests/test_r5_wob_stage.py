@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import csv
 import json
 import tarfile
 from pathlib import Path
@@ -193,7 +194,7 @@ def test_materialize_lance_logs_dataset_boundaries_and_counts(tmp_path: Path):
         ),
         patch(
             "glitch_detection.r5_wob_staged._build_window_manifest",
-            return_value=([{"window_id": "w1"}], {"normal": "n", "buggy": "b"}),
+            return_value=(1, {"normal": "n", "buggy": "b"}),
         ),
         patch("glitch_detection.r5_wob_staged._progress", side_effect=progress_messages.append),
     ):
@@ -214,3 +215,91 @@ def test_materialize_lance_logs_dataset_boundaries_and_counts(tmp_path: Path):
     assert any("buggy lance start rows=1" in message for message in progress_messages)
     assert any("buggy lance complete rows=1" in message for message in progress_messages)
     assert any("window manifest complete rows=1" in message for message in progress_messages)
+
+
+class _RecordingSample:
+    def __init__(self, data: dict[str, str], accessed: list[str]) -> None:
+        self._data = data
+        self._accessed = accessed
+
+    def __getitem__(self, key: str) -> str:
+        self._accessed.append(key)
+        return self._data[key]
+
+
+class _FakeDataset:
+    def __init__(self, samples: list[dict[str, str]]) -> None:
+        self._samples = samples
+        self.read_indices: list[int] = []
+        self.accessed_keys: list[str] = []
+
+    def __len__(self) -> int:
+        return len(self._samples)
+
+    def __getitem__(self, index: int):
+        self.read_indices.append(index)
+        return _RecordingSample(self._samples[index], self.accessed_keys)
+
+
+def _wob_sample(episode: str, label: str) -> dict[str, str]:
+    return {
+        "source": "wob",
+        "source_episode_id": episode,
+        "pair_id": f"pair/{episode}",
+        "category": "category",
+        "label": label,
+        "split": "validation",
+        "action_mode": "zero_action",
+        "pixels": "PIXELS",
+        "action": "ACTION",
+    }
+
+
+def test_build_window_manifest_streams_to_csv_without_pixels(tmp_path: Path, monkeypatch):
+    normal = _FakeDataset(
+        [
+            _wob_sample("normal-a", "normal"),
+            _wob_sample("normal-a", "normal"),
+            _wob_sample("normal-b", "normal"),
+        ]
+    )
+    buggy = _FakeDataset([_wob_sample("buggy-a", "buggy")])
+
+    def fake_open(path):
+        return (normal, True) if "normal" in str(path) else (buggy, True)
+
+    monkeypatch.setattr(r5_wob_staged, "open_metadata_dataset", fake_open)
+    monkeypatch.setattr(
+        r5_wob_staged.FingerprintBuilder,
+        "inventory_sha256",
+        staticmethod(lambda path: "fp"),
+    )
+
+    eval_rows = [
+        {"episode_id": "normal-a", "evaluation_role": "calibration_normal"},
+        {"episode_id": "normal-b", "evaluation_role": "calibration_normal"},
+        {"episode_id": "buggy-a", "evaluation_role": "evaluation"},
+    ]
+    output_path = tmp_path / "_window_manifest.csv"
+
+    row_count, fingerprints = r5_wob_staged._build_window_manifest(
+        normal_lance=tmp_path / "normal.lance",
+        buggy_lance=tmp_path / "buggy.lance",
+        eval_rows=eval_rows,
+        output_path=output_path,
+    )
+
+    assert row_count == 4
+    assert normal.read_indices == [0, 1, 2]
+    assert buggy.read_indices == [0]
+    assert "pixels" not in normal.accessed_keys + buggy.accessed_keys
+    assert "action" not in normal.accessed_keys + buggy.accessed_keys
+    assert set(fingerprints) == {"normal_validation", "buggy_probe"}
+
+    written = list(csv.DictReader(output_path.open("r", encoding="utf-8")))
+    assert len(written) == 4
+    telemetry_path = output_path.parent / "resource_telemetry_materialize_lance.json"
+    assert telemetry_path.exists()
+    telemetry = json.loads(telemetry_path.read_text(encoding="utf-8"))
+    assert telemetry["phase"] == "materialize_lance_window_manifest"
+    assert telemetry["checkpoints"][-1]["checkpoint"] == "complete"

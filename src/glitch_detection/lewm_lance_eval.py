@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import csv
+import gc
 import hashlib
 import importlib.metadata
 import json
@@ -9,6 +10,7 @@ import platform
 import subprocess
 import sys
 from collections.abc import Iterable, Sequence
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -101,6 +103,37 @@ def select_calibration_episodes(
     return tuple(sorted(unique, key=key)[:count])
 
 
+def canonical_row_from_sample(
+    *,
+    dataset_name: str,
+    dataset_fingerprint: str,
+    index: int,
+    sample: dict[str, Any],
+    calibration_episodes: set[str],
+) -> dict[str, str]:
+    label = str(sample["label"])
+    episode = str(sample["source_episode_id"])
+    role = (
+        "calibration_normal"
+        if label.lower() == "normal" and episode in calibration_episodes
+        else "evaluation"
+    )
+    return {
+        "window_id": f"{dataset_name}:{index:08d}",
+        "dataset_name": dataset_name,
+        "dataset_fingerprint": dataset_fingerprint,
+        "dataset_window_index": str(index),
+        "source": str(sample["source"]),
+        "source_episode_id": episode,
+        "pair_id": str(sample["pair_id"]),
+        "category": str(sample["category"]),
+        "label": label,
+        "split": str(sample["split"]),
+        "action_mode": str(sample["action_mode"]),
+        "evaluation_role": role,
+    }
+
+
 def canonical_rows_from_samples(
     *,
     dataset_name: str,
@@ -108,32 +141,16 @@ def canonical_rows_from_samples(
     samples: Sequence[dict[str, Any]],
     calibration_episodes: set[str],
 ) -> list[dict[str, str]]:
-    rows: list[dict[str, str]] = []
-    for index, sample in enumerate(samples):
-        label = str(sample["label"])
-        episode = str(sample["source_episode_id"])
-        role = (
-            "calibration_normal"
-            if label.lower() == "normal" and episode in calibration_episodes
-            else "evaluation"
+    return [
+        canonical_row_from_sample(
+            dataset_name=dataset_name,
+            dataset_fingerprint=dataset_fingerprint,
+            index=index,
+            sample=sample,
+            calibration_episodes=calibration_episodes,
         )
-        rows.append(
-            {
-                "window_id": f"{dataset_name}:{index:08d}",
-                "dataset_name": dataset_name,
-                "dataset_fingerprint": dataset_fingerprint,
-                "dataset_window_index": str(index),
-                "source": str(sample["source"]),
-                "source_episode_id": episode,
-                "pair_id": str(sample["pair_id"]),
-                "category": str(sample["category"]),
-                "label": label,
-                "split": str(sample["split"]),
-                "action_mode": str(sample["action_mode"]),
-                "evaluation_role": role,
-            }
-        )
-    return rows
+        for index, sample in enumerate(samples)
+    ]
 
 
 def validate_manifest_rows(
@@ -143,29 +160,51 @@ def validate_manifest_rows(
 ) -> None:
     if not rows:
         raise ValueError("Canonical Gate 7 manifest is empty.")
-    window_ids = [row["window_id"] for row in rows]
-    if len(window_ids) != len(set(window_ids)):
+    seen_window_ids: set[str] = set()
+    calibration_episodes: set[str] = set()
+    for row in rows:
+        validate_manifest_row(row, seen_window_ids=seen_window_ids)
+        if row["evaluation_role"] == "calibration_normal":
+            calibration_episodes.add(row["source_episode_id"])
+    validate_calibration_episode_count(
+        calibration_episodes,
+        expected_calibration_episode_count=expected_calibration_episode_count,
+    )
+
+
+def validate_manifest_row(row: dict[str, str], *, seen_window_ids: set[str]) -> None:
+    """Validate a single manifest row and track duplicate window_ids in place.
+
+    Mutates ``seen_window_ids`` so callers can stream rows one at a time while
+    still enforcing the global uniqueness invariant.
+    """
+    window_id = row["window_id"]
+    if window_id in seen_window_ids:
         raise ValueError("Canonical Gate 7 manifest contains duplicate window_id values.")
-    calibration_episodes = {
-        row["source_episode_id"] for row in rows if row["evaluation_role"] == "calibration_normal"
-    }
+    seen_window_ids.add(window_id)
+    split = row["split"].lower()
+    if "locked" in split or split == "test":
+        raise ValueError("Canonical Gate 7 manifest must not contain locked-test rows.")
+    label = row["label"].lower()
+    role = row["evaluation_role"]
+    if label not in {"normal", "buggy"}:
+        raise ValueError(f"Unsupported Gate 7 label: {row['label']}")
+    if label == "buggy" and role != "evaluation":
+        raise ValueError("Buggy rows must not be used for threshold calibration.")
+    if role not in {"calibration_normal", "evaluation"}:
+        raise ValueError(f"Unsupported Gate 7 evaluation role: {role}")
+
+
+def validate_calibration_episode_count(
+    calibration_episodes: set[str],
+    *,
+    expected_calibration_episode_count: int,
+) -> None:
     if len(calibration_episodes) != expected_calibration_episode_count:
         raise ValueError(
             "Canonical Gate 7 manifest has an invalid calibration episode count: "
             f"{len(calibration_episodes)}."
         )
-    for row in rows:
-        split = row["split"].lower()
-        if "locked" in split or split == "test":
-            raise ValueError("Canonical Gate 7 manifest must not contain locked-test rows.")
-        label = row["label"].lower()
-        role = row["evaluation_role"]
-        if label not in {"normal", "buggy"}:
-            raise ValueError(f"Unsupported Gate 7 label: {row['label']}")
-        if label == "buggy" and role != "evaluation":
-            raise ValueError("Buggy rows must not be used for threshold calibration.")
-        if role not in {"calibration_normal", "evaluation"}:
-            raise ValueError(f"Unsupported Gate 7 evaluation role: {role}")
 
 
 def validate_score_alignment(
@@ -200,14 +239,17 @@ def read_csv_rows(path: Path) -> list[dict[str, str]]:
         return list(csv.DictReader(handle))
 
 
-def _lance_dataset(path: Path, *, include_metadata: bool) -> Any:
+def _lance_dataset(path: Path, *, include_metadata: bool, metadata_only: bool = False) -> Any:
     try:
         import stable_worldmodel as swm
     except ImportError as exc:
         raise RuntimeError("Gate 7 Lance evaluation requires the isolated LeWM runtime.") from exc
-    keys = ["pixels", "action"]
-    if include_metadata:
-        keys.extend(METADATA_KEYS)
+    if metadata_only:
+        keys = list(METADATA_KEYS)
+    else:
+        keys = ["pixels", "action"]
+        if include_metadata:
+            keys.extend(METADATA_KEYS)
     return swm.data.LanceDataset(
         path=path.resolve().as_posix(),
         num_steps=4,
@@ -216,10 +258,78 @@ def _lance_dataset(path: Path, *, include_metadata: bool) -> Any:
     )
 
 
+def open_metadata_dataset(path: Path) -> tuple[Any, bool]:
+    """Open a LanceDataset that loads only metadata columns when supported.
+
+    Returns ``(dataset, metadata_only)``. The primary path requests a
+    metadata-only ``keys_to_load`` so the ``pixels``/``action`` image tensors
+    are never decoded while a window manifest is built. If the isolated runtime
+    rejects a metadata-only load, it falls back to the full ``keys_to_load``
+    (pixels + action + metadata).
+
+    Both paths go through ``swm.data.LanceDataset`` on purpose: ``window_id`` and
+    ``dataset_window_index`` are defined by the ``num_steps``/``frameskip``
+    windowing and must match ``_score_dataset``. A native ``lance`` column scan
+    would iterate raw rows, which do not align with that windowing, so it is not
+    used here.
+    """
+    try:
+        dataset = _lance_dataset(path, include_metadata=True, metadata_only=True)
+        if len(dataset) > 0:
+            probe = dataset[0]
+            for key in METADATA_KEYS:
+                _ = probe[key]
+        return dataset, True
+    except RuntimeError:
+        raise
+    except Exception:
+        return _lance_dataset(path, include_metadata=True), False
+
+
+def iter_metadata_samples(dataset: Any) -> Iterable[dict[str, str]]:
+    """Yield metadata-only samples, reading each window exactly once."""
+    for index in range(len(dataset)):
+        sample = dataset[index]
+        yield {key: str(sample[key]) for key in METADATA_KEYS}
+
+
 def _metadata_samples(dataset: Any) -> list[dict[str, str]]:
-    return [
-        {key: str(dataset[index][key]) for key in METADATA_KEYS} for index in range(len(dataset))
-    ]
+    return list(iter_metadata_samples(dataset))
+
+
+def capture_resource_usage() -> dict[str, Any]:
+    """Return a bounded RSS snapshot, degrading gracefully without psutil."""
+    try:
+        import psutil
+    except ImportError:
+        import resource
+
+        max_rss = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+        return {"source": "resource.getrusage", "max_rss_kib": int(max_rss)}
+    return {"source": "psutil", "rss_bytes": int(psutil.Process().memory_info().rss)}
+
+
+class ResourceTelemetry:
+    """Collect bounded RSS snapshots at named checkpoints and persist them."""
+
+    def __init__(self, phase: str) -> None:
+        self.phase = phase
+        self.checkpoints: list[dict[str, Any]] = []
+
+    def record(self, checkpoint: str, **fields: Any) -> None:
+        snapshot = capture_resource_usage()
+        snapshot["checkpoint"] = checkpoint
+        snapshot["timestamp"] = datetime.now(timezone.utc).isoformat()
+        snapshot.update(fields)
+        self.checkpoints.append(snapshot)
+
+    def to_dict(self) -> dict[str, Any]:
+        return {"phase": self.phase, "checkpoints": self.checkpoints}
+
+    def write(self, path: Path) -> Path:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(self.to_dict(), indent=2) + "\n", encoding="utf-8")
+        return path
 
 
 def build_canonical_manifest(
@@ -229,10 +339,12 @@ def build_canonical_manifest(
     seed: int = 42,
     calibration_episode_count: int = 2,
 ) -> tuple[list[dict[str, str]], dict[str, str]]:
-    normal_dataset = _lance_dataset(normal_lance, include_metadata=True)
-    buggy_dataset = _lance_dataset(buggy_lance, include_metadata=True)
-    normal_samples = _metadata_samples(normal_dataset)
-    buggy_samples = _metadata_samples(buggy_dataset)
+    normal_dataset, _normal_metadata_only = open_metadata_dataset(normal_lance)
+    try:
+        normal_samples = _metadata_samples(normal_dataset)
+    finally:
+        del normal_dataset
+        gc.collect()
     calibration = set(
         select_calibration_episodes(
             (sample["source_episode_id"] for sample in normal_samples),
@@ -244,20 +356,30 @@ def build_canonical_manifest(
         NORMAL_DATASET_NAME: FingerprintBuilder.inventory_sha256(normal_lance),
         BUGGY_DATASET_NAME: FingerprintBuilder.inventory_sha256(buggy_lance),
     }
-    rows = [
-        *canonical_rows_from_samples(
-            dataset_name=NORMAL_DATASET_NAME,
-            dataset_fingerprint=fingerprints[NORMAL_DATASET_NAME],
-            samples=normal_samples,
-            calibration_episodes=calibration,
-        ),
-        *canonical_rows_from_samples(
+    rows = canonical_rows_from_samples(
+        dataset_name=NORMAL_DATASET_NAME,
+        dataset_fingerprint=fingerprints[NORMAL_DATASET_NAME],
+        samples=normal_samples,
+        calibration_episodes=calibration,
+    )
+    del normal_samples
+    gc.collect()
+    buggy_dataset, _buggy_metadata_only = open_metadata_dataset(buggy_lance)
+    try:
+        buggy_samples = _metadata_samples(buggy_dataset)
+    finally:
+        del buggy_dataset
+        gc.collect()
+    rows.extend(
+        canonical_rows_from_samples(
             dataset_name=BUGGY_DATASET_NAME,
             dataset_fingerprint=fingerprints[BUGGY_DATASET_NAME],
             samples=buggy_samples,
             calibration_episodes=calibration,
-        ),
-    ]
+        )
+    )
+    del buggy_samples
+    gc.collect()
     validate_manifest_rows(
         rows,
         expected_calibration_episode_count=calibration_episode_count,

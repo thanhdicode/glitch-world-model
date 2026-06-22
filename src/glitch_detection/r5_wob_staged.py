@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import csv
 import gc
 import json
 import shutil
@@ -13,14 +14,16 @@ from .lewm_adapter import ActionMode, LeWMAdapter, LeWMCheckpointSpec, sha256_fi
 from .lewm_lance_eval import (
     BUGGY_DATASET_NAME,
     MANIFEST_FIELDS,
-    METADATA_KEYS,
     NORMAL_DATASET_NAME,
-    _lance_dataset,
+    ResourceTelemetry,
     _score_dataset,
-    canonical_rows_from_samples,
+    canonical_row_from_sample,
+    iter_metadata_samples,
+    open_metadata_dataset,
     read_csv_rows,
     runtime_provenance,
-    validate_manifest_rows,
+    validate_calibration_episode_count,
+    validate_manifest_row,
     validate_score_alignment,
     write_csv_rows,
 )
@@ -161,17 +164,16 @@ def _build_window_manifest(
     buggy_lance: Path,
     eval_rows: list[dict[str, str]],
     output_path: Path,
-) -> tuple[list[dict[str, str]], dict[str, str]]:
-    normal_dataset = _lance_dataset(normal_lance, include_metadata=True)
-    buggy_dataset = _lance_dataset(buggy_lance, include_metadata=True)
-    normal_samples = [
-        {key: str(normal_dataset[index][key]) for key in METADATA_KEYS}
-        for index in range(len(normal_dataset))
-    ]
-    buggy_samples = [
-        {key: str(buggy_dataset[index][key]) for key in METADATA_KEYS}
-        for index in range(len(buggy_dataset))
-    ]
+) -> tuple[int, dict[str, str]]:
+    """Build ``_window_manifest.csv`` while never decoding pixels/action.
+
+    Reads only metadata columns, reads each window exactly once, processes the
+    normal and buggy datasets sequentially (releasing each before opening the
+    next), and streams rows straight to CSV rather than holding both sample
+    lists plus the full row list in memory at once. Returns the written row
+    count and the dataset fingerprints (the rows themselves are re-read from CSV
+    by later stages).
+    """
     calibration_episodes = {
         row["episode_id"] for row in eval_rows if row["evaluation_role"] == "calibration_normal"
     }
@@ -179,26 +181,48 @@ def _build_window_manifest(
         NORMAL_DATASET_NAME: FingerprintBuilder.inventory_sha256(normal_lance),
         BUGGY_DATASET_NAME: FingerprintBuilder.inventory_sha256(buggy_lance),
     }
-    manifest_rows = [
-        *canonical_rows_from_samples(
-            dataset_name=NORMAL_DATASET_NAME,
-            dataset_fingerprint=fingerprints[NORMAL_DATASET_NAME],
-            samples=normal_samples,
-            calibration_episodes=calibration_episodes,
-        ),
-        *canonical_rows_from_samples(
-            dataset_name=BUGGY_DATASET_NAME,
-            dataset_fingerprint=fingerprints[BUGGY_DATASET_NAME],
-            samples=buggy_samples,
-            calibration_episodes=calibration_episodes,
-        ),
-    ]
-    validate_manifest_rows(
-        manifest_rows,
+    telemetry = ResourceTelemetry("materialize_lance_window_manifest")
+    telemetry.record("start")
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    seen_window_ids: set[str] = set()
+    observed_calibration: set[str] = set()
+    row_count = 0
+    with output_path.open("w", newline="", encoding="utf-8") as handle:
+        writer = csv.DictWriter(handle, fieldnames=MANIFEST_FIELDS, extrasaction="ignore")
+        writer.writeheader()
+        for dataset_name, lance_path in (
+            (NORMAL_DATASET_NAME, normal_lance),
+            (BUGGY_DATASET_NAME, buggy_lance),
+        ):
+            dataset, metadata_only = open_metadata_dataset(lance_path)
+            telemetry.record(f"{dataset_name}_open", metadata_only=metadata_only)
+            try:
+                for index, sample in enumerate(iter_metadata_samples(dataset)):
+                    row = canonical_row_from_sample(
+                        dataset_name=dataset_name,
+                        dataset_fingerprint=fingerprints[dataset_name],
+                        index=index,
+                        sample=sample,
+                        calibration_episodes=calibration_episodes,
+                    )
+                    validate_manifest_row(row, seen_window_ids=seen_window_ids)
+                    if row["evaluation_role"] == "calibration_normal":
+                        observed_calibration.add(row["source_episode_id"])
+                    writer.writerow(row)
+                    row_count += 1
+            finally:
+                del dataset
+                gc.collect()
+            telemetry.record(f"{dataset_name}_done", row_count=row_count)
+    if row_count == 0:
+        raise ValueError("Canonical Gate 7 manifest is empty.")
+    validate_calibration_episode_count(
+        observed_calibration,
         expected_calibration_episode_count=len(calibration_episodes),
     )
-    write_csv_rows(output_path, manifest_rows, MANIFEST_FIELDS)
-    return manifest_rows, fingerprints
+    telemetry.record("complete", row_count=row_count)
+    telemetry.write(output_path.parent / "resource_telemetry_materialize_lance.json")
+    return row_count, fingerprints
 
 
 def _release_cuda_memory() -> None:
@@ -470,14 +494,14 @@ def run_materialize_lance(
         f"materialize_lance: window manifest start normal={normal_lance} "
         f"buggy={buggy_lance} output={output_dir / WINDOW_MANIFEST_NAME}"
     )
-    manifest_rows, dataset_fingerprints = _build_window_manifest(
+    window_row_count, dataset_fingerprints = _build_window_manifest(
         normal_lance=normal_lance,
         buggy_lance=buggy_lance,
         eval_rows=selected_eval_rows,
         output_path=output_dir / WINDOW_MANIFEST_NAME,
     )
     _progress(
-        f"materialize_lance: window manifest complete rows={len(manifest_rows)} "
+        f"materialize_lance: window manifest complete rows={window_row_count} "
         f"output={output_dir / WINDOW_MANIFEST_NAME}"
     )
     payload = {
@@ -485,7 +509,7 @@ def run_materialize_lance(
         "smoke": smoke,
         "readiness_sha256": readiness["eval_manifest_sha256"],
         "eval_row_count": len(selected_eval_rows),
-        "window_row_count": len(manifest_rows),
+        "window_row_count": window_row_count,
         "dataset_fingerprints": dataset_fingerprints,
         "files": {
             "r5_wob_manifest.csv": _file_record(frozen_manifest_path),

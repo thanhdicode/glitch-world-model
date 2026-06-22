@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import gc
 import json
 import tarfile
 from pathlib import Path
@@ -14,9 +15,10 @@ from .lewm_lance_eval import (
     BUGGY_DATASET_NAME,
     MANIFEST_FIELDS,
     NORMAL_DATASET_NAME,
-    _lance_dataset,
     _score_dataset,
     canonical_rows_from_samples,
+    iter_metadata_samples,
+    open_metadata_dataset,
     read_csv_rows,
     runtime_provenance,
     validate_manifest_rows,
@@ -227,38 +229,18 @@ def _build_window_manifest(
     calibration_episodes = {
         row["episode_id"] for row in eval_rows if row["evaluation_role"] == "calibration_normal"
     }
-    normal_dataset = _lance_dataset(normal_lance, include_metadata=True)
-    buggy_dataset = _lance_dataset(buggy_lance, include_metadata=True)
-    normal_samples = [
-        {
-            key: str(normal_dataset[index][key])
-            for key in (
-                "source",
-                "source_episode_id",
-                "pair_id",
-                "category",
-                "label",
-                "split",
-                "action_mode",
-            )
-        }
-        for index in range(len(normal_dataset))
-    ]
-    buggy_samples = [
-        {
-            key: str(buggy_dataset[index][key])
-            for key in (
-                "source",
-                "source_episode_id",
-                "pair_id",
-                "category",
-                "label",
-                "split",
-                "action_mode",
-            )
-        }
-        for index in range(len(buggy_dataset))
-    ]
+    normal_dataset, _normal_metadata_only = open_metadata_dataset(normal_lance)
+    try:
+        normal_samples = list(iter_metadata_samples(normal_dataset))
+    finally:
+        del normal_dataset
+        gc.collect()
+    buggy_dataset, _buggy_metadata_only = open_metadata_dataset(buggy_lance)
+    try:
+        buggy_samples = list(iter_metadata_samples(buggy_dataset))
+    finally:
+        del buggy_dataset
+        gc.collect()
     for sample in [*normal_samples, *buggy_samples]:
         episode_id = sample["source_episode_id"]
         if episode_id not in role_by_episode:
