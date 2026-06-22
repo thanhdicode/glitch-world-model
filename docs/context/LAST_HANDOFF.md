@@ -1,10 +1,17 @@
 # LAST_HANDOFF.md
 
-Last completed task: R5-WOB materialize_lance streaming fix and failure classification hardening
+Last completed task: validated R5-WOB success intake and R5-XGame protocol preparation
 Commit: pending task commit
 Date: 2026-06-22
 
 ## What Changed
+
+- Verified the downloaded R5-WOB success tarball SHA256 and passed the repository offline intake validator. The validated bundle hash is `6b08c2cf07ed71a55f71fb0e288a445f460309b98f479e21eba13f8722ba2274`.
+- Confirmed the frozen 72-row manifest has 12 calibration-normal and 60 buggy-positive episodes, with zero normal evaluation negatives; locked test remains unmaterialized and unscored.
+- Added R5-XGame metadata protocol checks and binary metric guards. The new runner is smoke-only until a source-disjoint manifest is frozen; it cannot score or materialize data.
+- Added evidence-tagged R5-WOB analysis, current-state, protocol, paper-gap, and R5-XGame planning documents, and registered the narrow validated intake claim as C-079.
+
+## Prior Streaming-Fix Context
 
 - Inspected the downloaded staged failure bundle and confirmed the current Kaggle retry now passes
   `preflight`, validates all three seed artifacts, resolves 48/48 train rows and 72/72 eval rows,

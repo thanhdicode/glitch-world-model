@@ -1,15 +1,15 @@
 ﻿# 84 — R5-WOB Result Intake Template
 
 Date: 2026-06-20
-Status: `AWAITING_KAGGLE_OUTPUT`
+Status: `COMPLETED_VALIDATED_INTAKE`
 
 Canonical command checklist: [R5-WOB post-run workflow](88_r5_wob_postrun_workflow.md).
 
 ## Purpose
 
-This document provides the step-by-step procedure for ingesting, verifying, and recording the
-R5-WOB Kaggle output after the human downloads it. It does not contain empirical results. It does
-not fabricate metrics. It does not touch locked test.
+The procedure was completed on 2026-06-22 for the downloaded success bundle with SHA256
+`6b08c2cf07ed71a55f71fb0e288a445f460309b98f479e21eba13f8722ba2274`. The bundle passed
+`VALID_OUTPUT_BUNDLE`; the receipt remains outside Git. It does not open locked test.
 
 ## Expected Kaggle Outputs
 
