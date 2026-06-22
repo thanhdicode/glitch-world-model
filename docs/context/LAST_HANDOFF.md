@@ -1,10 +1,17 @@
 # LAST_HANDOFF.md
 
-Last completed task: R5-XGame metadata split freeze and leakage audit
+Last completed task: R5-XGame live-run readiness preflight
 Commit: pending task commit
 Date: 2026-06-22
 
 ## What Changed
+
+- Verified the frozen R5-XGame manifest and leakage audit again: 36 train-normal, 12 calibration-normal, 12 normal negatives, 60 buggy positives, and zero source/pair/episode conflicts.
+- Confirmed `scripts/run_r5_xgame_staged.py` is still metadata-only, then extended its dry-run response to expose `SAFE_TO_RUN_KAGGLE=false` plus the exact missing live requirements.
+- Added Phase B-RUN preflight, scoring-implementation, Kaggle-package, dry-run receipt, and preparation-report documents.
+- No Kaggle action, training, materialization, checkpoint loading, or scoring occurred. Existing R5-WOB checkpoints remain prohibited because their training set includes R5-XGame held-out normal negatives.
+
+## Prior Split-Freeze Context
 
 - Completed Phase B metadata preparation: froze `configs/wob_protocol/r5_xgame_split.csv` from the audited WOB source split with 36 train-normal, 12 calibration-normal, 12 held-out normal-negative, and 60 buggy-positive rows.
 - Added deterministic split freezing and leakage audit scripts. The audit reports zero cross-role episode, pair, and source conflicts; all 59 WOB test rows remain excluded.

@@ -6,9 +6,14 @@
 python scripts/freeze_r5_xgame_split.py
 python scripts/audit_r5_xgame_split.py --manifest configs/wob_protocol/r5_xgame_split.csv --output outputs/r5_xgame_leakage_audit.json
 python scripts/run_r5_xgame_staged.py --manifest configs/wob_protocol/r5_xgame_split.csv --smoke
+python scripts/run_r5_xgame_staged.py --manifest configs/wob_protocol/r5_xgame_split.csv --dry-run
 ```
 
 These commands validate metadata only. They do not materialize data, score episodes, or open locked test.
+
+## Current Readiness
+
+The dry run reports `SAFE_TO_RUN_KAGGLE=false`. Do not launch Kaggle from the current branch.
 
 ## Required Future Inputs
 
