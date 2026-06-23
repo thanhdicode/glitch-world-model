@@ -1,7 +1,7 @@
 # BOOT.md - Fast Start Context For Agents
 
-Generated: 2026-06-23T16:06:28+00:00
-Commit: `6993964547348659cb2f8882f0a84347f765e200`
+Generated: 2026-06-23T20:20:15+00:00
+Commit: `1509d1ccf97dc568fede9667d2bd6f30d59efbe6`
 
 ## Read Order
 1. `RULES.md`
@@ -38,18 +38,18 @@ The current execution roadmap is `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v3.md`
   repaired tarball/sidecar bundle.
 - The best recorded `R5-XGame` configuration reached AUROC `0.909722` on the frozen non-locked
   12-negative / 60-positive split, but this remains bounded validation evidence only.
+- The pair-disjoint TempGlitch follow-up is validator-backed on 2 calibration-normal, 12
+  evaluation normal-negative, and 22 evaluation buggy-positive episodes with zero cross-role
+  source, pair, and episode overlap.
 - Gate 10 is closed.
 - Locked test is closed.
 - LeWM gameplay evaluation now exists for the non-locked TempGlitch research MVP only; locked
   test remains unopened, and WOB remains limited to audit-plus-training-artifact evidence.
 
 ## Immediate Next Task
-- The `R5-XGame` intake reconciliation and bounded `R6` documentation pass are complete.
-- Freeze the next bounded evidence-upgrade lane from existing validated artifacts, with
-  TempGlitch follow-up remaining the current recommended direction.
-- Preserve the repaired tarball SHA256
-  `65f8b21bf9b31dd6498cb2b46ca0d368f7d4b1f8fef15480b915a1ff9a8204ac` and both validator receipts.
-- Do not relaunch Kaggle or retrain unless a required raw artifact is truly missing.
+- Build the first paper draft from the bounded TempGlitch and R5-XGame evidence package.
+- Keep the two result families separate and preserve their exact support and uncertainty limits.
+- Do not relaunch Kaggle, retrain, or open locked test for the local drafting phase.
 
 ## Safety
 - Non-locked-test Kaggle actions use standing Kaggle authorization after security, license,

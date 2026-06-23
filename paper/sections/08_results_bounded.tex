@@ -1,56 +1,47 @@
 \section{Bounded Results}
 \label{sec:results}
 
-TODO: keep this section limited to validated, hash-addressable result families. Do not add
-ablation, WOB, locked-test, or cross-dataset result prose without a corresponding validated
-artifact and claim-registry update.
-
-Table~\ref{tab:r5-bounded-results} summarizes the current qualified comparison surface. The table
-caption explicitly states the permitted scope: \emph{Non-locked TempGlitch validation-only
-identical-episode family.}
+Table~\ref{tab:r5-bounded-results} reports the validator-backed pair-disjoint TempGlitch
+follow-up. Every row uses exactly 12 normal-negative and 22 buggy-positive evaluation episodes;
+the threshold is the normal-P95 value from two frozen calibration episodes. Cross-role
+\texttt{source\_episode\_id}, \texttt{pair\_id}, and \texttt{source} overlap are all zero.
 
 \input{tables/r5_bounded_results}
 
-Within this frozen family, the best observed AUROC and AUPRC rows came from seed44 LeWM variants,
-while a \texttt{frame\_diff} configuration produced the strongest bounded F1 row. These are exact
-family-qualified observations, not broad method claims. The confidence intervals are wide enough to
-reinforce that this paper should emphasize provenance and containment over triumphal framing.
+Within this frozen non-locked split, seed44 \texttt{lewm\_l2\_max} with mean episode aggregation
+records AUROC 0.7159 and AUPRC 0.8026, compared with AUROC 0.6136 and AUPRC 0.7310 for the best
+baseline AUROC row, \texttt{feature\_distance} with \texttt{top2\_mean}. The LeWM row's pair-bootstrap
+AUROC interval is [0.5349, 0.8770], while the baseline interval is [0.4636, 0.7545]. These intervals
+overlap, evaluation support is small, and the LeWM FPR@95TPR remains 0.7500.
 
-The safe interpretation is therefore modest: the repository now contains a full provenance-bound
-R5 evaluation bundle and a reproducible bounded comparison table. The unsafe interpretation would
-be to promote these rows into a general claim of superiority, state of the art, or cross-dataset
-readiness. Appendix~\ref{app:forbidden-claims} makes that distinction explicit.
+The safe interpretation is therefore modest: within this exact same-support split, the best LeWM
+configuration shows stronger observed separation than the simple baselines. The result does not
+establish broad superiority, state of the art, temporal localization, or cross-game generalization.
+Appendix~\ref{app:forbidden-claims} makes that distinction explicit.
 
 \subsection{World of Bugs Results (Positive-Probe Only)}
 \label{sec:results-wob}
 
-% PLACEHOLDER -- do not promote the validated positive-probe bundle into a
-% binary-benchmark table.
 Table~\ref{tab:r5-wob-results} remains a placeholder because the validated \texttt{R5-WOB} bundle is a
 positive-probe result family with zero held-out normal-negative evaluation episodes. It supports
 pipeline-execution and signal-presence discussion only, not a binary-detection performance claim.
 
 \input{tables/r5_wob_results}
 
-\subsection{Cross-Dataset Comparison (Pending)}
+\subsection{R5-XGame Bounded Comparison}
 \label{sec:results-xgame}
 
-% PLACEHOLDER -- do not insert cross-dataset numbers until a separately
-% validated comparison artifact exists.
-Table~\ref{tab:r5-xgame-results} remains reserved for a future cross-dataset comparison between
-TempGlitch and World of Bugs under matched reporting discipline. The repo now has a validated
-non-locked \texttt{R5-XGame} binary bundle, but the current \texttt{R5-WOB} evidence is still positive-probe
-only and no separate cross-dataset comparison artifact has been validated. No cross-game
-generalization claim is supported.
+Table~\ref{tab:r5-xgame-results} presents a separate bounded comparison on the validated
+non-locked \texttt{R5-XGame} split. It must not be numerically compared with the TempGlitch table:
+support, class balance, calibration, domain, action mode, and training lineage differ. No
+cross-game generalization claim is supported.
 
 \input{tables/r5_xgame_results}
 
-\subsection{Ablation Results (Pending)}
+\subsection{Ablation Results (Exploratory)}
 \label{sec:results-ablation}
 
-% PLACEHOLDER -- do not insert ablation numbers until R6 ablations complete.
-Table~\ref{tab:r6-ablation-results} is reserved for the R6 minimal decision-relevant ablation
-study. No SIGReg benefit, action-conditioning benefit, or aggregation-superiority claim is
-supported until the corresponding ablation outputs exist and are validated.
+The existing R5-XGame bundle permits descriptive seed, scorer, and aggregation summaries only.
+No SIGReg, action-conditioning, temporal-smoothing, or retraining-budget ablation is available.
 
 \input{tables/r6_ablation_results}

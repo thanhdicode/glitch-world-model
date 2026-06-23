@@ -1,0 +1,64 @@
+# 103 - Q3 Paper Readiness Assessment
+
+Date: 2026-06-24
+Status: bounded assessment, not an experiment metric
+
+## Current Score
+
+Overall Q3 readiness: **7.5/10**.
+
+This score uses a transparent four-part rubric rather than claiming statistical precision:
+
+| Dimension | Score | Assessment |
+| --- | ---: | --- |
+| Engineering readiness | 9/10 | runners, validators, provenance, hashes, and CI checks are mature |
+| Scientific evidence readiness | 7/10 | two bounded binary families exist, but support and comparisons remain limited |
+| Paper readiness | 7/10 | LNICST scaffold and result package exist; prose, figures, and final audit remain |
+| Submission readiness | 7/10 | venue controls exist; official-kit compile, page fit, and similarity review remain |
+
+The arithmetic mean is 7.5. The prior early-project readiness assessment was 6/10; the gain comes
+from validator-backed LeWM gameplay evidence, a pair-disjoint TempGlitch follow-up, bounded
+R5-XGame results, and a traceable paper table/claim package.
+
+## Enough For A Bounded Empirical Study
+
+- A clear leakage-aware, normal-calibrated protocol.
+- A validated pair-disjoint TempGlitch result on exact same support.
+- A second bounded R5-XGame result family.
+- Named simple baselines, uncertainty intervals, operating-point metrics, and failure analysis.
+- Hash-addressable provenance and explicit negative/forbidden claims.
+
+This is enough to draft a cautious empirical study centered on protocol hardening, evidence
+containment, and bounded latent-surprise observations.
+
+## Remaining Scientific Blockers
+
+- Only 12 normal-negative episodes in each headline evaluation family.
+- Two-episode TempGlitch threshold calibration.
+- Wide/overlapping uncertainty and high TempGlitch FPR@95TPR.
+- No strong learned baseline on the exact follow-up support.
+- No SIGReg, action-conditioning, or temporal-localization evidence.
+- No locked-test evidence; that gate remains intentionally closed.
+
+## What Can Be Written Now
+
+- Motivation and related-work framing.
+- Leakage-aware dataset/split protocol.
+- LeWM integration and normal-only training methodology.
+- TempGlitch follow-up and R5-XGame bounded results.
+- Provenance, reproducibility, error analysis, limitations, and reviewer-risk sections.
+- A provisional abstract skeleton and bounded conclusion outline.
+
+## What Must Wait
+
+- A final abstract or conclusion that implies definitive model effectiveness.
+- Broad superiority or cross-game generalization.
+- Strong learned-baseline and controlled ablation conclusions.
+- GPU throughput claims if no comparable local measurement is available.
+- Any locked-test result.
+
+## Kaggle Dependency
+
+The first bounded paper draft does not require Kaggle. Kaggle or equivalent new compute becomes
+necessary only if the paper team chooses to strengthen the evidence with learned baselines, new
+seeds, controlled SIGReg/action ablations, broader benchmarks, or GPU throughput measurements.

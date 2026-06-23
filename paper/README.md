@@ -1,7 +1,8 @@
 # Paper Scaffold
 
-The paper scaffold is deliberately cautious and currently centers the verified non-locked
-TempGlitch validation-only evidence plus reproducibility appendices. It does not claim broad
+The paper scaffold is deliberately cautious and now centers the verified pair-disjoint non-locked
+TempGlitch follow-up, with R5-XGame as a separate bounded secondary result and reproducibility
+appendices. It does not claim broad
 superiority, state of the art, locked-test results, WOB training/evaluation results, SIGReg
 benefit, real-time operation, or temporal localization.
 
@@ -12,9 +13,9 @@ benefit, real-time operation, or temporal localization.
 | Scaffold | complete | Section, appendix, table, and control-document structure exists. |
 | Springer format | structurally complete | `main.tex` uses `llncs`; official Springer files are still required. |
 | Bibliography | expanded; final review required | Entries have checked metadata and stable URLs/DOIs where available. |
-| Results | bounded only | Current table is limited to the non-locked TempGlitch validation-only R5 family. |
+| Results | bounded, validator-backed | Main TempGlitch follow-up and secondary R5-XGame tables are populated with explicit support/claim limits. |
 | Locked test | closed | Not materialized and not scored. |
-| WOB-P1 seed42 | pending | Separate empirical gate; not a paper result yet. |
+| R5-WOB | positive-probe only | Not a binary-benchmark result. |
 | PDF compile | blocked locally | Local TeX tools/official class are not available in the repo environment. |
 | Page count | pending | Requires Overleaf or official Springer Author Kit compile. |
 | Similarity screening | pending | Must run before submission. |

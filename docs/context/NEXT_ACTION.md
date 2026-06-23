@@ -1,45 +1,26 @@
 # NEXT_ACTION.md
 
-Last updated: 2026-06-24T02:31:23.1559337+07:00
-Commit: `c3c2e1513f414f1668253b7883d243b7cf67862e`
+Last updated: 2026-06-23T20:20:15+00:00
+Commit: `1509d1ccf97dc568fede9667d2bd6f30d59efbe6`
 
 ## Current Priority
-Register the completed bounded TempGlitch follow-up as evidence-bearing, claim-safe
-documentation. The new bundle is validator-backed and pair-disjoint, so the next task is to fold
-its bounded non-locked findings into repo-facing research docs without widening the scientific
-claim.
+Build the first paper draft from the bounded TempGlitch and R5-XGame evidence package.
 
 ## Next Gate
-1. Review the completed follow-up receipt, provenance, and comparison metrics from the validated
-   pair-disjoint TempGlitch bundle.
-2. Update the relevant evidence docs and claim surfaces with bounded wording that keeps the result
-   explicitly non-locked, public-benchmark, and support-limited.
-3. Preserve the exact support contract across all compared methods:
-   `2` calibration normals, `12` evaluation normal-negative episodes, and `22` evaluation
-   buggy-positive episodes.
-4. Keep the next interpretation step focused on audit and documentation only: no retraining, no
-   Kaggle execution, no new datasets, and no locked-test activity.
+1. Use `docs/research/101_tempglitch_followup_results.md` as the main result authority.
+2. Use `docs/research/96_r6_xgame_bounded_comparison.md` only as a separate secondary result.
+3. Follow reports 102-105 and `docs/research/70_paper_claim_map.md` for table and claim controls.
+4. Keep support counts, confidence intervals, FPR, and limitations visible in the main text.
 
 ## Success Criteria
-- Preserve the completed `R5` TempGlitch raw score, metrics, and provenance hashes as source
-  evidence for the follow-up bundle.
-- Preserve the pair-disjoint follow-up calibration freeze:
-  `Godot_Blinking_Normal_106` and `Godot_Frozen_Animation_Platformer_Normal_107`.
-- Preserve follow-up evaluation support at `34` episodes:
-  `12` normal-negative and `22` buggy-positive.
-- Keep every compared row on exact manifest and support alignment.
-- Keep `validation_buggy_used_for_fit_select=false`,
-  `locked_test_materialized=false`, and `locked_test_scored=false`.
-- Do not relaunch Kaggle or rerun LeWM training unless a required raw artifact is truly missing.
-- Make no broad TempGlitch/WOB/XGame performance, cross-game, action-conditioning, or
-  SIGReg-benefit claim beyond the exact qualified non-locked bundles.
-- Keep the follow-up explicit about its bounded public-benchmark scope, binary video labels, and
-  non-locked status.
+- Map every result sentence to a registered verified claim.
+- Keep TempGlitch and R5-XGame visibly separate and not directly comparable.
+- Make no broad superiority, SOTA, cross-game, temporal-localization, SIGReg, action-conditioning,
+  WOB binary-benchmark, or locked-test claim.
+- Compile with the official Springer kit or report the missing dependency honestly.
+- Keep the repository verification suite green.
 
 ## Current Known Blocker
-The bounded TempGlitch follow-up is now complete as a validator-backed artifact family, but the
-scientific boundary is unchanged: the result is still non-locked, public-benchmark evidence with
-binary video labels and limited support. `R5-XGame` remains positive-heavy and non-locked, and
-`R5-WOB` remains positive-probe only, so broad generalization, final paper-grade benchmark
-claims, WOB binary benchmark claims, and locked-test claims remain blocked. Locked test stays
-closed.
+No blocker prevents a first bounded draft. Stronger learned baselines, new seeds, controlled
+ablations, broader benchmark execution, or GPU throughput evidence require a separate new-compute
+decision. Locked test remains closed and separately gated.

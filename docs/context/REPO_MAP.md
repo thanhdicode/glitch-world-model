@@ -1,7 +1,7 @@
 # REPO_MAP.md
 
-Generated: 2026-06-23T16:06:28+00:00
-Commit: `6993964547348659cb2f8882f0a84347f765e200`
+Generated: 2026-06-23T20:20:15+00:00
+Commit: `1509d1ccf97dc568fede9667d2bd6f30d59efbe6`
 Generator: `scripts/update_context_cache.py`
 
 ## Top-Level Map
@@ -91,6 +91,7 @@ Generator: `scripts/update_context_cache.py`
 | `scripts/run_r6_tempglitch_ablations.py` | run_aggregation_ablation, run_cpu_ablation, build_parser, main | R6 TempGlitch ablation runner. |
 | `scripts/run_r6_wob_ablations.py` | build_parser, main | R6 WOB ablation runner. |
 | `scripts/run_synthetic_demo.py` | write_synthetic_frames, write_synthetic_labels, main | Python module. |
+| `scripts/run_tempglitch_followup_pair_disjoint.py` | build_parser, _command_text, main | Python module. |
 | `scripts/run_tempglitch_repeated_grouped_splits.py` | _require_file, _clear_score_files, _write_split_artifacts, _write_partitions, _format_metric, _write_locked_summary, _metric_summary, _write_repeated_summary, run_repeated_grouped_experiments, build_parser, main | Python module. |
 | `scripts/run_tempglitch_smoke_test.py` | build_parser, main | Python module. |
 | `scripts/run_tempglitch_split_experiments.py` | write_scores_csv, preprocess_tempglitch_videos, normal_train_records, score_validation_and_test, write_comparison, best_and_worst_categories, positive_clip_counts, clip_counts_by_split, build_parser, main | Python module. |
@@ -114,6 +115,7 @@ Generator: `scripts/update_context_cache.py`
 | `scripts/validate_r5_xgame_output_bundle.py` | sha256, _expected_sha256, _verify_sidecar, _safe_extract, _read_csv, _normalized_manifest_payload, normalized_manifest_sha256, _validate_manifest_matches_frozen, _validate_stage_package_marker, _require_metrics, _validate_evaluation_classes, _validate_provenance | Fail-closed validator for a completed R5-XGame output directory or tarball. |
 | `scripts/validate_r6_ablations.py` | validate_r6, build_parser, main | Validate R6 ablation outputs. |
 | `scripts/validate_research_release.py` | git_tracked_files, validate_tracked_files, validate_required_paths, validate_playbook_structure, validate_release, working_tree_errors, build_parser, main | Python module. |
+| `scripts/validate_tempglitch_followup.py` | build_parser, main | Python module. |
 | `scripts/validate_wob_expansion_readiness.py` | _read_json, _assert, _sha256_bytes, _read_manifest_rows, validate_readiness, build_parser, main | Validate the frozen seed42 non-locked World of Bugs evaluation-readiness bundle. |
 | `scripts/validate_wob_seed42_artifacts.py` | main | Python module. |
 | `scripts/validate_wob_seed_artifacts.py` | seed_name, validator_status, phase_name, tarball_prefix, required_tarball_files, _read_json, _assert, _assert_false_if_present, _finite_numbers, _sha256_file, _sha256_tar_member, _parse_sha256_sidecar | Python module. |
@@ -166,6 +168,7 @@ Generator: `scripts/update_context_cache.py`
 | `src/glitch_detection/splits.py` | SplitRecord, GroupedSplitRecord, _split_counts_for_group, assign_video_splits, assign_grouped_video_splits, validate_no_group_leakage, write_grouped_split_csv, write_split_csv, read_split_csv, read_grouped_split_csv, sources_for_split, split_counts_by_group | Python module. |
 | `src/glitch_detection/statistics.py` | _percentile, _metric, bootstrap_metric_ci | Python module. |
 | `src/glitch_detection/tempglitch.py` | TempGlitchVideoRef, TempGlitchSample, normalize_tempglitch_label, encode_tempglitch_video_url, parse_tempglitch_video_url, _load_json, fetch_tempglitch_dataset_info, fetch_tempglitch_rows, fetch_all_tempglitch_metadata, tempglitch_category_counts, _relative_video_path, _write_tempglitch_source_readme | Python module. |
+| `src/glitch_detection/tempglitch_followup.py` | _read_json, _write_json, _write_sha256, _percentile, _float_text, _config_key, _resolve_repo_relative_path, _retag_role, _role_overlap, build_followup_manifest_rows, build_followup_episode_rows, validate_followup_manifest_rows | Python module. |
 | `src/glitch_detection/video_autoencoder.py` | VideoAutoencoderUnavailableError, VideoAutoencoderConfig, require_torch, resolve_checkpoint, list_clip_frames, select_frame_paths, load_clip_array, ClipTensorDataset, build_model, _resolve_device, _set_deterministic_seed, _data_loader | Python module. |
 | `src/glitch_detection/video_eval.py` | _percentile, _aggregate, aggregate_scores_by_source, source_labels_from_intervals, _split_metadata, build_video_level_rows, compute_video_level_metrics, calibrate_video_threshold, evaluate_video_with_fixed_threshold, write_video_rows_csv, write_json, write_video_comparison | Python module. |
 | `src/glitch_detection/wob_kaggle_common.py` | resolve_existing_path, resolve_split_csv, resolve_protocol_audit, resolve_split_audit, _path_from_env, _keyword_score, _select_candidate, iter_kaggle_dataset_roots, detect_kaggle_roots, resolve_wob_seed_input, discover_r5_wob_input_overrides, add_tree_to_tar | Python module. |
@@ -233,6 +236,7 @@ Generator: `scripts/update_context_cache.py`
 | `scripts/run_r6_tempglitch_ablations.py` | R6 TempGlitch ablation runner. | general |
 | `scripts/run_r6_wob_ablations.py` | R6 WOB ablation runner. | general |
 | `scripts/run_synthetic_demo.py` | CLI/helper script. | general |
+| `scripts/run_tempglitch_followup_pair_disjoint.py` | CLI/helper script. | general |
 | `scripts/run_tempglitch_repeated_grouped_splits.py` | CLI/helper script. | general |
 | `scripts/run_tempglitch_smoke_test.py` | CLI/helper script. | general |
 | `scripts/run_tempglitch_split_experiments.py` | CLI/helper script. | general |
@@ -251,7 +255,6 @@ Generator: `scripts/update_context_cache.py`
 | `scripts/validate_lewm_r3_seed_artifacts.py` | CLI/helper script. | Gate 5 |
 | `scripts/validate_lewm_research_mvp_config.py` | CLI/helper script. | Gate 5 |
 | `scripts/validate_r5_wob_evaluation.py` | CLI/helper script. | general |
-| `scripts/validate_r5_wob_stage_outputs.py` | CLI/helper script. | general |
 
 ## Tests
 | Test | Coverage |
@@ -335,6 +338,7 @@ Generator: `scripts/update_context_cache.py`
 | `tests/test_staged_install_completeness.py` | staged_install_completeness |
 | `tests/test_statistics.py` | statistics |
 | `tests/test_tempglitch.py` | tempglitch |
+| `tests/test_tempglitch_followup.py` | tempglitch_followup |
 | `tests/test_tempglitch_split_runner.py` | tempglitch_split_runner |
 | `tests/test_validate_r5_wob_evaluation.py` | validate_r5_wob_evaluation |
 | `tests/test_validate_r5_xgame_output_bundle.py` | validate_r5_xgame_output_bundle |
@@ -376,6 +380,7 @@ Generator: `scripts/update_context_cache.py`
 | `docs/research/07_baseline_plan.md` | 07 baseline plan |
 | `docs/research/08_reproducibility_checklist.md` | 08 reproducibility checklist |
 | `docs/research/09_risks_and_limitations.md` | 09 risks and limitations |
+| `docs/research/100_tempglitch_evidence_upgrade_checklist.md` | 100 tempglitch evidence upgrade checklist |
 | `docs/research/10_paper_outline.md` | 10 paper outline |
 | `docs/research/11_tempglitch_integration_plan.md` | 11 tempglitch integration plan |
 | `docs/research/12_experiment_results_log.md` | 12 experiment results log |
@@ -434,4 +439,3 @@ Generator: `scripts/update_context_cache.py`
 | `docs/research/70_paper_claim_map.md` | 70 paper claim map |
 | `docs/research/70_wob_controlled_expansion_plan.md` | 70 wob controlled expansion plan |
 | `docs/research/71_paper_source_matrix.md` | 71 paper source matrix |
-| `docs/research/71_wob_p0_dataset_materialization_audit.md` | 71 wob p0 dataset materialization audit |

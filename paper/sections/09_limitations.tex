@@ -1,22 +1,18 @@
 \section{Limitations}
 \label{sec:limitations}
 
-The present paper scaffold has at least five important limitations.
+The bounded results are non-locked and validation-only. The TempGlitch follow-up contains only 12
+normal-negative and 22 buggy-positive evaluation episodes, and its operating threshold is
+calibrated from only two normal episodes. Its best LeWM AUROC interval overlaps the best baseline
+interval, and its FPR@95TPR remains 0.7500. The R5-XGame split is positive-heavy at 60 positives
+and 12 negatives and exhibits seed sensitivity.
 
-First, the bounded results are non-locked and validation-only. Second, the bibliography is still a
-bounded verified surface rather than an exhaustive review. Third, the empirical family is narrow
-enough that broad generalization claims would be unjustified even when a single row looks
-favorable. Fourth, World of Bugs is not yet a paper-facing evaluation result, so any discussion of
-WOB must remain at the status or workflow level. Fifth, window-level scores are diagnostic outputs
-rather than validated temporal-localization evidence. Sixth, the current thresholding procedure is
-a validation-only operating point, not evidence of deployed calibration.
+The two result families are not directly comparable because their support, calibration, domain,
+action mode, and training lineage differ. R5-WOB remains a positive-probe family with no
+normal-negative evaluation episodes. Binary video/episode labels do not establish temporal
+localization. No controlled evidence supports SIGReg benefit, action-conditioning benefit, broad
+cross-game generalization, or state of the art. Locked test remains unmaterialized and unscored.
 
-Seventh, the World of Bugs R5 evaluation has not yet produced a validator-passed output bundle, and
-its results remain unverified until an output artifact is downloaded, SHA256-checked, and
-validator-passed. Eighth,
-no cross-game generalization, action-conditioning benefit, or SIGReg benefit claim is supported
-until the corresponding R5-XGAME comparison and R6 ablation outputs exist. Ninth, R6 ablations
-have not yet been executed; all ablation table entries are placeholders.
-
-These limitations are not incidental footnotes. They are part of the paper's integrity model and
-should remain visible in the main text as later prose is added.
+The bibliography is still a bounded verified surface rather than an exhaustive review, and the
+threshold operating points are validation-only rather than evidence of deployed calibration.
+These limitations are part of the paper's integrity model and must remain visible in the main text.

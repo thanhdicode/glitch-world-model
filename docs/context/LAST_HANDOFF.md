@@ -1,121 +1,75 @@
 # LAST_HANDOFF.md
 
-Last completed task: Bounded TempGlitch follow-up execution from validated `R5` artifacts
-Commit: `c3c2e1513f414f1668253b7883d243b7cf67862e`
+Last completed task: TempGlitch evidence registration and paper-readiness package
+Commit: starting point `1509d1ccf97dc568fede9667d2bd6f30d59efbe6`; package commit recorded in final handoff
 Date: 2026-06-24
 
 ## What Changed
 
-- Added a dedicated follow-up implementation path:
-  - `src/glitch_detection/tempglitch_followup.py`
-  - `scripts/run_tempglitch_followup_pair_disjoint.py`
-  - `scripts/validate_tempglitch_followup.py`
-  - `tests/test_tempglitch_followup.py`
-- Executed the bounded TempGlitch follow-up using the existing validated `R5` artifact family
-  only, with no retraining, no Kaggle execution, no new dataset download, and no locked-test
-  activity.
-- Generated a gitignored follow-up evidence bundle containing the frozen manifest, episode scores,
-  comparison metrics, provenance, command log, validator receipt, and a short report.
-- Updated `docs/context/NEXT_ACTION.md` so the next step is now documentation and claim-safety
-  integration of the completed follow-up rather than running the follow-up itself.
+- Revalidated the local gitignored TempGlitch follow-up bundle with status
+  `followup_validated`.
+- Registered the pair-disjoint support, metrics, uncertainty, leakage checks, flags, and exact
+  artifact hashes in `docs/research/101_tempglitch_followup_results.md`.
+- Added paper table, readiness, outline, and Kaggle-gate plans in reports 102-105.
+- Added claims C-090 through C-092 and synchronized the paper claim map.
+- Updated the manuscript scaffold with a main TempGlitch follow-up table and a separate bounded
+  R5-XGame table.
+- Kept all generated evidence artifacts uncommitted per repository policy.
 
-## Evidence Confirmed
+## Evidence Summary
 
-- Existing authoritative `R5` TempGlitch evidence remains present and was reused as the sole
-  source for the follow-up bundle, including baseline scores, three LeWM seed score files,
-  episode scores, comparison CSV, metrics JSON, and provenance JSON.
-- Source-artifact integrity was preserved by carrying forward the validated raw-score hashes and
-  Lance fingerprints from the checked `R5` provenance/metrics contracts.
-- Verified source flags remain false:
-  `validation_buggy_used_for_fit_select=false`,
-  `locked_test_materialized=false`,
-  `locked_test_scored=false`
-- The repaired pair-disjoint follow-up calibration episodes are:
-  - `Godot_Blinking_Normal_106`
-  - `Godot_Frozen_Animation_Platformer_Normal_107`
-- Follow-up support is now frozen and validator-backed at:
-  - `2` calibration-normal episodes
-  - `12` evaluation normal-negative episodes
-  - `22` evaluation buggy-positive episodes
-- Cross-role overlap checks are clean:
-  - `0` `source_episode_id` overlaps
-  - `0` `pair_id` overlaps
-  - `0` `source` overlaps
-- Every compared row uses the same frozen support tuple:
-  - `2` calibration episodes
-  - `34` evaluation episodes
-  - `22` positive episodes
-  - `12` negative episodes
-- The follow-up validator passes with status:
-  - `followup_validated`
-- The best observed follow-up row is bounded non-locked evidence only:
-  - method family: `lewm`
-  - seed: `44`
-  - scorer: `lewm_l2_max`
-  - aggregation: `mean`
-  - `AUROC=0.7159`
-  - `AUPRC=0.8026`
-  - `F1=0.7143`
-  - `Precision=0.7500`
-  - `Recall=0.6818`
-  - `Balanced Accuracy=0.6326`
-  - `FPR@95TPR=0.7500`
-- The best observed baseline row remains weaker on the same support:
-  - method: `feature_distance`
-  - aggregation: `top2_mean`
-  - `AUROC=0.6136`
-  - `AUPRC=0.7310`
-  - `F1=0.1600`
+- Calibration normals: `2`.
+- Evaluation: `12` normal-negative and `22` buggy-positive episodes.
+- Cross-role `source_episode_id`, `pair_id`, and `source` overlap: `0`.
+- Best LeWM: seed44 `lewm_l2_max` + episode `mean`, AUROC `0.7159`, AUPRC `0.8026`,
+  F1 `0.7143`, AUROC CI `[0.5349, 0.8770]`.
+- Best baseline AUROC: `feature_distance` + `top2_mean`, AUROC `0.6136`, AUPRC `0.7310`,
+  F1 `0.1600`, AUROC CI `[0.4636, 0.7545]`.
+- Best LeWM FPR@95TPR: `0.7500`; AUROC intervals overlap.
 
 ## Safety Status
 
-- No LeWM retraining was launched.
-- No new live Kaggle run was launched.
-- Locked test remains closed.
-- No new dataset download was launched.
-- No raw data, tarballs, checkpoints, or credentials were added to Git.
-- No raw scientific metrics were modified.
-- No broad generalization, SOTA, SIGReg-benefit, temporal-localization, or locked-test claim was
-  introduced.
+- No training, Kaggle launch, new dataset download, new scoring, or locked-test access occurred.
+- `validation_buggy_used_for_fit_select=false`.
+- `locked_test_materialized=false` and `locked_test_scored=false`.
+- No raw data, outputs, checkpoints, caches, or credentials were added to Git.
 
 ## Checks Passed
 
-- `git status --short`
-- source artifact inventory checks on the validated TempGlitch `R5` inputs and research-MVP
-  dataset handles
-- follow-up build command execution from validated artifacts only
-- dedicated follow-up validator run
-- targeted tests:
-  - `python -m pytest tests/test_tempglitch_followup.py tests/test_r5_tempglitch_eval.py tests/test_statistics.py`
-- targeted lint/format checks for the new follow-up files
-- full repository verification remains the next required close-out step before commit
+- Dedicated TempGlitch follow-up validator: `followup_validated`.
+- Full tests, lint, format, release, claim, doctor, context, and pre-commit checks are required at
+  close-out and recorded in the final handoff.
 
 ## Gate Status After Task
 
-- TempGlitch `R5`: unchanged as the authoritative validated raw artifact family.
-- TempGlitch follow-up: now executed and validator-backed as a bounded pair-disjoint non-locked
-  bundle.
-- `R5-XGame`: unchanged; intake-reconciled and bounded `R6` docs remain complete.
-- `R5-WOB`: unchanged; positive-probe only.
-- Locked test: still closed.
+- TempGlitch follow-up: validated bounded pair-disjoint non-locked evidence.
+- R5-XGame: unchanged bounded non-locked secondary evidence.
+- R5-WOB: unchanged positive-probe only.
+- Locked test: closed, unmaterialized, and unscored.
+
+## Claim Boundary
+
+Allowed: within the frozen non-locked TempGlitch follow-up split, the best LeWM configuration
+shows stronger same-support separation than the recorded simple baselines, with small support,
+wide/overlapping AUROC intervals, and high FPR stated beside the result.
+
+Forbidden: broad superiority, SOTA, cross-game generalization, temporal localization, SIGReg or
+action-conditioning benefit, WOB binary-benchmark performance, or locked-test performance.
 
 ## Open Blockers
 
-- Full repository close-out verification has not yet been rerun after the follow-up code landed.
-- TempGlitch remains non-locked and still uses binary video labels rather than temporal spans.
-- `R5-XGame` remains positive-heavy and non-locked.
-- `R5-WOB` remains positive-probe only and cannot be promoted into a binary-benchmark claim.
+- Small evaluation/calibration support, wide uncertainty, and high TempGlitch FPR@95TPR.
+- No exact-support learned baseline or controlled SIGReg/action ablation.
+- Official Springer-kit compile and final paper audit remain pending.
 
 ## Next Recommended Task
 
-Update the TempGlitch evidence/claim docs to register the completed bounded follow-up with
-explicit support limits and non-locked claim language, then rerun the full repository
-verification suite before commit.
+Build the first paper draft from the bounded TempGlitch and R5-XGame evidence package.
 
 ## Files Likely Relevant Next
 
-- `docs/research/99_tempglitch_followup_protocol.md`
-- `docs/research/100_tempglitch_evidence_upgrade_checklist.md`
-- `docs/research/69_r5_tempglitch_identical_episode_results.md`
-- `docs/research/16_claim_registry.md`
-- `paper/claim_map.csv`
+- `docs/research/101_tempglitch_followup_results.md`
+- `docs/research/102_paper_results_table_plan.md`
+- `docs/research/104_paper_outline_lnicst_fisat.md`
+- `docs/research/70_paper_claim_map.md`
+- `paper/main.tex`

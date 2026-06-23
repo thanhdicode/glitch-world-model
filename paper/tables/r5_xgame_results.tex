@@ -1,25 +1,16 @@
-% R5-XGAME cross-dataset comparison table.
-% SKELETON ONLY -- do not replace placeholders until both R5-TempGlitch and
-% a separately assembled cross-dataset comparison artifact have been validated.
 \begin{table}[t]
 \centering
-\caption{Cross-dataset comparison of episode-level glitch detection (R5-XGAME).
-TempGlitch results are from the frozen non-locked R5 evaluation family.
-The repository now also has a validated non-locked \texttt{R5-XGame} bundle, but the current \texttt{R5-WOB}
-evidence is positive-probe only and the matched cross-dataset comparison has not been separately
-assembled or validated. No cross-game generalization claim is supported.}
+\caption{Bounded comparison on the frozen non-locked R5-XGame split: 12 normal-negative and
+60 buggy-positive evaluation episodes. Confidence intervals overlap; no broad superiority or
+cross-game generalization claim is supported.}
 \label{tab:r5-xgame-results}
-\begin{tabular}{llllll}
+\begin{tabular}{lllllll}
 \toprule
-Dataset & Method & Scorer & Aggregation & AUROC & AUPRC \\
+Family & Scorer & Aggregation & AUROC & AUPRC & F1 & AUROC 95\% CI \\
 \midrule
-TempGlitch & LeWM (best) & TODO & TODO & TODO & TODO \\
-TempGlitch & frame\_diff & --- & TODO & TODO & TODO \\
-TempGlitch & feature\_distance & --- & TODO & TODO & TODO \\
-\midrule
-World of Bugs & LeWM (best) & TODO & TODO & TODO & TODO \\
-World of Bugs & frame\_diff & --- & TODO & TODO & TODO \\
-World of Bugs & feature\_distance & --- & TODO & TODO & TODO \\
+LeWM seed44 & \texttt{lewm\_mse\_max} & \texttt{top2\_mean} & 0.9097 & 0.9814 & 0.7921 & [0.8281, 0.9720] \\
+Feature distance & --- & \texttt{max} & 0.7681 & 0.9509 & 0.6882 & [0.6484, 0.8719] \\
+Frame difference & --- & \texttt{max} & 0.7167 & 0.9381 & 0.6593 & [0.5812, 0.8339] \\
 \bottomrule
 \end{tabular}
 \end{table}
