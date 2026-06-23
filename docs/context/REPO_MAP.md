@@ -1,7 +1,7 @@
 # REPO_MAP.md
 
-Generated: 2026-06-23T04:56:29+00:00
-Commit: `b6e2b906a34cae35bd20d8907ffe17af8ce4ac51`
+Generated: 2026-06-23T05:10:54+00:00
+Commit: `f7bab5f7845c1324892302cee32ba120cf138442`
 Generator: `scripts/update_context_cache.py`
 
 ## Top-Level Map
@@ -15,7 +15,6 @@ Generator: `scripts/update_context_cache.py`
 | `PLAYBOOK.md/` | Tracked repository path. |
 | `README.md/` | Tracked repository path. |
 | `RULES.md/` | Tracked repository path. |
-| `attached_assets/` | Tracked repository path. |
 | `cloud/` | Tracked repository path. |
 | `configs/` | Experiment and runtime configuration. |
 | `docs/` | Research evidence, workflows, context cache, and roadmap. |

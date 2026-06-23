@@ -81,6 +81,7 @@ _external_references/
 .codegraph/
 
 # Project data and generated outputs
+attached_assets/
 data/*
 !data/.gitkeep
 !data/raw/
