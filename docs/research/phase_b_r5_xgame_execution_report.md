@@ -1,23 +1,43 @@
 # Phase B R5-XGame Execution Report
 
+Date: 2026-06-23
+
 ## Status
 
-- Branch/commit at freeze: `main` / `2996309`.
+- Branch/commit at doc sync: `main` / `b6e2b90`.
 - Real manifest frozen: yes, 120 non-locked metadata rows.
-- Role counts: train-normal 36, calibration-normal 12, evaluation-normal-negative 12, evaluation-buggy-positive 60.
+- Role counts: train-normal 36, calibration-normal 12, evaluation-normal-negative 12,
+  evaluation-buggy-positive 60.
 - Leakage audit: passed with zero episode, pair, or source conflicts.
-- Safe to run Kaggle now: no. The live scorer and fresh seed42/43/44 training artifacts for the new 36-row train split are not yet available.
+- Runner/validator status: implemented.
+- External execution status: active / running on Kaggle.
+- Scientific evidence status: pending local output-bundle validation.
 
-## Artifacts
+## What This Report Allows
 
-- Versioned: frozen manifest, freezer/audit scripts, protocol and metric guards, tests, and Phase B documents.
-- Ignored: `outputs/r5_xgame_leakage_audit.json`.
+- A real, leakage-audited four-role `R5-XGame` protocol exists.
+- The repository has a concrete Phase B execution path.
+- The active external run may be tracked as operations status only.
 
-## Claims
+## What This Report Forbids
 
-- Allowed: a real, non-locked, metadata-level leakage-audited R5-XGame split has been frozen.
-- Forbidden: R5-XGame performance, cross-game generalization, superiority, action-conditioning benefit, and locked-test performance.
+- Any `R5-XGame` performance claim before intake passes.
+- Any cross-game generalization, superiority, action-conditioning, SIGReg, temporal-localization,
+  or locked-test claim.
 
-## Exact Next Human Command
+## Exact Next Intake Step
 
-After a reviewed R5-XGame scorer and new seed artifacts are available, request the Kaggle package preparation. Until then, rerun the preflight commands in `r5_xgame_runbook.md`; do not launch scoring.
+Download:
+
+- `r5_xgame_outputs.tar.gz`
+- `r5_xgame_outputs.tar.gz.sha256`
+- `r5_xgame_staged.log`
+
+Then run:
+
+```powershell
+python scripts/validate_r5_xgame_output_bundle.py `
+  --tarball <download-dir>\r5_xgame_outputs.tar.gz `
+  --sha256-file <download-dir>\r5_xgame_outputs.tar.gz.sha256 `
+  --frozen-manifest configs\wob_protocol\r5_xgame_split.csv
+```

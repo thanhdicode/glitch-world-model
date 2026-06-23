@@ -1,20 +1,56 @@
-# R5-XGame - Cross-Game / Cross-Source Evaluation with Held-Out Normal Negatives
+# R5-XGame Plan
+
+Date: 2026-06-23
 
 ## Purpose
 
-Convert the R5-WOB positive-probe evaluation into a valid non-locked binary protocol without changing R5-WOB labels or opening the locked test.
+Convert the project from positive-probe evidence into valid non-locked binary-discrimination
+evidence without opening locked test.
 
-## PLANNED Protocol
+## Frozen Protocol
 
-- Freeze one manifest containing `train_normal`, `calibration_normal`, `evaluation_normal_negative`, and `evaluation_buggy_positive` rows.
-- Reject zero negatives, zero positives, calibration/evaluation episode or pair overlap, buggy calibration rows, and every `test` or `locked_test` row.
-- Reuse metadata-only Lance manifest construction and emit the planned manifest, window-manifest, baseline/seed score files, episode scores, comparison, metrics, report, provenance, stage markers, and success tarball with SHA256.
-- Report episode-level AUROC, AUPRC, F1, precision, recall, FPR@95TPR, balanced accuracy where applicable, category breakdowns, and bootstrap confidence intervals.
+- `train_normal`: 36
+- `calibration_normal`: 12
+- `evaluation_normal_negative`: 12
+- `evaluation_buggy_positive`: 60
 
-## VERIFIED Preparation
+## Verified Preparation
 
-`src/glitch_detection/r5_xgame_protocol.py` validates the split contract and `src/glitch_detection/r5_xgame_metrics.py` rejects one-class metric evaluation. `scripts/run_r5_xgame_staged.py --smoke` reports the awaiting-manifest state without scoring or creating experiment artifacts.
+- The split is frozen and leakage-audited.
+- The staged runner exists and trains fresh seed42/43/44 artifacts on the frozen 36-row training
+  partition.
+- Threshold calibration is limited to the 12 calibration-normal rows.
+- The Kaggle launcher and output-bundle validator exist.
 
-## BLOCKED
+## Active Status
 
-No source-disjoint R5-XGame manifest has been frozen and no R5-XGame run has occurred. The empty `configs/wob_protocol/r5_xgame_split.csv` is a schema template, not dataset evidence.
+Phase B / `R5-XGame` is the active mandatory scientific gate.
+
+- The external Kaggle execution is treated as in progress.
+- No metric is scientific evidence until the tarball, SHA256 sidecar, and log are downloaded and
+  validated locally.
+
+## Required Metrics After Intake
+
+- AUROC
+- AUPRC
+- F1
+- precision
+- recall
+- balanced accuracy
+- FPR@95TPR
+- bootstrap confidence intervals
+- per-seed reporting
+- category breakdowns where available
+
+## Blocked Claims
+
+Until intake passes, do not claim:
+
+- `R5-XGame` performance
+- cross-game generalization
+- superiority
+- action-conditioning benefit
+- SIGReg benefit
+- temporal localization
+- locked-test performance

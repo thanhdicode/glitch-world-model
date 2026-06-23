@@ -1,7 +1,7 @@
 # BOOT.md - Fast Start Context For Agents
 
-Generated: 2026-06-22T18:22:56+00:00
-Commit: `e09f596f98427daefc709b081dc8f5effd628ee7`
+Generated: 2026-06-23T04:56:29+00:00
+Commit: `b6e2b906a34cae35bd20d8907ffe17af8ce4ac51`
 
 ## Read Order
 1. `RULES.md`
@@ -33,15 +33,16 @@ The current execution roadmap is `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v3.md`
   verified from the downloaded evidence bundle, and WOB-P1 seed42/seed43/seed44 training
   artifact verification is complete.
 - The seed42 non-locked WOB evaluation-readiness gate is frozen, all three planned WOB-P1
-  training artifacts are now validator-backed, and the R5-XGame staged Kaggle runner/validator is
-  implemented but unexecuted. No R5-XGame metric is verified yet.
+  training artifacts are now validator-backed, `R5-WOB` is validated as a positive-probe bundle,
+  and Phase B / `R5-XGame` is the active binary-discrimination gate. No R5-XGame metric is
+  verified yet.
 - Gate 10 is closed.
 - Locked test is closed.
 - LeWM gameplay evaluation now exists for the non-locked TempGlitch research MVP only; locked
   test remains unopened, and WOB remains limited to audit-plus-training-artifact evidence.
 
 ## Immediate Next Task
-- Have the human run the staged R5-XGame Kaggle package with the two required World of Bugs
+- Monitor or complete the staged R5-XGame Kaggle package with the two required World of Bugs
   datasets mounted.
 - Download `r5_xgame_outputs.tar.gz`, its `.sha256` sidecar, and the Kaggle log.
 - Pass `scripts/validate_r5_xgame_output_bundle.py` locally before recording any R5-XGame metric.
@@ -55,8 +56,8 @@ The current execution roadmap is `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v3.md`
 - No data, output, checkpoint, Lance dataset, cache, `.env`, token, or `kaggle.json` commits.
 - No broad LeWM superiority, SIGReg benefit, temporal localization, SOTA, or neural locked-test
   claim from the current non-locked evidence bundle.
-- No WOB/R5-XGame detection-performance, cross-game, or action-conditioning claim from the current
-  training-artifact and pipeline-preparation evidence.
+- No WOB/R5-XGame detection-performance, cross-game, action-conditioning, or SIGReg-benefit claim
+  from the current training-artifact, positive-probe, and pipeline-preparation evidence.
 
 ## Required Checks
 ```powershell

@@ -1,16 +1,15 @@
 # NEXT_ACTION.md
 
-Last updated: 2026-06-22T18:22:56+00:00
-Commit: `e09f596f98427daefc709b081dc8f5effd628ee7`
+Last updated: 2026-06-23T04:56:29+00:00
+Commit: `b6e2b906a34cae35bd20d8907ffe17af8ce4ac51`
 
 ## Current Priority
-Run the staged non-locked R5-XGame Kaggle package with the required World of Bugs normal/test
-datasets mounted, then validate the downloaded success bundle locally before recording any metric.
-The repository has no validated R5-XGame result yet. Keep WOB R6 and locked test closed until the
-named prerequisites pass.
+Complete or monitor the staged non-locked R5-XGame Kaggle operation, then validate the downloaded
+success bundle locally before recording any metric. The repository has no validated R5-XGame
+result yet. Keep WOB R6 and locked test closed until the named prerequisites pass.
 
 ## Kaggle Run Next Action
-1. Open Kaggle with GPU enabled.
+1. If the notebook is not already running, open Kaggle with GPU enabled.
 2. Attach `benedictwilkinsai/world-of-bugs-normal` and `benedictwilkinsai/world-of-bugs-test`.
 3. Run `bash cloud/wob_r5_xgame/run_kaggle_r5_xgame_staged.sh` from the repository root.
 4. Download `r5_xgame_outputs.tar.gz`, `r5_xgame_outputs.tar.gz.sha256`, and the Kaggle log.
@@ -43,7 +42,8 @@ named prerequisites pass.
   `BLOCKED_R5_XGAME_VALIDATION`.
 
 ## Current Known Blocker
-R5 is complete for the non-locked TempGlitch family. R5-XGame remains unverified until a human-run
-Kaggle success bundle passes SHA256, safe extraction, and the frozen validator. Without that
-receipt, all WOB ablations, WOB paper metrics, and WOB/R5-XGame performance claims remain blocked.
-A failure bundle opens only a minimal repair/retry path, not a result path. Locked test stays closed.
+R5 is complete for the non-locked TempGlitch family, and R5-WOB is validated as positive-probe
+evidence only. R5-XGame remains unverified until the Kaggle success bundle passes SHA256, safe
+extraction, and the frozen validator. Without that receipt, all WOB ablations, WOB paper metrics,
+and WOB/R5-XGame performance claims remain blocked. A failure bundle opens only a minimal
+repair/retry path, not a result path. Locked test stays closed.

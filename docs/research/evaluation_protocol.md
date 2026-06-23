@@ -1,21 +1,45 @@
 # Evaluation Protocol
 
-## VERIFIED
+Date: 2026-06-23
 
-R5-WOB keeps `validation_buggy_used_for_fit_select=false` and keeps the locked test unmaterialized and unscored.
+## Phase A Meaning
 
-## Required Roles
+`R5-WOB` is a validated positive-probe protocol only.
 
-- `train_normal`: normal-only fitting data.
-- `calibration_normal`: normal data used only to set a frozen threshold.
-- `evaluation_normal_negative`: held-out normal negatives for final binary evaluation.
-- `evaluation_buggy_positive`: held-out buggy positives for final binary evaluation.
-- `locked_test`: excluded unless separately authorized by a direct user command.
+- It preserves `validation_buggy_used_for_fit_select=false`.
+- It keeps locked test unmaterialized and unscored.
+- It does not include `evaluation_normal_negative`.
+- Calibration rows must not be silently reused as evaluation negatives.
 
-## BLOCKED
+## Required Roles For Valid Binary Evaluation
 
-R5-WOB has calibration-normal and buggy-positive episodes but no `evaluation_normal_negative` role. Calibration rows cannot be silently reused as evaluation negatives.
+- `train_normal`: normal-only fitting data
+- `calibration_normal`: normal data used only to set a frozen threshold
+- `evaluation_normal_negative`: held-out normal negatives for final binary evaluation
+- `evaluation_buggy_positive`: held-out buggy positives for final binary evaluation
+- `locked_test`: excluded unless separately authorized by a direct user command
 
-## PLANNED
+## Phase B Contract
 
-R5-XGame requires source/pair/episode-disjoint roles, both evaluation classes, a threshold selected only from calibration-normal episodes, and episode-level AUROC, AUPRC, F1, precision, recall, FPR@95TPR, balanced accuracy where applicable, category breakdowns, and bootstrap intervals.
+`R5-XGame` is the active mandatory binary-discrimination gate.
+
+It must:
+
+- keep roles source/pair/episode-disjoint;
+- keep all `test` / locked rows excluded;
+- calibrate thresholds from `calibration_normal` only;
+- evaluate only on `evaluation_normal_negative` plus `evaluation_buggy_positive`;
+- report episode-level metrics only after output-bundle intake validation succeeds.
+
+## Metrics After Validation
+
+- AUROC
+- AUPRC
+- F1
+- precision
+- recall
+- balanced accuracy
+- FPR@95TPR
+- bootstrap confidence intervals
+- per-seed reporting
+- category breakdowns where supported

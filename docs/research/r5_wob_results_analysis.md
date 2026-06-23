@@ -1,22 +1,45 @@
 # R5-WOB Results Analysis
 
-## VERIFIED
+Date: 2026-06-23
 
-- Artifact intake: `VALID_OUTPUT_BUNDLE`; the validated extraction and receipt remain outside Git-tracked paths.
-- Core files received: manifest, baseline scores, episode scores, comparison, metrics, provenance, and report. Raw per-seed score files, stage markers, `gate8_metadata.json`, and materialization telemetry are not present in the tarball.
-- The Kaggle log reports preflight, Lance materialization, baseline scoring, three LeWM seeds, aggregation, package validation, and stage-marker validation as complete.
-- Protocol: 48 train-normal episodes, 12 calibration-normal episodes, 60 buggy probe episodes, 303,211 windows, and zero evaluation normal negatives. The frozen manifest hash is `f7dbd85876809a1c2437cf5827ce4c27f289078ca0904ed70c1d75908a1bcec6`.
-- The highest observed calibrated positive-probe F1 row is LeWM seed43 / `lewm_mse_mean` / max episode aggregation: 0.9474 (bootstrap CI 0.8991 to 0.9831).
+## Verified
 
-## INFERRED
+- Artifact intake status: `VALID_OUTPUT_BUNDLE`.
+- The validated extraction and receipt remain outside Git-tracked paths.
+- The Kaggle log reports staged completion for preflight, Lance materialization, baseline scoring,
+  three LeWM seeds, aggregation, and package validation.
+- The frozen manifest contains 48 `train_normal`, 12 `calibration_normal`, and 60
+  `evaluation_buggy_positive` episodes, with zero `evaluation_normal_negative` episodes.
+- The bundle therefore proves pipeline execution and class-conditional signal presence under a
+  normal-calibrated threshold.
 
-- The observed spread between seed43 and seed44 means checkpoint/seed stability remains a material uncertainty.
+## What R5-WOB Means
 
-## BLOCKED
+`R5-WOB` is a positive-probe / proof-of-execution bundle.
 
-- No normal-negative evaluation set exists. AUROC and FPR@95TPR are undefined; AUPRC=1 reflects a positive-only evaluation and must not be used as a binary classification result.
-- F1 is only calibrated buggy-probe detection under a normal-calibrated threshold, not full binary benchmark evidence.
+It supports:
+
+- execution success
+- provenance-bound artifact validation
+- signal-presence discussion
+- seed-aware qualitative comparison inside the positive-probe setting
+
+It does not support:
+
+- AUROC as a valid binary-benchmark claim
+- FPR@95TPR
+- binary discrimination
+- superiority
+- state of the art
+- cross-game generalization
+- temporal localization
+- action-conditioning benefit
+- SIGReg benefit
 
 ## Safe Claim Boundary
 
-The non-locked R5-WOB pipeline completed and produced provenance-bound baseline and three-seed LeWM episode outputs. It does not establish broad glitch-detection performance, superiority, cross-game generalization, or any locked-test result.
+Use this wording when summarizing the result:
+
+`A provenance-bound non-locked positive-probe evaluation demonstrating pipeline execution and
+class-conditional signal presence under a normal-calibrated threshold, but not yet a complete
+binary benchmark.`

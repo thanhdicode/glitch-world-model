@@ -1,15 +1,32 @@
 # R5-XGame Main Metrics Contract
 
+Date: 2026-06-23
+
 ## Frozen Semantics
 
 - Unit of analysis: episode, after pre-specified window-to-episode aggregation.
-- Threshold: selected only from `calibration_normal` episode scores; no evaluation row may influence it.
+- Threshold: selected only from `calibration_normal` episode scores.
 - Evaluation labels: `evaluation_normal_negative=0` and `evaluation_buggy_positive=1`.
-- Report AUROC, AUPRC, F1, precision, recall, FPR@95TPR, and balanced accuracy only when both evaluation classes are present.
-- Report all seeds 42, 43, and 44; do not select a best seed for the headline result.
-- Report per-category buggy-positive results where labels are available, with support counts.
-- Bootstrap confidence intervals resample episodes, retain the frozen threshold, and use a documented deterministic seed.
+- Report metrics only when both evaluation classes are present and the output bundle has passed
+  local validation.
+- Report seeds 42, 43, and 44 together; do not choose a headline best seed.
+- Report category breakdowns with support counts where metadata supports them.
+- Bootstrap confidence intervals must resample episodes while retaining the frozen threshold and
+  a documented deterministic seed.
 
-## BLOCKED
+## Required Post-Validation Metrics
 
-No metric may be reported until the frozen split is materialized and scored. The existing metric guard rejects one-class evaluation.
+- AUROC
+- AUPRC
+- F1
+- precision
+- recall
+- balanced accuracy
+- FPR@95TPR
+
+## Forbidden Uses
+
+- Do not backfill `R5-WOB` into this contract.
+- Do not report one-class metrics as binary-discrimination evidence.
+- Do not summarize `R5-XGame` performance from remote status, partial logs, or unvalidated bundle
+  contents.

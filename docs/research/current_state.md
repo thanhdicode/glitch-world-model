@@ -1,23 +1,45 @@
 # Current Research State
 
-Date: 2026-06-22
+Date: 2026-06-23
 
-## VERIFIED
+## Verified
 
-- The downloaded R5-WOB success bundle passed SHA256 verification and the repository offline intake validator: bundle SHA256 `6b08c2cf07ed71a55f71fb0e288a445f460309b98f479e21eba13f8722ba2274`.
-- The bundle contains the seven core intake artifacts. The frozen evaluation manifest hash is `f7dbd85876809a1c2437cf5827ce4c27f289078ca0904ed70c1d75908a1bcec6` and contains 12 calibration-normal plus 60 evaluation-buggy episodes.
-- All staged R5-WOB phases are reported complete in the supplied Kaggle log. Direct intake validation confirms seeds 42/43/44, `frame_diff`, and `feature_distance` are present.
-- `validation_buggy_used_for_fit_select=false`, `locked_test_materialized=false`, and `locked_test_scored=false`.
+- `R5-WOB` passed SHA256 verification and the repository offline intake validator as a
+  provenance-bound non-locked output bundle.
+- `R5-WOB` contains calibration-normal plus buggy-positive evidence and preserves
+  `validation_buggy_used_for_fit_select=false`, `locked_test_materialized=false`, and
+  `locked_test_scored=false`.
+- `R5-WOB` proves pipeline execution and class-conditional signal presence under a
+  normal-calibrated threshold.
+- The `R5-XGame` four-role split is frozen and leakage-audited with 36 `train_normal`,
+  12 `calibration_normal`, 12 `evaluation_normal_negative`, and 60
+  `evaluation_buggy_positive` rows.
+- The staged `R5-XGame` runner, Kaggle launcher, and output-bundle validator exist in the repo.
+- Phase B / `R5-XGame` is the active scientific gate, and the external Kaggle run is treated as
+  in progress until the downloaded bundle is validated locally.
 
-## INFERRED
+## Blocked
 
-- Seed-level calibrated positive-probe F1 varies materially; this warrants seed-aware reporting rather than a single-seed narrative.
+- `R5-WOB` is not a valid binary benchmark because it has zero
+  `evaluation_normal_negative` episodes.
+- `R5-WOB` must not be used to claim AUROC, FPR@95TPR, binary discrimination, superiority, state
+  of the art, cross-game generalization, temporal localization, action-conditioning benefit, or
+  SIGReg benefit.
+- No `R5-XGame` metric is claim-ready until `r5_xgame_outputs.tar.gz`,
+  `r5_xgame_outputs.tar.gz.sha256`, and `r5_xgame_staged.log` pass local intake validation.
+- Locked test remains closed.
 
-## BLOCKED
+## Safe Wording
 
-- R5-WOB has zero normal evaluation negatives. AUROC and FPR@95TPR are therefore unavailable, and AUPRC=1 is not a meaningful binary-benchmark result.
-- Cross-game/source generalization, method superiority, action-conditioning benefit, and locked-test results remain unproven.
+Use this wording for `R5-WOB` when a concise summary is needed:
 
-## PLANNED
+`A provenance-bound non-locked positive-probe evaluation demonstrating pipeline execution and
+class-conditional signal presence under a normal-calibrated threshold, but not yet a complete
+binary benchmark.`
 
-- R5-XGame will require disjoint train-normal, calibration-normal, evaluation-normal-negative, and evaluation-buggy-positive groups before live scoring.
+## Planned Next State
+
+- If Phase B intake passes, the repository may record valid non-locked binary metrics for
+  `R5-XGame`.
+- Until that intake passes, Phase C benchmark-prep work, Phase D ablation design, and Phase E
+  paper scaffolding remain prep-only lanes.
