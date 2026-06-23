@@ -13,20 +13,22 @@ Date: 2026-06-23
 
 ## Operational State
 
-- Phase B is the active external scientific gate.
-- The Kaggle run may proceed or be in progress operationally.
-- No metric is evidence until the downloaded bundle passes local validation.
+- Phase B compute has already completed.
+- The repaired downloaded bundle now passes local validation for both the live output directory and
+  the tarball/sidecar pair.
+- The packaging repair only made the downloaded tarball intake-valid; it did not relaunch Kaggle
+  or retrain LeWM.
 
 ## Claim Boundary
 
 Allowed now:
 
 - code/package readiness for a non-locked `R5-XGame` binary-discrimination run
-- execution-state reporting at the level of "running" or "awaiting intake"
+- bounded reporting from the validated non-locked bundle
 
 Still forbidden:
 
-- `R5-XGame` performance claims
+- broad `R5-XGame` performance claims outside the frozen non-locked split
 - superiority or state-of-the-art claims
 - cross-game generalization claims
 - action-conditioning or SIGReg benefit claims

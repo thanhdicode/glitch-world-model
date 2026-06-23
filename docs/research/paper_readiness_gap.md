@@ -7,7 +7,8 @@ Date: 2026-06-23
 - Evidence-governed pipeline and claim-control infrastructure.
 - Provenance-bound TempGlitch R5 documentation and bounded non-locked findings.
 - Validated `R5-WOB` positive-probe bundle with explicit limitations.
-- Frozen `R5-XGame` split, runner, Kaggle launcher, validator, and execution docs.
+- Validated `R5-XGame` output-dir and tarball intake with a bounded non-locked binary result
+  summary.
 - Paper scaffolding work: method/protocol text, related-work refresh, limitations framing,
   reviewer FAQ, figure/table shells, and submission memo.
 
@@ -22,17 +23,18 @@ Date: 2026-06-23
 
 ## Governing Distinction
 
-Engineering readiness is not the same as scientific-evidence readiness.
+Engineering readiness is not the same as broad paper-readiness.
 
 - `R5-WOB` is engineering-ready and signal-validating, but not binary-benchmark-ready.
-- `R5-XGame` is execution-ready in tooling terms, but not claim-ready in scientific terms until
-  the downloaded bundle passes intake validation.
+- `R5-XGame` now has claim-ready intake receipts and a bounded non-locked validation summary, but
+  it remains a frozen 12-negative / 60-positive split rather than proof of broad generalization.
 
-## Exit Condition For Paper-Ready Results
+## Exit Condition For Broader Paper-Ready Results
 
-Paper-facing main results become eligible only after:
+Broader paper-facing main results become eligible only after:
 
-1. the Phase B output tarball, SHA256 sidecar, and log are downloaded;
-2. `scripts/validate_r5_xgame_output_bundle.py` passes;
-3. claim registry, current-state, and paper claim map are refreshed from the validated bundle;
-4. the results are written with the documented non-locked boundary still explicit.
+1. the validated `R5-XGame` bundle is the cited source, not remote status or partial logs;
+2. claim registry, current-state, and paper claim map remain synchronized to that validated
+   bundle;
+3. any cross-source or final-table claim adds separately validated matching evidence;
+4. the documented non-locked boundary and evaluation-set limitations remain explicit.

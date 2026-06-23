@@ -18,6 +18,114 @@ def _runner():
     return module
 
 
+def _validator():
+    path = Path("scripts/validate_r5_xgame_output_bundle.py")
+    spec = importlib.util.spec_from_file_location("r5_xgame_bundle_validator", path)
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def _prepare_valid_package_input(runner, output: Path, manifest: Path) -> None:
+    output.mkdir()
+    (output / "r5_xgame_manifest.csv").write_bytes(manifest.read_bytes())
+    for name in (
+        runner.WINDOW_MANIFEST_NAME,
+        runner.BASELINE_SCORE_NAME,
+        runner.COMPARISON_NAME,
+    ):
+        (output / name).write_text("value\n", encoding="utf-8")
+    for seed in (42, 43, 44):
+        (output / f"r5_xgame_lewm_scores_seed{seed}.csv").write_text(
+            "window_id,mse_t1,mse_t2,mse_t3,l2_t1,l2_t2,l2_t3\n",
+            encoding="utf-8",
+        )
+    with (output / runner.EPISODE_SCORE_NAME).open("w", encoding="utf-8", newline="") as handle:
+        writer = csv.DictWriter(
+            handle,
+            fieldnames=[
+                "method_family",
+                "method",
+                "window_scorer",
+                "seed",
+                "episode_aggregation",
+                "source_episode_id",
+                "source",
+                "pair_id",
+                "category",
+                "label",
+                "dataset_name",
+                "evaluation_role",
+                "window_count",
+                "score",
+            ],
+        )
+        writer.writeheader()
+        writer.writerow(
+            {
+                "method_family": "baseline",
+                "method": "frame_diff",
+                "window_scorer": "frame_diff",
+                "seed": "",
+                "episode_aggregation": "mean",
+                "source_episode_id": "normal/eval",
+                "source": "NORMAL-TRAIN/eval.tar",
+                "pair_id": "normal/eval",
+                "category": "world_of_bugs",
+                "label": "Normal",
+                "dataset_name": "normal_validation",
+                "evaluation_role": "evaluation",
+                "window_count": "1",
+                "score": "0.1",
+            }
+        )
+        writer.writerow(
+            {
+                "method_family": "baseline",
+                "method": "frame_diff",
+                "window_scorer": "frame_diff",
+                "seed": "",
+                "episode_aggregation": "mean",
+                "source_episode_id": "buggy/eval",
+                "source": "TEST/eval.tar",
+                "pair_id": "buggy/eval",
+                "category": "world_of_bugs",
+                "label": "Buggy",
+                "dataset_name": "buggy_probe",
+                "evaluation_role": "evaluation",
+                "window_count": "1",
+                "score": "0.9",
+            }
+        )
+    (output / runner.METRICS_NAME).write_text(
+        json.dumps(
+            {
+                "summary_row": {
+                    "method": "frame_diff",
+                    "seed": "",
+                    "window_scorer": "frame_diff",
+                    "episode_aggregation": "mean",
+                },
+                "results": [{"method": "frame_diff"}],
+                "auroc": 0.5,
+                "auprc": 0.5,
+                "f1": 0.5,
+                "precision": 0.5,
+                "recall": 0.5,
+                "fpr_at_95_tpr": 0.5,
+                "balanced_accuracy": 0.5,
+                "validation_buggy_used_for_fit_select": False,
+                "locked_test_materialized": False,
+                "locked_test_scored": False,
+            }
+        ),
+        encoding="utf-8",
+    )
+    for name in runner.PRE_PACKAGE_STAGE_MARKER_NAMES:
+        (output / name).write_text("{}\n", encoding="utf-8")
+
+
 def test_preflight_reports_missing_archives_by_role(tmp_path: Path):
     runner = _runner()
     result = runner.preflight(
@@ -81,6 +189,8 @@ def test_package_writes_tarball_and_sidecar(tmp_path: Path, monkeypatch):
         ),
         encoding="utf-8",
     )
+    for name in runner.PRE_PACKAGE_STAGE_MARKER_NAMES:
+        (output / name).write_text("{}\n", encoding="utf-8")
     monkeypatch.setattr(
         runner,
         "runtime_provenance",
@@ -92,6 +202,49 @@ def test_package_writes_tarball_and_sidecar(tmp_path: Path, monkeypatch):
     assert (output / "r5_xgame_outputs.tar.gz.sha256").is_file()
     with tarfile.open(output / "r5_xgame_outputs.tar.gz", "r:gz") as archive:
         assert "r5_xgame_manifest.csv" in archive.getnames()
+        assert "stage_package.json" in archive.getnames()
+
+
+def test_package_tarball_extracts_to_intake_valid_directory(tmp_path: Path, monkeypatch):
+    runner = _runner()
+    validator = _validator()
+    manifest = Path("configs/wob_protocol/r5_xgame_split.csv")
+    output = tmp_path / "out"
+    _prepare_valid_package_input(runner, output, manifest)
+    monkeypatch.setattr(
+        runner,
+        "runtime_provenance",
+        lambda include_lewm: {"git_sha": "abc"} if not include_lewm else {"git_sha": "abc"},
+    )
+
+    runner.run_package(manifest=manifest, output_dir=output)
+
+    extract_dir = tmp_path / "extract"
+    extract_dir.mkdir()
+    with tarfile.open(output / runner.TARBALL_NAME, "r:gz") as archive:
+        archive.extractall(extract_dir)
+
+    result = validator.validate_output_dir(extract_dir, manifest, require_package_files=False)
+    assert result["status"] == "r5_xgame_output_validated"
+
+
+def test_validate_package_checks_tarball_pair(tmp_path: Path, monkeypatch):
+    runner = _runner()
+    manifest = Path("configs/wob_protocol/r5_xgame_split.csv")
+    output = tmp_path / "out"
+    _prepare_valid_package_input(runner, output, manifest)
+    monkeypatch.setattr(
+        runner,
+        "runtime_provenance",
+        lambda include_lewm: {"git_sha": "abc"} if not include_lewm else {"git_sha": "abc"},
+    )
+
+    runner.run_package(manifest=manifest, output_dir=output)
+    result = runner.run_validate_package(output_dir=output, frozen_manifest=manifest)
+
+    assert result["status"] == "validate_package_complete"
+    assert result["validator_result"]["status"] == "r5_xgame_output_validated"
+    assert result["tarball_validator_result"]["status"] == "r5_xgame_tarball_validated"
 
 
 def test_kaggle_launch_script_and_required_input_doc_exist():

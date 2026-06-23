@@ -24,15 +24,17 @@ Current LeWM gate status:
 - R5 completed for the non-locked TempGlitch identical-episode family with provenance-bound
   manifest, score, metric, and report outputs.
 - World of Bugs remains a controlled post-R5 expansion track; WOB-P1 seed42, seed43, and seed44
-  training artifact verification are complete, while WOB evaluation remains unopened.
-- The seed42 non-locked WOB evaluation-readiness gate is frozen, all three planned WOB-P1
-  training artifacts are now validator-backed, and the next empirical WOB step is the frozen
-  non-locked `R5-WOB` evaluation path.
+  training artifact verification are complete, `R5-WOB` is validated as a positive-probe bundle,
+  and `R5-XGame` compute is now intake-validated as a non-locked binary bundle.
+- The repaired `R5-XGame` tarball now passes `r5_xgame_output_validated` and
+  `r5_xgame_tarball_validated`; the repair was packaging-only and did not relaunch Kaggle or
+  retrain LeWM.
 - Local WOB replay remains blocked on missing raw tar coverage, but the Kaggle-native `WOB-P0`
   audit has now passed and resolved all 120 non-locked rows with locked test still closed.
 - The verified WOB-P1 seed42/seed43/seed44 artifacts are training evidence only, not WOB
   detection-performance evidence.
-- WOB evaluation remains closed until a separate explicit human command opens it.
+- The best recorded `R5-XGame` configuration reached AUROC `0.909722` on the frozen
+  12-negative / 60-positive split; this remains bounded validation evidence only.
 - Gate 9 remains a one-buggy-episode pilot; Gate 10 has not run.
 - Locked test remains closed.
 - Only exact qualified pilot and R5-family metrics are supported; broad superiority, temporal
@@ -76,6 +78,7 @@ Research planning docs:
 - [R5 + WOB controlled expansion plan](docs/research/68_r5_tempglitch_and_wob_expansion_plan.md)
 - [R5 TempGlitch identical-episode results](docs/research/69_r5_tempglitch_identical_episode_results.md)
 - [WOB controlled expansion plan](docs/research/70_wob_controlled_expansion_plan.md)
+- [R5-XGame validated bundle summary](docs/research/93_r5_xgame_validated_bundle_summary.md)
 
 Phase 6D completed five pair-suspect grouped refit/selection/locked-test runs with zero
 cross-split groups. The selected pipeline achieved locked-test AUROC `0.573 +/- 0.118`; this
@@ -168,10 +171,13 @@ non-locked TempGlitch identical-episode evaluation family. Those R5 results are 
 frozen validation-only family and do not support broad superiority or general glitch-detection
 claims. Kaggle-native `WOB-P0` has now passed with a verified downloaded evidence bundle, and the
 WOB-P1 seed42, seed43, and seed44 training artifacts are SHA256-verified and validator-passed
-under the train-normal / validation-normal protocol. The seed42 evaluation-readiness gate is
-frozen, the next empirical WOB gate is the non-locked `R5-WOB` evaluation path, WOB evaluation
-remains closed pending a separate explicit human command, and the locked test still requires a
-separate explicit command.
+under the train-normal / validation-normal protocol. `R5-WOB` completed as a validated
+positive-probe bundle, and `R5-XGame` compute completed with a repaired downloaded bundle that now
+passes `r5_xgame_output_validated` and `r5_xgame_tarball_validated` locally. The repaired tarball
+SHA256 is `65f8b21bf9b31dd6498cb2b46ca0d368f7d4b1f8fef15480b915a1ff9a8204ac`. The best recorded
+non-locked `R5-XGame` configuration reached AUROC `0.909722` on the frozen 12-normal-negative /
+60-buggy-positive split; this remains bounded validation evidence, not broad generalization or a
+locked-test result. The locked test still requires a separate explicit command.
 
 The June 11, 2026 Gate 5 TempGlitch dataset upload is ready. The first approved kernel push
 returned HTTP `409 Conflict` before a run was established; the local cause was a kernel slug that

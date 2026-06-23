@@ -1,0 +1,11 @@
+{
+  "title": "phase6e-video-autoencoder-template",
+  "id": "your-kaggle-username/phase6e-video-autoencoder-template",
+  "licenses": [
+    {
+      "name": "CC0-1.0"
+    }
+  ],
+  "subtitle": "Template metadata for the historical Phase 6E validation-only launch package",
+  "description": "Fill this template only for a separately authorized historical Phase 6E rerun. Do not publish credentials, outputs, checkpoints, or locked-test data."
+}

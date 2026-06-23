@@ -30,10 +30,12 @@ Do not frame the project as:
 - `R5-WOB` demonstrates pipeline execution and class-conditional signal presence only.
 - `R5-WOB` is not a valid binary benchmark because it contains zero
   `evaluation_normal_negative` episodes.
-- The `R5-XGame` split, runner, package, and validator exist; the active external scientific gate
-  is the staged Kaggle `R5-XGame` run plus postrun bundle intake.
-- No `R5-XGame` metric is claim-ready until `r5_xgame_outputs.tar.gz`,
-  `r5_xgame_outputs.tar.gz.sha256`, and `r5_xgame_staged.log` pass local intake validation.
+- The `R5-XGame` split, runner, package, and validator exist, and the downloaded bundle now passes
+  local output-dir and tarball intake validation after a packaging-only repair.
+- The repaired `R5-XGame` tarball SHA256 is
+  `65f8b21bf9b31dd6498cb2b46ca0d368f7d4b1f8fef15480b915a1ff9a8204ac`.
+- `R5-XGame` now provides bounded non-locked binary validation evidence, with the best recorded
+  configuration reaching AUROC approximately `0.91` on the frozen split.
 - Locked test remains closed.
 
 ## 3. Claim Boundary
@@ -45,12 +47,14 @@ Do not frame the project as:
   registry.
 - R5-WOB as a provenance-bound positive-probe bundle proving execution and signal presence under a
   normal-calibrated threshold.
-- R5-XGame tooling readiness, manifest freeze, leakage audit, and staged Kaggle execution status.
+- R5-XGame tooling readiness, manifest freeze, leakage audit, validated intake receipt, and the
+  bounded non-locked AUROC approximately `0.91` summary on the frozen split.
 
 ### Forbidden until new evidence exists
 
 - Any claim that `R5-WOB` is a valid binary benchmark.
-- Any `R5-XGame` performance claim before bundle validation.
+- Any broad `R5-XGame` performance, generalization, or final-benchmark claim beyond the exact
+  validated split.
 - Broad glitch-detection superiority or state-of-the-art language.
 - Cross-game generalization claims.
 - Action-conditioning benefit claims.
@@ -82,7 +86,7 @@ binary benchmark.`
 
 ### Phase B - R5-XGame Binary Discrimination
 
-Status: active / running on Kaggle, pending output-bundle intake.
+Status: complete as an intake-validated non-locked bundle with bounded claim scope.
 
 Purpose:
 
@@ -97,8 +101,8 @@ Frozen protocol:
 
 Claim rule:
 
-- Treat the run as operational activity only until the downloaded tarball, SHA256 sidecar, and log
-  pass local validation.
+- Treat only the locally validated bundle as evidence. The packaging repair that made the tarball
+  intake-valid did not create a new scientific run.
 
 Required metrics after successful validation:
 
@@ -213,7 +217,10 @@ Phase B is complete only after all of the following are true:
 5. The claim registry and current-state docs are updated from the validated intake, not from remote
    status alone.
 
-If the bundle fails intake:
+Status on 2026-06-23: satisfied by the repaired bundle with tarball SHA256
+`65f8b21bf9b31dd6498cb2b46ca0d368f7d4b1f8fef15480b915a1ff9a8204ac`.
+
+If a future bundle fails intake:
 
 - keep it out of evidence
 - preserve the log

@@ -4,8 +4,8 @@ Date: 2026-06-23
 
 ## Status
 
-Phase B / `R5-XGame` is the active scientific gate. Treat the Kaggle run as an external operation
-that is not evidence until local intake validation succeeds.
+Phase B / `R5-XGame` compute has completed, and the current downloaded bundle now passes local
+intake validation. Treat only locally validated bundles as evidence.
 
 ## Preflight Reference Commands
 
@@ -29,7 +29,18 @@ These are metadata/readiness commands only. They do not create claim-ready metri
 - `r5_xgame_outputs.tar.gz.sha256`
 - `r5_xgame_staged.log`
 
-## Intake Rule
+## Current Validated Receipt
+
+- Live output directory validator status:
+  `r5_xgame_output_validated`
+- Tarball/sidecar validator status:
+  `r5_xgame_tarball_validated`
+- Repaired tarball SHA256:
+  `65f8b21bf9b31dd6498cb2b46ca0d368f7d4b1f8fef15480b915a1ff9a8204ac`
+- Packaging-only repair:
+  `stage_package.json` is now snapshotted before tarball sealing; no retraining was launched.
+
+## Intake Rule For Any Future Bundle
 
 Do not summarize or claim `R5-XGame` metrics until:
 
@@ -40,5 +51,5 @@ Do not summarize or claim `R5-XGame` metrics until:
 
 - Never mount, materialize, or score the 59 WOB `test` rows.
 - Never reuse old `R5-WOB` training artifacts for `R5-XGame`.
-- Treat remote status, notebook completion, or partial logs as operational signals only, not
-  scientific evidence.
+- Treat remote status, notebook completion, partial logs, or packaging-only repairs as operational
+  signals only unless a locally validated bundle still supports the cited claim.

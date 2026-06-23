@@ -100,7 +100,12 @@ artifacts/downloads/
 artifacts/verified/
 lewm_outputs/
 lewm_data/
-/kaggle/
+/kaggle/*
+!/kaggle/phase6e_video_autoencoder/
+!/kaggle/phase6e_video_autoencoder/README.md
+!/kaggle/phase6e_video_autoencoder/phase6e_kaggle_cells.md
+!/kaggle/phase6e_video_autoencoder/dataset-metadata.template.json
+!/kaggle/phase6e_video_autoencoder/DO_NOT_COMMIT_ARTIFACTS.md
 
 checkpoints/
 *.tar.gz

@@ -14,9 +14,16 @@ Date: 2026-06-23
 - The `R5-XGame` four-role split is frozen and leakage-audited with 36 `train_normal`,
   12 `calibration_normal`, 12 `evaluation_normal_negative`, and 60
   `evaluation_buggy_positive` rows.
-- The staged `R5-XGame` runner, Kaggle launcher, and output-bundle validator exist in the repo.
-- Phase B / `R5-XGame` is the active scientific gate, and the external Kaggle run is treated as
-  in progress until the downloaded bundle is validated locally.
+- The staged `R5-XGame` runner, Kaggle launcher, and output-bundle validator exist in the repo,
+  and the downloaded bundle now passes both `r5_xgame_output_validated` and
+  `r5_xgame_tarball_validated`.
+- The repaired `R5-XGame` tarball SHA256 is
+  `65f8b21bf9b31dd6498cb2b46ca0d368f7d4b1f8fef15480b915a1ff9a8204ac`.
+- `R5-XGame` now provides bounded non-locked binary validation evidence; the best recorded
+  configuration reached AUROC `0.909722`, AUPRC `0.981384`, F1 `0.792079`, precision `0.975610`,
+  recall `0.666667`, and balanced accuracy `0.791667`.
+- The repaired tarball receipt reflects a packaging-only fix; no retraining or new Kaggle run was
+  launched.
 
 ## Blocked
 
@@ -25,8 +32,9 @@ Date: 2026-06-23
 - `R5-WOB` must not be used to claim AUROC, FPR@95TPR, binary discrimination, superiority, state
   of the art, cross-game generalization, temporal localization, action-conditioning benefit, or
   SIGReg benefit.
-- No `R5-XGame` metric is claim-ready until `r5_xgame_outputs.tar.gz`,
-  `r5_xgame_outputs.tar.gz.sha256`, and `r5_xgame_staged.log` pass local intake validation.
+- The current `R5-XGame` evidence is bounded to a frozen, non-locked, positive-heavy evaluation
+  split with only 12 normal-negative episodes, so it must not be promoted into broad
+  generalization, superiority, state-of-the-art, or locked-test language.
 - Locked test remains closed.
 
 ## Safe Wording
@@ -37,9 +45,13 @@ Use this wording for `R5-WOB` when a concise summary is needed:
 class-conditional signal presence under a normal-calibrated threshold, but not yet a complete
 binary benchmark.`
 
+Use this wording for `R5-XGame` when a concise summary is needed:
+
+`R5-XGame provides non-locked binary validation evidence that latent surprise scores separate
+buggy-positive and normal-negative gameplay episodes, with the best recorded configuration
+reaching AUROC approximately 0.91 on the frozen R5-XGame split.`
+
 ## Planned Next State
 
-- If Phase B intake passes, the repository may record valid non-locked binary metrics for
-  `R5-XGame`.
-- Until that intake passes, Phase C benchmark-prep work, Phase D ablation design, and Phase E
-  paper scaffolding remain prep-only lanes.
+- Downstream work may cite the validated non-locked `R5-XGame` bundle with its limitation note,
+  but cross-source comparison, broad benchmark claims, and locked-test work remain closed.
