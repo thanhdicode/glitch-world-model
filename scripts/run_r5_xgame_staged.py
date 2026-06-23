@@ -8,6 +8,7 @@ import hashlib
 import json
 import shutil
 import tarfile
+import tempfile
 from pathlib import Path
 from typing import Any, Sequence
 
@@ -81,6 +82,7 @@ METRICS_NAME = "r5_xgame_metrics.json"
 PROVENANCE_NAME = "r5_xgame_provenance.json"
 REPORT_NAME = "R5_XGAME_REPORT.md"
 TARBALL_NAME = "r5_xgame_outputs.tar.gz"
+LEWM_SCORE_FIELDS = ("window_id", "mse_t1", "mse_t2", "mse_t3", "l2_t1", "l2_t2", "l2_t3")
 PLANNED_OUTPUTS = (
     "r5_xgame_manifest.csv",
     WINDOW_MANIFEST_NAME,
@@ -136,6 +138,18 @@ def _sha256(path: Path) -> str:
 def _read_manifest(path: Path) -> list[dict[str, str]]:
     with path.open("r", encoding="utf-8-sig", newline="") as handle:
         return list(csv.DictReader(handle))
+
+
+def _validate_seed_selection(seeds: Sequence[int], *, allow_subset: bool) -> tuple[int, ...]:
+    ordered = tuple(dict.fromkeys(int(seed) for seed in seeds))
+    invalid = [seed for seed in ordered if seed not in SUPPORTED_SEEDS]
+    if invalid:
+        raise ValueError(f"Unsupported R5-XGame seeds: {invalid}")
+    if not allow_subset and ordered != SUPPORTED_SEEDS:
+        raise ValueError("R5-XGame requires fresh seeds 42, 43, and 44.")
+    if not ordered:
+        raise ValueError("R5-XGame requires at least one seed.")
+    return ordered
 
 
 def _role_hash(rows: Sequence[dict[str, str]], roles: set[str]) -> str:
@@ -232,6 +246,78 @@ def _load_stage_marker(output_dir: Path, stage: str) -> dict[str, Any]:
     if not path.is_file():
         raise FileNotFoundError(f"Missing R5-XGame stage marker: {path}")
     return json.loads(path.read_text(encoding="utf-8-sig"))
+
+
+def _require_safe_flags(payload: dict[str, Any], *, context: str) -> None:
+    for field in (
+        "validation_buggy_used_for_fit_select",
+        "locked_test_materialized",
+        "locked_test_scored",
+    ):
+        if payload.get(field) is not False:
+            raise ValueError(f"Unsafe {context} flag: {field}")
+
+
+def _assert_score_rows_complete(
+    manifest_rows: Sequence[dict[str, str]],
+    raw_rows: Sequence[dict[str, str]],
+    *,
+    context: str,
+) -> None:
+    expected_rows = len(manifest_rows)
+    actual_rows = len(raw_rows)
+    if actual_rows != expected_rows:
+        raise ValueError(
+            f"{context} row count mismatch: expected {expected_rows}, found {actual_rows}."
+        )
+    validate_score_alignment(manifest_rows, raw_rows)
+
+
+def _seed_score_path(output_dir: Path, seed: int) -> Path:
+    return output_dir / f"r5_xgame_lewm_scores_seed{seed}.csv"
+
+
+def _write_csv_rows_atomic(
+    path: Path, rows: Sequence[dict[str, str]], fieldnames: Sequence[str]
+) -> Path:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with tempfile.NamedTemporaryFile(
+        mode="w",
+        encoding="utf-8",
+        newline="",
+        delete=False,
+        dir=path.parent,
+        prefix=f".{path.name}.",
+        suffix=".tmp",
+    ) as handle:
+        tmp_path = Path(handle.name)
+    try:
+        write_csv_rows(tmp_path, rows, tuple(fieldnames))
+        tmp_path.replace(path)
+    finally:
+        if tmp_path.exists():
+            tmp_path.unlink()
+    return path
+
+
+def validate_existing_lewm_score_file(
+    output_dir: Path,
+    manifest_rows: Sequence[dict[str, str]],
+    *,
+    seed: int,
+) -> dict[str, Any]:
+    score_path = _seed_score_path(output_dir, seed)
+    if not score_path.is_file():
+        raise FileNotFoundError(f"Missing R5-XGame score CSV for seed{seed}: {score_path}")
+    raw_rows = read_csv_rows(score_path)
+    _assert_score_rows_complete(
+        manifest_rows, raw_rows, context=f"r5_xgame_lewm_scores_seed{seed}.csv"
+    )
+    return {
+        "path": str(score_path),
+        "sha256": sha256_file(score_path),
+        "row_count": len(raw_rows),
+    }
 
 
 def preflight(
@@ -390,9 +476,10 @@ def run_baseline_score(*, output_dir: Path, batch_size: int) -> dict[str, Any]:
 def run_train_lewm(
     *, output_dir: Path, seeds: Sequence[int], device: str, resume: bool
 ) -> dict[str, Any]:
+    selected_seeds = _validate_seed_selection(seeds, allow_subset=False)
     materialize = _load_stage_marker(output_dir, "materialize")
     seed_outputs = []
-    for seed in seeds:
+    for seed in selected_seeds:
         seed_dir = output_dir / f"_lewm_seed{seed}"
         metadata = train_fresh_seed(
             Path(materialize["files"][TRAIN_LANCE_NAME]["path"]),
@@ -431,8 +518,13 @@ def run_train_lewm(
 def run_lewm_score(
     *, output_dir: Path, seeds: Sequence[int], device: str, batch_size: int
 ) -> dict[str, Any]:
+    selected_seeds = _validate_seed_selection(seeds, allow_subset=True)
     materialize = _load_stage_marker(output_dir, "materialize")
+    _require_safe_flags(materialize, context="materialize")
     train_stage = _load_stage_marker(output_dir, "train_lewm")
+    if train_stage.get("status") != "train_lewm_complete":
+        raise ValueError("R5-XGame lewm_score requires stage_train_lewm.json with completion.")
+    _require_safe_flags(train_stage, context="train_lewm")
     manifest_rows = read_csv_rows(Path(materialize["files"][WINDOW_MANIFEST_NAME]["path"]))
     normal_ids = [
         row["window_id"] for row in manifest_rows if row["dataset_name"] == NORMAL_DATASET_NAME
@@ -442,10 +534,28 @@ def run_lewm_score(
     ]
     files: dict[str, dict[str, str]] = {}
     seed_infos = []
-    for seed in seeds:
+    for seed in SUPPORTED_SEEDS:
         seed_info = next(
             item for item in train_stage["seed_outputs"] if int(item["seed"]) == int(seed)
         )
+        score_path = _seed_score_path(output_dir, seed)
+        if seed not in selected_seeds:
+            existing = validate_existing_lewm_score_file(output_dir, manifest_rows, seed=seed)
+            print(
+                f"[r5_xgame] reuse existing score seed={seed} rows={existing['row_count']} "
+                f"path={existing['path']}",
+                flush=True,
+            )
+            files[score_path.name] = _file_record(score_path)
+            seed_infos.append(
+                {
+                    **seed_info,
+                    "raw_score_path": str(score_path),
+                    "raw_score_sha256": existing["sha256"],
+                }
+            )
+            continue
+        print(f"[r5_xgame] lewm_score seed={seed} load checkpoint", flush=True)
         adapter = LeWMAdapter(
             LeWMCheckpointSpec(
                 weights_path=Path(seed_info["weights_path"]),
@@ -455,28 +565,41 @@ def run_lewm_score(
                 device=device,
             )
         ).load()
-        raw_rows = [
-            *_score_dataset(
-                Path(materialize["files"][NORMAL_LANCE_NAME]["path"]),
-                normal_ids,
-                adapter,
-                batch_size=batch_size,
-                device=device,
-            ),
-            *_score_dataset(
-                Path(materialize["files"][BUGGY_LANCE_NAME]["path"]),
-                buggy_ids,
-                adapter,
-                batch_size=batch_size,
-                device=device,
-            ),
-        ]
-        validate_score_alignment(manifest_rows, raw_rows)
-        score_path = write_csv_rows(
-            output_dir / f"r5_xgame_lewm_scores_seed{seed}.csv",
-            raw_rows,
-            ("window_id", "mse_t1", "mse_t2", "mse_t3", "l2_t1", "l2_t2", "l2_t3"),
+        print(
+            f"[r5_xgame] lewm_score seed={seed} score dataset={NORMAL_DATASET_NAME} "
+            f"windows={len(normal_ids)}",
+            flush=True,
         )
+        normal_rows = _score_dataset(
+            Path(materialize["files"][NORMAL_LANCE_NAME]["path"]),
+            normal_ids,
+            adapter,
+            batch_size=batch_size,
+            device=device,
+        )
+        print(
+            f"[r5_xgame] lewm_score seed={seed} score dataset={BUGGY_DATASET_NAME} "
+            f"windows={len(buggy_ids)}",
+            flush=True,
+        )
+        buggy_rows = _score_dataset(
+            Path(materialize["files"][BUGGY_LANCE_NAME]["path"]),
+            buggy_ids,
+            adapter,
+            batch_size=batch_size,
+            device=device,
+        )
+        raw_rows = [*normal_rows, *buggy_rows]
+        _assert_score_rows_complete(
+            manifest_rows,
+            raw_rows,
+            context=f"lewm_score seed{seed}",
+        )
+        print(
+            f"[r5_xgame] lewm_score seed={seed} validated rows={len(raw_rows)}",
+            flush=True,
+        )
+        score_path = _write_csv_rows_atomic(score_path, raw_rows, LEWM_SCORE_FIELDS)
         files[score_path.name] = _file_record(score_path)
         seed_infos.append(
             {
@@ -484,6 +607,10 @@ def run_lewm_score(
                 "raw_score_path": str(score_path),
                 "raw_score_sha256": sha256_file(score_path),
             }
+        )
+        print(
+            f"[r5_xgame] lewm_score seed={seed} wrote {score_path.name}",
+            flush=True,
         )
     payload = {
         "status": "lewm_score_complete",
@@ -507,12 +634,13 @@ def _score_rows_for_lewm(raw_rows: Sequence[dict[str, str]]) -> dict[str, list[d
 
 
 def run_aggregate_episode(*, output_dir: Path, seeds: Sequence[int]) -> dict[str, Any]:
+    selected_seeds = _validate_seed_selection(seeds, allow_subset=False)
     manifest_rows = read_csv_rows(output_dir / WINDOW_MANIFEST_NAME)
     baseline_rows = read_csv_rows(output_dir / BASELINE_SCORE_NAME)
     per_method_rows: list[dict[str, str]] = []
-    for seed in seeds:
-        raw_rows = read_csv_rows(output_dir / f"r5_xgame_lewm_scores_seed{seed}.csv")
-        validate_score_alignment(manifest_rows, raw_rows)
+    for seed in selected_seeds:
+        score_info = validate_existing_lewm_score_file(output_dir, manifest_rows, seed=seed)
+        raw_rows = read_csv_rows(Path(score_info["path"]))
         for window_scorer, aligned_rows in _score_rows_for_lewm(raw_rows).items():
             for aggregation in EPISODE_AGGREGATIONS:
                 per_method_rows.extend(
@@ -967,12 +1095,12 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
-    if sorted(args.seeds) != list(SUPPORTED_SEEDS):
-        raise ValueError("R5-XGame requires fresh seeds 42, 43, and 44.")
     if args.smoke:
         raise ValueError(
             "R5-XGame smoke mode is not supported because one-class shortcuts are unsafe."
         )
+    allow_subset = args.stage == "lewm_score"
+    _validate_seed_selection(args.seeds, allow_subset=allow_subset)
     if args.dry_run:
         receipt = preflight(args.manifest, args.input_root, args.output_dir, args.seeds)
         ready = receipt["status"] == "preflight_complete"

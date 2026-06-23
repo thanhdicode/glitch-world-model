@@ -1,65 +1,79 @@
 # LAST_HANDOFF.md
 
-Last completed task: roadmap/docs synchronization for the Phase B parallel strategy
+Last completed task: R5-XGame resume/finalize workflow for missing seed44 Kaggle partial output
 Commit: pending task commit
 Date: 2026-06-23
 
 ## What Changed
 
-- Rewrote the canonical roadmap around Phase A/B/C/D/E so every planning doc now shares the same
-  state model.
-- Marked `R5-WOB` as completed positive-probe evidence only, with explicit wording that it is not
-  a valid binary benchmark because it has zero normal-negative evaluation episodes.
-- Marked Phase B / `R5-XGame` as the active mandatory scientific gate and blocked all metric claims
-  until the tarball, SHA256 sidecar, and log pass local intake validation.
-- Added `docs/research/roadmap_q3_upgrade_strategy.md`,
-  `docs/research/parallel_work_while_phase_b_runs.md`, and
-  `docs/research/roadmap_update_report.md`.
-- Updated current-state, paper-readiness, evaluation-protocol, metrics-contract, paper-claim-map,
-  and Phase B execution docs to match the same claim boundary.
-- Registered the new safe-phrasing and Phase B gating statements in the claim registry.
+- Added `scripts/run_r5_xgame_resume_missing_seed44.py` to locate a mounted partial `r5_xgame/`
+  directory under `/kaggle/input`, copy it into `/kaggle/working/r5_xgame`, validate the partial
+  output, score only missing seed44, and then run only downstream finalize stages.
+- Added `cloud/wob_r5_xgame/run_kaggle_r5_xgame_resume_missing_seed44_and_finalize.sh` as the
+  Kaggle launcher for the resume path.
+- Extended `scripts/run_r5_xgame_staged.py` so `lewm_score` can safely run on a subset such as
+  `--seeds 44`, reuse already-complete seed42/seed43 score files, write seed44 atomically, print
+  scoring progress, and fail closed on row-count mismatches.
+- Hardened downstream aggregation to require all three validated score CSVs before finalize.
+- Added targeted tests for resume validation failures, seed44-only scoring, shell runtime
+  completeness, and missing `stage_lewm_score.json` rejection during package validation.
+- Added the new partial-output intake note, resume plan, resume runbook, and resume report, and
+  updated the main R5-XGame Kaggle live runbook with the resume path.
 
 ## Safety Status
 
-- No heavy training, Kaggle execution, materialization, checkpoint loading, or scoring was run in
-  this task.
-- No frozen manifest, scoring logic, locked-test state, or benchmark result was changed.
+- No heavy training, Kaggle execution, materialization, or full local scoring was run in this
+  task.
+- The frozen manifest and role counts were not changed.
+- Locked test remains closed.
 - No raw data, outputs, checkpoints, caches, credentials, or `attached_assets` were added.
-- No `R5-XGame` performance, superiority, cross-game, action-conditioning, SIGReg,
-  temporal-localization, or locked-test claim was introduced.
+- No `R5-XGame` performance claim was introduced; the new workflow is operational only until the
+  completed bundle passes final package validation.
 
 ## Checks Passed
 
-- Pending validation execution for this doc-sync task.
+- Targeted resume-related pytest:
+  `python -m pytest tests/test_r5_xgame_runner.py tests/test_r5_xgame_resume_missing_seed44.py tests/test_validate_r5_xgame_output_bundle.py tests/test_staged_install_completeness.py`
+  -> `45 passed`
+- `python -m ruff check .`
+- `python -m ruff format --check .`
+- `python scripts/validate_research_release.py --ci`
+- `python scripts/check_claim_registry.py`
+- `python scripts/doctor.py`
+- `pre-commit run --all-files`
+- `python -m pytest` -> `521 passed, 2 failed`; both failures are pre-existing unrelated missing
+  `phase6e_video_autoencoder` Kaggle docs in `tests/test_phase6e_kaggle_docs.py`
 
 ## Gate Status After Task
 
 - Phase A / `R5-WOB`: complete with explicit limitations.
-- Phase B / `R5-XGame`: active/running externally, but not claim-ready.
+- Phase B / `R5-XGame`: resume workflow ready for a quota-interrupted partial bundle; still not
+  claim-ready until the completed tarball, SHA256 sidecar, and log pass local intake validation.
 - Phase C / target benchmark prep: prep only.
 - Phase D / baselines and ablations: design only.
 - Phase E / paper package: scaffold only.
 
 ## Open Blockers
 
-- `R5-XGame` metrics remain blocked until `r5_xgame_outputs.tar.gz`,
-  `r5_xgame_outputs.tar.gz.sha256`, and `r5_xgame_staged.log` are downloaded and validated
+- `R5-XGame` metrics remain blocked until the completed resume bundle is produced and validated
   locally.
-- Full `python -m pytest` may still include the known unrelated Phase 6E missing-doc failure if the
-  repo-wide suite is rerun.
+- Repo-wide `python -m pytest` still has the unrelated `tests/test_phase6e_kaggle_docs.py`
+  missing-doc failures outside this task scope.
 
 ## Next Recommended Task
 
 1. Finish or monitor the external Phase B Kaggle run.
-2. Download the tarball, SHA256 sidecar, and staged log.
-3. Run local intake with `scripts/validate_r5_xgame_output_bundle.py`.
-4. Only after a successful intake, update evidence-bearing result docs and paper-facing metrics.
+2. Mount the partial `r5_xgame/` output as a Kaggle dataset and run:
+   `bash cloud/wob_r5_xgame/run_kaggle_r5_xgame_resume_missing_seed44_and_finalize.sh`
+3. Download the completed tarball, SHA256 sidecar, and resume log.
+4. Run local intake with `scripts/validate_r5_xgame_output_bundle.py`.
+5. Only after a successful intake, update evidence-bearing result docs and paper-facing metrics.
 
 ## Files Likely Relevant Next
 
-- `docs/research/r5_xgame_plan.md`
-- `docs/research/r5_xgame_runbook.md`
-- `docs/research/phase_b_r5_xgame_execution_report.md`
-- `docs/research/parallel_work_while_phase_b_runs.md`
-- `docs/research/roadmap_update_report.md`
-- `scripts/validate_r5_xgame_output_bundle.py`
+- `cloud/wob_r5_xgame/run_kaggle_r5_xgame_resume_missing_seed44_and_finalize.sh`
+- `scripts/run_r5_xgame_resume_missing_seed44.py`
+- `scripts/run_r5_xgame_staged.py`
+- `docs/research/r5_xgame_resume_missing_seed44_runbook.md`
+- `docs/research/r5_xgame_partial_output_intake_note.md`
+- `docs/research/r5_xgame_resume_missing_seed44_report.md`

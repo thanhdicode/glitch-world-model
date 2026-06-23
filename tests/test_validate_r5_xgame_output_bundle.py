@@ -198,3 +198,11 @@ def test_validator_accepts_tarball_pair(tmp_path: Path):
         frozen,
     )
     assert result["status"] == "r5_xgame_tarball_validated"
+
+
+def test_validator_refuses_missing_stage_lewm_score_marker(tmp_path: Path):
+    validator = _load_validator()
+    output, frozen = _valid_output(tmp_path)
+    (output / "stage_lewm_score.json").unlink()
+    with pytest.raises(ValueError, match="stage_lewm_score.json"):
+        validator.validate_output_dir(output, frozen)

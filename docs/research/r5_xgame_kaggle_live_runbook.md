@@ -15,6 +15,19 @@ cd /kaggle/working/glitch-world-model
 bash cloud/wob_r5_xgame/run_kaggle_r5_xgame_staged.sh
 ```
 
+If a prior Kaggle attempt already finished `materialize`, `baseline_score`, `train_lewm`, and
+complete seed42/seed43 scoring but stopped before seed44 and downstream finalize, switch to the
+resume path instead of restarting the full run:
+
+```bash
+cd /kaggle/working/glitch-world-model
+bash cloud/wob_r5_xgame/run_kaggle_r5_xgame_resume_missing_seed44_and_finalize.sh
+```
+
+The resume path is documented in
+`docs/research/r5_xgame_resume_missing_seed44_runbook.md`. Use it only when the mounted partial
+`r5_xgame/` directory passes the new resume validator.
+
 The script is self-contained: before running any stage it installs the isolated LeWM runtime
 (`stable-worldmodel==0.1.1`, `lancedb==0.30.0`, `pylance==4.0.0`, `lance-namespace`, `loguru`,
 `hydra-core` with `--no-deps`, then `stable-pretraining==0.1.7` + `transformers==4.57.6` with full
@@ -45,6 +58,9 @@ credentials back into the repository.
 
 - Missing input: attach the two required WOB datasets or set `NORMAL_INPUT_ROOT` and
   `TEST_INPUT_ROOT`; do not edit the frozen manifest.
+- Quota-interrupted partial output with completed train artifacts and complete seed42/seed43 score
+  CSVs: mount the partial `r5_xgame/` directory and use the resume launcher rather than rerunning
+  the full staged pipeline.
 - Old checkpoint/R5-WOB input refusal: remove the unsafe mounted dataset and rerun from scratch.
 - OOM or timeout: return the full Kaggle log and stage marker files; do not reuse partial metrics.
 - Validation failure: download the log plus output directory listing; treat the bundle as invalid

@@ -29,6 +29,12 @@ SCRIPT = Path(__file__).parent.parent / "cloud" / "wob_r5_eval" / "run_kaggle_r5
 XGAME_SCRIPT = (
     Path(__file__).parent.parent / "cloud" / "wob_r5_xgame" / "run_kaggle_r5_xgame_staged.sh"
 )
+XGAME_RESUME_SCRIPT = (
+    Path(__file__).parent.parent
+    / "cloud"
+    / "wob_r5_xgame"
+    / "run_kaggle_r5_xgame_resume_missing_seed44_and_finalize.sh"
+)
 KAGGLE_RUNTIME = Path(__file__).parent.parent / "requirements" / "kaggle_runtime.txt"
 _LANCEDB_MIN_VERSION = "0.30.0"
 _PYLANCE_MIN_VERSION = "4.0.0"
@@ -210,8 +216,7 @@ def test_xgame_stable_worldmodel_installed():
     """stable-worldmodel must be present (required by materialize/baseline/score stages)."""
     text = XGAME_SCRIPT.read_text(encoding="utf-8")
     assert "stable-worldmodel" in text, (
-        "stable-worldmodel must appear in the pip install block of "
-        "run_kaggle_r5_xgame_staged.sh"
+        "stable-worldmodel must appear in the pip install block of run_kaggle_r5_xgame_staged.sh"
     )
 
 
@@ -308,4 +313,28 @@ def test_xgame_verifies_runtime_imports_before_stages():
         stage_index = text.find("for stage in")
     assert verify_index != -1 and stage_index != -1 and verify_index < stage_index, (
         "The import-verification step must run before the materialize stage."
+    )
+
+
+def test_xgame_resume_script_exists():
+    assert XGAME_RESUME_SCRIPT.is_file(), f"Shell script not found: {XGAME_RESUME_SCRIPT}"
+
+
+def test_xgame_resume_launcher_installs_runtime():
+    text = XGAME_RESUME_SCRIPT.read_text(encoding="utf-8")
+    for package in ("stable-worldmodel", "stable-pretraining", "hydra-core", "lancedb"):
+        assert package in text, (
+            f"{package} must appear in the pip install block of "
+            "run_kaggle_r5_xgame_resume_missing_seed44_and_finalize.sh"
+        )
+    assert _parse_pin(text, "lancedb") == _parse_runtime_pin("lancedb")
+    assert _parse_pin(text, "pylance") == _parse_runtime_pin("pylance")
+
+
+def test_xgame_resume_launcher_verifies_runtime_before_resume():
+    text = XGAME_RESUME_SCRIPT.read_text(encoding="utf-8")
+    assert "stable_worldmodel.data" in text
+    assert "scripts/run_r5_xgame_resume_missing_seed44.py" in text
+    assert text.find("stable_worldmodel.data") < text.find(
+        "scripts/run_r5_xgame_resume_missing_seed44.py"
     )

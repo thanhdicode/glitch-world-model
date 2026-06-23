@@ -1,7 +1,7 @@
 # REPO_MAP.md
 
-Generated: 2026-06-23T05:10:54+00:00
-Commit: `f7bab5f7845c1324892302cee32ba120cf138442`
+Generated: 2026-06-23T07:05:59+00:00
+Commit: `fc8f41aae8cc267056cc2659a77e0a1ac9746864`
 Generator: `scripts/update_context_cache.py`
 
 ## Top-Level Map
@@ -84,7 +84,7 @@ Generator: `scripts/update_context_cache.py`
 | `scripts/run_r5_wob_identical_episode_evaluation.py` | - | Python module. |
 | `scripts/run_r5_wob_stage.py` | - | Python module. |
 | `scripts/run_r5_xgame_comparison.py` | _load_metrics, _sha256_file, _validate_wob_output, _extract_best_rows, build_comparison_table, write_comparison_csv, write_provenance, build_parser, main | R5-XGAME: Cross-dataset comparison of TempGlitch R5 and WOB R5 results. |
-| `scripts/run_r5_xgame_staged.py` | _sha256, _read_manifest, _role_hash, _validate_counts, _normalize_rows, _resolve_source_path, _coverage, _reject_old_r5_wob_inputs, _stage_marker_path, _file_record, _write_stage_marker, _load_stage_marker | Fail-closed staged entrypoint for the four-role R5-XGame protocol. |
+| `scripts/run_r5_xgame_staged.py` | _sha256, _read_manifest, _validate_seed_selection, _role_hash, _validate_counts, _normalize_rows, _resolve_source_path, _coverage, _reject_old_r5_wob_inputs, _stage_marker_path, _file_record, _write_stage_marker | Fail-closed staged entrypoint for the four-role R5-XGame protocol. |
 | `scripts/run_r6_tempglitch_ablations.py` | run_aggregation_ablation, run_cpu_ablation, build_parser, main | R6 TempGlitch ablation runner. |
 | `scripts/run_r6_wob_ablations.py` | build_parser, main | R6 WOB ablation runner. |
 | `scripts/run_synthetic_demo.py` | write_synthetic_frames, write_synthetic_labels, main | Python module. |
