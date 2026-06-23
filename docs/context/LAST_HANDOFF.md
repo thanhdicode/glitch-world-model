@@ -1,71 +1,61 @@
 # LAST_HANDOFF.md
 
-Last completed task: R5-XGame intake reconciliation plus bounded R6 evidence upgrade
-Commit: pending task commit
-Date: 2026-06-23
+Last completed task: Bounded TempGlitch follow-up protocol freeze
+Commit: `228f128559edb6154ff82143477b42f45fe84501`
+Date: 2026-06-24
 
 ## What Changed
 
-- Reconciled the `R5-XGame` intake contract so the checked-in frozen manifest remains
-  authoritative across LF/CRLF checkouts by validating normalized CSV content rather than raw
-  line-ending bytes.
-- Added explicit reconciliation evidence in
-  `docs/research/94_r5_xgame_intake_reconciliation.md`, including the original fail/pass matrix,
-  raw versus normalized manifest hashes, line-ending evidence, and the legacy `stage_package.json`
-  SHA caveat.
-- Updated `scripts/validate_r5_xgame_output_bundle.py` to report raw-hash mismatch separately from
-  normalized manifest equivalence and to surface legacy package-marker tarball metadata without
-  treating it as authoritative.
-- Added focused regression tests for line-ending-insensitive manifest validation and for the
-  minimal `stage_package.json` snapshot contract.
-- Completed bounded `R6` documentation from the validated bundle only:
-  - `95_r6_xgame_error_analysis.md`
-  - `96_r6_xgame_bounded_comparison.md`
-  - `97_r6_xgame_ablation_summary.md`
-  - `98_r6_limitations_and_next_benchmark_memo.md`
-- Synchronized claim-control docs so the new bounded reconciliation and R6 findings are explicitly
-  registered without widening claim scope.
+- Froze the next main evidence lane as a bounded non-locked TempGlitch follow-up built from the
+  existing validated `R5` TempGlitch artifact set only.
+- Added `docs/research/99_tempglitch_followup_protocol.md` to capture the executive verdict,
+  evidence inventory, frozen split repair, metric contract, provenance contract, claim boundary,
+  and exact next single action.
+- Added `docs/research/100_tempglitch_evidence_upgrade_checklist.md` to capture pre-run checks,
+  required inputs/outputs, validation expectations, failure conditions, claim-safety checks, and
+  stop conditions.
+- Updated `docs/context/NEXT_ACTION.md` so the next step is no longer "freeze a protocol," but
+  rather execute the pair-disjoint TempGlitch follow-up without retraining or Kaggle execution.
 
 ## Evidence Confirmed
 
-- Checked-in manifest role counts remain:
-  `train_normal=36`, `calibration_normal=12`, `evaluation_normal_negative=12`,
-  `evaluation_buggy_positive=60`
-- Verified flags remain false:
+- Existing authoritative `R5` TempGlitch evidence remains present, including the frozen manifest,
+  baseline scores, three LeWM seed score files, episode-level scores, comparison CSV, metrics
+  JSON, and provenance JSON documented in
+  `docs/research/69_r5_tempglitch_identical_episode_results.md`.
+- Verified `R5` flags remain false:
   `validation_buggy_used_for_fit_select`, `locked_test_materialized`, `locked_test_scored`
-- Output-dir validator status against checked-in manifest:
-  `r5_xgame_output_validated`
-- Tarball validator status against checked-in manifest:
-  `r5_xgame_tarball_validated`
-- Repaired tarball SHA256:
-  `65f8b21bf9b31dd6498cb2b46ca0d368f7d4b1f8fef15480b915a1ff9a8204ac`
-- Raw manifest SHA mismatch is now documented as LF/CRLF-only:
-  checked-in `4f4b0ca5fe6e7ea207dd5a8f4ec97a0d00af486a109d2f215e9c83880c89182c`
-  versus bundle `caf14819f347342d13165db6129e4b12f7cf6bf99e78d1b96ba4b9ea02ecb999`
-- Normalized manifest SHA matches:
-  `caf14819f347342d13165db6129e4b12f7cf6bf99e78d1b96ba4b9ea02ecb999`
-- Best recorded bounded result remains:
-  AUROC approximately `0.9097`, AUPRC approximately `0.9814`, F1 approximately `0.7921`,
-  precision approximately `0.9756`, recall approximately `0.6667`, balanced accuracy
-  approximately `0.7917`
+- Current validated `R5` manifest support remains:
+  - `2` calibration-normal episodes
+  - `12` evaluation normal-negative episodes
+  - `22` evaluation buggy-positive episodes
+- Current manifest caveat documented for follow-up repair:
+  `1` calibration/evaluation `pair_id` overlap
+- Pair-disjoint follow-up calibration episodes are now frozen as:
+  - `Godot_Blinking_Normal_106`
+  - `Godot_Frozen_Animation_Platformer_Normal_107`
+- That repair preserves:
+  - `2` calibration-normal episodes
+  - `12` evaluation normal-negative episodes
+  - `22` evaluation buggy-positive episodes
+  - `0` cross-role pair overlaps between calibration and evaluation
 
-## Main Bounded R6 Findings
+## Main Protocol Findings
 
-- Best-row error analysis shows `20` false negatives and `1` false positive on the frozen
-  72-episode evaluation, so the strongest row remains recall-limited rather than precision-limited.
-- Within the frozen non-locked split, the best recorded baseline remains `feature_distance`
-  (`AUROC 0.7681`) above `frame_diff` (`AUROC 0.7167`), while the best recorded LeWM row remains
-  `0.9097`; this comparison remains split-bounded only.
-- The validated `category` field is single-valued (`world_of_bugs`), so per-category comparison is
-  limited to support-count confirmation rather than multi-category contrast.
-- Recorded LeWM rows show stronger descriptive AUROC for `max` / `top2_mean` aggregation than for
-  `mean`, with seed `44` providing the strongest recorded rows.
+- The next TempGlitch lane should be artifact-only, not a new training lane.
+- The next follow-up should use the existing validated `R5` raw scores and seed artifacts, not
+  Phase 6D locked-test-style artifacts and not a new Kaggle run.
+- The next follow-up must emit richer metrics than the current `R5` comparison receipt, including
+  precision, recall, balanced accuracy, and an explicit validator receipt.
+- The next follow-up should use grouped confidence intervals keyed by `pair_id` when available,
+  rather than relying only on episode-level grouping.
 
 ## Safety Status
 
 - No LeWM retraining was launched.
 - No new live Kaggle run was launched.
 - Locked test remains closed.
+- No new dataset download was launched.
 - No raw data, tarballs, checkpoints, or credentials were added to Git.
 - No raw scientific metrics were modified.
 - No broad generalization, SOTA, SIGReg-benefit, temporal-localization, or locked-test claim was
@@ -73,38 +63,43 @@ Date: 2026-06-23
 
 ## Checks Passed
 
-- `python -m pytest tests/test_validate_r5_xgame_output_bundle.py tests/test_r5_xgame_runner.py`
-  -> `18 passed`
-- `python -m ruff check scripts/validate_r5_xgame_output_bundle.py`
-- `python -m ruff check tests/test_validate_r5_xgame_output_bundle.py tests/test_r5_xgame_runner.py docs/research/16_claim_registry.md docs/research/70_paper_claim_map.md`
-- `python -m ruff format --check scripts/validate_r5_xgame_output_bundle.py tests/test_validate_r5_xgame_output_bundle.py tests/test_r5_xgame_runner.py`
-- `python scripts/check_claim_registry.py`
+- `git status --short`
+- local artifact inventory checks on the validated TempGlitch `R5`, research-MVP dataset, and
+  Phase 6D background directories
+- manifest/support-count audits from the frozen `R5` manifest and comparison receipts
+- code/doc inspection for:
+  - `src/glitch_detection/r5_tempglitch_eval.py`
+  - `src/glitch_detection/lewm_lance_eval.py`
+  - `scripts/run_r6_tempglitch_ablations.py`
+  - `docs/research/27_phase6d_repeated_grouped_experiment_protocol.md`
+  - `docs/research/28_phase6d_repeated_grouped_results.md`
 
 ## Gate Status After Task
 
-- Phase A / `R5-WOB`: unchanged; complete as positive-probe only.
-- Phase B / `R5-XGame`: intake-reconciled and validator-green against the checked-in manifest.
-- R6 / bounded evidence upgrade: completed from the validated bundle only.
+- TempGlitch `R5`: unchanged as the authoritative validated raw artifact family.
+- TempGlitch follow-up protocol: now frozen.
+- `R5-XGame`: unchanged; intake-reconciled and bounded `R6` docs remain complete.
+- `R5-WOB`: unchanged; positive-probe only.
 - Locked test: still closed.
 
 ## Open Blockers
 
-- `R5-XGame` remains non-locked and positive-heavy with only `12` normal-negative evaluation
-  episodes.
-- The validated bundle still contains legacy old-SHA fields inside `stage_package.json`; they are
-  now explicitly documented as non-authoritative.
+- The next TempGlitch follow-up implementation still needs a dedicated validator receipt and exact
+  command log.
+- The current validated `R5` TempGlitch comparison rows do not yet persist precision, recall, or
+  balanced accuracy fields.
+- TempGlitch remains non-locked and still uses binary video labels rather than temporal spans.
+- `R5-XGame` remains positive-heavy and non-locked.
 - `R5-WOB` remains positive-probe only and cannot be promoted into a binary-benchmark claim.
 
 ## Next Recommended Task
 
-Freeze a bounded TempGlitch follow-up protocol that strengthens evidence quality without touching
-locked test and without widening claims beyond validated non-locked evidence.
+Run the bounded TempGlitch follow-up from existing validated `R5` artifacts only, using the frozen
+pair-disjoint calibration repair and emitting a validator-backed evidence package.
 
 ## Files Likely Relevant Next
 
-- `docs/research/94_r5_xgame_intake_reconciliation.md`
-- `docs/research/95_r6_xgame_error_analysis.md`
-- `docs/research/96_r6_xgame_bounded_comparison.md`
-- `docs/research/97_r6_xgame_ablation_summary.md`
-- `docs/research/98_r6_limitations_and_next_benchmark_memo.md`
-- `docs/context/NEXT_ACTION.md`
+- `docs/research/99_tempglitch_followup_protocol.md`
+- `docs/research/100_tempglitch_evidence_upgrade_checklist.md`
+- `docs/research/69_r5_tempglitch_identical_episode_results.md`
+- `src/glitch_detection/r5_tempglitch_eval.py`
