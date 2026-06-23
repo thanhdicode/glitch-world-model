@@ -5,19 +5,22 @@ Status: canonical strategy companion to `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch
 
 ## Objective
 
-Synchronize the repo around a single Q3-safe strategy while Phase B is running:
+Synchronize the repo around a single Q3-safe strategy after the Phase B intake gate closed:
 
 - Phase A closed with limitations
-- Phase B active and not yet claim-ready
-- Phase C/D/E prep-only until Phase B intake succeeds
+- Phase B intake-complete with bounded claim-ready wording
+- Phase C/D/E remain bounded until additional matched evidence exists
 
 ## Current Scientific Interpretation
 
 - `R5-WOB` is completed and validated as a non-locked positive-probe / proof-of-execution bundle.
 - `R5-WOB` demonstrates pipeline execution and class-conditional signal presence only.
 - `R5-WOB` is not a valid binary benchmark because it has zero evaluation normal-negative episodes.
-- `R5-XGame` is the mandatory next gate because it introduces held-out normal negatives and valid
-  binary evaluation roles.
+- `R5-XGame` has now completed as a validated non-locked binary evidence bundle with held-out
+  normal negatives and valid binary evaluation roles.
+- The repaired `R5-XGame` tarball SHA256 is
+  `65f8b21bf9b31dd6498cb2b46ca0d368f7d4b1f8fef15480b915a1ff9a8204ac`, and the repair was
+  packaging-only rather than a new run.
 
 ## Upgrade Logic
 
@@ -28,8 +31,8 @@ Synchronize the repo around a single Q3-safe strategy while Phase B is running:
 
 ### Phase B
 
-- Wait for the Kaggle tarball, SHA256 sidecar, and log.
-- Accept evidence only after local validation.
+- Preserve the validated tarball/sidecar receipt and the frozen split boundary.
+- Do not relaunch training for packaging-only issues.
 
 ### Phase C
 
@@ -39,7 +42,7 @@ Synchronize the repo around a single Q3-safe strategy while Phase B is running:
 ### Phase D
 
 - Design baselines and ablations.
-- Do not report Phase D conclusions before Phase B validation.
+- Do not report broad Phase D conclusions without separately validated downstream evidence.
 
 ### Phase E
 
@@ -50,5 +53,5 @@ Synchronize the repo around a single Q3-safe strategy while Phase B is running:
 
 The strongest defensible contribution is not "we built the best glitch detector." It is:
 
-`we built a leakage-aware empirical evaluation path for latent-surprise methods and are advancing
-from proof-of-execution to proof-of-discrimination under explicit claim controls`
+`we built a leakage-aware empirical evaluation path for latent-surprise methods and advanced from
+proof-of-execution to a bounded non-locked proof-of-discrimination under explicit claim controls`

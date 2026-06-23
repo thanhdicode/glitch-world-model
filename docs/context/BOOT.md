@@ -1,7 +1,7 @@
 # BOOT.md - Fast Start Context For Agents
 
-Generated: 2026-06-23T07:05:59+00:00
-Commit: `fc8f41aae8cc267056cc2659a77e0a1ac9746864`
+Generated: 2026-06-23T12:10:27+00:00
+Commit: `d94655f2c26d9d3aff5a0122e82f2324a81b48ff`
 
 ## Read Order
 1. `RULES.md`
@@ -34,18 +34,21 @@ The current execution roadmap is `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v3.md`
   artifact verification is complete.
 - The seed42 non-locked WOB evaluation-readiness gate is frozen, all three planned WOB-P1
   training artifacts are now validator-backed, `R5-WOB` is validated as a positive-probe bundle,
-  and Phase B / `R5-XGame` is the active binary-discrimination gate. No R5-XGame metric is
-  verified yet.
+  and `R5-XGame` compute is now intake-validated for both the live output directory and the
+  repaired tarball/sidecar bundle.
+- The best recorded `R5-XGame` configuration reached AUROC `0.909722` on the frozen non-locked
+  12-negative / 60-positive split, but this remains bounded validation evidence only.
 - Gate 10 is closed.
 - Locked test is closed.
 - LeWM gameplay evaluation now exists for the non-locked TempGlitch research MVP only; locked
   test remains unopened, and WOB remains limited to audit-plus-training-artifact evidence.
 
 ## Immediate Next Task
-- Monitor or complete the staged R5-XGame Kaggle package with the two required World of Bugs
-  datasets mounted.
-- Download `r5_xgame_outputs.tar.gz`, its `.sha256` sidecar, and the Kaggle log.
-- Pass `scripts/validate_r5_xgame_output_bundle.py` locally before recording any R5-XGame metric.
+- Advance the next scientific gate as `R6 Scientific Evidence Upgrade` using only the validated
+  `R5-XGame` bundle.
+- Preserve the repaired tarball SHA256
+  `65f8b21bf9b31dd6498cb2b46ca0d368f7d4b1f8fef15480b915a1ff9a8204ac` and both validator receipts.
+- Do not relaunch Kaggle or retrain unless a required raw artifact is truly missing.
 
 ## Safety
 - Non-locked-test Kaggle actions use standing Kaggle authorization after security, license,
@@ -56,8 +59,8 @@ The current execution roadmap is `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v3.md`
 - No data, output, checkpoint, Lance dataset, cache, `.env`, token, or `kaggle.json` commits.
 - No broad LeWM superiority, SIGReg benefit, temporal localization, SOTA, or neural locked-test
   claim from the current non-locked evidence bundle.
-- No WOB/R5-XGame detection-performance, cross-game, action-conditioning, or SIGReg-benefit claim
-  from the current training-artifact, positive-probe, and pipeline-preparation evidence.
+- No broad WOB/R5-XGame detection-performance, cross-game, action-conditioning, or
+  SIGReg-benefit claim outside the exact qualified non-locked bundles.
 
 ## Required Checks
 ```powershell

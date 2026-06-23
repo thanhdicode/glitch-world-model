@@ -24,11 +24,26 @@ evidence without opening locked test.
 
 ## Active Status
 
-Phase B / `R5-XGame` is the active mandatory scientific gate.
+Phase B / `R5-XGame` is now an intake-validated non-locked binary evidence family.
 
-- The external Kaggle execution is treated as in progress.
-- No metric is scientific evidence until the tarball, SHA256 sidecar, and log are downloaded and
-  validated locally.
+- The required Kaggle execution already completed before this documentation sync.
+- The downloaded live output directory and repaired tarball/sidecar now pass local intake
+  validation.
+- The repair was packaging-only and did not relaunch Kaggle or retrain LeWM.
+
+## Current Validated Summary
+
+- Validator statuses: `r5_xgame_output_validated` and `r5_xgame_tarball_validated`
+- Repaired tarball SHA256:
+  `65f8b21bf9b31dd6498cb2b46ca0d368f7d4b1f8fef15480b915a1ff9a8204ac`
+- Best recorded configuration:
+  seed44 `lewm_mse_max` with `top2_mean`
+- Best recorded metrics:
+  AUROC `0.909722`, AUPRC `0.981384`, F1 `0.792079`, precision `0.975610`, recall `0.666667`,
+  balanced accuracy `0.791667`
+- Limitation:
+  12 normal-negative episodes versus 60 buggy-positive episodes, non-locked validation only, not a
+  generalization proof.
 
 ## Required Metrics After Intake
 
@@ -45,7 +60,7 @@ Phase B / `R5-XGame` is the active mandatory scientific gate.
 
 ## Blocked Claims
 
-Until intake passes, do not claim:
+Even after intake passes, do not claim:
 
 - `R5-XGame` performance
 - cross-game generalization

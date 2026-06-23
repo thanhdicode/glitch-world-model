@@ -98,6 +98,18 @@ PLANNED_OUTPUTS = (
     TARBALL_NAME,
     f"{TARBALL_NAME}.sha256",
 )
+PACKAGE_OUTPUT_NAMES = tuple(
+    name
+    for name in PLANNED_OUTPUTS
+    if not name.endswith(".tar.gz") and not name.endswith(".sha256")
+)
+PACKAGE_STAGE_MARKER_NAMES = tuple(
+    f"stage_{stage}.json" for stage in STAGES if stage != "validate_package"
+)
+PRE_PACKAGE_STAGE_MARKER_NAMES = tuple(
+    name for name in PACKAGE_STAGE_MARKER_NAMES if name != "stage_package.json"
+)
+PACKAGE_MEMBER_NAMES = PACKAGE_OUTPUT_NAMES + PACKAGE_STAGE_MARKER_NAMES
 XGAME_COMPARISON_FIELDS = (
     "method_family",
     "method",
@@ -256,6 +268,45 @@ def _require_safe_flags(payload: dict[str, Any], *, context: str) -> None:
     ):
         if payload.get(field) is not False:
             raise ValueError(f"Unsafe {context} flag: {field}")
+
+
+def _package_stage_payload(*, provenance_path: Path) -> dict[str, Any]:
+    return {
+        "status": "package_complete",
+        "package_members": list(PACKAGE_MEMBER_NAMES),
+        "package_member_count": len(PACKAGE_MEMBER_NAMES),
+        "tarball_name": TARBALL_NAME,
+        "sha256_sidecar_name": f"{TARBALL_NAME}.sha256",
+        "files": {
+            PROVENANCE_NAME: _file_record(provenance_path),
+        },
+        "validation_buggy_used_for_fit_select": False,
+        "locked_test_materialized": False,
+        "locked_test_scored": False,
+    }
+
+
+def _write_package_stage_snapshot(snapshot_path: Path, *, provenance_path: Path) -> dict[str, Any]:
+    marker = {
+        "schema_version": 1,
+        "stage": "package",
+        **_package_stage_payload(provenance_path=provenance_path),
+    }
+    _write_json(snapshot_path, marker)
+    return marker
+
+
+def _package_contract_paths(output_dir: Path) -> list[Path]:
+    missing = [
+        name
+        for name in (*PACKAGE_OUTPUT_NAMES, *PRE_PACKAGE_STAGE_MARKER_NAMES)
+        if not (output_dir / name).is_file()
+    ]
+    if missing:
+        raise FileNotFoundError(
+            f"R5-XGame package contract is incomplete before tarball creation: {sorted(missing)}"
+        )
+    return [output_dir / name for name in (*PACKAGE_OUTPUT_NAMES, *PRE_PACKAGE_STAGE_MARKER_NAMES)]
 
 
 def _assert_score_rows_complete(
@@ -962,11 +1013,6 @@ def _report_text(output_dir: Path) -> str:
 
 
 def run_package(*, manifest: Path, output_dir: Path) -> dict[str, Any]:
-    required = [
-        name
-        for name in PLANNED_OUTPUTS
-        if not name.endswith(".tar.gz") and not name.endswith(".sha256")
-    ]
     if not (output_dir / REPORT_NAME).is_file():
         (output_dir / REPORT_NAME).write_text(_report_text(output_dir), encoding="utf-8")
     provenance = {
@@ -985,7 +1031,7 @@ def run_package(*, manifest: Path, output_dir: Path) -> dict[str, Any]:
         ),
         "outputs": {
             name: sha256_file(output_dir / name)
-            for name in required
+            for name in PACKAGE_OUTPUT_NAMES
             if (output_dir / name).is_file()
         },
         "old_r5_wob_checkpoint_reused": False,
@@ -998,38 +1044,37 @@ def run_package(*, manifest: Path, output_dir: Path) -> dict[str, Any]:
     sha_path = output_dir / f"{TARBALL_NAME}.sha256"
     if tarball.exists():
         tarball.unlink()
-    with tarfile.open(tarball, "w:gz") as archive:
-        for name in required:
-            archive.add(output_dir / name, arcname=name)
-        for marker in sorted(output_dir.glob("stage_*.json")):
-            archive.add(marker, arcname=marker.name)
+    if sha_path.exists():
+        sha_path.unlink()
+    package_inputs = _package_contract_paths(output_dir)
+    with tempfile.TemporaryDirectory(prefix="r5_xgame_package_") as tmp:
+        snapshot_path = Path(tmp) / "stage_package.json"
+        _write_package_stage_snapshot(snapshot_path, provenance_path=provenance_path)
+        with tarfile.open(tarball, "w:gz") as archive:
+            for path in package_inputs:
+                archive.add(path, arcname=path.name)
+            archive.add(snapshot_path, arcname=snapshot_path.name)
     sha_path.write_text(f"{sha256_file(tarball)}  {tarball.name}\n", encoding="utf-8")
     return _write_stage_marker(
-        output_dir,
-        "package",
-        {
-            "status": "package_complete",
-            "files": {
-                PROVENANCE_NAME: _file_record(provenance_path),
-                TARBALL_NAME: _file_record(tarball),
-                f"{TARBALL_NAME}.sha256": _file_record(sha_path),
-            },
-            "validation_buggy_used_for_fit_select": False,
-            "locked_test_materialized": False,
-            "locked_test_scored": False,
-        },
+        output_dir, "package", _package_stage_payload(provenance_path=provenance_path)
     )
 
 
 def run_validate_package(*, output_dir: Path, frozen_manifest: Path) -> dict[str, Any]:
     validator = _load_script_module("validate_r5_xgame_output_bundle")
     result = validator.validate_output_dir(output_dir, frozen_manifest)
+    tarball_result = validator.validate_tarball(
+        output_dir / TARBALL_NAME,
+        output_dir / f"{TARBALL_NAME}.sha256",
+        frozen_manifest,
+    )
     return _write_stage_marker(
         output_dir,
         "validate_package",
         {
             "status": "validate_package_complete",
             "validator_result": result,
+            "tarball_validator_result": tarball_result,
             "validation_buggy_used_for_fit_select": False,
             "locked_test_materialized": False,
             "locked_test_scored": False,

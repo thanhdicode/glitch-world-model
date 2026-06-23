@@ -21,7 +21,7 @@ Date: 2026-06-23
 
 ## Phase B Contract
 
-`R5-XGame` is the active mandatory binary-discrimination gate.
+`R5-XGame` is the bounded binary-discrimination evidence family for the current WOB/XGame lane.
 
 It must:
 
@@ -30,6 +30,10 @@ It must:
 - calibrate thresholds from `calibration_normal` only;
 - evaluate only on `evaluation_normal_negative` plus `evaluation_buggy_positive`;
 - report episode-level metrics only after output-bundle intake validation succeeds.
+
+The current repaired bundle satisfies the intake requirement with
+`r5_xgame_output_validated` and `r5_xgame_tarball_validated`, but the resulting evidence remains
+bounded to a non-locked 12-negative / 60-positive split.
 
 ## Metrics After Validation
 

@@ -18,5 +18,7 @@
 | Gate 8 metadata | ignored `outputs/gate8/gate8_metadata.json` | verified; SHA-256 `52370d3ab39b3d033c370df1dfb96d77bad077ff9eb8785c821a393e29fa0f2f` |
 | Gate 9 comparison | ignored `outputs/gate9/comparison.csv` | verified; SHA-256 `102d45cd13c1cdc0fe15bc8291a11cf976bb58daa203f16f8d67ff5002bbc2af` |
 | Gate 9 results | ignored `outputs/gate9/ablation_results.json` | verified window-level pilot; SHA-256 `89d1f3b4c4c66650fa307b542cee5e62a06cbb2ac0c20ca7834ae1be235b100a` |
+| R5-WOB success bundle | ignored downloaded bundle + receipt retained outside Git | SHA-256 verified and offline intake-validated as positive-probe only |
+| R5-XGame repaired success bundle | ignored downloaded repaired bundle + receipt retained outside Git | output_dir `r5_xgame_output_validated`; tarball `r5_xgame_tarball_validated`; SHA-256 `65f8b21bf9b31dd6498cb2b46ca0d368f7d4b1f8fef15480b915a1ff9a8204ac`; packaging-only repair, no retraining |
 
 No data, Lance dataset, checkpoint, Kaggle output, or credential is committed.
