@@ -14,9 +14,21 @@
   `PACKAGE_OUTPUT_NAMES + PACKAGE_STAGE_MARKER_NAMES`.
 - The package step now builds a `stage_package.json` snapshot first, injects that snapshot into the
   tarball, and only then writes the same marker to `output_dir`.
-- The package marker no longer needs self-referential tarball hashes, so we avoid recursive SHA
-  inconsistency while still shipping the required evidence file.
+- The current package contract treats `stage_package.json` as a stage marker rather than the
+  authoritative source for the repaired tarball SHA, so future snapshots do not need
+  self-referential tarball hashes.
 - `run_validate_package()` now validates both the live `output_dir` and the tarball/sidecar pair.
+
+## Reconciliation Note
+
+- The downloaded repaired bundle is intake-valid, but its existing `stage_package.json` still
+  carries legacy tarball/hash fields from the earlier packaging path.
+- Those legacy fields still reference the old tarball SHA
+  `05d298c29904142d9e28db97e485db80b8b68eb56b520450594936593970fbd2`.
+- The authoritative repaired tarball hash remains the tarball plus `.sha256` sidecar pair:
+  `65f8b21bf9b31dd6498cb2b46ca0d368f7d4b1f8fef15480b915a1ff9a8204ac`.
+- The validator now compares normalized manifest content rather than raw line-ending bytes, so the
+  checked-in frozen manifest remains authoritative across LF/CRLF checkouts.
 
 ## Rebuilt Tarball
 

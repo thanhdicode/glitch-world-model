@@ -1,7 +1,7 @@
 # REPO_MAP.md
 
-Generated: 2026-06-23T12:10:27+00:00
-Commit: `d94655f2c26d9d3aff5a0122e82f2324a81b48ff`
+Generated: 2026-06-23T16:06:28+00:00
+Commit: `6993964547348659cb2f8882f0a84347f765e200`
 Generator: `scripts/update_context_cache.py`
 
 ## Top-Level Map
@@ -12,6 +12,7 @@ Generator: `scripts/update_context_cache.py`
 | `CLAUDE.md/` | Tracked repository path. |
 | `CONVENTIONS.md/` | Tracked repository path. |
 | `Makefile/` | Tracked repository path. |
+| `PACKAGE_FIX_REPORT.md/` | Tracked repository path. |
 | `PLAYBOOK.md/` | Tracked repository path. |
 | `README.md/` | Tracked repository path. |
 | `RULES.md/` | Tracked repository path. |
@@ -19,6 +20,7 @@ Generator: `scripts/update_context_cache.py`
 | `configs/` | Experiment and runtime configuration. |
 | `docs/` | Research evidence, workflows, context cache, and roadmap. |
 | `dvc.yaml/` | Tracked repository path. |
+| `kaggle/` | Validation-only launch packages. |
 | `paper/` | Cautious manuscript scaffold and generated tables. |
 | `pyproject.toml/` | Tracked repository path. |
 | `requirements/` | Optional runtime requirement pins. |
@@ -109,7 +111,7 @@ Generator: `scripts/update_context_cache.py`
 | `scripts/validate_r5_wob_evaluation.py` | _read_json, _read_csv, _assert, _finite_or_blank, validate_r5_wob, hashlib_sha256, build_parser, main | Python module. |
 | `scripts/validate_r5_wob_stage_outputs.py` | build_parser, main | Python module. |
 | `scripts/validate_r5_xgame_comparison.py` | validate_r5_xgame, build_parser, main | Validate an R5-XGAME cross-dataset comparison output directory. |
-| `scripts/validate_r5_xgame_output_bundle.py` | sha256, _expected_sha256, _verify_sidecar, _safe_extract, _read_csv, _require_metrics, _validate_evaluation_classes, _validate_provenance, validate_output_dir, validate_tarball, build_parser, main | Fail-closed validator for a completed R5-XGame output directory or tarball. |
+| `scripts/validate_r5_xgame_output_bundle.py` | sha256, _expected_sha256, _verify_sidecar, _safe_extract, _read_csv, _normalized_manifest_payload, normalized_manifest_sha256, _validate_manifest_matches_frozen, _validate_stage_package_marker, _require_metrics, _validate_evaluation_classes, _validate_provenance | Fail-closed validator for a completed R5-XGame output directory or tarball. |
 | `scripts/validate_r6_ablations.py` | validate_r6, build_parser, main | Validate R6 ablation outputs. |
 | `scripts/validate_research_release.py` | git_tracked_files, validate_tracked_files, validate_required_paths, validate_playbook_structure, validate_release, working_tree_errors, build_parser, main | Python module. |
 | `scripts/validate_wob_expansion_readiness.py` | _read_json, _assert, _sha256_bytes, _read_manifest_rows, validate_readiness, build_parser, main | Validate the frozen seed42 non-locked World of Bugs evaluation-readiness bundle. |

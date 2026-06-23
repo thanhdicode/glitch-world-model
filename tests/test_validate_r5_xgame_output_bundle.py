@@ -162,6 +162,8 @@ def test_validator_accepts_minimal_safe_structure(tmp_path: Path):
     output, frozen = _valid_output(tmp_path)
     result = validator.validate_output_dir(output, frozen)
     assert result["status"] == "r5_xgame_output_validated"
+    assert result["manifest_raw_sha256_match"] is True
+    assert result["manifest_normalized_sha256_match"] is True
 
 
 def test_validator_rejects_one_class_evaluation(tmp_path: Path):
@@ -206,3 +208,49 @@ def test_validator_refuses_missing_stage_lewm_score_marker(tmp_path: Path):
     (output / "stage_lewm_score.json").unlink()
     with pytest.raises(ValueError, match="stage_lewm_score.json"):
         validator.validate_output_dir(output, frozen)
+
+
+def test_validator_accepts_manifest_with_crlf_frozen_and_lf_output(tmp_path: Path):
+    validator = _load_validator()
+    output, frozen = _valid_output(tmp_path)
+    lf_manifest = (output / "r5_xgame_manifest.csv").read_text(encoding="utf-8")
+    (output / "r5_xgame_manifest.csv").write_text(
+        lf_manifest.replace("\r\n", "\n"), encoding="utf-8"
+    )
+    frozen_crlf = tmp_path / "frozen_crlf.csv"
+    frozen_text = frozen.read_text(encoding="utf-8")
+    frozen_crlf.write_text(frozen_text.replace("\n", "\r\n"), encoding="utf-8")
+    result = validator.validate_output_dir(output, frozen_crlf)
+    assert result["status"] == "r5_xgame_output_validated"
+    assert result["manifest_raw_sha256_match"] is False
+    assert result["manifest_normalized_sha256_match"] is True
+
+
+def test_validator_reports_legacy_stage_package_tarball_sha(tmp_path: Path):
+    validator = _load_validator()
+    output, frozen = _valid_output(tmp_path)
+    stage_package = {
+        "schema_version": 1,
+        "stage": "package",
+        "status": "package_complete",
+        "files": {
+            "r5_xgame_outputs.tar.gz": {
+                "path": "/kaggle/working/r5_xgame/r5_xgame_outputs.tar.gz",
+                "path_type": "file",
+                "sha256": "05d298c29904142d9e28db97e485db80b8b68eb56b520450594936593970fbd2",
+            },
+            "r5_xgame_outputs.tar.gz.sha256": {
+                "path": "/kaggle/working/r5_xgame/r5_xgame_outputs.tar.gz.sha256",
+                "path_type": "file",
+                "sha256": "legacy-sidecar",
+            },
+        },
+        "validation_buggy_used_for_fit_select": False,
+        "locked_test_materialized": False,
+        "locked_test_scored": False,
+    }
+    (output / "stage_package.json").write_text(json.dumps(stage_package), encoding="utf-8")
+    result = validator.validate_output_dir(output, frozen)
+    marker = result["stage_package_marker"]
+    assert marker["has_legacy_tarball_record"] is True
+    assert marker["stale_legacy_tarball_sha256"] is True

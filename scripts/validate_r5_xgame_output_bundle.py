@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import csv
 import hashlib
+import io
 import json
 import math
 import tarfile
@@ -103,6 +104,68 @@ def _read_csv(path: Path) -> list[dict[str, str]]:
         return list(csv.DictReader(handle))
 
 
+def _normalized_manifest_payload(path: Path) -> tuple[list[str], list[dict[str, str]], str]:
+    with path.open("r", encoding="utf-8-sig", newline="") as handle:
+        reader = csv.DictReader(handle)
+        fieldnames = list(reader.fieldnames or [])
+        rows = list(reader)
+    buffer = io.StringIO()
+    writer = csv.DictWriter(buffer, fieldnames=fieldnames, lineterminator="\n")
+    writer.writeheader()
+    writer.writerows(rows)
+    return fieldnames, rows, buffer.getvalue()
+
+
+def normalized_manifest_sha256(path: Path) -> str:
+    _, _, payload = _normalized_manifest_payload(path)
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
+def _validate_manifest_matches_frozen(manifest: Path, frozen_manifest: Path) -> dict[str, object]:
+    manifest_raw_sha256 = sha256(manifest)
+    frozen_manifest_raw_sha256 = sha256(frozen_manifest)
+    manifest_headers, manifest_rows, manifest_payload = _normalized_manifest_payload(manifest)
+    frozen_headers, frozen_rows, frozen_payload = _normalized_manifest_payload(frozen_manifest)
+    if manifest_headers != frozen_headers:
+        raise ValueError("Output manifest columns differ from the frozen R5-XGame manifest.")
+    if manifest_rows != frozen_rows:
+        raise ValueError("Output manifest rows differ from the frozen R5-XGame manifest.")
+    normalized_sha256 = hashlib.sha256(manifest_payload.encode("utf-8")).hexdigest()
+    frozen_normalized_sha256 = hashlib.sha256(frozen_payload.encode("utf-8")).hexdigest()
+    return {
+        "raw_sha256": manifest_raw_sha256,
+        "frozen_raw_sha256": frozen_manifest_raw_sha256,
+        "raw_sha256_match": manifest_raw_sha256 == frozen_manifest_raw_sha256,
+        "normalized_sha256": normalized_sha256,
+        "frozen_normalized_sha256": frozen_normalized_sha256,
+        "normalized_sha256_match": normalized_sha256 == frozen_normalized_sha256,
+    }
+
+
+def _validate_stage_package_marker(
+    output_dir: Path, tarball_name: str, tarball_sha256: str | None
+) -> dict[str, object]:
+    marker_path = output_dir / "stage_package.json"
+    marker = json.loads(marker_path.read_text(encoding="utf-8"))
+    files = marker.get("files", {})
+    tarball_record = files.get(tarball_name)
+    sidecar_record = files.get(f"{tarball_name}.sha256")
+    stale_tarball_sha256 = (
+        isinstance(tarball_record, dict)
+        and tarball_sha256 is not None
+        and tarball_record.get("sha256") not in {None, tarball_sha256}
+    )
+    return {
+        "path": str(marker_path),
+        "has_legacy_tarball_record": tarball_record is not None,
+        "has_legacy_sidecar_record": sidecar_record is not None,
+        "legacy_tarball_sha256": tarball_record.get("sha256")
+        if isinstance(tarball_record, dict)
+        else None,
+        "stale_legacy_tarball_sha256": stale_tarball_sha256,
+    }
+
+
 def _require_metrics(metrics: dict[str, Any]) -> None:
     for field in REQUIRED_METRICS:
         if field not in metrics or not math.isfinite(float(metrics[field])):
@@ -167,8 +230,7 @@ def validate_output_dir(
         raise ValueError(f"R5-XGame output is incomplete: {sorted(missing)}")
 
     manifest = output_dir / "r5_xgame_manifest.csv"
-    if sha256(manifest) != sha256(frozen_manifest):
-        raise ValueError("Output manifest hash differs from the frozen R5-XGame manifest.")
+    manifest_match = _validate_manifest_matches_frozen(manifest, frozen_manifest)
     counts = validate_r5_xgame_manifest(_read_csv(manifest))
     if counts != EXPECTED_ROLE_COUNTS:
         raise ValueError(f"R5-XGame role counts changed: {counts}")
@@ -180,17 +242,28 @@ def validate_output_dir(
     provenance = json.loads((output_dir / "r5_xgame_provenance.json").read_text(encoding="utf-8"))
     _validate_provenance(provenance)
 
+    tarball_sha256 = None
     if require_package_files:
-        _verify_sidecar(
+        tarball_verification = _verify_sidecar(
             output_dir / "r5_xgame_outputs.tar.gz",
             output_dir / "r5_xgame_outputs.tar.gz.sha256",
         )
+        tarball_sha256 = str(tarball_verification["sha256"])
+    stage_package = _validate_stage_package_marker(
+        output_dir, "r5_xgame_outputs.tar.gz", tarball_sha256
+    )
     return {
         "status": "r5_xgame_output_validated",
         "role_counts": counts,
         "output_dir": str(output_dir),
-        "manifest_sha256": sha256(manifest),
+        "manifest_sha256": str(manifest_match["raw_sha256"]),
+        "frozen_manifest_sha256": str(manifest_match["frozen_raw_sha256"]),
+        "manifest_raw_sha256_match": bool(manifest_match["raw_sha256_match"]),
+        "manifest_normalized_sha256": str(manifest_match["normalized_sha256"]),
+        "frozen_manifest_normalized_sha256": str(manifest_match["frozen_normalized_sha256"]),
+        "manifest_normalized_sha256_match": bool(manifest_match["normalized_sha256_match"]),
         "metrics_sha256": sha256(output_dir / "r5_xgame_metrics.json"),
+        "stage_package_marker": stage_package,
     }
 
 

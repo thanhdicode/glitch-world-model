@@ -1,7 +1,7 @@
 # BOOT.md - Fast Start Context For Agents
 
-Generated: 2026-06-23T12:10:27+00:00
-Commit: `d94655f2c26d9d3aff5a0122e82f2324a81b48ff`
+Generated: 2026-06-23T16:06:28+00:00
+Commit: `6993964547348659cb2f8882f0a84347f765e200`
 
 ## Read Order
 1. `RULES.md`
@@ -44,8 +44,9 @@ The current execution roadmap is `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v3.md`
   test remains unopened, and WOB remains limited to audit-plus-training-artifact evidence.
 
 ## Immediate Next Task
-- Advance the next scientific gate as `R6 Scientific Evidence Upgrade` using only the validated
-  `R5-XGame` bundle.
+- The `R5-XGame` intake reconciliation and bounded `R6` documentation pass are complete.
+- Freeze the next bounded evidence-upgrade lane from existing validated artifacts, with
+  TempGlitch follow-up remaining the current recommended direction.
 - Preserve the repaired tarball SHA256
   `65f8b21bf9b31dd6498cb2b46ca0d368f7d4b1f8fef15480b915a1ff9a8204ac` and both validator receipts.
 - Do not relaunch Kaggle or retrain unless a required raw artifact is truly missing.

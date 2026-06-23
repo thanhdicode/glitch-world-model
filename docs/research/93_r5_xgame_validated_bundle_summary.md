@@ -20,6 +20,10 @@ downloaded bundle after the packaging repair and does not describe a new scienti
 - Packaging fix:
   `stage_package.json` is now snapshotted before tarball sealing, so the extracted tarball carries
   the same required stage marker as the live output directory.
+- Reconciliation note:
+  the current downloaded bundle still contains legacy tarball/hash fields inside
+  `stage_package.json`; those fields are no longer treated as the authoritative repaired tarball
+  hash source.
 - Scientific-run status:
   unchanged. No retraining, no new Kaggle launch, and no locked-test access were introduced by the
   repair.

@@ -203,6 +203,11 @@ def test_package_writes_tarball_and_sidecar(tmp_path: Path, monkeypatch):
     with tarfile.open(output / "r5_xgame_outputs.tar.gz", "r:gz") as archive:
         assert "r5_xgame_manifest.csv" in archive.getnames()
         assert "stage_package.json" in archive.getnames()
+        stage_package = json.loads(archive.extractfile("stage_package.json").read().decode("utf-8"))
+    files = stage_package["files"]
+    assert "r5_xgame_provenance.json" in files
+    assert "r5_xgame_outputs.tar.gz" not in files
+    assert "r5_xgame_outputs.tar.gz.sha256" not in files
 
 
 def test_package_tarball_extracts_to_intake_valid_directory(tmp_path: Path, monkeypatch):

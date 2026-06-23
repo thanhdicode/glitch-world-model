@@ -39,6 +39,10 @@ These are metadata/readiness commands only. They do not create claim-ready metri
   `65f8b21bf9b31dd6498cb2b46ca0d368f7d4b1f8fef15480b915a1ff9a8204ac`
 - Packaging-only repair:
   `stage_package.json` is now snapshotted before tarball sealing; no retraining was launched.
+- Intake reconciliation:
+  validator checks now treat the checked-in frozen manifest as authoritative by normalized CSV
+  content, not raw LF/CRLF bytes. Legacy tarball/hash fields inside older downloaded
+  `stage_package.json` files are informational only.
 
 ## Intake Rule For Any Future Bundle
 

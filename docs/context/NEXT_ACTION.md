@@ -1,21 +1,22 @@
 # NEXT_ACTION.md
 
-Last updated: 2026-06-23T12:10:27+00:00
-Commit: `d94655f2c26d9d3aff5a0122e82f2324a81b48ff`
+Last updated: 2026-06-23T16:06:28+00:00
+Commit: `6993964547348659cb2f8882f0a84347f765e200`
 
 ## Current Priority
-R5-XGame package intake is complete. The next gate is `R6 Scientific Evidence Upgrade`, using only
-the validated `R5-XGame` bundle and without launching new training or opening locked test.
+`R5-XGame` package intake reconciliation and the bounded `R6` documentation pass are complete.
+The next gate is a bounded TempGlitch follow-up protocol decision that preserves the current
+non-locked claim boundary and does not launch new training or open locked test.
 
-## R6 Scientific Evidence Upgrade
-1. Perform false-positive / false-negative analysis on the frozen R5-XGame episode outputs.
-2. Produce a per-category breakdown if the validated labels and metadata support it.
-3. Audit the bounded baseline-vs-LeWM comparison and record exact support counts.
-4. Prepare scorer, aggregation, and threshold ablation analysis from the validated outputs only.
-5. Write a limitation table covering the positive-heavy split and the fact that only 12
-   normal-negative evaluation episodes exist.
-6. Draft a decision memo for the next external benchmark lane: TempGlitch follow-up versus
-   VideoGlitchBench / WOB expansion.
+## Next Gate
+1. Freeze a bounded TempGlitch follow-up protocol that improves evidence quality without touching
+   locked test.
+2. Decide whether the next external benchmark lane should be TempGlitch follow-up,
+   VideoGlitchBench access, or WOB/XGame expansion.
+3. Keep every proposed comparison bounded to validated non-locked evidence and preserve the
+   repaired `R5-XGame` tarball intake contract.
+4. Carry forward the documented `R5-XGame` limitations: positive-heavy split, only 12
+   normal-negative evaluation episodes, and no broad generalization claim.
 
 ## Success Criteria
 - Preserve the completed R5 manifest, score, metric, and provenance hashes.
@@ -34,11 +35,13 @@ the validated `R5-XGame` bundle and without launching new training or opening lo
 - Keep locked-test materialization/scoring false.
 - Make no broad R5-XGame/WOB performance, cross-game, action-conditioning, or SIGReg-benefit
   claim beyond the exact qualified non-locked bundles.
-- Keep every R6 output explicit about the 12 normal-negative / 60 buggy-positive evaluation scope.
+- Keep the next protocol memo explicit about the 12 normal-negative / 60 buggy-positive
+  `R5-XGame` evaluation scope.
 
 ## Current Known Blocker
-R5 is complete for the non-locked TempGlitch family, and R5-WOB is validated as positive-probe
-evidence only. `R5-XGame` now has a validated bundle, but that evidence remains bounded to a
-positive-heavy non-locked split with only 12 normal-negative evaluation episodes. Without new,
-separately validated evidence, cross-game generalization, final paper-grade benchmark claims, WOB
-binary benchmark claims, and locked-test claims remain blocked. Locked test stays closed.
+R5 is complete for the non-locked TempGlitch family, `R5-XGame` intake is reconciled, and the
+bounded `R6` analysis docs are complete. The remaining blocker is scientific scope:
+`R5-XGame` still rests on a positive-heavy non-locked split with only 12 normal-negative
+evaluation episodes, while `R5-WOB` remains positive-probe only. Without new, separately
+validated evidence, cross-game generalization, final paper-grade benchmark claims, WOB binary
+benchmark claims, and locked-test claims remain blocked. Locked test stays closed.
