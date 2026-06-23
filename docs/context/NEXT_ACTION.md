@@ -1,41 +1,45 @@
 # NEXT_ACTION.md
 
-Last updated: 2026-06-24T01:07:30.4365951+07:00
-Commit: `228f128559edb6154ff82143477b42f45fe84501`
+Last updated: 2026-06-24T02:31:23.1559337+07:00
+Commit: `c3c2e1513f414f1668253b7883d243b7cf67862e`
 
 ## Current Priority
-Execute the bounded TempGlitch follow-up from existing validated `R5` artifacts only. The follow-up
-must freeze a pair-disjoint calibration split, recompute support-matched episode metrics and
-provenance, and stay entirely non-locked without retraining or Kaggle execution.
+Register the completed bounded TempGlitch follow-up as evidence-bearing, claim-safe
+documentation. The new bundle is validator-backed and pair-disjoint, so the next task is to fold
+its bounded non-locked findings into repo-facing research docs without widening the scientific
+claim.
 
 ## Next Gate
-1. Re-freeze TempGlitch calibration on the pair-disjoint normal episodes
-   `Godot_Blinking_Normal_106` and `Godot_Frozen_Animation_Platformer_Normal_107`.
-2. Reuse the existing validated `R5` raw score files to build a fresh bounded follow-up output
-   directory with one frozen manifest and exact support matching across all compared rows.
-3. Report AUROC, AUPRC, F1, precision, recall, balanced accuracy, FPR@95TPR, support counts, and
-   grouped confidence intervals with explicit non-locked claim language.
-4. Add a command log plus a dedicated validator receipt so the follow-up is evidence-bearing
-   without relying on old Phase 6D or locked-test-style artifacts.
+1. Review the completed follow-up receipt, provenance, and comparison metrics from the validated
+   pair-disjoint TempGlitch bundle.
+2. Update the relevant evidence docs and claim surfaces with bounded wording that keeps the result
+   explicitly non-locked, public-benchmark, and support-limited.
+3. Preserve the exact support contract across all compared methods:
+   `2` calibration normals, `12` evaluation normal-negative episodes, and `22` evaluation
+   buggy-positive episodes.
+4. Keep the next interpretation step focused on audit and documentation only: no retraining, no
+   Kaggle execution, no new datasets, and no locked-test activity.
 
 ## Success Criteria
 - Preserve the completed `R5` TempGlitch raw score, metrics, and provenance hashes as source
-  evidence.
+  evidence for the follow-up bundle.
 - Preserve the pair-disjoint follow-up calibration freeze:
   `Godot_Blinking_Normal_106` and `Godot_Frozen_Animation_Platformer_Normal_107`.
 - Preserve follow-up evaluation support at `34` episodes:
   `12` normal-negative and `22` buggy-positive.
 - Keep every compared row on exact manifest and support alignment.
+- Keep `validation_buggy_used_for_fit_select=false`,
+  `locked_test_materialized=false`, and `locked_test_scored=false`.
 - Do not relaunch Kaggle or rerun LeWM training unless a required raw artifact is truly missing.
-- Keep locked-test materialization/scoring false.
 - Make no broad TempGlitch/WOB/XGame performance, cross-game, action-conditioning, or
   SIGReg-benefit claim beyond the exact qualified non-locked bundles.
 - Keep the follow-up explicit about its bounded public-benchmark scope, binary video labels, and
   non-locked status.
 
 ## Current Known Blocker
-The bounded TempGlitch lane is ready, but the current `R5` manifest still uses one
-calibration/evaluation pair overlap and does not emit a dedicated validator receipt or full
-comparison metric surface. `R5-XGame` remains positive-heavy and `R5-WOB` remains positive-probe
-only, so broad generalization, final paper-grade benchmark claims, WOB binary benchmark claims,
-and locked-test claims remain blocked. Locked test stays closed.
+The bounded TempGlitch follow-up is now complete as a validator-backed artifact family, but the
+scientific boundary is unchanged: the result is still non-locked, public-benchmark evidence with
+binary video labels and limited support. `R5-XGame` remains positive-heavy and non-locked, and
+`R5-WOB` remains positive-probe only, so broad generalization, final paper-grade benchmark
+claims, WOB binary benchmark claims, and locked-test claims remain blocked. Locked test stays
+closed.

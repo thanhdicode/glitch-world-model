@@ -1,54 +1,71 @@
 # LAST_HANDOFF.md
 
-Last completed task: Bounded TempGlitch follow-up protocol freeze
-Commit: `228f128559edb6154ff82143477b42f45fe84501`
+Last completed task: Bounded TempGlitch follow-up execution from validated `R5` artifacts
+Commit: `c3c2e1513f414f1668253b7883d243b7cf67862e`
 Date: 2026-06-24
 
 ## What Changed
 
-- Froze the next main evidence lane as a bounded non-locked TempGlitch follow-up built from the
-  existing validated `R5` TempGlitch artifact set only.
-- Added `docs/research/99_tempglitch_followup_protocol.md` to capture the executive verdict,
-  evidence inventory, frozen split repair, metric contract, provenance contract, claim boundary,
-  and exact next single action.
-- Added `docs/research/100_tempglitch_evidence_upgrade_checklist.md` to capture pre-run checks,
-  required inputs/outputs, validation expectations, failure conditions, claim-safety checks, and
-  stop conditions.
-- Updated `docs/context/NEXT_ACTION.md` so the next step is no longer "freeze a protocol," but
-  rather execute the pair-disjoint TempGlitch follow-up without retraining or Kaggle execution.
+- Added a dedicated follow-up implementation path:
+  - `src/glitch_detection/tempglitch_followup.py`
+  - `scripts/run_tempglitch_followup_pair_disjoint.py`
+  - `scripts/validate_tempglitch_followup.py`
+  - `tests/test_tempglitch_followup.py`
+- Executed the bounded TempGlitch follow-up using the existing validated `R5` artifact family
+  only, with no retraining, no Kaggle execution, no new dataset download, and no locked-test
+  activity.
+- Generated a gitignored follow-up evidence bundle containing the frozen manifest, episode scores,
+  comparison metrics, provenance, command log, validator receipt, and a short report.
+- Updated `docs/context/NEXT_ACTION.md` so the next step is now documentation and claim-safety
+  integration of the completed follow-up rather than running the follow-up itself.
 
 ## Evidence Confirmed
 
-- Existing authoritative `R5` TempGlitch evidence remains present, including the frozen manifest,
-  baseline scores, three LeWM seed score files, episode-level scores, comparison CSV, metrics
-  JSON, and provenance JSON documented in
-  `docs/research/69_r5_tempglitch_identical_episode_results.md`.
-- Verified `R5` flags remain false:
-  `validation_buggy_used_for_fit_select`, `locked_test_materialized`, `locked_test_scored`
-- Current validated `R5` manifest support remains:
-  - `2` calibration-normal episodes
-  - `12` evaluation normal-negative episodes
-  - `22` evaluation buggy-positive episodes
-- Current manifest caveat documented for follow-up repair:
-  `1` calibration/evaluation `pair_id` overlap
-- Pair-disjoint follow-up calibration episodes are now frozen as:
+- Existing authoritative `R5` TempGlitch evidence remains present and was reused as the sole
+  source for the follow-up bundle, including baseline scores, three LeWM seed score files,
+  episode scores, comparison CSV, metrics JSON, and provenance JSON.
+- Source-artifact integrity was preserved by carrying forward the validated raw-score hashes and
+  Lance fingerprints from the checked `R5` provenance/metrics contracts.
+- Verified source flags remain false:
+  `validation_buggy_used_for_fit_select=false`,
+  `locked_test_materialized=false`,
+  `locked_test_scored=false`
+- The repaired pair-disjoint follow-up calibration episodes are:
   - `Godot_Blinking_Normal_106`
   - `Godot_Frozen_Animation_Platformer_Normal_107`
-- That repair preserves:
+- Follow-up support is now frozen and validator-backed at:
   - `2` calibration-normal episodes
   - `12` evaluation normal-negative episodes
   - `22` evaluation buggy-positive episodes
-  - `0` cross-role pair overlaps between calibration and evaluation
-
-## Main Protocol Findings
-
-- The next TempGlitch lane should be artifact-only, not a new training lane.
-- The next follow-up should use the existing validated `R5` raw scores and seed artifacts, not
-  Phase 6D locked-test-style artifacts and not a new Kaggle run.
-- The next follow-up must emit richer metrics than the current `R5` comparison receipt, including
-  precision, recall, balanced accuracy, and an explicit validator receipt.
-- The next follow-up should use grouped confidence intervals keyed by `pair_id` when available,
-  rather than relying only on episode-level grouping.
+- Cross-role overlap checks are clean:
+  - `0` `source_episode_id` overlaps
+  - `0` `pair_id` overlaps
+  - `0` `source` overlaps
+- Every compared row uses the same frozen support tuple:
+  - `2` calibration episodes
+  - `34` evaluation episodes
+  - `22` positive episodes
+  - `12` negative episodes
+- The follow-up validator passes with status:
+  - `followup_validated`
+- The best observed follow-up row is bounded non-locked evidence only:
+  - method family: `lewm`
+  - seed: `44`
+  - scorer: `lewm_l2_max`
+  - aggregation: `mean`
+  - `AUROC=0.7159`
+  - `AUPRC=0.8026`
+  - `F1=0.7143`
+  - `Precision=0.7500`
+  - `Recall=0.6818`
+  - `Balanced Accuracy=0.6326`
+  - `FPR@95TPR=0.7500`
+- The best observed baseline row remains weaker on the same support:
+  - method: `feature_distance`
+  - aggregation: `top2_mean`
+  - `AUROC=0.6136`
+  - `AUPRC=0.7310`
+  - `F1=0.1600`
 
 ## Safety Status
 
@@ -64,42 +81,41 @@ Date: 2026-06-24
 ## Checks Passed
 
 - `git status --short`
-- local artifact inventory checks on the validated TempGlitch `R5`, research-MVP dataset, and
-  Phase 6D background directories
-- manifest/support-count audits from the frozen `R5` manifest and comparison receipts
-- code/doc inspection for:
-  - `src/glitch_detection/r5_tempglitch_eval.py`
-  - `src/glitch_detection/lewm_lance_eval.py`
-  - `scripts/run_r6_tempglitch_ablations.py`
-  - `docs/research/27_phase6d_repeated_grouped_experiment_protocol.md`
-  - `docs/research/28_phase6d_repeated_grouped_results.md`
+- source artifact inventory checks on the validated TempGlitch `R5` inputs and research-MVP
+  dataset handles
+- follow-up build command execution from validated artifacts only
+- dedicated follow-up validator run
+- targeted tests:
+  - `python -m pytest tests/test_tempglitch_followup.py tests/test_r5_tempglitch_eval.py tests/test_statistics.py`
+- targeted lint/format checks for the new follow-up files
+- full repository verification remains the next required close-out step before commit
 
 ## Gate Status After Task
 
 - TempGlitch `R5`: unchanged as the authoritative validated raw artifact family.
-- TempGlitch follow-up protocol: now frozen.
+- TempGlitch follow-up: now executed and validator-backed as a bounded pair-disjoint non-locked
+  bundle.
 - `R5-XGame`: unchanged; intake-reconciled and bounded `R6` docs remain complete.
 - `R5-WOB`: unchanged; positive-probe only.
 - Locked test: still closed.
 
 ## Open Blockers
 
-- The next TempGlitch follow-up implementation still needs a dedicated validator receipt and exact
-  command log.
-- The current validated `R5` TempGlitch comparison rows do not yet persist precision, recall, or
-  balanced accuracy fields.
+- Full repository close-out verification has not yet been rerun after the follow-up code landed.
 - TempGlitch remains non-locked and still uses binary video labels rather than temporal spans.
 - `R5-XGame` remains positive-heavy and non-locked.
 - `R5-WOB` remains positive-probe only and cannot be promoted into a binary-benchmark claim.
 
 ## Next Recommended Task
 
-Run the bounded TempGlitch follow-up from existing validated `R5` artifacts only, using the frozen
-pair-disjoint calibration repair and emitting a validator-backed evidence package.
+Update the TempGlitch evidence/claim docs to register the completed bounded follow-up with
+explicit support limits and non-locked claim language, then rerun the full repository
+verification suite before commit.
 
 ## Files Likely Relevant Next
 
 - `docs/research/99_tempglitch_followup_protocol.md`
 - `docs/research/100_tempglitch_evidence_upgrade_checklist.md`
 - `docs/research/69_r5_tempglitch_identical_episode_results.md`
-- `src/glitch_detection/r5_tempglitch_eval.py`
+- `docs/research/16_claim_registry.md`
+- `paper/claim_map.csv`
