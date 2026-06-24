@@ -113,14 +113,14 @@ def test_generated_context_records_gate7_to_gate9_pilot_without_opening_gate10(
     assert "Locked test is closed" in boot
 
 
-def test_generated_context_points_to_post_audit_finalization(tmp_path: Path):
+def test_generated_context_points_to_official_kit_finalization_pass(tmp_path: Path):
     _init_repo(tmp_path)
     _write_minimal_repo(tmp_path)
     update_context_cache(tmp_path, refresh_boot=True)
 
     next_action = (tmp_path / CONTEXT_DIR / "NEXT_ACTION.md").read_text(encoding="utf-8")
 
-    assert "Finalize bounded paper submission package locally." in next_action
+    assert "Perform official-kit compile/anonymization/similarity pass" in next_action
     assert "official Springer kit" in next_action
     assert "R6 Scientific Evidence Upgrade" not in next_action
 

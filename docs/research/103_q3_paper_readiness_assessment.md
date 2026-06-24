@@ -16,9 +16,10 @@ This score uses a transparent four-part rubric rather than claiming statistical 
 | Paper readiness | 8.5/10 | the bounded package now includes reviewer, checklist, and submission-gap audits in addition to the full draft |
 | Submission readiness | 7/10 | venue controls exist, but official-kit compile, page fit, anonymization, and similarity review remain |
 
-The arithmetic mean is 7.875, reported as 7.9. The prior assessment was 7.8/10; the gain comes
-from completing the local paper package audit, adding reviewer and submission-readiness documents,
-and locking the current path to bounded local finalization rather than open-ended paper prep.
+The arithmetic mean is 7.875, reported as 7.9. The score is unchanged from the prior assessment:
+the package is now more submission-ready in documentation terms, but official-kit compilation,
+page-fit review, and similarity screening still remain outside the local evidence we can complete
+honestly in this workspace.
 
 ## Enough For A Bounded Empirical Study
 
@@ -66,7 +67,7 @@ measurements.
 
 ## Build Status
 
-The repository does not vendor the official Springer class, and `pdflatex`, `bibtex`, and
-`latexmk` are unavailable locally. Content-level drafting and repository validation can complete
-without them, but official-kit compilation, page fit, typesetting warnings, and final PDF review
-remain blocked on the template/toolchain.
+The repository does not vendor the official Springer class, and `pdflatex`, `bibtex`, `biber`,
+and `latexmk` are unavailable locally. Content-level drafting and repository validation can
+complete without them, but official-kit compilation, page fit, typesetting warnings, and final PDF
+review remain blocked on the template/toolchain.

@@ -1,7 +1,7 @@
 # BOOT.md - Fast Start Context For Agents
 
-Generated: 2026-06-24T06:23:39+00:00
-Commit: `380f713f58b6e77ae2c31075c0ce21c6bc7b4dc8`
+Generated: 2026-06-24T06:40:56+00:00
+Commit: `816fd867bda0f7e82f8fbbc5604794cbbb35236d`
 
 ## Read Order
 1. `RULES.md`
@@ -47,7 +47,8 @@ The current execution roadmap is `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v3.md`
   test remains unopened, and WOB remains limited to audit-plus-training-artifact evidence.
 
 ## Immediate Next Task
-- Finalize the bounded paper submission package locally.
+- Perform official-kit compile/anonymization/similarity pass, then finalize bounded submission
+  package.
 - Keep stronger learned baselines or ablations as a separate later compute decision.
 - Keep locked test closed.
 

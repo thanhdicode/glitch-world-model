@@ -25,7 +25,7 @@ Status: bounded local package checklist
 | Reproducibility/provenance section | 1 | Complete | `paper/sections/08b_reproducibility.tex`, appendix B |
 | Figure planning | 1 | Complete as a plan only, with no invented data | `paper/figures/PLAN.md` |
 | References metadata | 2 | Bibliography exists, but final citation-by-citation review remains | `paper/references.bib` |
-| Anonymity package | 2 | Author/institute placeholders remain, but final anonymization checklist must still be run | `paper/main.tex` |
+| Anonymity package | 2 | Anonymous-submission metadata is now in `paper/main.tex`, but a final anonymization checklist must still be run | `paper/main.tex`, `docs/research/111_anonymization_checklist.md` |
 | Similarity screening record | 2 | Not yet documented | must be recorded before submission |
 | Final wording polish | 2 | Bounded wording is in place, but venue-level prose compression may still be needed after compile | paper sections and report 106 |
 | Official Springer class files | 3 | Missing locally | `llncs.cls`, `splncs04.bst` absent from repo |

@@ -13,7 +13,8 @@ Date: 2026-06-24
 
 ## Before FISAT Initial Submission
 
-1. Replace placeholder author and institute metadata.
+1. Keep the anonymous-submission metadata for the review package; prepare camera-ready metadata
+   separately.
 2. Audit the bounded abstract against page fit and the final claim map; do not broaden it.
 3. Finish the literature review from verified primary sources.
 4. Keep the results section bounded to reports 101 and 96 and retain their support/CI limitations.

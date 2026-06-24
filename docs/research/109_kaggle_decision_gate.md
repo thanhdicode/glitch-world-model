@@ -5,7 +5,7 @@ Decision: Path A
 
 ## Decision
 
-`Continue final bounded submission polishing locally; no Kaggle needed yet.`
+`No Kaggle needed yet; finalize bounded submission locally after official-kit compile/anonymization/similarity checks.`
 
 ## Why Path A Is Correct
 

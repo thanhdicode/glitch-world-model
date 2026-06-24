@@ -1,7 +1,7 @@
 # REPO_MAP.md
 
-Generated: 2026-06-24T06:23:39+00:00
-Commit: `380f713f58b6e77ae2c31075c0ce21c6bc7b4dc8`
+Generated: 2026-06-24T06:40:56+00:00
+Commit: `816fd867bda0f7e82f8fbbc5604794cbbb35236d`
 Generator: `scripts/update_context_cache.py`
 
 ## Top-Level Map
@@ -387,6 +387,10 @@ Generator: `scripts/update_context_cache.py`
 | `docs/research/104_paper_outline_lnicst_fisat.md` | 104 paper outline lnicst fisat |
 | `docs/research/105_kaggle_gate_decision_memo.md` | 105 kaggle gate decision memo |
 | `docs/research/106_first_bounded_paper_claim_audit.md` | 106 first bounded paper claim audit |
+| `docs/research/107_paper_draft_reviewer_audit.md` | 107 paper draft reviewer audit |
+| `docs/research/107_submission_readiness_checklist.md` | 107 submission readiness checklist |
+| `docs/research/108_submission_gap_analysis.md` | 108 submission gap analysis |
+| `docs/research/109_kaggle_decision_gate.md` | 109 kaggle decision gate |
 | `docs/research/10_paper_outline.md` | 10 paper outline |
 | `docs/research/11_tempglitch_integration_plan.md` | 11 tempglitch integration plan |
 | `docs/research/12_experiment_results_log.md` | 12 experiment results log |
@@ -435,7 +439,3 @@ Generator: `scripts/update_context_cache.py`
 | `docs/research/61_reproducibility_checklist.md` | 61 reproducibility checklist |
 | `docs/research/62_artifact_manifest.md` | 62 artifact manifest |
 | `docs/research/63_full_repo_audit_and_gate6_root_cause.md` | 63 full repo audit and gate6 root cause |
-| `docs/research/64_kaggle_kernel_write_path_repair.md` | 64 kaggle kernel write path repair |
-| `docs/research/65_lewm_research_mvp_source_audit.md` | 65 lewm research mvp source audit |
-| `docs/research/66_lewm_gpu_profile_results.md` | 66 lewm gpu profile results |
-| `docs/research/67_r3_r4_multiseed_status.md` | 67 r3 r4 multiseed status |

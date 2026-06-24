@@ -28,6 +28,7 @@ Result: a truthful local PDF build is not possible in the current workspace.
 - Full bounded paper draft with main text, tables, appendices, discussion, reproducibility, and
   limitations.
 - Paragraph-level claim audit and paper claim map.
+- Anonymous-submission-ready paper metadata.
 - Reviewer-risk package and submission-readiness checklist.
 - Figure plan with placement and evidence sources.
 - Kaggle gate decision recorded as Path A.
@@ -42,7 +43,7 @@ Result: a truthful local PDF build is not possible in the current workspace.
 | Page count | 3 | depends on truthful compile | record after first official-kit PDF |
 | Overfull boxes and warning audit | 3 | depends on truthful compile | inspect first official-kit build log |
 | Final bibliography polish | 2 | source list exists but final venue pass remains | review after compile |
-| Final anonymization check | 2 | placeholders remain | run submission pass after author metadata decision |
+| Final anonymization check | 2 | anonymous-submission metadata is in place, but the surrounding checklist is still manual | run submission pass and PDF metadata check after first official-kit build |
 | Similarity screening log | 2 | not yet recorded | run before upload |
 
 ## What Does Not Currently Block A Bounded Paper
@@ -57,7 +58,7 @@ Result: a truthful local PDF build is not possible in the current workspace.
 
 Path A is justified:
 
-`Continue final bounded submission polishing locally; no Kaggle needed yet.`
+`No Kaggle needed yet; finalize bounded submission locally after official-kit compile/anonymization/similarity checks.`
 
 The paper already has an honest bounded contribution surface. The remaining blockers are chiefly
 formatting, build, and submission-package tasks, not evidence-rescue tasks.

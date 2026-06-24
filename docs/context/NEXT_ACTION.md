@@ -1,15 +1,16 @@
 # NEXT_ACTION.md
 
-Last updated: 2026-06-24T06:23:39+00:00
-Commit: `380f713f58b6e77ae2c31075c0ce21c6bc7b4dc8`
+Last updated: 2026-06-24T06:40:56+00:00
+Commit: `816fd867bda0f7e82f8fbbc5604794cbbb35236d`
 
 ## Current Priority
-Finalize bounded paper submission package locally.
+Perform official-kit compile/anonymization/similarity pass, then finalize bounded submission
+package.
 
 ## Next Gate
 1. Compile with the official Springer kit when available and record page fit, missing references,
    and warnings.
-2. Complete anonymization, similarity screening, and bibliography review.
+2. Complete anonymization, similarity screening, bibliography review, and PDF metadata review.
 3. Replace figure plans only with provenance-recorded approved figures.
 4. Keep any stronger baseline or ablation compute as a separate user-approved decision.
 

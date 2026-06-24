@@ -27,7 +27,7 @@ Decision: Path A selected; continue final bounded submission polishing locally
 
 Path A is selected:
 
-`Continue final bounded submission polishing locally; no Kaggle needed yet.`
+`No Kaggle needed yet; finalize bounded submission locally after official-kit compile/anonymization/similarity checks.`
 
 The bounded evidence is sufficient for an honest leakage-aware empirical evaluation paper. Stronger
 baselines, new seeds, SIGReg/action ablations, or broader benchmark scoring remain optional
