@@ -12,7 +12,7 @@ from typing import Any
 import numpy as np
 
 from .kaggle_automation import FingerprintBuilder
-from .lewm_adapter import sha256_file
+from .lewm_adapter import ActionMode, sha256_file
 
 
 class LeWMTrainingError(RuntimeError):
@@ -48,6 +48,8 @@ class LeWMTrainConfig:
     target_optimizer_updates: int | None = None
     evaluation_interval_updates: int | None = None
     checkpoint_interval_updates: int | None = None
+    sigreg_enabled: bool = True
+    action_mode: str = ActionMode.REAL.value
 
     def __post_init__(self) -> None:
         if self.image_size < 28 or self.image_size % 14:
@@ -80,6 +82,12 @@ class LeWMTrainConfig:
             raise ValueError(
                 "LeWM update-based training requires evaluation and checkpoint intervals."
             )
+        if self.action_mode not in {mode.value for mode in ActionMode}:
+            raise ValueError(
+                f"LeWM action_mode must be one of {[mode.value for mode in ActionMode]}."
+            )
+        if self.action_mode == ActionMode.ACTION_FREE.value:
+            raise ValueError("LeWM training does not implement action_free mode.")
 
 
 def _require_runtime() -> tuple[Any, Any]:
@@ -174,6 +182,17 @@ def _sigreg(torch: Any, embeddings: Any, projections: int) -> Any:
     return ((error @ weights) * values.size(-2)).mean()
 
 
+def _prepare_training_actions(
+    torch: Any, actions: Any, config: LeWMTrainConfig, device: Any
+) -> Any:
+    prepared = torch.nan_to_num(actions.to(device), 0.0)
+    if config.action_mode == ActionMode.REAL.value:
+        return prepared
+    if config.action_mode == ActionMode.ZERO_ACTION.value:
+        return torch.zeros_like(prepared)
+    raise LeWMTrainingError(f"Unsupported LeWM training action_mode: {config.action_mode}")
+
+
 def _dataset(path: Path, config: LeWMTrainConfig) -> Any:
     try:
         import stable_worldmodel as swm
@@ -206,7 +225,7 @@ def _run_epoch(
         if max_steps is not None and step >= max_steps:
             break
         pixels = _preprocess_pixels(torch, batch["pixels"], config.image_size, device)
-        actions = torch.nan_to_num(batch["action"].to(device), 0.0)
+        actions = _prepare_training_actions(torch, batch["action"], config, device)
         use_amp = config.mixed_precision and device.type == "cuda"
         with torch.set_grad_enabled(training):
             with torch.autocast(device_type=device.type, enabled=use_amp):
@@ -218,7 +237,11 @@ def _run_epoch(
                 )
                 target = embeddings[:, 1 : config.history_size + 1]
                 prediction_loss = (predicted - target).pow(2).mean()
-                sigreg_loss = _sigreg(torch, embeddings, config.sigreg_projections)
+                sigreg_loss = (
+                    _sigreg(torch, embeddings, config.sigreg_projections)
+                    if config.sigreg_enabled
+                    else torch.zeros((), device=device, dtype=prediction_loss.dtype)
+                )
                 loss = prediction_loss + config.sigreg_weight * sigreg_loss
             if training:
                 optimizer.zero_grad(set_to_none=True)
@@ -267,7 +290,7 @@ def _train_update_step(
 ) -> dict[str, float]:
     model.train(True)
     pixels = _preprocess_pixels(torch, batch["pixels"], config.image_size, device)
-    actions = torch.nan_to_num(batch["action"].to(device), 0.0)
+    actions = _prepare_training_actions(torch, batch["action"], config, device)
     use_amp = config.mixed_precision and device.type == "cuda"
     optimizer.zero_grad(set_to_none=True)
     with torch.autocast(device_type=device.type, enabled=use_amp):
@@ -279,7 +302,11 @@ def _train_update_step(
         )
         target = embeddings[:, 1 : config.history_size + 1]
         prediction_loss = (predicted - target).pow(2).mean()
-        sigreg_loss = _sigreg(torch, embeddings, config.sigreg_projections)
+        sigreg_loss = (
+            _sigreg(torch, embeddings, config.sigreg_projections)
+            if config.sigreg_enabled
+            else torch.zeros((), device=device, dtype=prediction_loss.dtype)
+        )
         loss = prediction_loss + config.sigreg_weight * sigreg_loss
     if scaler.is_enabled():
         scaler.scale(loss).backward()
@@ -594,6 +621,8 @@ def _train_lewm_by_updates(
         "validation_buggy_used_for_fit_select": False,
         "locked_test_materialized": False,
         "locked_test_scored": False,
+        "sigreg_enabled": config.sigreg_enabled,
+        "action_mode": config.action_mode,
     }
     (output_root / "training_metadata.json").write_text(
         json.dumps(metadata, indent=2) + "\n", encoding="utf-8"
@@ -808,6 +837,8 @@ def train_lewm(
         "weights_sha256": sha256_file(weights_path),
         "locked_test_materialized": False,
         "locked_test_scored": False,
+        "sigreg_enabled": config.sigreg_enabled,
+        "action_mode": config.action_mode,
     }
     (output_root / "training_metadata.json").write_text(
         json.dumps(metadata, indent=2) + "\n", encoding="utf-8"

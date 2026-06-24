@@ -1,7 +1,7 @@
 # BOOT.md - Fast Start Context For Agents
 
-Generated: 2026-06-24T12:05:00+00:00
-Commit: `d475724e49acbd024daed3f2b4dfe9c1ba071c33`
+Generated: 2026-06-24T17:20:00+00:00
+Commit: `731fef69f76d6025fe7e14a2d9498c49746b8a62`
 
 ## Read Order
 1. `RULES.md`
@@ -22,35 +22,26 @@ The current execution roadmap is `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v4.md`
 - Gate 6 v8 completed normal-only CUDA training and passed strict checkpoint/reload/encoding
   validation with locked-test flags false.
 - Gates 7-9 completed a validation-only, non-locked evidence lane on canonical TempGlitch support.
-- A separate non-locked research MVP source is ready with 36 train-normal, 14 validation-normal,
-  and 22 validation-buggy episodes across all five categories.
-- The exact 500-update research-MVP GPU profile completed as engineering evidence only.
-- R4 rerun seed43/44 training artifacts are local SHA256-verified and pass per-seed validators.
 - The pair-disjoint TempGlitch follow-up is validator-backed on 2 calibration-normal, 12
   evaluation normal-negative, and 22 evaluation buggy-positive episodes with zero cross-role
   source, pair, and episode overlap.
-- K1 learned-baseline Kaggle intake is now validator-backed locally for `video_autoencoder`,
-  `cnn_lstm`, and `video_transformer` on the exact currently cited TempGlitch follow-up support,
-  with false locked-test materialized/scored flags.
-- The strongest K1 learned baseline is the bounded `cnn_lstm` row at AUROC `0.613636`; the best
-  recorded LeWM row on the same support remains higher at AUROC `0.715909`, while the intervals
-  overlap and the comparison stays non-locked and split-bounded.
-- Local `WOB-P0` remains blocked on missing tar files, the Kaggle-native `WOB-P0` pass is
-  verified from the downloaded evidence bundle, and WOB-P1 seed42/seed43/seed44 training
-  artifact verification is complete.
-- `R5-WOB` is validated as a positive-probe bundle, and `R5-XGame` compute is intake-validated
-  for both the live output directory and the repaired tarball/sidecar bundle.
-- Roadmap V4 is canonical and keeps the Topic-A upgrade lane open while preserving the anti-
-  overclaim and locked-test rules.
-- Gate 10 is closed.
-- Locked test is closed.
+- K1 learned-baseline intake is validator-backed locally and remains bounded to the cited
+  TempGlitch support.
+- P3 local GlitchBench preparation is now complete:
+  - structured subset ingestion exists
+  - a deterministic grouped split exists
+  - a validator-backed K2 input package exists
+  - the current K2 zip SHA256 is
+    `d2c6be8f83d99cb6a04578532f0f80d620c168342ff3e630b4e6b5389c62b038`
+- The current executable GlitchBench path remains image-level, synthetic-normal, and not temporal.
+- P4 local controlled SIGReg/action tooling now exists, but no K3 artifact has been validated.
+- Roadmap V4 remains canonical and locked test remains closed.
 
 ## Immediate Next Task
-- Execute roadmap V4 Phase P3 local preparation for the GlitchBench benchmark.
-- Freeze the K2 public-benchmark packaging, validator, and claim boundary before any Kaggle K2
-  launch.
-- Keep K1 learned-baseline wording bounded to the validated TempGlitch support and stop before the
-  user-operated K2 gate.
+- Execute the user-operated Kaggle K2 GlitchBench benchmark run with the prepared package.
+- Validate the downloaded K2 artifact locally before registering any benchmark metric claim.
+- Keep GlitchBench wording bounded to image-level synthetic-normal evidence and keep K3 effect
+  claims pending until artifact-validated.
 
 ## Safety
 - Non-locked-test Kaggle actions use standing Kaggle authorization after security, license,
@@ -62,8 +53,6 @@ The current execution roadmap is `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v4.md`
 - No new performance, superiority, SIGReg-benefit, action-benefit, cross-game, temporal-
   localization, SOTA, or neural locked-test claim may appear until a supporting artifact is
   validated.
-- No broad WOB/R5-XGame detection-performance, cross-game, action-conditioning, or
-  SIGReg-benefit claim outside the exact qualified non-locked bundles.
 
 ## Required Checks
 ```powershell
