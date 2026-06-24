@@ -9,8 +9,8 @@ For routine tasks, use the fast context cache before opening the long playbook. 
 context, roadmap, evidence policy, skills, and next actions, read `PLAYBOOK.md` when the task
 requires deep context.
 
-The current execution roadmap is `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v3.md`. Older roadmap
-files are historical inputs, not the current next-action authority.
+The current execution roadmap is `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v4.md`. Older roadmap
+files, including V3, are historical inputs and not the current next-action authority.
 
 Current verified status:
 
@@ -19,6 +19,8 @@ Current verified status:
   same canonical Lance manifest.
 - A separate research MVP source is ready with 36 train-normal, 14 validation-normal, and 22
   validation-buggy episodes across all five categories.
+- Roadmap V4 is now canonical and reopens the evidence lane for a full Topic-A method-paper
+  upgrade while preserving the existing anti-overclaim and locked-test rules.
 - The exact 500-update non-locked GPU profile completed as engineering evidence only.
 - R4 rerun seed43/44 training artifacts are local SHA256-verified and pass per-seed validators.
 - R5 TempGlitch non-locked identical-episode evaluation completed and produced

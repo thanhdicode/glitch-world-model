@@ -1,7 +1,7 @@
 # Context Cache
 
-Generated: 2026-06-24T06:40:56+00:00
-Commit: `816fd867bda0f7e82f8fbbc5604794cbbb35236d`
+Generated: 2026-06-24T08:15:50+00:00
+Commit: `8853fc5de1ad85e0fe874f72a9a0ebcd745d01f3`
 
 This directory is the fast-start layer for coding agents. It keeps routine tasks from re-reading
 the full repository and long playbook unless the task truly needs deep context.

@@ -1,6 +1,6 @@
 # PLAYBOOK.md - LeWM-Glitch Research Operating Bible
 
-Last updated: 2026-06-19
+Last updated: 2026-06-24
 Status owner: repository owner / technical program lead
 Canonical branch at update: `main`
 Evidence cutoff: post-WOB-P1 seed44 artifact verification
@@ -67,6 +67,9 @@ under 200 lines without hiding safety rules.
 LeWM integration engineering exists together with a limited one-buggy-episode window pilot and a
 completed validation-only, non-locked TempGlitch R5 identical-episode family.
 
+Roadmap V4 is now the canonical next-action authority. V3 remains historical protocol context
+only.
+
 ## 2. One-Page Executive Summary
 
 Manual game QA is expensive because modern games expose large state spaces, long temporal
@@ -105,7 +108,9 @@ artifacts are now SHA256-verified and validator-backed, R5 has completed a prove
 non-locked TempGlitch identical-episode evaluation family, and WOB-P1 seed42/seed43/seed44 now
 have SHA256-verified validator-passed training artifacts. World of Bugs remains a controlled
 post-R5 expansion track, with non-locked WOB evaluation still closed pending a separate explicit
-human command.
+human command. The current roadmap is no longer "finalize the bounded note and stop"; Roadmap V4
+reopens the evidence lane so the repository can build a fuller Topic-A empirical method paper
+without relaxing any claim boundary.
 
 ## 3. Why This Project Exists
 
@@ -234,6 +239,15 @@ described as components of the audited method, but their gameplay detection bene
 - Fit thresholds, covariance, normalization, or model choices on test.
 - Commit data, outputs, Lance datasets, checkpoints, tracker stores, or credentials.
 
+### Roadmap V4 Claim Rule
+
+- Build evidence first; expand paper claims only after artifact validation.
+- Register future paper-facing claims in `docs/research/16_claim_registry.md` as
+  `experiment-pending` before implementation or compute, then upgrade them only after the
+  supporting artifact is validated.
+- Negative results are valid contributions and must remain reportable.
+- V3 remains historical; V4 phases P1-P7 control current next actions.
+
 ## 8. Current Verified Status
 
 Status date: 2026-06-19.
@@ -274,6 +288,10 @@ passed the strict local validator with matching hashes and false locked-test fla
 Conv3D run remains separate from LeWM Gate 5.
 
 ## 9. Gate Roadmap To FISAT 2026
+
+The Gate 1-10 ladder below is retained as the historical execution backbone. For current
+repository next actions, follow `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v4.md` and the V4
+phase sequence P1-P7.
 
 ### Gate 1 - Baseline And Protocol Foundation
 
@@ -911,9 +929,12 @@ granularity, negative results, and lessons for reproducible game-QA anomaly rese
 | 10, complete | ML Research Engineers | Verify the `WOB-P1` seed42 real-action train-normal Kaggle training artifact | Roadmap v3 WOB section, verified WOB-P0 bundle, seed42 cloud package, artifact validator, context docs, report 72 | seed42 artifact SHA256 verified and validator-passed, train-normal/validation-normal only, validation-buggy excluded from fit/select, locked test closed | no WOB evaluation result |
 | 11 | Locked Test Release Officer | Keep locked test closed pending a frozen validation decision and separate direct command | release workflow | no materialization/scoring before frozen decision | schedule pressure |
 
-Current recommended task: run the first bounded paper-draft audit and decide whether to stop at a
-bounded submission or request a separate Kaggle compute phase for stronger baselines/ablations.
-Keep locked test closed.
+Roadmap V4 now supersedes V3 for all next actions. The completed rows above remain historical
+execution context.
+
+Current recommended task: execute Roadmap V4 Phase P1 (statistical and support hardening) locally:
+add paired-comparison statistics, multi-seed aggregation, and a four-calibration-normal
+TempGlitch follow-up freeze. Keep locked test closed.
 
 ## 29. Maintenance Rules For This Playbook
 

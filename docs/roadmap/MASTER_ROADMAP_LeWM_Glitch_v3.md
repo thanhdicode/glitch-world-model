@@ -2,7 +2,13 @@
 
 Date: 2026-06-23
 Target submission window: FISAT 2026 / Springer LNICST
-Status: canonical execution roadmap
+Status: SUPERSEDED by `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v4.md` (historical input only)
+
+> NOTE: V3 closed the project at a bounded evaluation note (Path A, no Kaggle). V4 reopens the
+> evidence lane and upgrades the project into a full empirical method paper (phases P1-P7).
+> For all next actions read `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v4.md` instead of this file.
+
+Status (historical): canonical execution roadmap
 
 ## 1. Executive Position
 

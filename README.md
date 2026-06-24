@@ -4,7 +4,7 @@ This workspace starts with a small baseline pipeline for video game glitch detec
 
 ## Research roadmap
 
-This repo is currently a baseline research MVP for the topic "Latent World Models for Video Game Glitch Detection: A JEPA-based Approach." See the [research overview](docs/research/00_research_overview.md) for the project scope and hypothesis.
+This repo is currently a research engineering workspace for the topic "Latent World Models for Video Game Glitch Detection: A JEPA-based Approach." See the [research overview](docs/research/00_research_overview.md) for the project scope and hypothesis.
 
 `mini_latent` remains the lightweight latent-dynamics proxy. LeWM integration engineering now
 includes strict checkpoint loading, finite non-gameplay CPU inference, real-data conversion,
@@ -35,6 +35,8 @@ Current LeWM gate status:
   detection-performance evidence.
 - The best recorded `R5-XGame` configuration reached AUROC `0.909722` on the frozen
   12-negative / 60-positive split; this remains bounded validation evidence only.
+- Roadmap V4 is now the canonical next-action authority and reopens the evidence lane for a fuller
+  method-paper upgrade while preserving the current claim boundaries and locked-test closure.
 - Gate 9 remains a one-buggy-episode pilot; Gate 10 has not run.
 - Locked test remains closed.
 - Only exact qualified pilot and R5-family metrics are supported; broad superiority, temporal
@@ -46,7 +48,7 @@ Research planning docs:
 - [Project Playbook](PLAYBOOK.md)
 - [Fast agent boot context](docs/context/BOOT.md)
 - [Context cache policy](docs/context/CONTEXT_POLICY.md)
-- [Current execution roadmap](docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v3.md)
+- [Current execution roadmap](docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v4.md)
 - [Real LeWM integration audit](docs/research/36_lewm_integration_audit.md)
 - [Literature matrix](docs/research/02_literature_matrix.md)
 - [Dataset and benchmark map](docs/research/04_dataset_benchmark_map.md)

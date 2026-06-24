@@ -1,7 +1,7 @@
 # REPO_MAP.md
 
-Generated: 2026-06-24T06:40:56+00:00
-Commit: `816fd867bda0f7e82f8fbbc5604794cbbb35236d`
+Generated: 2026-06-24T08:15:50+00:00
+Commit: `8853fc5de1ad85e0fe874f72a9a0ebcd745d01f3`
 Generator: `scripts/update_context_cache.py`
 
 ## Top-Level Map
@@ -166,7 +166,7 @@ Generator: `scripts/update_context_cache.py`
 | `src/glitch_detection/run_baseline.py` | run_baseline, build_parser, main | Python module. |
 | `src/glitch_detection/score_clips.py` | _frame_diff_scorer, available_scorers, run_scorer, build_parser, main | Python module. |
 | `src/glitch_detection/splits.py` | SplitRecord, GroupedSplitRecord, _split_counts_for_group, assign_video_splits, assign_grouped_video_splits, validate_no_group_leakage, write_grouped_split_csv, write_split_csv, read_split_csv, read_grouped_split_csv, sources_for_split, split_counts_by_group | Python module. |
-| `src/glitch_detection/statistics.py` | _percentile, _metric, bootstrap_metric_ci | Python module. |
+| `src/glitch_detection/statistics.py` | _percentile, _metric, _compute_midrank, _fast_delong, delong_auroc_test, _group_rows, _row_signature, paired_bootstrap_delta, bootstrap_metric_ci | Python module. |
 | `src/glitch_detection/tempglitch.py` | TempGlitchVideoRef, TempGlitchSample, normalize_tempglitch_label, encode_tempglitch_video_url, parse_tempglitch_video_url, _load_json, fetch_tempglitch_dataset_info, fetch_tempglitch_rows, fetch_all_tempglitch_metadata, tempglitch_category_counts, _relative_video_path, _write_tempglitch_source_readme | Python module. |
 | `src/glitch_detection/tempglitch_followup.py` | _read_json, _write_json, _write_sha256, _percentile, _float_text, _config_key, _resolve_repo_relative_path, _retag_role, _role_overlap, build_followup_manifest_rows, build_followup_episode_rows, validate_followup_manifest_rows | Python module. |
 | `src/glitch_detection/video_autoencoder.py` | VideoAutoencoderUnavailableError, VideoAutoencoderConfig, require_torch, resolve_checkpoint, list_clip_frames, select_frame_paths, load_clip_array, ClipTensorDataset, build_model, _resolve_device, _set_deterministic_seed, _data_loader | Python module. |
@@ -392,6 +392,11 @@ Generator: `scripts/update_context_cache.py`
 | `docs/research/108_submission_gap_analysis.md` | 108 submission gap analysis |
 | `docs/research/109_kaggle_decision_gate.md` | 109 kaggle decision gate |
 | `docs/research/10_paper_outline.md` | 10 paper outline |
+| `docs/research/110_reference_and_bibliography_audit.md` | 110 reference and bibliography audit |
+| `docs/research/111_anonymization_checklist.md` | 111 anonymization checklist |
+| `docs/research/112_similarity_screening_plan.md` | 112 similarity screening plan |
+| `docs/research/113_official_build_blocker_and_overleaf_plan.md` | 113 official build blocker and overleaf plan |
+| `docs/research/114_submission_package_inventory.md` | 114 submission package inventory |
 | `docs/research/11_tempglitch_integration_plan.md` | 11 tempglitch integration plan |
 | `docs/research/12_experiment_results_log.md` | 12 experiment results log |
 | `docs/research/15_reproducibility_checklist.md` | 15 reproducibility checklist |
@@ -434,8 +439,3 @@ Generator: `scripts/update_context_cache.py`
 | `docs/research/52_r3_seed42_failed_p100_cuda_incompatibility.md` | 52 r3 seed42 failed p100 cuda incompatibility |
 | `docs/research/53_r3_seed42_live_run_record.md` | 53 r3 seed42 live run record |
 | `docs/research/54_r3_seed42_alternative_gpu_execution_plan.md` | 54 r3 seed42 alternative gpu execution plan |
-| `docs/research/55_r3_seed42_cloud_run_record.md` | 55 r3 seed42 cloud run record |
-| `docs/research/60_paper_claim_audit.md` | 60 paper claim audit |
-| `docs/research/61_reproducibility_checklist.md` | 61 reproducibility checklist |
-| `docs/research/62_artifact_manifest.md` | 62 artifact manifest |
-| `docs/research/63_full_repo_audit_and_gate6_root_cause.md` | 63 full repo audit and gate6 root cause |

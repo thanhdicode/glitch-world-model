@@ -13,9 +13,10 @@ claim. A paper claim map then translates those entries into allowed wording. The
 keeps the current gate, claim boundary, next action, and handoff synchronized for subsequent
 agents.
 
-The current bounded submission package requires no Kaggle execution because it uses existing
-validated artifacts.
+The current repository roadmap no longer stops at a bounded submission package. Roadmap V4 reopens
+the evidence lane through staged local-first upgrades and user-operated Kaggle gates only after
+the corresponding local code, validators, and protocols are ready.
 Generated data, raw scores, checkpoints, and output directories remain outside Git; tracked
-documents preserve hashes, support, commands, and exact summaries. A later decision to add learned
-baselines, new seeds, controlled ablations, broader scoring, or GPU throughput would open a
-separate compute gate. Locked-test access remains independently closed.
+documents preserve hashes, support, commands, and exact summaries. Learned baselines, controlled
+ablations, broader scoring, and any later GPU execution still require their own validated protocol
+surfaces before they can support paper claims. Locked-test access remains independently closed.

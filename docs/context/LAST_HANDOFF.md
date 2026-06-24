@@ -1,60 +1,63 @@
 # LAST_HANDOFF.md
 
-Last completed task: Final local submission package preparation
-Commit: evidence cutoff `816fd867bda0f7e82f8fbbc5604794cbbb35236d`; final submission-package commit recorded in final handoff
+Last completed task: Roadmap V4 context sync and Phase P1 local implementation
+Commit: `8853fc5de1ad85e0fe874f72a9a0ebcd745d01f3`
 Date: 2026-06-24
 
 ## What Changed
 
-- Audited the active bibliography and confirmed that every cited key in the paper resolves inside
-  `paper/references.bib` with no unused paper-bibliography entries.
-- Switched `paper/main.tex` to anonymous-submission-ready metadata and aligned the paper README,
-  TODO, and appendix checklist with anonymized review-package handling.
-- Added explicit anonymization, similarity-screening, official-build-blocker, and submission-
-  inventory docs for the bounded paper package.
-- Marked which paper tables are submission-safe versus internal-only so the source upload set is
-  easier to assemble without accidental leakage from legacy helper files.
-- Advanced the generated context cache so the next task is now the official-kit
-  compile/anonymization/similarity pass, not the already-completed local package audit.
+- Added `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v4.md` and marked V3 as superseded historical
+  input.
+- Synchronized AGENTS/README/PLAYBOOK/Claude guidance plus the fast context cache so V4 Phase P1
+  is the current next-action authority.
+- Registered future paper-facing claims C-094 through C-098 as `experiment-pending`.
+- Implemented Phase P1 local tooling: DeLong AUROC test, paired bootstrap delta, seed-metric
+  aggregation, and a four-calibration-normal TempGlitch follow-up hardening path.
+- Expanded tests for statistics, seed aggregation, TempGlitch follow-up validation, and context
+  cache generation.
 
 ## Checks Passed
 
-- Pending final close-out run in this task; exact commands and results are reported in the final
+- Final verification is run in this task; exact commands and results are reported in the final
   handoff.
 
 ## Safety Status
 
-- No Kaggle launch, retraining, new dataset download, new scoring, or locked-test access.
-- No raw evidence was modified.
-- Generated evidence, datasets, checkpoints, caches, and credentials remain outside Git.
-- Claims remain bounded to verified non-locked evidence.
+- No Kaggle launch, retraining, new dataset download, or locked-test access.
+- Existing verified evidence reports remain historical; no new positive result claim was added.
+- Data, outputs, checkpoints, caches, and credentials remain outside Git.
+- New roadmap claims remain blocked until their supporting artifacts are validated.
 
 ## Gate Status After Task
 
-- TempGlitch follow-up: unchanged validated pair-disjoint non-locked main evidence.
+- TempGlitch follow-up: existing validated bounded evidence remains historical; the codebase now
+  targets a stronger four-calibration-normal re-freeze for the next local regeneration.
 - R5-XGame: unchanged bounded non-locked secondary evidence.
 - R5-WOB: unchanged positive-probe only.
-- Local submission package docs: expanded and synchronized.
-- Kaggle gate: Path A remains active; no Kaggle is needed yet.
+- V4 roadmap: canonical for all next actions.
+- Kaggle gates K1-K4: still unopened and user-operated only.
 - Locked test: closed, unmaterialized, and unscored.
 
 ## Open Blockers
 
-- Official Springer template files and local TeX toolchain remain unavailable.
-- Page-fit, citation-warning, PDF metadata, and final PDF inspection require the official kit.
-- Similarity screening remains an external/manual step because no checker was run locally.
-- Small support, two-episode TempGlitch calibration, wide uncertainty, and high TempGlitch
-  FPR@95TPR remain scientific reviewer risks.
+- Phase P2-P5 evidence is still missing: learned baselines, public benchmark scoring, controlled
+  SIGReg/action ablations, and temporal-localization scope/results.
+- Existing verified TempGlitch follow-up evidence still reflects only two calibration normals until
+  the new P1 freeze is actually regenerated from local artifacts.
+- Official Springer template files and local TeX toolchain remain a later P7 packaging blocker.
 
 ## Next Recommended Task
 
-Perform official-kit compile/anonymization/similarity pass, then finalize bounded submission
-package.
+Execute Phase P2 local preparation, then stop before Kaggle gate K1 and print exact K1 launch
+instructions for the user.
 
 ## Files Likely Relevant Next
 
-- `docs/research/110_reference_and_bibliography_audit.md`
-- `docs/research/111_anonymization_checklist.md`
-- `docs/research/112_similarity_screening_plan.md`
-- `docs/research/113_official_build_blocker_and_overleaf_plan.md`
-- `docs/research/114_submission_package_inventory.md`
+- `src/glitch_detection/video_autoencoder.py`
+- `src/glitch_detection/score_clips.py`
+- `scripts/run_kaggle_video_autoencoder.py`
+- `scripts/run_kaggle_learned_baselines.py`
+- `scripts/validate_learned_baselines.py`
+- `tests/test_cnn_lstm.py`
+- `tests/test_video_transformer.py`
+- `tests/test_learned_baselines_runner.py`

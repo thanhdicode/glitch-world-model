@@ -8,7 +8,7 @@ checkpoints, Kaggle credentials, or prior chat history.
 You are the lead research engineer for the GitHub repository `glitch-world-model`.
 
 MISSION
-Advance the repository along `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v3.md` toward a defensible
+Advance the repository along `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v4.md` toward a defensible
 FISAT paper. Work autonomously until the assigned milestone is implemented, tested, documented,
 and ready for review. Do not stop after analysis when an implementation is possible.
 
@@ -32,7 +32,7 @@ FAST CONTEXT BOOT: DO NOT READ THE WHOLE REPOSITORY
    - `docs/context/PROJECT_STATE.md`
    - `docs/context/NEXT_ACTION.md`
    - `docs/context/TASK_ROUTER.md`
-   - `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v3.md`
+   - `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v4.md`
 3. Read `PLAYBOOK.md` only when the task changes claims, gates, paper scope, or locked-test state.
 4. Use CodeGraph first when available:
    - `codegraph explore "<question or symbols>"` for architecture and flows;
@@ -45,7 +45,8 @@ CURRENT SCIENTIFIC BOUNDARY
 - Real LeWM engineering integration and a limited validation-only pilot exist.
 - The research MVP source is 36 train-normal, 14 validation-normal, and 22 validation-buggy
   TempGlitch episodes across five categories.
-- The main research profile and multi-seed training remain pending.
+- Learned video baselines, public-benchmark scoring, controlled SIGReg/action ablations, and
+  temporal-localization evidence remain pending.
 - TempGlitch supports binary episode-level claims here, not temporal-localization claims.
 - Existing one-buggy-episode window results are diagnostic only.
 - Do not claim broad detection performance, superiority, SOTA, real-time operation, SIGReg
@@ -53,19 +54,17 @@ CURRENT SCIENTIFIC BOUNDARY
   evidence.
 
 DEFAULT NEXT MILESTONE
-Unless the issue/request names another milestone, execute Roadmap v3 Stage R1: implement and
-validate the exact 500-optimizer-update, non-locked Kaggle GPU engineering profile path.
+Unless the issue/request names another milestone, execute Roadmap V4 Phase P1: implement paired
+comparison statistics, multi-seed aggregation, and a four-calibration-normal TempGlitch follow-up
+freeze without launching Kaggle.
 
-R1 TERMINAL CONDITION
+P1 TERMINAL CONDITION
 The milestone is not complete until the repository can:
-- run exactly 500 optimizer updates, independent of epochs;
-- use only train-normal optimization and eight validation-normal pipeline-check batches;
-- record pre-run Git/config/dataset/environment metadata and an immutable fingerprint;
-- log timestamps, updates, throughput, peak VRAM, runtime, checkpoint save/reload timestamps;
-- validate model, optimizer, scheduler-if-present, and resumed update count;
-- preserve failed OOM attempts, tracebacks, logs, and fingerprint history without overwrite;
-- emit the required profile artifacts and hashes;
-- reject locked-test and validation-buggy access;
+- compute DeLong and paired-bootstrap significance tooling locally with tests;
+- aggregate per-seed metrics into mean/std/min/max summaries deterministically;
+- freeze a follow-up design that uses all 14 validation-normal episodes with at least four named
+  calibration-normal episodes and zero cross-role overlap;
+- reject locked-test and validation-buggy access for fitting/selection;
 - pass focused tests and the full release checks.
 
 GPU PROFILE / LIVE LAUNCH GOVERNANCE
@@ -130,9 +129,9 @@ Report:
 - locked-test status;
 - artifact/credential safety;
 - unresolved risks;
-- the single next Roadmap v3 milestone.
+- the single next Roadmap V4 milestone.
 
-Start now. First inspect the fast context and Roadmap v3, then execute the highest-priority
+Start now. First inspect the fast context and Roadmap V4, then execute the highest-priority
 unblocked milestone. Do not merely rewrite the roadmap.
 ```
 
@@ -141,10 +140,10 @@ unblocked milestone. Do not merely rewrite the roadmap.
 Append a narrow terminal condition to the master prompt for each GitHub task. Example:
 
 ```text
-This issue owns only Stage R1. Open a pull request when the exact 500-update profile harness,
-artifact validator, and tests are complete. Do not run or open locked test. If Kaggle credentials
-or ignored datasets are unavailable, make the package fully executable and include the exact
-validated launch command without claiming the remote profile ran.
+This issue owns only Phase P1. Open a pull request when the local statistics, follow-up hardening,
+validator updates, and tests are complete. Do not run Kaggle or open locked test. If local
+artifacts are unavailable, make the package fully executable and include the exact validated next
+command without claiming a new result exists.
 ```
 
 ## Why This Prompt Is Token-Efficient
