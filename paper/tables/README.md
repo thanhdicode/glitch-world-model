@@ -7,6 +7,7 @@ Current submission-safe tables:
 - `r5_bounded_results.tex`
 - `artifact_hashes.tex`
 - `claim_map.tex`
+- `k1_learned_baselines.tex`
 - `dataset_inventory.tex`
 - `literature_matrix.tex`
 - `r5_xgame_results.tex`

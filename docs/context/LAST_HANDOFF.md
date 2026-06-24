@@ -1,18 +1,24 @@
 # LAST_HANDOFF.md
 
-Last completed task: K1 TempGlitch Kaggle dataset input packaging
+Last completed task: K1 learned-baseline artifact intake, validation, and claim-bound result update
 Commit: latest `main` commit for this task (see `git log -1`)
-Date: 2026-06-24T09:34:13.7327957Z
+Date: 2026-06-24T12:05:00Z
 
 ## What Changed
 
-- Added `scripts/build_k1_kaggle_input_dataset.py` to derive the frozen K1 support directly from
-  the canonical Gate-3 TempGlitch split CSV plus `data/processed/tempglitch_phase3b/manifest.csv`.
-- Added `tests/test_build_k1_kaggle_input_dataset.py` to cover portable manifest writing, grouped
-  split generation, clip packaging, and zip layout.
-- Built a local ignored K1 input package directory plus a matching zip for Kaggle Dataset upload.
-- Verified the packaged dataset against `scripts/run_kaggle_learned_baselines.py --dry-run` on
-  CPU with the packaged manifest, split, and `clips_root`.
+- Validated the downloaded K1 learned-baseline Kaggle tarball and SHA256 sidecar, then extracted
+  the bundle for local intake.
+- Updated `scripts/validate_learned_baselines.py` so downloaded Kaggle bundles with embedded
+  `/kaggle/input/...` provenance can be revalidated locally without relaxing any leakage or
+  locked-test checks.
+- Added `tests/test_learned_baselines_runner.py` coverage for the local-path remapping validator
+  behavior.
+- Added `scripts/ingest_k1_learned_baselines.py` to compute bounded follow-up metrics for
+  `video_autoencoder`, `cnn_lstm`, and `video_transformer` on the exact currently cited
+  TempGlitch follow-up support and to summarize paired deltas against LeWM and the simple
+  baselines.
+- Added K1 protocol, runbook, results, claim-map, and paper-table updates with bounded wording
+  only.
 
 ## Checks Passed
 
@@ -23,40 +29,43 @@ Date: 2026-06-24T09:34:13.7327957Z
 - `python scripts/check_claim_registry.py`
 - `python scripts/doctor.py`
 - `python scripts/validate_context_cache.py`
+- `git diff --check`
 
 ## Safety Status
 
-- No Kaggle launch, model training run, TempGlitch download, or re-preprocess was performed in
-  this task.
-- The packaged dataset is an input artifact only; no learned-baseline performance claim was added.
-- No locked-test access.
-- No data/output/checkpoint/cache/credential commit intended.
+- K1 intake is validator-backed with false locked-test materialized/scored flags.
+- No locked-test access, materialization, or scoring occurred in this task.
+- The new learned-baseline results are bounded to the exact non-locked TempGlitch follow-up
+  support and do not justify broad superiority, SOTA, cross-game, SIGReg-benefit, action-benefit,
+  or temporal-localization claims.
+- No data/output/checkpoint/cache/credential commit is intended.
 
 ## Gate Status After Task
 
-- Gates 1-8 passed; Gate 9 remains a bounded pilot and R5 follow-up evidence remains bounded.
+- Gates 1-8 passed; Gate 9 remains a bounded non-locked pilot/follow-up evidence lane.
 - Gate 10 remains closed.
-- Phase P2 local preparation remains complete; K1 now has a ready-to-upload Kaggle Dataset input
-  package with train-normal fit support and frozen validation scoring support.
+- K1 is now complete as a downloaded, locally validated learned-baseline evidence bundle with
+  paper-facing bounded result updates.
 - Locked test remains closed.
 
 ## Open Blockers
 
-- K1 still requires a user-operated Kaggle Dataset upload plus Kaggle notebook run and local
-  validator-backed artifact intake.
-- Phase P3-P5 evidence is still missing: public benchmark scoring, controlled ablations, and
-  temporal-localization scope/results.
+- Phase P3-P5 evidence is still missing: public benchmark scoring, controlled SIGReg/action
+  ablation, and temporal-localization scope/results.
+- The current TempGlitch follow-up code defaults and the currently cited validated support are not
+  yet fully harmonized; preserve the existing validated support until a separate follow-up freeze
+  update is completed.
 - Official-kit compile remains a later P7 packaging blocker.
 
 ## Next Recommended Task
 
-- Upload the generated K1 input zip as a Kaggle Dataset, run K1 with the packaged
-  `RUN_K1_COMMAND.txt`, then validate the downloaded artifact directory locally.
+- Prepare the Phase P3 GlitchBench local package, validator, and claim boundary, then stop before
+  the user-operated Kaggle K2 benchmark run.
 
 ## Files Likely Relevant Next
 
-- `scripts/build_k1_kaggle_input_dataset.py`
-- `scripts/run_kaggle_learned_baselines.py`
+- `scripts/ingest_k1_learned_baselines.py`
 - `scripts/validate_learned_baselines.py`
-- `tests/test_learned_baselines_runner.py`
-- `tests/test_build_k1_kaggle_input_dataset.py`
+- `docs/research/118_k1_learned_baseline_results.md`
+- `docs/research/16_claim_registry.md`
+- `paper/tables/k1_learned_baselines.tex`

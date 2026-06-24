@@ -6,7 +6,9 @@ from pathlib import Path
 
 import pytest
 
+from glitch_detection.gate6_data import sha256_file
 from glitch_detection.manifest import ClipRecord, write_manifest
+from glitch_detection.neural_protocol import rebase_clip_records
 from glitch_detection.splits import GroupedSplitRecord, write_grouped_split_csv
 from scripts.run_kaggle_learned_baselines import run_kaggle_learned_baselines
 from scripts.validate_learned_baselines import validate_learned_baselines
@@ -177,6 +179,126 @@ def test_runner_and_validator_complete_with_stubbed_baselines(
         assert (output_root / f"{name}_training_metadata.json").is_file()
         assert (output_root / f"{name}_validation_scores.csv").is_file()
         assert (output_root / f"{name}.pt.sha256").is_file()
+
+    receipt = validate_learned_baselines(output_root)
+
+    assert receipt["status"] == "validated"
+    assert receipt["train_normal_clip_count"] == 2
+    assert receipt["validation_clip_count"] == 2
+
+
+def test_validator_resolves_downloaded_kaggle_mount_paths_locally(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
+    manifest_path = tmp_path / "manifest.csv"
+    split_path = tmp_path / "split.csv"
+    output_root = tmp_path / "outputs"
+    records = [
+        _record(tmp_path, "train_normal_a"),
+        _record(tmp_path, "train_normal_b"),
+        _record(tmp_path, "validation_normal"),
+        _record(tmp_path, "validation_buggy"),
+    ]
+    write_manifest(manifest_path, records)
+    write_grouped_split_csv(
+        split_path,
+        [
+            _split("train_normal_a", "Normal", "train", "Blinking/1"),
+            _split("train_normal_b", "Normal", "train", "Blinking/2"),
+            _split("validation_normal", "Normal", "validation", "Blinking/3"),
+            _split("validation_buggy", "Buggy", "validation", "Blinking/4"),
+        ],
+        seed=42,
+    )
+
+    for module_name in ("video_autoencoder", "cnn_lstm", "video_transformer"):
+        monkeypatch.setattr(
+            f"scripts.run_kaggle_learned_baselines.{module_name}.train_model",
+            _fake_train_model,
+        )
+        monkeypatch.setattr(
+            f"scripts.run_kaggle_learned_baselines.{module_name}.score_records_with_checkpoint",
+            _fake_score_records_with_checkpoint,
+        )
+        monkeypatch.setattr(
+            f"scripts.run_kaggle_learned_baselines.{module_name}.write_scores",
+            _write_scores_csv,
+        )
+
+    run_kaggle_learned_baselines(
+        manifest_path=manifest_path,
+        split_path=split_path,
+        output_root=output_root,
+        dry_run=False,
+    )
+
+    dataset_root = tmp_path / "k1_tempglitch_kaggle_dataset" / "lewm-k1-tempglitch-inputs"
+    dataset_root.mkdir(parents=True)
+    write_manifest(dataset_root / "combined_manifest.csv", records)
+    write_grouped_split_csv(
+        dataset_root / "grouped_split.csv",
+        [
+            _split("train_normal_a", "Normal", "train", "Blinking/1"),
+            _split("train_normal_b", "Normal", "train", "Blinking/2"),
+            _split("validation_normal", "Normal", "validation", "Blinking/3"),
+            _split("validation_buggy", "Buggy", "validation", "Blinking/4"),
+        ],
+        seed=42,
+    )
+    clips_root = dataset_root / "clips_root"
+    for record in records:
+        source_dir = clips_root / record.source / "clips" / record.clip_id
+        source_dir.mkdir(parents=True)
+    train_records = [record for record in records if record.source.startswith("train_normal")]
+    validation_records = [
+        record for record in records if record.source in {"validation_normal", "validation_buggy"}
+    ]
+    write_manifest(
+        output_root / "train_normal_manifest.csv",
+        rebase_clip_records(train_records, clips_root.resolve()),
+    )
+    write_manifest(
+        output_root / "validation_manifest.csv",
+        rebase_clip_records(validation_records, clips_root.resolve()),
+    )
+
+    protocol_path = output_root / "protocol_audit.json"
+    summary_path = output_root / "learned_baselines_summary.json"
+    for path in (protocol_path, summary_path):
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        payload["manifest_path"] = (
+            "/kaggle/input/datasets/user/lewm-k1-tempglitch-inputs/"
+            "lewm-k1-tempglitch-inputs/combined_manifest.csv"
+        )
+        payload["split_path"] = (
+            "/kaggle/input/datasets/user/lewm-k1-tempglitch-inputs/"
+            "lewm-k1-tempglitch-inputs/grouped_split.csv"
+        )
+        payload["clips_root"] = (
+            "/kaggle/input/datasets/user/lewm-k1-tempglitch-inputs/"
+            "lewm-k1-tempglitch-inputs/clips_root"
+        )
+        path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+
+    for name in ("video_autoencoder", "cnn_lstm", "video_transformer"):
+        score_path = output_root / f"{name}_validation_scores.csv"
+        rows = list(csv.DictReader(score_path.open("r", newline="", encoding="utf-8-sig")))
+        with score_path.open("w", newline="", encoding="utf-8") as handle:
+            writer = csv.DictWriter(
+                handle,
+                fieldnames=["clip_id", "source", "clip_dir", "start_frame", "end_frame", "score"],
+            )
+            writer.writeheader()
+            for row in rows:
+                row["clip_dir"] = (
+                    "/kaggle/input/datasets/user/lewm-k1-tempglitch-inputs/"
+                    f"lewm-k1-tempglitch-inputs/clips_root/{row['source']}/clips/{row['clip_id']}"
+                )
+                writer.writerow(row)
+        score_path.with_suffix(score_path.suffix + ".sha256").write_text(
+            f"{sha256_file(score_path)}  {score_path.name}\n",
+            encoding="utf-8",
+        )
 
     receipt = validate_learned_baselines(output_root)
 

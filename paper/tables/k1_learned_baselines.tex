@@ -1,0 +1,21 @@
+\begin{table}[t]
+\caption{K1 learned baselines on the frozen non-locked TempGlitch follow-up support. Every row
+uses the same two calibration-normal episodes and the same 12 normal-negative / 22
+buggy-positive evaluation episodes. Learned rows report the best aggregation per method over
+\texttt{mean}, \texttt{max}, and \texttt{top2\_mean}.}
+\label{tab:k1-learned-baselines}
+\centering
+\scriptsize
+\begin{tabularx}{\textwidth}{@{}lXrrrrrrrX@{}}
+\toprule
+Family & Configuration & AUROC & AUPRC & F1 & Prec. & Recall & Bal. acc. & FPR@95 & 95\% CI \\
+\midrule
+LeWM & seed44 \texttt{lewm\_l2\_max} + episode \texttt{mean} & 0.7159 & 0.8026 & 0.7143 & 0.7500 & 0.6818 & 0.6326 & 0.7500 & AUROC [0.5349, 0.8770]; F1 [0.5854, 0.8293] \\
+Simple baseline & \texttt{frame\_diff} + episode \texttt{mean} & 0.5833 & 0.7216 & 0.6154 & 0.7059 & 0.5455 & 0.5644 & 0.7500 & AUROC [0.4181, 0.7603]; F1 [0.4516, 0.7500] \\
+Simple baseline & \texttt{feature\_distance} + episode \texttt{top2\_mean} & 0.6136 & 0.7310 & 0.1600 & 0.6667 & 0.0909 & 0.5038 & 0.8333 & AUROC [0.4636, 0.7545]; F1 [0, 0.3575] \\
+Learned baseline & \texttt{video\_autoencoder} + episode \texttt{mean} & 0.5606 & 0.7005 & 0.6818 & 0.6818 & 0.6818 & 0.5492 & 0.8333 & AUROC [0.3909, 0.7386]; F1 [0.5556, 0.7907] \\
+Learned baseline & \texttt{cnn\_lstm} + episode \texttt{max} & 0.6136 & 0.7249 & 0.7111 & 0.6957 & 0.7273 & 0.5720 & 0.9167 & AUROC [0.4405, 0.8000]; F1 [0.5946, 0.8163] \\
+Learned baseline & \texttt{video\_transformer} + episode \texttt{mean} & 0.5909 & 0.7756 & 0.2400 & 1.0000 & 0.1364 & 0.5682 & 1.0000 & AUROC [0.4615, 0.7273]; F1 [0, 0.4286] \\
+\bottomrule
+\end{tabularx}
+\end{table}
