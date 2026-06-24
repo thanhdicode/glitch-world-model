@@ -228,6 +228,31 @@ def test_evaluate_followup_configuration_reports_pair_grouped_ci_and_balanced_ac
     assert result["metrics"]["balanced_accuracy"] == pytest.approx(1.0)
 
 
+def test_validate_followup_manifest_rows_requires_four_calibration_episodes_by_default():
+    rows = [
+        _manifest_row(
+            "w1",
+            "Godot_Blinking_Normal_106",
+            "Blinking/pair-index:106",
+            "Normal",
+            "calibration_normal",
+        ),
+        _manifest_row(
+            "w2",
+            "Godot_Frozen_Animation_Platformer_Normal_107",
+            "Frozen Animation/pair-index:107",
+            "Normal",
+            "calibration_normal",
+        ),
+        _manifest_row("w3", "eval-normal-a", "pair/eval-normal-a", "Normal", "evaluation"),
+        _manifest_row("w4", "eval-normal-b", "pair/eval-normal-b", "Normal", "evaluation"),
+        _manifest_row("w5", "eval-buggy", "pair/eval-buggy", "Buggy", "evaluation"),
+    ]
+
+    with pytest.raises(ValueError, match="calibration episodes do not match"):
+        validate_followup_manifest_rows(rows)
+
+
 def test_validate_followup_output_requires_precision_recall_balanced_accuracy(tmp_path: Path):
     output_dir = tmp_path / "followup"
     output_dir.mkdir()
@@ -238,8 +263,10 @@ def test_validate_followup_output_requires_precision_recall_balanced_accuracy(tm
                 "window_id,dataset_name,dataset_fingerprint,dataset_window_index,source,source_episode_id,pair_id,category,label,split,action_mode,evaluation_role",
                 "w1,normal_validation,fingerprint,0,Godot_Blinking_Normal_106,Godot_Blinking_Normal_106,pair/blinking,Blinking,Normal,validation,zero_action,calibration_normal",
                 "w2,normal_validation,fingerprint,1,Godot_Frozen_Animation_Platformer_Normal_107,Godot_Frozen_Animation_Platformer_Normal_107,pair/frozen,Blinking,Normal,validation,zero_action,calibration_normal",
-                "w3,normal_validation,fingerprint,2,eval-normal,eval-normal,pair/eval-normal,Blinking,Normal,validation,zero_action,evaluation",
-                "w4,buggy_probe,fingerprint,3,eval-buggy,eval-buggy,pair/eval-buggy,Blinking,Buggy,validation,zero_action,evaluation",
+                "w3,normal_validation,fingerprint,2,Godot_Shooting_Error_Normal_101,Godot_Shooting_Error_Normal_101,pair/shooting-101,Blinking,Normal,validation,zero_action,calibration_normal",
+                "w4,normal_validation,fingerprint,3,Godot_Teleportation_TPS_Normal_1,Godot_Teleportation_TPS_Normal_1,pair/velocity-1,Blinking,Normal,validation,zero_action,calibration_normal",
+                "w5,normal_validation,fingerprint,4,eval-normal,eval-normal,pair/eval-normal,Blinking,Normal,validation,zero_action,evaluation",
+                "w6,buggy_probe,fingerprint,5,eval-buggy,eval-buggy,pair/eval-buggy,Blinking,Buggy,validation,zero_action,evaluation",
             ]
         )
         + "\n",

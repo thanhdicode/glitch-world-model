@@ -18,6 +18,12 @@ from glitch_detection.tempglitch import (
 )
 
 ROOT = Path(__file__).resolve().parents[1]
+PHASE_P1_FOLLOWUP_CALIBRATION_EPISODE_IDS = (
+    "Godot_Blinking_Normal_106",
+    "Godot_Frozen_Animation_Platformer_Normal_107",
+    "Godot_Shooting_Error_Normal_101",
+    "Godot_Teleportation_TPS_Normal_1",
+)
 
 
 def _sha256(path: Path) -> str:
@@ -94,6 +100,14 @@ def main() -> None:
             "exposed_group_count": len(exposed),
             "exposed_metadata_evidence": exposed_evidence,
             "raw_video_materialized_locally": False,
+            "phase_p1_followup_calibration_episode_ids": list(
+                PHASE_P1_FOLLOWUP_CALIBRATION_EPISODE_IDS
+            ),
+            "phase_p1_followup_calibration_episode_count": len(
+                PHASE_P1_FOLLOWUP_CALIBRATION_EPISODE_IDS
+            ),
+            "phase_p1_followup_validation_normal_episode_count": 14,
+            "phase_p1_followup_evaluation_normal_episode_count": 10,
         },
     )
     print(

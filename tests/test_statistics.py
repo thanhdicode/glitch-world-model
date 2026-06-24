@@ -1,4 +1,11 @@
-from glitch_detection.statistics import bootstrap_metric_ci
+import pytest
+
+from glitch_detection.statistics import (
+    _metric,
+    bootstrap_metric_ci,
+    delong_auroc_test,
+    paired_bootstrap_delta,
+)
 from scripts.evaluate_tempglitch_locked_test import write_locked_metrics_markdown
 
 ROWS = [
@@ -36,6 +43,55 @@ def test_bootstrap_f1_ci_supports_pair_level_resampling():
     assert result["point"] == 1.0
     assert result["valid_bootstrap_count"] == 50
     assert result["group_key"] == "pair_id_heuristic"
+
+
+def test_delong_auroc_test_reports_known_auroc_gap():
+    labels = [1, 1, 1, 0, 0, 0]
+    perfect = [0.9, 0.8, 0.7, 0.6, 0.2, 0.1]
+    weaker = [0.95, 0.4, 0.3, 0.85, 0.2, 0.1]
+
+    result = delong_auroc_test(labels, perfect, weaker)
+
+    assert result["auroc_a"] == pytest.approx(1.0)
+    assert result["auroc_b"] == pytest.approx(7 / 9)
+    assert result["z"] > 0
+    assert 0.0 <= result["p_value"] <= 1.0
+
+
+def test_paired_bootstrap_delta_is_deterministic_for_same_group_resamples():
+    rows_a = [
+        {"source": "ep1", "label": 0, "score": 0.1},
+        {"source": "ep2", "label": 0, "score": 0.2},
+        {"source": "ep3", "label": 1, "score": 0.8},
+        {"source": "ep4", "label": 1, "score": 0.9},
+    ]
+    rows_b = [
+        {"source": "ep1", "label": 0, "score": 0.3},
+        {"source": "ep2", "label": 0, "score": 0.4},
+        {"source": "ep3", "label": 1, "score": 0.7},
+        {"source": "ep4", "label": 1, "score": 0.6},
+    ]
+
+    first = paired_bootstrap_delta(rows_a, rows_b, "auroc", seed=11, n_bootstrap=40)
+    second = paired_bootstrap_delta(rows_a, rows_b, "auroc", seed=11, n_bootstrap=40)
+
+    assert first == second
+    assert first["point_delta"] == pytest.approx(0.0)
+    assert 0 < first["valid_bootstrap_count"] <= 40
+    assert first["group_key"] == "source"
+
+
+@pytest.mark.parametrize(
+    ("metric_name", "expected"),
+    [
+        ("auprc", 1.0),
+        ("balanced_accuracy", 1.0),
+        ("mcc", 1.0),
+    ],
+)
+def test_metric_supports_new_branches(metric_name, expected):
+    threshold = 0.5 if metric_name in {"balanced_accuracy", "mcc"} else None
+    assert _metric(ROWS, metric_name, threshold) == pytest.approx(expected)
 
 
 def test_locked_metrics_markdown_handles_undefined_auroc_ci(tmp_path):

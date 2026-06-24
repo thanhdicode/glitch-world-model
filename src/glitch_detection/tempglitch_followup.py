@@ -19,8 +19,10 @@ FOLLOWUP_VALIDATOR_STATUS = "followup_validated"
 CALIBRATION_NORMAL_EPISODE_IDS = (
     "Godot_Blinking_Normal_106",
     "Godot_Frozen_Animation_Platformer_Normal_107",
+    "Godot_Shooting_Error_Normal_101",
+    "Godot_Teleportation_TPS_Normal_1",
 )
-EXPECTED_EVALUATION_NORMAL_COUNT = 12
+EXPECTED_EVALUATION_NORMAL_COUNT = 10
 EXPECTED_EVALUATION_BUGGY_COUNT = 22
 EXPECTED_CONFIG_COUNT = 60
 FOLLOWUP_REQUIRED_FILES = (
@@ -856,7 +858,7 @@ def validate_tempglitch_followup_output(
         )
         for row in comparison_rows
     }
-    expected_support = {("2", "34", "22", "12")}
+    expected_support = {("4", "32", "22", "10")}
     if support_tuples != expected_support:
         raise ValueError(f"Follow-up support mismatch: {support_tuples}")
 
@@ -935,10 +937,10 @@ def validate_tempglitch_followup_output(
         "baseline_methods": sorted(baseline_methods),
         "lewm_seeds": sorted(lewm_seeds),
         "support_tuple": {
-            "calibration_episode_count": 2,
-            "evaluation_episode_count": 34,
+            "calibration_episode_count": 4,
+            "evaluation_episode_count": 32,
             "positive_episode_count": 22,
-            "negative_episode_count": 12,
+            "negative_episode_count": 10,
         },
         "calibration_episode_ids": list(CALIBRATION_NORMAL_EPISODE_IDS),
         "validation_buggy_used_for_fit_select": False,
