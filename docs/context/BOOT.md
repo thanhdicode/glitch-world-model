@@ -1,7 +1,7 @@
 # BOOT.md - Fast Start Context For Agents
 
-Generated: 2026-06-24T17:20:00+00:00
-Commit: `731fef69f76d6025fe7e14a2d9498c49746b8a62`
+Generated: 2026-06-25T00:00:00+00:00
+Commit: `ea7c8609e9cead37d90bcd8c97e9d6e72393a173`
 
 ## Read Order
 1. `RULES.md`
@@ -27,21 +27,22 @@ The current execution roadmap is `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v4.md`
   source, pair, and episode overlap.
 - K1 learned-baseline intake is validator-backed locally and remains bounded to the cited
   TempGlitch support.
-- P3 local GlitchBench preparation is now complete:
-  - structured subset ingestion exists
-  - a deterministic grouped split exists
-  - a validator-backed K2 input package exists
-  - the current K2 zip SHA256 is
-    `d2c6be8f83d99cb6a04578532f0f80d620c168342ff3e630b4e6b5389c62b038`
+- P3 local GlitchBench preparation remains complete and the K2 input zip SHA256 is
+  `d2c6be8f83d99cb6a04578532f0f80d620c168342ff3e630b4e6b5389c62b038`.
+- The K2 runner is now repaired:
+  - direct read-only `/kaggle/input` validation is supported
+  - the scientific full K2 path now includes real LeWM scoring
+  - the local LeWM seed-artifact zip SHA256 is
+    `bf227ef26ac8316ccbc7456425e6218d2ac2172576fa874c35041b4913d04e69`
 - The current executable GlitchBench path remains image-level, synthetic-normal, and not temporal.
-- P4 local controlled SIGReg/action tooling now exists, but no K3 artifact has been validated.
+- P4 local controlled SIGReg/action tooling exists, but no K3 artifact has been validated.
 - Roadmap V4 remains canonical and locked test remains closed.
 
 ## Immediate Next Task
-- Execute the user-operated Kaggle K2 GlitchBench benchmark run with the prepared package.
+- Rerun the direct `/kaggle/input` K2 dry-run on Kaggle.
+- Run the scientific full K2 command with the LeWM seed artifact dataset attached.
 - Validate the downloaded K2 artifact locally before registering any benchmark metric claim.
-- Keep GlitchBench wording bounded to image-level synthetic-normal evidence and keep K3 effect
-  claims pending until artifact-validated.
+- Keep K3 closed until K2 intake is complete.
 
 ## Safety
 - Non-locked-test Kaggle actions use standing Kaggle authorization after security, license,
