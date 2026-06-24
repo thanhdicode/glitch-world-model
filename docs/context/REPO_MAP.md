@@ -1,7 +1,7 @@
 # REPO_MAP.md
 
-Generated: 2026-06-24T08:15:50+00:00
-Commit: `8853fc5de1ad85e0fe874f72a9a0ebcd745d01f3`
+Generated: 2026-06-24T08:42:16+00:00
+Commit: `940b8d60bb036934ebceeb8f2ca2cc910e65011a`
 Generator: `scripts/update_context_cache.py`
 
 ## Top-Level Map
@@ -165,6 +165,7 @@ Generator: `scripts/update_context_cache.py`
 | `src/glitch_detection/repeated_eval.py` | FittedScorer, train_normal_records, fit_scorer_for_split, score_fitted_scorer, clip_score_rows, write_clip_scores_csv, split_rows_as_dicts, source_labels_for_split, build_video_rows | Python module. |
 | `src/glitch_detection/run_baseline.py` | run_baseline, build_parser, main | Python module. |
 | `src/glitch_detection/score_clips.py` | _frame_diff_scorer, available_scorers, run_scorer, build_parser, main | Python module. |
+| `src/glitch_detection/seed_aggregation.py` | _population_std, aggregate_seed_metrics | Python module. |
 | `src/glitch_detection/splits.py` | SplitRecord, GroupedSplitRecord, _split_counts_for_group, assign_video_splits, assign_grouped_video_splits, validate_no_group_leakage, write_grouped_split_csv, write_split_csv, read_split_csv, read_grouped_split_csv, sources_for_split, split_counts_by_group | Python module. |
 | `src/glitch_detection/statistics.py` | _percentile, _metric, _compute_midrank, _fast_delong, delong_auroc_test, _group_rows, _row_signature, paired_bootstrap_delta, bootstrap_metric_ci | Python module. |
 | `src/glitch_detection/tempglitch.py` | TempGlitchVideoRef, TempGlitchSample, normalize_tempglitch_label, encode_tempglitch_video_url, parse_tempglitch_video_url, _load_json, fetch_tempglitch_dataset_info, fetch_tempglitch_rows, fetch_all_tempglitch_metadata, tempglitch_category_counts, _relative_video_path, _write_tempglitch_source_readme | Python module. |
@@ -334,6 +335,7 @@ Generator: `scripts/update_context_cache.py`
 | `tests/test_run_baseline.py` | run_baseline |
 | `tests/test_run_kaggle_lewm.py` | run_kaggle_lewm |
 | `tests/test_score_clips.py` | score_clips |
+| `tests/test_seed_aggregation.py` | seed_aggregation |
 | `tests/test_splits.py` | splits |
 | `tests/test_staged_install_completeness.py` | staged_install_completeness |
 | `tests/test_statistics.py` | statistics |

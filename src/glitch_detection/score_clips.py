@@ -5,12 +5,14 @@ from collections.abc import Callable
 from pathlib import Path
 
 from . import (
+    cnn_lstm,
     feature_distance,
     frame_diff,
     lewm_latent,
     lewm_surprise,
     mini_latent,
     video_autoencoder,
+    video_transformer,
 )
 
 ScorerFn = Callable[[Path, Path | None, Path], Path]
@@ -28,6 +30,8 @@ SCORERS: dict[str, ScorerFn] = {
     "lewm_latent": lewm_latent.score_manifest,
     "lewm_surprise": lewm_surprise.registered_score_manifest,
     "video_autoencoder": video_autoencoder.score_manifest,
+    "cnn_lstm": cnn_lstm.score_manifest,
+    "video_transformer": video_transformer.score_manifest,
 }
 TRAIN_DEPENDENT_GENERIC_SCORERS = {"feature_distance", "mini_latent"}
 

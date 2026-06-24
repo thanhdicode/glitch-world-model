@@ -9,6 +9,8 @@ def test_available_scorers_contains_existing_baselines():
     assert "frame_diff" in available_scorers()
     assert "feature_distance" in available_scorers()
     assert "video_autoencoder" in available_scorers()
+    assert "cnn_lstm" in available_scorers()
+    assert "video_transformer" in available_scorers()
 
 
 def test_unknown_scorer_raises(tmp_path: Path):

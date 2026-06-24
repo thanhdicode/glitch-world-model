@@ -1,61 +1,61 @@
 # LAST_HANDOFF.md
 
-Last completed task: Roadmap V4 context sync and Phase P1 local implementation
-Commit: `8853fc5de1ad85e0fe874f72a9a0ebcd745d01f3`
-Date: 2026-06-24
+Last completed task: Phase P2 learned-baseline local preparation
+Commit: `940b8d60bb036934ebceeb8f2ca2cc910e65011a`
+Date: 2026-06-24T08:42:16+00:00
 
 ## What Changed
 
-- Added `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v4.md` and marked V3 as superseded historical
-  input.
-- Synchronized AGENTS/README/PLAYBOOK/Claude guidance plus the fast context cache so V4 Phase P1
-  is the current next-action authority.
-- Registered future paper-facing claims C-094 through C-098 as `experiment-pending`.
-- Implemented Phase P1 local tooling: DeLong AUROC test, paired bootstrap delta, seed-metric
-  aggregation, and a four-calibration-normal TempGlitch follow-up hardening path.
-- Expanded tests for statistics, seed aggregation, TempGlitch follow-up validation, and context
-  cache generation.
+- Added `src/glitch_detection/cnn_lstm.py` with an optional CNN-LSTM next-frame baseline that
+  mirrors the video autoencoder train/score interface.
+- Added `src/glitch_detection/video_transformer.py` with an optional VideoMAE-small
+  feature-distance baseline and checkpointed train/score flow.
+- Registered the new learned baselines in `src/glitch_detection/score_clips.py`.
+- Added `scripts/run_kaggle_learned_baselines.py` and
+  `scripts/validate_learned_baselines.py` for the shared K1 train/score/validate path.
+- Added CPU-mock coverage for the new baselines and the unified runner.
 
 ## Checks Passed
 
-- Final verification is run in this task; exact commands and results are reported in the final
-  handoff.
+- `python -m pytest`
+- `python -m ruff check .`
+- `python -m ruff format --check .`
+- `python scripts/validate_research_release.py --ci`
+- `python scripts/check_claim_registry.py`
+- `python scripts/doctor.py`
+- `python scripts/validate_context_cache.py`
 
 ## Safety Status
 
-- No Kaggle launch, retraining, new dataset download, or locked-test access.
-- Existing verified evidence reports remain historical; no new positive result claim was added.
-- Data, outputs, checkpoints, caches, and credentials remain outside Git.
-- New roadmap claims remain blocked until their supporting artifacts are validated.
+- No Kaggle launch, retraining run, or downloaded evidence claim was performed in this task.
+- New paper-facing learned-baseline claims stay blocked until K1 artifacts are validated.
+- No locked-test access.
+- No data/output/checkpoint/cache/credential commit intended.
 
 ## Gate Status After Task
 
-- TempGlitch follow-up: existing validated bounded evidence remains historical; the codebase now
-  targets a stronger four-calibration-normal re-freeze for the next local regeneration.
-- R5-XGame: unchanged bounded non-locked secondary evidence.
-- R5-WOB: unchanged positive-probe only.
-- V4 roadmap: canonical for all next actions.
-- Kaggle gates K1-K4: still unopened and user-operated only.
-- Locked test: closed, unmaterialized, and unscored.
+- Gates 1-8 passed; Gate 9 remains a bounded pilot and R5 follow-up evidence remains bounded.
+- Gate 10 remains closed.
+- Phase P2 local preparation is complete; K1 is the next external gate.
+- Locked test remains closed.
 
 ## Open Blockers
 
-- Phase P2-P5 evidence is still missing: learned baselines, public benchmark scoring, controlled
-  SIGReg/action ablations, and temporal-localization scope/results.
-- Existing verified TempGlitch follow-up evidence still reflects only two calibration normals until
-  the new P1 freeze is actually regenerated from local artifacts.
-- Official Springer template files and local TeX toolchain remain a later P7 packaging blocker.
+- K1 still requires a user-operated Kaggle run plus local validator-backed artifact intake.
+- Phase P3-P5 evidence is still missing: public benchmark scoring, controlled ablations, and
+  temporal-localization scope/results.
+- Official-kit compile remains a later P7 packaging blocker.
 
 ## Next Recommended Task
 
-Execute Phase P2 local preparation, then stop before Kaggle gate K1 and print exact K1 launch
-instructions for the user.
+- Run Kaggle gate K1 with the frozen follow-up manifest/split and the new learned-baseline
+  runner, then validate the downloaded artifact directory locally.
 
 ## Files Likely Relevant Next
 
 - `src/glitch_detection/video_autoencoder.py`
-- `src/glitch_detection/score_clips.py`
-- `scripts/run_kaggle_video_autoencoder.py`
+- `src/glitch_detection/cnn_lstm.py`
+- `src/glitch_detection/video_transformer.py`
 - `scripts/run_kaggle_learned_baselines.py`
 - `scripts/validate_learned_baselines.py`
 - `tests/test_cnn_lstm.py`
