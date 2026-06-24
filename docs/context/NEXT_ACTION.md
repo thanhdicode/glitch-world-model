@@ -1,25 +1,25 @@
 # NEXT_ACTION.md
 
-Last updated: 2026-06-24T05:58:03+00:00
-Commit: `88642a17d70cbfa09c75a1eef79ff986d1166d07`
+Last updated: 2026-06-24T06:23:39+00:00
+Commit: `380f713f58b6e77ae2c31075c0ce21c6bc7b4dc8`
 
 ## Current Priority
-Run paper draft audit and decide whether to stop at bounded submission or launch Kaggle for
-stronger baselines/ablations.
+Finalize bounded paper submission package locally.
 
 ## Next Gate
-1. Compile with the official Springer kit when available and record page fit and warnings.
-2. Audit abstract, results, discussion, and conclusion against report 106 and the claim registry.
-3. Decide whether the bounded evidence is sufficient for submission.
-4. If stronger evidence is required, ask the user before opening a Kaggle baseline/ablation phase.
+1. Compile with the official Springer kit when available and record page fit, missing references,
+   and warnings.
+2. Complete anonymization, similarity screening, and bibliography review.
+3. Replace figure plans only with provenance-recorded approved figures.
+4. Keep any stronger baseline or ablation compute as a separate user-approved decision.
 
 ## Success Criteria
 - Official-kit build status and page fit are known.
-- Every empirical paragraph remains mapped to a registered verified claim.
-- The bounded-submission versus new-compute decision is explicit.
+- The bounded paper package remains mapped to registered verified claims.
+- The local submission package is ready except for external-template or external-tool blockers.
 - Locked test remains closed and the repository verification suite stays green.
 
 ## Current Known Blocker
-The local TeX toolchain and official Springer class are unavailable. A content/claim audit can
-continue locally, but typeset build and page-fit review require the official kit. Stronger learned
-baselines or ablations require a separate user decision and new compute. Locked test remains closed.
+The local TeX toolchain and official Springer files are unavailable: `pdflatex`, `bibtex`,
+`biber`, `latexmk`, `llncs.cls`, and `splncs04.bst` are all missing. Typeset build and page-fit
+review therefore require the official kit. Locked test remains closed.

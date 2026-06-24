@@ -1,7 +1,7 @@
 # 105 - Kaggle Gate Decision Memo
 
 Date: 2026-06-24
-Decision: first paper draft remains local; new empirical strengthening requires a separate compute decision
+Decision: Path A selected; continue final bounded submission polishing locally
 
 ## No Kaggle Needed
 
@@ -25,11 +25,15 @@ Decision: first paper draft remains local; new empirical strengthening requires 
 
 ## Gate Decision
 
-The first bounded paper draft is complete locally. The next task is also local: audit the draft,
-resolve official-template build availability, and decide whether the bounded evidence is sufficient
-for submission or whether a stronger baseline/ablation phase is scientifically necessary.
+Path A is selected:
 
-Stop and ask the user only when deciding whether to launch a new compute phase for stronger
-baseline/ablation evidence.
+`Continue final bounded submission polishing locally; no Kaggle needed yet.`
+
+The bounded evidence is sufficient for an honest leakage-aware empirical evaluation paper. Stronger
+baselines, new seeds, SIGReg/action ablations, or broader benchmark scoring remain optional
+strengthening work, not current submission blockers.
+
+Ask the user only if the paper team later decides to widen the evidence package through a new
+compute phase.
 
 Locked-test access remains a separate gate and is not authorized by a future Kaggle decision.

@@ -1,7 +1,7 @@
 # BOOT.md - Fast Start Context For Agents
 
-Generated: 2026-06-24T05:58:03+00:00
-Commit: `88642a17d70cbfa09c75a1eef79ff986d1166d07`
+Generated: 2026-06-24T06:23:39+00:00
+Commit: `380f713f58b6e77ae2c31075c0ce21c6bc7b4dc8`
 
 ## Read Order
 1. `RULES.md`
@@ -47,9 +47,8 @@ The current execution roadmap is `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v3.md`
   test remains unopened, and WOB remains limited to audit-plus-training-artifact evidence.
 
 ## Immediate Next Task
-- Run the paper-draft claim/build audit.
-- Decide whether to stop at a bounded submission or request a separate compute phase for stronger
-  baselines and ablations.
+- Finalize the bounded paper submission package locally.
+- Keep stronger learned baselines or ablations as a separate later compute decision.
 - Keep locked test closed.
 
 ## Safety

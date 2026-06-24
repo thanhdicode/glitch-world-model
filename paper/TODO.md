@@ -8,7 +8,8 @@ Date: 2026-06-24
 2. Upload `paper/main.tex`, `paper/references.bib`, `paper/sections/`, `paper/appendices/`,
    `paper/tables/`, and any approved figure assets.
 3. Confirm `llncs.cls` and `splncs04.bst` come from the official Springer template.
-4. Compile with BibTeX and record unresolved references, overfull boxes, page count, and warnings.
+4. Compile with `pdflatex` plus `bibtex` or with `latexmk` after those tools are installed.
+5. Record unresolved references, overfull boxes, page count, and warnings.
 
 ## Before FISAT Initial Submission
 
@@ -21,7 +22,7 @@ Date: 2026-06-24
 
 ## Post-Draft Decision
 
-1. Run the paper draft audit with the official kit when available.
-2. Decide whether to stop at a bounded submission or request a new compute phase for stronger
-   learned baselines/ablations.
-3. Do not launch Kaggle, retrain, rescore new datasets, or access locked test from the paper track.
+1. Finalize the bounded submission package locally.
+2. Use the official Springer kit to complete compile, page-fit, and warning review when available.
+3. Keep stronger learned baselines or ablations as a separate future compute decision.
+4. Do not launch Kaggle, retrain, rescore new datasets, or access locked test from the paper track.

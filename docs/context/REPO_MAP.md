@@ -1,7 +1,7 @@
 # REPO_MAP.md
 
-Generated: 2026-06-24T05:58:03+00:00
-Commit: `88642a17d70cbfa09c75a1eef79ff986d1166d07`
+Generated: 2026-06-24T06:23:39+00:00
+Commit: `380f713f58b6e77ae2c31075c0ce21c6bc7b4dc8`
 Generator: `scripts/update_context_cache.py`
 
 ## Top-Level Map
@@ -386,6 +386,7 @@ Generator: `scripts/update_context_cache.py`
 | `docs/research/103_q3_paper_readiness_assessment.md` | 103 q3 paper readiness assessment |
 | `docs/research/104_paper_outline_lnicst_fisat.md` | 104 paper outline lnicst fisat |
 | `docs/research/105_kaggle_gate_decision_memo.md` | 105 kaggle gate decision memo |
+| `docs/research/106_first_bounded_paper_claim_audit.md` | 106 first bounded paper claim audit |
 | `docs/research/10_paper_outline.md` | 10 paper outline |
 | `docs/research/11_tempglitch_integration_plan.md` | 11 tempglitch integration plan |
 | `docs/research/12_experiment_results_log.md` | 12 experiment results log |
@@ -438,4 +439,3 @@ Generator: `scripts/update_context_cache.py`
 | `docs/research/65_lewm_research_mvp_source_audit.md` | 65 lewm research mvp source audit |
 | `docs/research/66_lewm_gpu_profile_results.md` | 66 lewm gpu profile results |
 | `docs/research/67_r3_r4_multiseed_status.md` | 67 r3 r4 multiseed status |
-| `docs/research/68_r5_identical_episode_eval_plan.md` | 68 r5 identical episode eval plan |

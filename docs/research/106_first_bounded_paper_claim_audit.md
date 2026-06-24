@@ -1,7 +1,7 @@
 # 106 - First Bounded Paper Draft Claim Audit
 
 Date: 2026-06-24
-Status: paper-facing claim control
+Status: bounded paper package claim control
 
 ## Framing
 
@@ -30,7 +30,8 @@ benchmark, cross-game generalization proof, or SIGReg contribution.
 - Its R5-XGame status statement maps to C-084/C-088.
 - Its negative claim boundary maps to C-082 and the notes for C-088/C-091.
 - The conclusion repeats the same bounded observations without adding a deployment, localization,
-  generalization, SIGReg, or locked-test conclusion.
+  generalization, SIGReg, or locked-test conclusion, and now points to local submission
+  finalization rather than a new compute gate.
 
 ## Wording Audit
 
@@ -46,13 +47,13 @@ Required wording retained:
 
 Rejected or rewritten:
 
-- “LeWM beats baselines” → “the best recorded LeWM row shows stronger observed same-support
-  separation within the frozen non-locked split”;
-- “detects glitches generally” → bounded episode discrimination only;
-- “generalizes” → result families are explicitly separate and not directly comparable;
-- “temporal localization” → binary video labels do not support localization;
-- “SIGReg improves performance” → no controlled SIGReg evidence;
-- any locked-test wording → locked test remains unmaterialized and unscored.
+- "LeWM beats baselines" -> "the best recorded LeWM row shows stronger observed same-support
+  separation within the frozen non-locked split";
+- "detects glitches generally" -> bounded episode discrimination only;
+- "generalizes" -> result families are explicitly separate and not directly comparable;
+- "temporal localization" -> binary video labels do not support localization;
+- "SIGReg improves performance" -> no controlled SIGReg evidence;
+- any locked-test wording -> locked test remains unmaterialized and unscored.
 
 ## Artifact And Build Audit
 
@@ -60,5 +61,6 @@ Rejected or rewritten:
 - R5-XGame source: reports 96/97 and claims C-084/C-088/C-089.
 - R5-WOB boundary: C-079/C-082.
 - Output artifacts remain outside Git; exact hashes are in report 101 and the provenance appendix.
-- Local `pdflatex`, `bibtex`, and `latexmk` are unavailable, and the repository does not vendor the
-  official Springer class. Typeset compilation and page-fit review therefore remain pending.
+- Local `pdflatex`, `bibtex`, `biber`, and `latexmk` are unavailable, and the repository does not
+  vendor `llncs.cls` or `splncs04.bst`. Typeset compilation and page-fit review therefore remain
+  pending.

@@ -5,7 +5,7 @@ Status: bounded assessment, not an experiment metric
 
 ## Current Score
 
-Overall Q3 readiness: **7.8/10**.
+Overall Q3 readiness: **7.9/10**.
 
 This score uses a transparent four-part rubric rather than claiming statistical precision:
 
@@ -13,13 +13,12 @@ This score uses a transparent four-part rubric rather than claiming statistical 
 | --- | ---: | --- |
 | Engineering readiness | 9/10 | runners, validators, provenance, hashes, and CI checks are mature |
 | Scientific evidence readiness | 7/10 | two bounded binary families exist, but support and comparisons remain limited |
-| Paper readiness | 8/10 | first bounded draft, tables, appendices, and paragraph claim audit are complete |
-| Submission readiness | 7/10 | venue controls exist; official-kit compile, page fit, and similarity review remain |
+| Paper readiness | 8.5/10 | the bounded package now includes reviewer, checklist, and submission-gap audits in addition to the full draft |
+| Submission readiness | 7/10 | venue controls exist, but official-kit compile, page fit, anonymization, and similarity review remain |
 
-The arithmetic mean is 7.75, reported as 7.8. The prior assessment was 7.5/10; the gain comes from
-turning the scaffold into a complete first bounded draft, adding discussion and reproducibility
-sections, populating the required tables, and mapping every empirical paragraph to registered
-claims.
+The arithmetic mean is 7.875, reported as 7.9. The prior assessment was 7.8/10; the gain comes
+from completing the local paper package audit, adding reviewer and submission-readiness documents,
+and locking the current path to bounded local finalization rather than open-ended paper prep.
 
 ## Enough For A Bounded Empirical Study
 
@@ -60,9 +59,10 @@ containment, and bounded latent-surprise observations.
 
 ## Kaggle Dependency
 
-The first bounded paper draft does not require Kaggle. Kaggle or equivalent new compute becomes
-necessary only if the paper team chooses to strengthen the evidence with learned baselines, new
-seeds, controlled SIGReg/action ablations, broader benchmarks, or GPU throughput measurements.
+The current bounded submission package does not require Kaggle. Kaggle or equivalent new compute
+becomes necessary only if the paper team chooses to strengthen the evidence with learned
+baselines, new seeds, controlled SIGReg/action ablations, broader benchmarks, or GPU throughput
+measurements.
 
 ## Build Status
 

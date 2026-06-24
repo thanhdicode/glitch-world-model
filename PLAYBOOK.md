@@ -775,8 +775,9 @@ publishing additionally requires the policy's license, redistribution, and locke
 ### Venue Scope
 
 FISAT 2026 currently requires an English anonymized PDF in Springer LNICST format through
-Confy+. The current `paper/main.tex` uses IEEEtran and is provisional. Migrate format before the
-PDF freeze and add descriptive text/alt text for figures and tables.
+Confy+. The current `paper/main.tex` targets `llncs`, but the official Springer class files and
+local TeX toolchain are not yet present in the repository environment. Confirm an official-kit
+compile before the PDF freeze and add descriptive text/alt text for figures and tables.
 
 The serious LeWM paper may now cite the exact Gate 7-9 pilot, but the strongest defensible framing
 remains reproducibility, protocol, calibration failure, and negative/limited results.

@@ -1,21 +1,19 @@
 # LAST_HANDOFF.md
 
-Last completed task: First bounded paper draft and paragraph-level claim audit
-Commit: evidence cutoff `88642a17d70cbfa09c75a1eef79ff986d1166d07`; draft commit recorded in final handoff
+Last completed task: Local bounded paper package audit and Kaggle gate decision
+Commit: evidence cutoff `380f713f58b6e77ae2c31075c0ce21c6bc7b4dc8`; final audit commit recorded in final handoff
 Date: 2026-06-24
 
 ## What Changed
 
-- Replaced the paper scaffold prose with a complete first bounded draft from abstract through
-  conclusion.
-- Added dedicated discussion and reproducibility sections.
-- Populated the TempGlitch and R5-XGame result tables and replaced TODO ablation entries with a
-  descriptive recorded-row summary.
-- Added limitation/claim-boundary and reviewer-risk tables.
-- Added a four-figure provenance plan without inventing visual data.
-- Added report 106 mapping every empirical paragraph to registered claims.
-- Updated the paper source matrix, readiness score, outline, Kaggle gate memo, and historical claim
-  audit.
+- Audited the bounded paper package against the current TempGlitch and R5-XGame claim surfaces.
+- Tightened submission-facing wording in the conclusion, paper docs, workflow notes, and venue
+  guidance so the manuscript stays aligned with Path A.
+- Added a reviewer audit, submission-readiness checklist, submission gap analysis, and explicit
+  Kaggle decision gate.
+- Updated the context-cache generator so `BOOT.md`, `PROJECT_STATE.md`, and `NEXT_ACTION.md`
+  advance to local bounded submission finalization instead of pointing back to the audit phase.
+- Expanded the figure plan to include placement and evidence sources without inventing visual data.
 
 ## Checks Passed
 
@@ -24,7 +22,7 @@ Date: 2026-06-24
 
 ## Safety Status
 
-- No Kaggle launch, training, new dataset download, new scoring, or locked-test access.
+- No Kaggle launch, retraining, new dataset download, new scoring, or locked-test access.
 - No raw evidence was modified.
 - Generated evidence, datasets, checkpoints, caches, and credentials remain outside Git.
 - Claims remain bounded to verified non-locked evidence.
@@ -34,26 +32,27 @@ Date: 2026-06-24
 - TempGlitch follow-up: unchanged validated pair-disjoint non-locked main evidence.
 - R5-XGame: unchanged bounded non-locked secondary evidence.
 - R5-WOB: unchanged positive-probe only.
-- First bounded paper draft: complete locally.
-- Official-kit PDF build: pending because local TeX tools/class are unavailable.
+- Local paper package audit: complete.
+- Kaggle gate: Path A selected; no Kaggle needed yet for the bounded submission package.
 - Locked test: closed, unmaterialized, and unscored.
 
 ## Open Blockers
 
-- Official Springer template/toolchain, page-fit review, and final PDF inspection.
-- Small support, two-episode calibration, wide uncertainty, and high TempGlitch FPR@95TPR.
-- No exact-support learned video baseline or controlled SIGReg/action ablation.
-- Final decision between bounded submission and a separate stronger-compute phase.
+- Official Springer template files and local TeX toolchain remain unavailable.
+- Page-fit, citation-warning, and PDF inspection require the official Springer kit.
+- Small support, two-episode TempGlitch calibration, wide uncertainty, and high TempGlitch
+  FPR@95TPR remain scientific reviewer risks.
+- No exact-support learned video baseline or controlled SIGReg/action ablation exists in the
+  current package.
 
 ## Next Recommended Task
 
-Run paper draft audit and decide whether to stop at bounded submission or launch Kaggle for
-stronger baselines/ablations.
+Finalize bounded paper submission package locally.
 
 ## Files Likely Relevant Next
 
-- `docs/research/106_first_bounded_paper_claim_audit.md`
-- `docs/research/103_q3_paper_readiness_assessment.md`
-- `docs/research/105_kaggle_gate_decision_memo.md`
+- `docs/research/107_submission_readiness_checklist.md`
+- `docs/research/108_submission_gap_analysis.md`
+- `docs/research/109_kaggle_decision_gate.md`
 - `paper/main.tex`
 - `paper/TODO.md`

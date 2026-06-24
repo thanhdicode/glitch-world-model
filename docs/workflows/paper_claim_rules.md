@@ -13,6 +13,6 @@
 - Keep negative results, heuristic grouping, binary-label limits, and prior exposure visible.
 - Use primary sources and record source/access details.
 
-The current paper uses an IEEEtran scaffold. FISAT 2026 requires Springer LNICST, so migrate
-the manuscript and accessibility requirements before submission; the scaffold is not format
-evidence.
+The current paper now targets Springer LNICST through `llncs`, but the repository still lacks the
+official Springer class files and local TeX toolchain. Treat format-readiness as blocked until an
+official-kit compile confirms bibliography, page fit, warnings, and accessibility requirements.
