@@ -32,6 +32,7 @@ Forbidden framing:
 | The pair-disjoint TempGlitch follow-up is validator-backed on the same 12 normal-negative / 22 buggy-positive evaluation support for every row. | allowed now | `docs/research/101_tempglitch_followup_results.md`, `docs/research/16_claim_registry.md` | "frozen pair-disjoint non-locked split" | "official held-out benchmark" |
 | Within that exact TempGlitch split, seed44 `lewm_l2_max` with mean episode aggregation records stronger observed same-support separation than the simple baselines. | allowed with all qualifiers | same as above | "within the frozen non-locked TempGlitch follow-up split" | "LeWM beats baselines generally" |
 | The TempGlitch AUROC intervals are wide and overlap, while the best LeWM FPR@95TPR is `0.7500`. | required limitation | same as above | report beside headline metrics | omit uncertainty or operating-point weakness |
+| Every empirical paragraph in the first bounded draft is mapped to registered claims and evidence sources. | required manuscript control | `docs/research/106_first_bounded_paper_claim_audit.md` | “bounded evidence-backed draft” | “new evidence created by manuscript prose” |
 
 ## Still Blocked After Follow-up Validation
 

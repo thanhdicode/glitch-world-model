@@ -1,37 +1,20 @@
-﻿% R6 ablation results table.
-% SCAFFOLD ONLY — queue preparation is not execution. Do not replace placeholders until each R6
-% dependency is open and its output passes validation.
 \begin{table}[t]
 \centering
-\caption{Ablation study results (R6). All ablation rows contain placeholders
-until validated ablation outputs exist. No SIGReg benefit, action-conditioning
-benefit, or superiority claim is supported by this scaffold.}
+\caption{Exploratory recorded-row summaries from the frozen non-locked R5-XGame bundle. These are
+descriptive, not controlled causal ablations.}
 \label{tab:r6-ablation-results}
-\begin{tabular}{lllll}
+\small
+\begin{tabular}{llrr}
 \toprule
-Ablation & Variant & Dataset & AUROC & AUPRC \\
+Axis & Variant & Mean AUROC & Rows \\
 \midrule
-\multicolumn{5}{l}{\textit{Aggregation (A1/A7)}} \\
-mean & LeWM & TempGlitch & TODO & TODO \\
-max & LeWM & TempGlitch & TODO & TODO \\
-top2\_mean & LeWM & TempGlitch & TODO & TODO \\
-mean & LeWM & World of Bugs & TODO & TODO \\
-max & LeWM & World of Bugs & TODO & TODO \\
-top2\_mean & LeWM & World of Bugs & TODO & TODO \\
+Episode aggregation & mean & 0.7478 & 18 \\
+Episode aggregation & max & 0.8272 & 18 \\
+Episode aggregation & top2\_mean & 0.8275 & 18 \\
 \midrule
-\multicolumn{5}{l}{\textit{Surprise distance (A2/A8)}} \\
-L2 & LeWM & TempGlitch & TODO & TODO \\
-cosine & LeWM & TempGlitch & TODO & TODO \\
-L2 & LeWM & World of Bugs & TODO & TODO \\
-cosine & LeWM & World of Bugs & TODO & TODO \\
-\midrule
-\multicolumn{5}{l}{\textit{SIGReg (A5) — requires GPU}} \\
-default & LeWM & TempGlitch & TODO & TODO \\
-zero & LeWM & TempGlitch & TODO & TODO \\
-\midrule
-\multicolumn{5}{l}{\textit{Action conditioning (A11) — requires GPU}} \\
-real-action & LeWM & World of Bugs & TODO & TODO \\
-zero-action & LeWM & World of Bugs & TODO & TODO \\
+Seed & 42 & 0.7678 & 18 \\
+Seed & 43 & 0.7736 & 18 \\
+Seed & 44 & 0.8610 & 18 \\
 \bottomrule
 \end{tabular}
 \end{table}

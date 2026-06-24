@@ -12,6 +12,8 @@ Current scaffolded tables:
 - `r5_wob_results.tex`
 - `r5_xgame_results.tex`
 - `r6_ablation_results.tex`
+- `limitations_claim_boundary.tex`
+- `reviewer_risk.tex`
 
 Only populate or revise these tables from verified repository evidence. Do not add fake metrics,
 locked-test results, unsupported superiority language, or unverified citations.

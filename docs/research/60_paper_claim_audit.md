@@ -1,18 +1,20 @@
 # Paper Claim Audit
 
-Status: not ready for a LeWM performance paper.
+Date: 2026-06-24
+Status: superseded for current paragraph-level control by report 106
 
-Allowed: Gates 1-5 engineering evidence, deterministic Gate 6 data preparation, the preserved
-Gate 6 infrastructure failure, and the existence of Gate 7 scoring infrastructure.
+The earlier pre-Gate-7 assessment in this file is historical. The repository now has validated
+non-locked TempGlitch and R5-XGame evidence. Current paper-facing control is:
 
-Forbidden: gameplay LeWM training success, glitch-detection performance, baseline superiority,
-SIGReg benefit, temporal localization, real-time performance, state of the art, and a neural
-locked-test result.
+- `docs/research/16_claim_registry.md`;
+- `docs/research/70_paper_claim_map.md`;
+- `docs/research/101_tempglitch_followup_results.md`;
+- `docs/research/106_first_bounded_paper_claim_audit.md`.
 
-The current `paper/main.tex` must not be converted into a results paper until Gate 7 produces
-validated metrics. The official conference page currently states that FISAT 2026 papers are
-published in the EAI/Springer SICC series, not LNICST, with a July 20, 2026 submission deadline:
-<https://fisat.eai-conferences.org/2026/>. The FPT conference page specifies Springer/EAI format,
-12-20 pages for regular papers and 6-11 pages for short papers:
-<https://daihoc.fpt.edu.vn/hcm/fisat/>. The eventual template migration must follow the linked
-author kit rather than assuming the existing IEEE class or an LNICST class.
+The current draft may report exact bounded observations from those sources. It still must not
+claim broad superiority, state of the art, cross-game generalization, temporal localization,
+SIGReg or action-conditioning benefit, real-time operation, or locked-test performance.
+
+Official-template compilation remains pending because the repository does not vendor the Springer
+class and the local TeX toolchain is unavailable. Venue/template details must be rechecked from the
+official source before submission.

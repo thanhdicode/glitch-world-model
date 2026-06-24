@@ -1,0 +1,19 @@
+\begin{table}[t]
+\caption{Reviewer risks and the evidence-based response used in this draft.}
+\label{tab:reviewer-risk}
+\centering
+\small
+\begin{tabularx}{\textwidth}{@{}lXX@{}}
+\toprule
+Risk & Evidence symptom & Paper treatment \\
+\midrule
+Small negative support & 12 normal negatives in each binary family & Report counts and confidence intervals beside metrics \\
+Calibration fragility & TempGlitch threshold uses two normal episodes & Name calibration episodes and avoid deployment claims \\
+High false-positive rate & TempGlitch FPR@95TPR is 0.7500 & Report explicitly rather than relying on AUROC alone \\
+Seed sensitivity & R5-XGame seed44 is strongest & Treat best-row ranking as split-bounded \\
+Binary label granularity & No verified temporal spans & Forbid temporal-localization wording \\
+Protocol mismatch & Zero-action TempGlitch and real-action XGame & Keep result families separate \\
+Public non-locked evidence & No locked-test result & Avoid final-benchmark language \\
+\bottomrule
+\end{tabularx}
+\end{table}

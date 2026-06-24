@@ -1,28 +1,41 @@
 \section{Introduction}
 \label{sec:introduction}
 
-Video game glitch detection is an appealing testbed for anomaly-sensitive visual systems because
-the target events are rare, heterogeneous, and easy to overclaim from narrow evaluation windows.
-Recent benchmark and evaluation efforts have started to make the space more concrete, but they
-also highlight how quickly leakage, split mistakes, or unsupported generalization language can
-distort conclusions \cite{glitchbench,tempglitch,kaufman2011leakage,kapoor2023leakage}.
+Gameplay glitches are visible software failures that can disrupt interaction, presentation, or
+progression. Detecting them from gameplay video is attractive because recorded visual evidence is
+widely available during quality assurance, yet manual review is expensive, repetitive, and
+difficult to scale. The task is also unusually easy to mischaracterize: many glitches are temporal
+events whose evidence lies in motion, persistence, or an unexpected transition rather than in a
+single screenshot \cite{glitchbench,tempglitch}. Sequence-level scoring is therefore a more
+appropriate target for this study than isolated-frame classification.
 
-This manuscript is therefore organized around a deliberately conservative thesis: before broad
-performance claims, a paper in this area needs a bounded protocol, explicit artifact provenance,
-and a clear statement of what was and was not evaluated. The present scaffold focuses on that
-infrastructure for latent-surprise style gameplay glitch detection using artifact-backed LeWM
-checkpoints and a non-locked TempGlitch validation-only identical-episode family. The surrounding
-literature motivates the ingredients--latent world-model representations, video anomaly scoring,
-calibration caution, and reproducibility checklists--but none of those external sources is treated
-as evidence for this repository's empirical results.
+Latent predictive world models offer one plausible signal. If a model trained on normal gameplay
+predicts future latent states, unexpectedly large prediction error may indicate a departure from
+learned dynamics. Joint-embedding predictive architectures and latent world models motivate this
+idea \cite{ijepa,vjepa,worldmodels,planet,dreamerv3,lewm}, but that motivation is not itself
+evidence that latent surprise detects gameplay glitches. Empirical support must come from a
+protocol that prevents related episodes from leaking across roles, calibrates without buggy
+evaluation examples, and compares methods on identical support.
 
-At the current evidence level, the paper makes only bounded claims. It does not claim state of the
-art, broad superiority over alternative methods, locked-test performance, World of Bugs training or
-evaluation performance, real-time deployment readiness, or temporal-localization ability. The
-appendices and control documents are intentionally first-class because the current paper phase is
-as much about scientific containment as about results presentation.
+This paper conducts a leakage-aware empirical evaluation of latent-surprise signals for gameplay
+glitch detection. The main evidence is a frozen pair-disjoint, non-locked TempGlitch follow-up in
+which two normal episodes define the operating threshold and all methods are evaluated on the same
+12 normal-negative and 22 buggy-positive episodes. A separate R5-XGame family provides secondary
+bounded evidence on a different frozen distribution. The two families are deliberately not pooled
+or treated as proof of cross-game generalization.
 
-The rest of the scaffold separates problem framing, method summary, protocol controls, dataset
-inventory, bounded experiments, and limitations. This structure is intended to let later prose
-expansion happen safely from the claim map in Appendix~\ref{app:claim-registry} rather than from
-memory or informal summaries.
+The contributions are:
+\begin{itemize}[leftmargin=*]
+\item a source-, pair-, and episode-aware protocol that separates normal-only fitting,
+calibration, and evaluation before windowing;
+\item an episode-level comparison of artifact-backed LeWM latent surprise against frame-difference
+and train-normal-fitted feature-distance baselines on identical support;
+\item uncertainty, operating-point, provenance, and claim-boundary reporting that keeps negative
+evidence visible; and
+\item a reproducible evidence package whose validators, hashes, and registered claims constrain
+the manuscript.
+\end{itemize}
+
+The scope is intentionally bounded. The study does not claim a universal glitch detector,
+state-of-the-art performance, broad method superiority, cross-game generalization, temporal
+localization, SIGReg benefit, action-conditioning benefit, or locked-test performance.

@@ -1,19 +1,37 @@
-\section{Method Summary}
+\section{Method}
 \label{sec:method}
 
-The current manuscript is method-light by design. Its paper-facing method surface consists of
-artifact-backed latent-surprise scoring from previously trained LeWM checkpoints together with two
-simple comparison baselines, \texttt{frame\_diff} and train-normal-fitted
-\texttt{feature\_distance}.
+\subsection{Normal-Only Latent Prediction}
 
-The LeWM family is conceptually aligned with joint-embedding predictive architectures
-\cite{ijepa,vjepa,lewm} and with broader latent world-model work
-\cite{worldmodels,planet,dreamerv3}. In the repository's bounded evaluation path, a trained
-checkpoint maps input windows to latent prediction behavior from which scalar surprise statistics
-can be derived. Different score variants and episode aggregations are compared within a frozen
-manifest rather than through unconstrained post hoc tuning.
+The LeWM evidence used here comes from previously validated checkpoints trained under a
+normal-only gameplay protocol. For an observation window, the encoder produces latent targets and
+the predictor estimates future latent representations. A scalar surprise score is derived from
+the discrepancy between predicted and target latents. The evaluated score registry includes
+mean-, maximum-, and top-two summaries of mean-squared or L2 latent error. This study treats these
+as recorded scoring variants, not as novel architectural contributions.
 
-This section intentionally avoids claiming a new architecture contribution. For the current paper
-state, the safe contribution is the evaluation framing and the artifact-backed reporting surface,
-not a proof of broad method superiority. Any later expansion of the method section should remain
-subordinate to the claim map and provenance appendices.
+TempGlitch does not provide verified action traces for the current adapter, so its LeWM path uses
+an explicitly documented zero-action input. The R5-XGame path uses its separately validated
+real-action protocol. This difference is one reason the two evidence families are not directly
+compared and cannot support an action-conditioning conclusion.
+
+\subsection{Episode Aggregation}
+
+Each window scorer is combined with mean, maximum, or top-two-mean episode aggregation. Mean
+captures sustained elevation, whereas maximum and top-two-mean emphasize short high-surprise
+segments. The main TempGlitch row uses mean episode aggregation. The manuscript reports recorded
+variants without claiming that one aggregation is universally optimal.
+
+\subsection{Simple Baselines}
+
+\texttt{frame\_diff} measures visual change between adjacent frames and requires no learned fit.
+\texttt{feature\_distance} fits its reference representation on allowed train-normal data only and
+measures distance from that normal reference. Both baselines are scored and aggregated on the
+same frozen evaluation support as LeWM within each evidence family.
+
+\subsection{Normal-Only Threshold Calibration}
+
+For every configuration, $\tau$ is the empirical 95th percentile of designated calibration-normal
+episode scores. Buggy evaluation episodes are not used for fitting, configuration selection, or
+threshold calibration. This is an operating-point rule, not neural probability calibration
+\cite{guo2017calibration}. Locked test is neither materialized nor scored.

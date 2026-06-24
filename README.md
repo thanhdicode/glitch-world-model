@@ -155,7 +155,8 @@ Refresh the fast context cache after each task handoff:
 python scripts\update_context_cache.py --refresh-boot
 ```
 
-Generate paper tables and compile the cautious paper scaffold when `latexmk` is available:
+Generate paper tables and compile the first bounded draft when `latexmk` and the official
+Springer class are available:
 
 ```powershell
 python scripts\make_paper_tables.py
@@ -177,7 +178,11 @@ passes `r5_xgame_output_validated` and `r5_xgame_tarball_validated` locally. The
 SHA256 is `65f8b21bf9b31dd6498cb2b46ca0d368f7d4b1f8fef15480b915a1ff9a8204ac`. The best recorded
 non-locked `R5-XGame` configuration reached AUROC `0.909722` on the frozen 12-normal-negative /
 60-buggy-positive split; this remains bounded validation evidence, not broad generalization or a
-locked-test result. The locked test still requires a separate explicit command.
+locked-test result. The pair-disjoint TempGlitch follow-up is validator-backed on two calibration
+normals and a same-support 12-normal-negative / 22-buggy-positive evaluation split. The first
+bounded paper draft and paragraph-level claim audit are complete locally. The next gate is the
+official-kit paper build/claim audit and a bounded-submission versus stronger-compute decision.
+The locked test still requires a separate explicit command.
 
 The June 11, 2026 Gate 5 TempGlitch dataset upload is ready. The first approved kernel push
 returned HTTP `409 Conflict` before a run was established; the local cause was a kernel slug that

@@ -4,13 +4,13 @@ normal-negative and 22 buggy-positive evaluation episodes; thresholds use two ca
 episodes.}
 \label{tab:r5-bounded-results}
 \centering
-\small
-\begin{tabularx}{\textwidth}{@{}lXccccccX@{}}
+\scriptsize
+\begin{tabularx}{\textwidth}{@{}lXrrrrrrrX@{}}
 \toprule
-Family & Configuration & AUROC & AUPRC & F1 & Prec. & Recall & FPR@95 & 95\% CI \\
+Family & Configuration & AUROC & AUPRC & F1 & Prec. & Recall & Bal. acc. & FPR@95 & 95\% CI \\
 \midrule
-LeWM & seed44 \texttt{lewm\_l2\_max} + episode \texttt{mean} & 0.7159 & 0.8026 & 0.7143 & 0.7500 & 0.6818 & 0.7500 & AUROC [0.5349, 0.8770]; F1 [0.5854, 0.8293] \\
-Baseline & \texttt{feature\_distance} + episode \texttt{top2\_mean} & 0.6136 & 0.7310 & 0.1600 & 0.6667 & 0.0909 & 0.8333 & AUROC [0.4636, 0.7545]; F1 [0, 0.3575] \\
+LeWM & seed44 \texttt{lewm\_l2\_max} + episode \texttt{mean} & 0.7159 & 0.8026 & 0.7143 & 0.7500 & 0.6818 & 0.6326 & 0.7500 & AUROC [0.5349, 0.8770]; F1 [0.5854, 0.8293] \\
+Baseline & \texttt{feature\_distance} + episode \texttt{top2\_mean} & 0.6136 & 0.7310 & 0.1600 & 0.6667 & 0.0909 & 0.5038 & 0.8333 & AUROC [0.4636, 0.7545]; F1 [0, 0.3575] \\
 \bottomrule
 \end{tabularx}
 \end{table}

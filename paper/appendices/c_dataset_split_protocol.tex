@@ -1,13 +1,16 @@
 \section{Dataset Split Protocol}
 \label{app:dataset-split-protocol}
 
-The repository's protocol requires source-aware split hygiene before windowing and forbids
-train-dependent fitting on buggy evaluation material. For the current bounded R5 family:
+The protocol assigns source, suspected pair, and episode identities before generating windows.
+For the main TempGlitch follow-up:
 \begin{itemize}[leftmargin=*]
 \item train-normal data are the only allowed source for train-dependent fitting;
-\item two validation-normal episodes define the calibration surface;
-\item the evaluation pool contains 12 validation-normal and 22 validation-buggy episodes;
+\item two frozen validation-normal episodes define the calibration threshold;
+\item evaluation contains 12 normal-negative and 22 buggy-positive episodes;
+\item every method uses the same 34 evaluation episodes;
+\item cross-role source, pair, and episode overlap is zero;
+\item validation-buggy data are excluded from fit and threshold selection; and
 \item locked-test materialization and scoring remain disabled.
 \end{itemize}
 
-This appendix exists so that later prose cannot silently widen the split contract.
+R5-XGame follows its own frozen non-locked role assignment and is reported separately.

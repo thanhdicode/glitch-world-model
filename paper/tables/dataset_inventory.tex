@@ -1,15 +1,15 @@
 \begin{table}[t]
-\caption{Bounded dataset inventory for the current paper scaffold.}
+\caption{Dataset and evidence-role inventory. Result families are reported separately.}
 \label{tab:dataset-inventory}
 \centering
 \small
 \begin{tabularx}{\textwidth}{@{}lcccX@{}}
 \toprule
-Surface & Train-normal & Validation-normal & Validation-buggy & Notes \\
+Surface & Train normal & Calibration normal & Evaluation & Scope \\
 \midrule
-TempGlitch research MVP source & 36 episodes & 14 episodes & 22 episodes & Current paper-facing empirical inventory across five categories; two validation-normal episodes are used for calibration and 12 for evaluation. \\
-R5 identical-episode evaluation pool & fit only from train-normal & 12 evaluation-normal plus 2 calibration-normal & 22 evaluation-buggy & Non-locked validation-only family with a frozen manifest of 30,549 windows. \\
-World of Bugs expansion track & not opened here & not opened here & not opened here & Status-only mention; WOB training and evaluation claims remain out of scope for this draft. \\
+TempGlitch follow-up & 36 source episodes & 2 episodes & 12 normal + 22 buggy & Main pair-disjoint, non-locked binary evidence across five source categories \\
+R5-XGame & 36 episodes & 12 episodes & 12 normal + 60 buggy & Secondary positive-heavy non-locked binary evidence \\
+R5-WOB & validated training artifacts & 12 episodes & 60 buggy, 0 normal & Positive-probe only; not a binary benchmark \\
 \bottomrule
 \end{tabularx}
 \end{table}

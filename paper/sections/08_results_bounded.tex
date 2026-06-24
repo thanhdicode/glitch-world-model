@@ -1,47 +1,46 @@
 \section{Bounded Results}
 \label{sec:results}
 
-Table~\ref{tab:r5-bounded-results} reports the validator-backed pair-disjoint TempGlitch
-follow-up. Every row uses exactly 12 normal-negative and 22 buggy-positive evaluation episodes;
-the threshold is the normal-P95 value from two frozen calibration episodes. Cross-role
-\texttt{source\_episode\_id}, \texttt{pair\_id}, and \texttt{source} overlap are all zero.
+\subsection{Main TempGlitch Pair-Disjoint Follow-up}
+
+Table~\ref{tab:r5-bounded-results} reports the frozen pair-disjoint, non-locked, same-support
+TempGlitch comparison. Every row uses 12 normal-negative and 22 buggy-positive evaluation
+episodes after calibration on two normal episodes; source, pair, and episode overlap across roles
+is zero.
 
 \input{tables/r5_bounded_results}
 
-Within this frozen non-locked split, seed44 \texttt{lewm\_l2\_max} with mean episode aggregation
-records AUROC 0.7159 and AUPRC 0.8026, compared with AUROC 0.6136 and AUPRC 0.7310 for the best
-baseline AUROC row, \texttt{feature\_distance} with \texttt{top2\_mean}. The LeWM row's pair-bootstrap
-AUROC interval is [0.5349, 0.8770], while the baseline interval is [0.4636, 0.7545]. These intervals
-overlap, evaluation support is small, and the LeWM FPR@95TPR remains 0.7500.
+The best recorded LeWM row is seed44 \texttt{lewm\_l2\_max} with mean episode aggregation. It
+reaches AUROC 0.7159, AUPRC 0.8026, F1 0.7143, precision 0.7500, recall 0.6818, balanced accuracy
+0.6326, and FPR@95TPR 0.7500. Its pair-bootstrap intervals are [0.5349, 0.8770] for AUROC and
+[0.5854, 0.8293] for F1.
 
-The safe interpretation is therefore modest: within this exact same-support split, the best LeWM
-configuration shows stronger observed separation than the simple baselines. The result does not
-establish broad superiority, state of the art, temporal localization, or cross-game generalization.
-Appendix~\ref{app:forbidden-claims} makes that distinction explicit.
+The best baseline by recorded AUROC is \texttt{feature\_distance} with
+\texttt{top2\_mean} episode aggregation. It reaches AUROC 0.6136, AUPRC 0.7310, and F1 0.1600;
+its AUROC interval is [0.4636, 0.7545]. Within this exact frozen non-locked split, the LeWM row
+shows stronger observed same-support separation than the recorded simple baselines. The AUROC
+intervals overlap, however, evaluation support is small, and the LeWM FPR@95TPR remains high.
+The result therefore does not establish broad superiority.
 
-\subsection{World of Bugs Results (Positive-Probe Only)}
-\label{sec:results-wob}
+\subsection{Secondary R5-XGame Comparison}
 
-Table~\ref{tab:r5-wob-results} remains a placeholder because the validated \texttt{R5-WOB} bundle is a
-positive-probe result family with zero held-out normal-negative evaluation episodes. It supports
-pipeline-execution and signal-presence discussion only, not a binary-detection performance claim.
-
-\input{tables/r5_wob_results}
-
-\subsection{R5-XGame Bounded Comparison}
-\label{sec:results-xgame}
-
-Table~\ref{tab:r5-xgame-results} presents a separate bounded comparison on the validated
-non-locked \texttt{R5-XGame} split. It must not be numerically compared with the TempGlitch table:
-support, class balance, calibration, domain, action mode, and training lineage differ. No
-cross-game generalization claim is supported.
+Table~\ref{tab:r5-xgame-results} reports the separate frozen non-locked R5-XGame family. On its
+12-normal-negative and 60-buggy-positive evaluation support, the best recorded LeWM row reaches
+AUROC 0.9097, compared with 0.7681 for feature distance and 0.7167 for frame difference. The
+AUROC confidence intervals overlap, and the positive-heavy support limits the precision of
+false-positive estimates.
 
 \input{tables/r5_xgame_results}
 
-\subsection{Ablation Results (Exploratory)}
-\label{sec:results-ablation}
+These values are not directly compared with TempGlitch values. The two result families differ in
+dataset distribution, class balance, calibration support, action mode, and training lineage. The
+R5-XGame result is evidence about its own frozen split, not a test of cross-game generalization.
 
-The existing R5-XGame bundle permits descriptive seed, scorer, and aggregation summaries only.
-No SIGReg, action-conditioning, temporal-smoothing, or retraining-budget ablation is available.
+\subsection{Exploratory Recorded-Row Analysis}
+
+Within R5-XGame, seed44 provides the strongest recorded rows. Across the 18 LeWM rows for each
+aggregation, maximum and top-two-mean aggregation have mean AUROC approximately 0.827, compared
+with approximately 0.748 for mean aggregation. Table~\ref{tab:r6-ablation-results} presents this
+as a descriptive recorded-row analysis, not as a causal ablation.
 
 \input{tables/r6_ablation_results}

@@ -1,7 +1,7 @@
 # BOOT.md - Fast Start Context For Agents
 
-Generated: 2026-06-23T20:20:15+00:00
-Commit: `1509d1ccf97dc568fede9667d2bd6f30d59efbe6`
+Generated: 2026-06-24T05:58:03+00:00
+Commit: `88642a17d70cbfa09c75a1eef79ff986d1166d07`
 
 ## Read Order
 1. `RULES.md`
@@ -47,9 +47,10 @@ The current execution roadmap is `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v3.md`
   test remains unopened, and WOB remains limited to audit-plus-training-artifact evidence.
 
 ## Immediate Next Task
-- Build the first paper draft from the bounded TempGlitch and R5-XGame evidence package.
-- Keep the two result families separate and preserve their exact support and uncertainty limits.
-- Do not relaunch Kaggle, retrain, or open locked test for the local drafting phase.
+- Run the paper-draft claim/build audit.
+- Decide whether to stop at a bounded submission or request a separate compute phase for stronger
+  baselines and ablations.
+- Keep locked test closed.
 
 ## Safety
 - Non-locked-test Kaggle actions use standing Kaggle authorization after security, license,

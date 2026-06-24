@@ -1,21 +1,21 @@
 # 104 - LNICST/FISAT Bounded Paper Outline
 
 Date: 2026-06-24
-Status: planning scaffold; result-dependent prose remains provisional
+Status: first bounded draft implemented; final submission prose remains provisional
 
 ## Proposed Title
 
 **Leakage-Aware Evaluation of Latent Surprise for Gameplay Glitch Detection**
 
-## Abstract Skeleton
+## Abstract Implementation
 
 1. Problem: gameplay glitches are temporal and costly to review.
 2. Gap: latent predictive surprise is plausible but weakly evidenced under leakage-aware game-video protocols.
 3. Method: normal-only LeWM training, frozen episode aggregation, normal-calibrated thresholds, and pair/source-disjoint evaluation.
-4. Results placeholder: insert only the validated TempGlitch follow-up and bounded R5-XGame observations with support and uncertainty.
+4. Results: validated TempGlitch follow-up and bounded R5-XGame observations with support and uncertainty.
 5. Boundary: non-locked validation study; no SOTA, localization, broad generalization, or SIGReg claim.
 
-Do not finalize the abstract until tables, page fit, and claim audit are complete.
+The first bounded abstract is implemented. Do not broaden it during page-fit editing.
 
 ## Introduction
 
@@ -84,7 +84,8 @@ finds bounded evidence that latent surprise can separate classes on two frozen n
 It must not state general detection success, benchmark leadership, temporal localization,
 cross-game generalization, SIGReg benefit, or locked-test performance.
 
-Do not write the final conclusion until the first full draft and claim audit are complete.
+The cautious first-draft conclusion is implemented. Treat it as provisional until official-kit
+compile, page fit, and final claim audit.
 
 ## Required Figures And Tables
 
@@ -95,3 +96,13 @@ Do not write the final conclusion until the first full draft and claim audit are
 - Figure 1: leakage-aware protocol flow.
 - Figure 2: existing-score distribution or ROC/PR visualization.
 - Reproducibility appendix: artifact hashes and commands.
+
+## Draft Files
+
+- Core narrative: `paper/sections/01_introduction.tex` through
+  `paper/sections/10_conclusion.tex`.
+- Added discussion and reproducibility: `08a_discussion.tex`,
+  `08b_reproducibility.tex`.
+- Tables 1--4: TempGlitch, R5-XGame, claim boundary, reviewer risk.
+- Figure plan: `paper/figures/PLAN.md`; no visual data invented.
+- Paragraph audit: `docs/research/106_first_bounded_paper_claim_audit.md`.

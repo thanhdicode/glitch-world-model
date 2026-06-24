@@ -1,14 +1,15 @@
-\section{Datasets and Data Scope}
+\section{Datasets and Evidence Scope}
 \label{sec:datasets}
 
-The current bounded empirical surface is the TempGlitch research MVP source summarized in
-Table~\ref{tab:dataset-inventory}. The paper-facing R5 family uses train-normal data for fit-only
-operations, a validation-normal split that is partitioned into calibration and evaluation roles,
-and a validation-buggy split reserved for evaluation only.
+Table~\ref{tab:dataset-inventory} separates the paper's three evidence surfaces. TempGlitch is the
+main public-benchmark lineage and spans five categories in the research MVP source. The
+pair-disjoint follow-up uses only its non-locked validation roles. R5-XGame is a distinct,
+positive-heavy binary family derived from the controlled World of Bugs expansion and is used only
+as secondary bounded evidence.
 
 \input{tables/dataset_inventory}
 
-World of Bugs appears in the repository as a controlled expansion track rather than as a paper
-results source at this stage. The project has verified WOB-P0 acquisition evidence, but WOB
-training and evaluation remain unopened for paper claims. Keeping that boundary explicit avoids
-blending workflow readiness with empirical evidence.
+R5-WOB is retained as a provenance-bound positive-probe result. Its evaluation set contains buggy
+positives but no held normal-negative episodes, so it demonstrates pipeline execution and
+class-conditional signal presence under a normal-calibrated threshold, not binary discrimination.
+No WOB binary-benchmark metric is promoted into the paper.

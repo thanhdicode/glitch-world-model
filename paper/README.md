@@ -10,13 +10,13 @@ benefit, real-time operation, or temporal localization.
 
 | Surface | Status | Notes |
 | --- | --- | --- |
-| Scaffold | complete | Section, appendix, table, and control-document structure exists. |
+| First bounded draft | complete | Abstract through conclusion, discussion, reproducibility, tables, and appendices are populated. |
 | Springer format | structurally complete | `main.tex` uses `llncs`; official Springer files are still required. |
 | Bibliography | expanded; final review required | Entries have checked metadata and stable URLs/DOIs where available. |
 | Results | bounded, validator-backed | Main TempGlitch follow-up and secondary R5-XGame tables are populated with explicit support/claim limits. |
 | Locked test | closed | Not materialized and not scored. |
 | R5-WOB | positive-probe only | Not a binary-benchmark result. |
-| PDF compile | blocked locally | Local TeX tools/official class are not available in the repo environment. |
+| PDF compile | blocked locally | `pdflatex`, `bibtex`, `latexmk`, and the official class are unavailable locally. |
 | Page count | pending | Requires Overleaf or official Springer Author Kit compile. |
 | Similarity screening | pending | Must run before submission. |
 
@@ -34,5 +34,5 @@ Recommended Overleaf setup:
    `paper/references.bib` contents.
 4. Keep author/institute metadata as placeholders until the submission package is finalized.
 
-Generated LaTeX build files are gitignored. Update the claim map and source matrix before editing
-bounded results prose.
+Generated LaTeX build files are gitignored. Every empirical edit must remain synchronized with the
+claim registry, source matrix, and report 106 paragraph audit.

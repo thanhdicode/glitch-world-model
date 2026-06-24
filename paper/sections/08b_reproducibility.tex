@@ -1,0 +1,20 @@
+\section{Reproducibility and Evidence Control}
+\label{sec:reproducibility}
+
+The paper is generated from validator-backed evidence rather than copied from terminal summaries.
+The TempGlitch follow-up validator checks required files, hashes, support equality across all 60
+rows, calibration episode identities, leakage counts, and false locked-test flags. R5-XGame has
+separate output and package-intake validators. Key commands and SHA256 identifiers are retained in
+the research reports and summarized in Appendix~\ref{app:artifact-provenance}.
+
+Paper-facing statements are registered before use. The repository claim registry identifies the
+evidence source, status, intended manuscript location, and prohibited interpretation for each
+claim. A paper claim map then translates those entries into allowed wording. The fast context cache
+keeps the current gate, claim boundary, next action, and handoff synchronized for subsequent
+agents.
+
+The current paper draft requires no Kaggle execution because it uses existing validated artifacts.
+Generated data, raw scores, checkpoints, and output directories remain outside Git; tracked
+documents preserve hashes, support, commands, and exact summaries. A later decision to add learned
+baselines, new seeds, controlled ablations, broader scoring, or GPU throughput would open a
+separate compute gate. Locked-test access remains independently closed.

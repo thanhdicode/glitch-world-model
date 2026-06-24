@@ -1,28 +1,41 @@
-\section{Evaluation Protocol}
+\section{Experimental Protocol}
 \label{sec:protocol}
 
-The protocol is the core scientific contribution of the current scaffold. All train-dependent
-fitting and threshold selection must respect split hygiene. In particular, train-dependent methods
-fit on allowed train-normal data only, while the bounded R5 evaluation uses a frozen
-identical-episode manifest with two calibration-normal episodes and a held evaluation pool of
-normal and buggy episodes. This separation follows the general learn-predict and leakage-avoidance
-concerns raised in prior work \cite{kaufman2011leakage,kapoor2023leakage}; the exact split
-contract, however, is repository evidence rather than an external benchmark claim.
+\subsection{Role Separation and Leakage Controls}
 
-For the qualified R5 family, thresholds are derived from the $95^{\text{th}}$ percentile of the
-two calibration-normal episode scores. Primary metrics are AUROC and AUPRC, while F1 at the
-normal-calibrated threshold and FPR@95TPR are secondary. Grouped episode-bootstrap intervals are
-used for uncertainty reporting in the current bounded table.
+Sources, suspected pairs, and episodes are assigned to roles before window generation. Train-normal
+episodes are the only allowed input for train-dependent fitting. Calibration uses designated normal
+episodes, and evaluation contains held normal-negative and buggy-positive episodes. The main
+TempGlitch follow-up has zero cross-role overlap by \texttt{source}, \texttt{pair\_id}, and
+\texttt{source\_episode\_id}. This grouping matters because a normal/buggy pair or derivative
+capture split across roles could make evaluation easier without demonstrating transferable
+anomaly detection \cite{kaufman2011leakage,kapoor2023leakage}.
 
-Calibration is used here in the narrow sense of selecting a threshold from designated
-calibration-normal episodes. It should not be confused with neural probability calibration such as
-temperature scaling \cite{guo2017calibration}.
+\subsection{Main TempGlitch Follow-up}
 
-Three protocol flags are especially important and remain fixed throughout the current paper phase:
-\begin{itemize}[leftmargin=*]
-\item \texttt{locked\_test\_materialized = false}
-\item \texttt{locked\_test\_scored = false}
-\item \texttt{validation\_buggy\_used\_for\_fit\_select = false}
-\end{itemize}
+The frozen pair-disjoint, non-locked TempGlitch follow-up contains 30,549 windows. Two normal
+episodes define the threshold:
+\texttt{Godot\_Blinking\_Normal\_106} and
+\texttt{Godot\_Frozen\_Animation\_Platformer\_Normal\_107}. The evaluation support is exactly 34
+episodes: 12 normal-negative and 22 buggy-positive. All 60 recorded comparison rows use this same
+support tuple. TempGlitch supplies binary video labels; no temporal span metric is evaluated.
 
-These controls are repeated in the appendices because they define what the paper is allowed to say.
+\subsection{Secondary R5-XGame Evidence}
+
+R5-XGame is reported separately on a frozen non-locked split with 12 calibration-normal, 12
+normal-negative, and 60 buggy-positive episodes. Within that bundle, all compared methods share
+the same support. Its distribution, class balance, calibration support, action mode, and training
+lineage differ from TempGlitch, so absolute metrics are not interpreted as a cross-benchmark
+comparison.
+
+\subsection{Metrics and Uncertainty}
+
+We report AUROC, AUPRC, F1, precision, recall, balanced accuracy, and FPR@95TPR. TempGlitch
+confidence intervals use 1,000 pair-grouped bootstrap replicates for AUROC and F1. R5-XGame uses
+the corresponding validated group-bootstrap intervals from its evidence bundle. The operating
+threshold is fixed from normal calibration scores before evaluation.
+
+The validators enforce
+\texttt{validation\_buggy\_used\_for\_fit\_select=false},
+\texttt{locked\_test\_materialized=false}, and
+\texttt{locked\_test\_scored=false}.

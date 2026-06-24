@@ -11,8 +11,7 @@
 \usepackage{enumitem}
 \usepackage[hidelinks]{hyperref}
 
-% Working title; keep bounded until the final claim audit is complete.
-\title{Leakage-Aware Latent Surprise Evaluation for Gameplay Glitch Detection}
+\title{Leakage-Aware Evaluation of Latent Surprise for Gameplay Glitch Detection}
 \titlerunning{Leakage-Aware Latent Surprise Evaluation}
 
 \author{Author metadata placeholder}
@@ -23,13 +22,21 @@
 \maketitle
 
 \begin{abstract}
-This manuscript is an appendix-first Springer/LNICST-safe scaffold for a bounded paper on
-gameplay glitch detection with latent-surprise methods. The current draft intentionally limits
-itself to verified repository evidence, with a cautious focus on the non-locked TempGlitch
-validation-only identical-episode family and on reproducibility documentation. The abstract is a
-TODO placeholder and must be replaced only after the bibliography, claim map, and section-level
-evidence audit are complete. It does not claim final performance.
-\keywords{gameplay glitch detection \and world models \and evaluation protocol \and reproducibility}
+Gameplay glitches often unfold over time, making sequence-level evidence important for automated
+video-based quality assurance. We present a leakage-aware empirical evaluation of latent-surprise
+signals derived from artifact-backed LeWorldModel checkpoints. The protocol uses normal-only
+training evidence, separates calibration from evaluation before windowing, aggregates window
+scores at episode level, and retains source-, pair-, and episode-disjoint roles. On the main frozen
+non-locked TempGlitch follow-up split, every method is evaluated on the same 12 normal-negative and
+22 buggy-positive episodes after threshold calibration on two normal episodes. The best recorded
+LeWM configuration reaches AUROC 0.7159 and AUPRC 0.8026, compared with AUROC 0.6136 and AUPRC
+0.7310 for the strongest simple baseline by AUROC. The AUROC confidence intervals overlap,
+evaluation support is small, and FPR@95TPR remains 0.7500. A separate R5-XGame result provides
+additional bounded non-locked evidence but is not treated as directly comparable. These findings
+support further investigation of latent surprise under stronger baselines and broader protocols;
+they do not establish broad superiority, cross-game generalization, temporal localization, or
+deployment readiness.
+\keywords{gameplay glitch detection \and latent surprise \and world models \and leakage-aware evaluation \and reproducibility}
 \end{abstract}
 
 \input{sections/01_introduction}
@@ -40,6 +47,8 @@ evidence audit are complete. It does not claim final performance.
 \input{sections/06_datasets}
 \input{sections/07_experiments}
 \input{sections/08_results_bounded}
+\input{sections/08a_discussion}
+\input{sections/08b_reproducibility}
 \input{sections/09_limitations}
 \input{sections/10_conclusion}
 

@@ -5,7 +5,7 @@ Status: bounded assessment, not an experiment metric
 
 ## Current Score
 
-Overall Q3 readiness: **7.5/10**.
+Overall Q3 readiness: **7.8/10**.
 
 This score uses a transparent four-part rubric rather than claiming statistical precision:
 
@@ -13,12 +13,13 @@ This score uses a transparent four-part rubric rather than claiming statistical 
 | --- | ---: | --- |
 | Engineering readiness | 9/10 | runners, validators, provenance, hashes, and CI checks are mature |
 | Scientific evidence readiness | 7/10 | two bounded binary families exist, but support and comparisons remain limited |
-| Paper readiness | 7/10 | LNICST scaffold and result package exist; prose, figures, and final audit remain |
+| Paper readiness | 8/10 | first bounded draft, tables, appendices, and paragraph claim audit are complete |
 | Submission readiness | 7/10 | venue controls exist; official-kit compile, page fit, and similarity review remain |
 
-The arithmetic mean is 7.5. The prior early-project readiness assessment was 6/10; the gain comes
-from validator-backed LeWM gameplay evidence, a pair-disjoint TempGlitch follow-up, bounded
-R5-XGame results, and a traceable paper table/claim package.
+The arithmetic mean is 7.75, reported as 7.8. The prior assessment was 7.5/10; the gain comes from
+turning the scaffold into a complete first bounded draft, adding discussion and reproducibility
+sections, populating the required tables, and mapping every empirical paragraph to registered
+claims.
 
 ## Enough For A Bounded Empirical Study
 
@@ -47,11 +48,11 @@ containment, and bounded latent-surprise observations.
 - LeWM integration and normal-only training methodology.
 - TempGlitch follow-up and R5-XGame bounded results.
 - Provenance, reproducibility, error analysis, limitations, and reviewer-risk sections.
-- A provisional abstract skeleton and bounded conclusion outline.
+- A bounded abstract and cautious conclusion, both still subject to the final submission audit.
 
 ## What Must Wait
 
-- A final abstract or conclusion that implies definitive model effectiveness.
+- Any revised abstract or conclusion that implies definitive model effectiveness.
 - Broad superiority or cross-game generalization.
 - Strong learned-baseline and controlled ablation conclusions.
 - GPU throughput claims if no comparable local measurement is available.
@@ -62,3 +63,10 @@ containment, and bounded latent-surprise observations.
 The first bounded paper draft does not require Kaggle. Kaggle or equivalent new compute becomes
 necessary only if the paper team chooses to strengthen the evidence with learned baselines, new
 seeds, controlled SIGReg/action ablations, broader benchmarks, or GPU throughput measurements.
+
+## Build Status
+
+The repository does not vendor the official Springer class, and `pdflatex`, `bibtex`, and
+`latexmk` are unavailable locally. Content-level drafting and repository validation can complete
+without them, but official-kit compilation, page fit, typesetting warnings, and final PDF review
+remain blocked on the template/toolchain.

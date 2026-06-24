@@ -113,15 +113,15 @@ def test_generated_context_records_gate7_to_gate9_pilot_without_opening_gate10(
     assert "Locked test is closed" in boot
 
 
-def test_generated_context_points_to_bounded_paper_draft(tmp_path: Path):
+def test_generated_context_points_to_post_draft_audit(tmp_path: Path):
     _init_repo(tmp_path)
     _write_minimal_repo(tmp_path)
     update_context_cache(tmp_path, refresh_boot=True)
 
     next_action = (tmp_path / CONTEXT_DIR / "NEXT_ACTION.md").read_text(encoding="utf-8")
 
-    assert "Build the first paper draft" in next_action
-    assert "TempGlitch and R5-XGame evidence package" in next_action
+    assert "Run paper draft audit" in next_action
+    assert "bounded submission" in next_action
     assert "R6 Scientific Evidence Upgrade" not in next_action
 
 

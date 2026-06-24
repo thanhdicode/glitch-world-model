@@ -1,19 +1,18 @@
-\section{Bounded Experiments}
+\section{Experimental Setup}
 \label{sec:experiments}
 
-The experiment section is currently restricted to the non-locked TempGlitch validation-only
-identical-episode family documented in the repository's R5 results note. Required methods in this
-family are LeWM latent surprise using artifact-backed seed42, seed43, and seed44 checkpoints,
-along with \texttt{frame\_diff} and train-normal-fitted \texttt{feature\_distance}.
+The TempGlitch follow-up evaluates artifact-backed LeWM checkpoints from seeds 42, 43, and 44.
+Six latent-surprise window scorers are combined with three episode aggregations, producing 54 LeWM
+rows. The two baselines, \texttt{frame\_diff} and \texttt{feature\_distance}, are each combined
+with the same three episode aggregations, producing six baseline rows. The headline comparison
+selects the highest recorded AUROC row within each family for descriptive reporting; it does not
+use evaluation results to retrain a model or refit a threshold.
 
-Two potentially relevant comparison families are deliberately not elevated here. The earlier
-one-buggy-episode pilot is too limited to serve as the main paper table, and deferred methods such
-as the Conv3D autoencoder or a frozen video-representation baseline are not included in the current
-identical-manifest runner. This keeps the experiment section aligned with what is actually frozen
-and hash-addressable today.
+R5-XGame contains the same 60-row configuration structure on its own frozen 72-episode evaluation
+support. Its best recorded rows are presented as a separate secondary comparison. Descriptive
+seed, scorer, and aggregation summaries from that bundle are exploratory; no causal SIGReg,
+action-conditioning, temporal-smoothing, or training-budget ablation exists.
 
-Every future addition to this section should first update the claim map and source matrix so the
-paper remains evidence-led instead of convenience-led.
-
-TODO: add ablation prose only after predeclared ablation artifacts validate and the claim registry
-is updated. No ablation result is claimed in the current scaffold.
+The earlier one-buggy-episode window pilot, old exposed sequential-subset results, and results from
+different manifests are excluded from the main tables. Learned baselines that were not evaluated
+on the exact frozen follow-up support are also excluded rather than treated as comparable.

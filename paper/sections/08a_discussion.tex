@@ -1,0 +1,34 @@
+\section{Discussion}
+\label{sec:discussion}
+
+\paragraph{Why pair-disjoint calibration matters.}
+The TempGlitch follow-up improves on the earlier identical-episode family by preventing the
+calibration normals from sharing source, suspected pair, or episode identity with evaluation
+episodes. This matters because paired normal and buggy captures may share scene layout, assets,
+camera motion, or recording conditions. A threshold calibrated on a related normal could encode
+pair-specific information rather than a transferable notion of normality. The repaired split does
+not eliminate every possible dataset bias, but it closes the documented cross-role overlap.
+
+\paragraph{What the main result says.}
+The best recorded LeWM row has higher AUROC and AUPRC than the strongest simple baseline row on
+the exact same frozen TempGlitch support. Its thresholded F1 is also substantially higher. At the
+same time, overlapping AUROC intervals, two-episode calibration, 12 normal negatives, and
+FPR@95TPR of 0.7500 make the observation fragile. The scientifically useful conclusion is that
+latent surprise warrants further controlled study, not that it has won a general benchmark.
+
+\paragraph{Why R5-WOB is not a binary benchmark.}
+The R5-WOB bundle validates execution and records positive-class behavior under a threshold
+calibrated from normal episodes. Because its evaluation role has no normal-negative episodes,
+AUROC and false-positive behavior cannot be estimated as a binary benchmark. R5-XGame adds held
+normal negatives and therefore supports bounded binary metrics, but it remains a separate,
+positive-heavy non-locked family.
+
+\paragraph{Future comparisons.}
+The current simple baselines are useful controls but do not exhaust plausible alternatives.
+Stronger evidence would require an exact-support learned video baseline, additional seeds,
+predeclared SIGReg and action-conditioning comparisons, and broader datasets with verified
+temporal annotations. Those experiments require a new compute phase and are not inferred from the
+existing artifacts.
+
+\input{tables/limitations_claim_boundary}
+\input{tables/reviewer_risk}

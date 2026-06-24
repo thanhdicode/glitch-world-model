@@ -1,10 +1,13 @@
 \section{Artifact Provenance}
 \label{app:artifact-provenance}
 
-The current paper-facing results are only as trustworthy as the artifacts behind them. Table
-\ref{tab:artifact-hashes} records the key input and output hashes for the qualified R5 family.
+Table~\ref{tab:artifact-hashes} records the key identifiers for the validator-backed TempGlitch
+follow-up. The validator status is \texttt{followup\_validated}; the source metrics status is
+\texttt{followup\_complete}. The command, environment, source-score hashes, Lance fingerprints,
+support tuple, leakage counts, and false locked-test flags are retained in the metrics,
+provenance, and validator-receipt artifacts.
 
 \input{tables/artifact_hashes}
 
-These hashes are not ornamental metadata. They define the bounded evidence package for the present
-manuscript state.
+Generated evidence remains outside Git under the repository artifact policy. Tracked research
+reports preserve the hashes and exact metric summaries needed to identify the evidence family.

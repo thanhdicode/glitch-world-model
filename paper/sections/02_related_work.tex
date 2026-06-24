@@ -1,32 +1,38 @@
 \section{Related Work}
 \label{sec:related-work}
 
-The verified bibliography is organized by what each source is allowed to support. Gameplay-glitch
-benchmarks frame the task and the temporal-glitch setting \cite{glitchbench,tempglitch}. Automated
-game-testing work provides a broader software-engineering context in which testing goals and
-oracles remain central \cite{politowski2022automatedtesting}. These sources motivate the problem;
-they do not establish that the present repository solves production game QA.
+\paragraph{Video anomaly detection.}
+Video anomaly detection commonly models normality or assigns anomaly scores to temporal segments.
+Weakly supervised and memory-guided approaches illustrate the range of formulations used in
+surveillance video \cite{sultani2018ucfcrime,park2020mnad}. Gameplay glitches differ in domain,
+labels, and failure semantics, so those results are contextual rather than directly comparable.
+Score-based out-of-distribution work similarly motivates cautious use of scalar anomaly scores
+without implying calibrated probability or benchmark equivalence \cite{hendrycks2017baseline,
+guo2017calibration}.
 
-The representation context comes from joint-embedding predictive architectures
-\cite{ijepa,vjepa}, latent world models \cite{worldmodels,planet,dreamerv3}, and the external LeWM
-paper \cite{lewm}. These sources explain why latent prediction and learned dynamics are relevant
-background. They do not support any claim that this repository contributes a new architecture or
-achieves control/planning results.
+\paragraph{Gameplay glitches and automated testing.}
+GlitchBench and TempGlitch make visual game failures more concrete as benchmark objects
+\cite{glitchbench,tempglitch}. TempGlitch is particularly relevant because it emphasizes temporal
+gameplay evidence, although the public artifact used here supplies binary video labels rather than
+verified temporal spans. Broader game-testing research also stresses the continuing difficulty of
+test generation, oracle design, and production integration \cite{politowski2022automatedtesting}.
+Our study addresses only bounded video-level discrimination, not a complete automated QA system.
 
-Video anomaly detection and OOD/calibration work are included to locate the evaluation problem
-without importing their metrics as paper claims \cite{sultani2018ucfcrime,park2020mnad,
-hendrycks2017baseline,guo2017calibration}. Leakage and reproducibility papers motivate the
-paper's conservative split, threshold, and artifact-reporting discipline
-\cite{kaufman2011leakage,kapoor2023leakage,pineau2021reproducibility}.
+\paragraph{World models, JEPA, and latent prediction.}
+World Models, PlaNet, and Dreamer establish a lineage of learned latent dynamics
+\cite{worldmodels,planet,dreamerv3}. I-JEPA and V-JEPA motivate prediction in representation space
+\cite{ijepa,vjepa}, while LeWorldModel provides the specific artifact-backed predictive model
+family used in this repository \cite{lewm}. We evaluate latent prediction error as an anomaly
+signal; we do not introduce a new architecture or claim control and planning performance.
 
-At this stage, the role of related work is not to claim a comprehensive literature survey. Instead,
-it provides the minimum scholarly context necessary to position the paper without inventing
-coverage. Table~\ref{tab:literature-matrix} records the current literature surface and the exact
-claim boundary for each group.
+\paragraph{Leakage-aware evaluation and reproducibility.}
+Related sources can leak information when paired or derivative examples cross split boundaries,
+inflating apparent generalization \cite{kaufman2011leakage,kapoor2023leakage}. Reproducibility
+work further motivates explicit artifacts, commands, and reporting checklists
+\cite{pineau2021reproducibility}. These concerns directly shape our role separation, same-support
+comparisons, validators, and claim registry.
+
+Table~\ref{tab:literature-matrix} records what each literature group supports and, equally
+importantly, what it does not support for this paper.
 
 \input{tables/literature_matrix}
-
-The literature section should remain cautious as the manuscript develops. In particular, this
-scaffold does not argue that latent-surprise methods dominate alternative anomaly detectors; it
-only notes that joint-embedding predictive architectures and latent world models are plausible
-background for the repository's bounded evaluation.

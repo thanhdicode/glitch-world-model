@@ -1,7 +1,7 @@
 # REPO_MAP.md
 
-Generated: 2026-06-23T20:20:15+00:00
-Commit: `1509d1ccf97dc568fede9667d2bd6f30d59efbe6`
+Generated: 2026-06-24T05:58:03+00:00
+Commit: `88642a17d70cbfa09c75a1eef79ff986d1166d07`
 Generator: `scripts/update_context_cache.py`
 
 ## Top-Level Map
@@ -381,6 +381,11 @@ Generator: `scripts/update_context_cache.py`
 | `docs/research/08_reproducibility_checklist.md` | 08 reproducibility checklist |
 | `docs/research/09_risks_and_limitations.md` | 09 risks and limitations |
 | `docs/research/100_tempglitch_evidence_upgrade_checklist.md` | 100 tempglitch evidence upgrade checklist |
+| `docs/research/101_tempglitch_followup_results.md` | 101 tempglitch followup results |
+| `docs/research/102_paper_results_table_plan.md` | 102 paper results table plan |
+| `docs/research/103_q3_paper_readiness_assessment.md` | 103 q3 paper readiness assessment |
+| `docs/research/104_paper_outline_lnicst_fisat.md` | 104 paper outline lnicst fisat |
+| `docs/research/105_kaggle_gate_decision_memo.md` | 105 kaggle gate decision memo |
 | `docs/research/10_paper_outline.md` | 10 paper outline |
 | `docs/research/11_tempglitch_integration_plan.md` | 11 tempglitch integration plan |
 | `docs/research/12_experiment_results_log.md` | 12 experiment results log |
@@ -434,8 +439,3 @@ Generator: `scripts/update_context_cache.py`
 | `docs/research/66_lewm_gpu_profile_results.md` | 66 lewm gpu profile results |
 | `docs/research/67_r3_r4_multiseed_status.md` | 67 r3 r4 multiseed status |
 | `docs/research/68_r5_identical_episode_eval_plan.md` | 68 r5 identical episode eval plan |
-| `docs/research/68_r5_tempglitch_and_wob_expansion_plan.md` | 68 r5 tempglitch and wob expansion plan |
-| `docs/research/69_r5_tempglitch_identical_episode_results.md` | 69 r5 tempglitch identical episode results |
-| `docs/research/70_paper_claim_map.md` | 70 paper claim map |
-| `docs/research/70_wob_controlled_expansion_plan.md` | 70 wob controlled expansion plan |
-| `docs/research/71_paper_source_matrix.md` | 71 paper source matrix |

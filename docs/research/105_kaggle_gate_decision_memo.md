@@ -25,8 +25,9 @@ Decision: first paper draft remains local; new empirical strengthening requires 
 
 ## Gate Decision
 
-The next task is local: build the first paper draft from the bounded TempGlitch and R5-XGame
-evidence package. No Kaggle launch is required for that task.
+The first bounded paper draft is complete locally. The next task is also local: audit the draft,
+resolve official-template build availability, and decide whether the bounded evidence is sufficient
+for submission or whether a stronger baseline/ablation phase is scientifically necessary.
 
 Stop and ask the user only when deciding whether to launch a new compute phase for stronger
 baseline/ablation evidence.
