@@ -234,17 +234,17 @@ def _score_learned_baselines(
     learned_specs = {
         "video_autoencoder": (
             video_autoencoder,
-            video_autoencoder.VideoAutoencoderConfig(device=device if device != "auto" else "cpu"),
+            video_autoencoder.VideoAutoencoderConfig(),
             output_root / "video_autoencoder.pt",
         ),
         "cnn_lstm": (
             cnn_lstm,
-            cnn_lstm.CNNLSTMConfig(device=device if device != "auto" else "cpu"),
+            cnn_lstm.CNNLSTMConfig(),
             output_root / "cnn_lstm.pt",
         ),
         "video_transformer": (
             video_transformer,
-            video_transformer.VideoTransformerConfig(device=device if device != "auto" else "cpu"),
+            video_transformer.VideoTransformerConfig(),
             output_root / "video_transformer.pt",
         ),
     }

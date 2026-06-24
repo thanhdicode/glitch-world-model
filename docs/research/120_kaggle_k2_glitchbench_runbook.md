@@ -48,6 +48,19 @@ Optional but supported:
 The repo now provides `scripts/build_k2_lewm_seed_artifact_dataset.py` to normalize local seed
 roots into this Kaggle-ready layout.
 
+## Kaggle Failure Note (2026-06-25)
+
+An initial full K2 Kaggle attempt failed after the direct dry-run passed because
+`scripts/run_kaggle_glitchbench_benchmark.py` incorrectly passed `device=...` into learned-baseline
+config constructors. The repaired runner now constructs:
+
+- `VideoAutoencoderConfig()`
+- `CNNLSTMConfig()`
+- `VideoTransformerConfig()`
+
+without a `device` keyword and passes `device` only to `train_model(...)` and
+`score_records_with_checkpoint(...)`.
+
 ## Direct `/kaggle/input` Dry-Run Command
 
 Run this first. It now works directly on read-only Kaggle mounts because the bundle validator writes

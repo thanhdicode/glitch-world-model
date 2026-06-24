@@ -7,6 +7,11 @@ Date: 2026-06-25T00:00:00Z
 
 ## What Changed
 
+- Patched `scripts/run_kaggle_glitchbench_benchmark.py` so learned-baseline config constructors no
+  longer receive `device=...`; device is still passed to `train_model(...)` and
+  `score_records_with_checkpoint(...)`.
+- Added regression tests covering the learned-baseline constructor path and a full-K2 setup path
+  that reaches learned-baseline setup without the Kaggle `TypeError`.
 - Patched `scripts/validate_glitchbench_bundle.py` so protocol-materialization temp files are now
   written outside `package_root`, making direct `/kaggle/input` validation read-only safe.
 - Added a regression test that proves validation leaves the mounted package untouched and writes the
@@ -59,9 +64,9 @@ Date: 2026-06-25T00:00:00Z
 
 ## Next Recommended Task
 
-- Upload `lewm-k2-lewm-seed-artifacts.zip`, rerun the direct `/kaggle/input` K2 dry-run on Kaggle,
-  then run the scientific full K2 command and validate the downloaded artifact locally before any
-  K2 metric enters the claim registry.
+- Rerun the scientific K2 Kaggle job on the pinned commit that includes the learned-baseline
+  constructor fix, then validate the downloaded artifact locally before any K2 metric enters the
+  claim registry.
 
 ## Files Likely Relevant Next
 

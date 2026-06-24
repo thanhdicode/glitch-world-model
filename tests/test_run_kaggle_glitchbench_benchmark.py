@@ -1,13 +1,18 @@
 from __future__ import annotations
 
 import csv
+import hashlib
 import json
+from dataclasses import make_dataclass
 from pathlib import Path
 
 import pytest
 from PIL import Image
 
+from glitch_detection.manifest import read_manifest
+from glitch_detection.splits import read_grouped_split_csv
 from scripts.run_kaggle_glitchbench_benchmark import (
+    _score_learned_baselines,
     _validate_lewm_seed_artifact_root,
     run_kaggle_glitchbench_benchmark,
 )
@@ -111,7 +116,7 @@ def _artifact_root(tmp_path: Path) -> Path:
             encoding="utf-8",
         )
         (seed_root / "checkpoint.sha256").write_text(
-            f"{__import__('hashlib').sha256(checkpoint_path.read_bytes()).hexdigest()}\n",
+            f"{hashlib.sha256(checkpoint_path.read_bytes()).hexdigest()}\n",
             encoding="utf-8",
         )
     return root
@@ -215,3 +220,137 @@ def test_k2_summary_status_is_complete_when_lewm_lane_runs(
 
     assert summary["status"] == "k2_complete_lewm_and_baselines"
     assert summary["lewm_artifact_validation"] == {"ok": True}
+
+
+def test_score_learned_baselines_does_not_pass_device_to_config_constructors(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
+    package_root = _package_root(tmp_path)
+    train_records = read_manifest(package_root / "combined_manifest.csv")[:2]
+    validation_records = read_manifest(package_root / "combined_manifest.csv")[2:]
+    split_records = read_grouped_split_csv(package_root / "grouped_split.csv")
+    constructor_calls: list[str] = []
+
+    def _constructor(name: str):
+        def _build(**kwargs):
+            assert "device" not in kwargs
+            constructor_calls.append(name)
+            config_type = make_dataclass("Config", [("model_name", str)])
+            return config_type(kwargs.get("model_name", name))
+
+        return _build
+
+    def _fake_train_model(records, checkpoint_path, metadata_path, config, device="auto"):
+        checkpoint_path.write_text("checkpoint\n", encoding="utf-8")
+        metadata_path.write_text(json.dumps({"device": device}), encoding="utf-8")
+        return {
+            "device": device,
+            "clip_count": len(records),
+            "config": getattr(config, "__dict__", {}),
+        }
+
+    def _fake_score_records(records, checkpoint_path, device="auto"):
+        _ = checkpoint_path, device
+        return {record.clip_id: float(index + 1) for index, record in enumerate(records)}
+
+    def _fake_write_scores(records, scores, output_path):
+        with output_path.open("w", newline="", encoding="utf-8") as handle:
+            writer = csv.DictWriter(
+                handle,
+                fieldnames=["clip_id", "source", "clip_dir", "start_frame", "end_frame", "score"],
+            )
+            writer.writeheader()
+            for record in records:
+                writer.writerow(
+                    {
+                        "clip_id": record.clip_id,
+                        "source": record.source,
+                        "clip_dir": record.clip_dir,
+                        "start_frame": record.start_frame,
+                        "end_frame": record.end_frame,
+                        "score": f"{scores[record.clip_id]:.8f}",
+                    }
+                )
+        return output_path
+
+    monkeypatch.setattr(
+        "scripts.run_kaggle_glitchbench_benchmark.video_autoencoder.VideoAutoencoderConfig",
+        _constructor("video_autoencoder"),
+    )
+    monkeypatch.setattr(
+        "scripts.run_kaggle_glitchbench_benchmark.cnn_lstm.CNNLSTMConfig",
+        _constructor("cnn_lstm"),
+    )
+    monkeypatch.setattr(
+        "scripts.run_kaggle_glitchbench_benchmark.video_transformer.VideoTransformerConfig",
+        _constructor("video_transformer"),
+    )
+    output_root = tmp_path / "out"
+    output_root.mkdir(parents=True, exist_ok=True)
+    for module_name in ("video_autoencoder", "cnn_lstm", "video_transformer"):
+        monkeypatch.setattr(
+            f"scripts.run_kaggle_glitchbench_benchmark.{module_name}.train_model",
+            _fake_train_model,
+        )
+        monkeypatch.setattr(
+            f"scripts.run_kaggle_glitchbench_benchmark.{module_name}.score_records_with_checkpoint",
+            _fake_score_records,
+        )
+        monkeypatch.setattr(
+            f"scripts.run_kaggle_glitchbench_benchmark.{module_name}.write_scores",
+            _fake_write_scores,
+        )
+
+    results = _score_learned_baselines(
+        train_records=train_records,
+        validation_records=validation_records,
+        split_records=split_records,
+        output_root=output_root,
+        device="cuda",
+    )
+
+    assert [row["method"] for row in results] == [
+        "video_autoencoder",
+        "cnn_lstm",
+        "video_transformer",
+    ]
+    assert constructor_calls == ["video_autoencoder", "cnn_lstm", "video_transformer"]
+
+
+def test_k2_full_run_reaches_learned_baseline_setup_without_constructor_typeerror(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
+    package_root = _package_root(tmp_path)
+    artifact_root = _artifact_root(tmp_path)
+    learned_setup_called = {"value": False}
+
+    monkeypatch.setattr(
+        "scripts.run_kaggle_glitchbench_benchmark._score_simple_baselines",
+        lambda **kwargs: [{"method": "frame_diff"}],
+    )
+
+    def _fake_learned(**kwargs):
+        learned_setup_called["value"] = True
+        return [{"method": "video_autoencoder"}]
+
+    monkeypatch.setattr(
+        "scripts.run_kaggle_glitchbench_benchmark._score_learned_baselines",
+        _fake_learned,
+    )
+    monkeypatch.setattr(
+        "scripts.run_kaggle_glitchbench_benchmark._score_lewm",
+        lambda **kwargs: ([{"method": "lewm", "seed": 42, "aggregation": "mean"}], {"ok": True}),
+    )
+
+    summary = run_kaggle_glitchbench_benchmark(
+        manifest_path=package_root / "combined_manifest.csv",
+        split_path=package_root / "grouped_split.csv",
+        clips_root=package_root / "clips_root",
+        output_root=tmp_path / "out",
+        device="cuda",
+        dry_run=False,
+        lewm_seed_artifact_root=artifact_root,
+    )
+
+    assert learned_setup_called["value"] is True
+    assert summary["status"] == "k2_complete_lewm_and_baselines"
