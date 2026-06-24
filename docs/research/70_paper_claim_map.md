@@ -35,6 +35,9 @@ Forbidden framing:
 | The K1 learned-baseline bundle validates locally and keeps locked-test flags false. | allowed now | `docs/research/117_kaggle_k1_learned_baselines_runbook.md`, `docs/research/16_claim_registry.md` | "validated learned-baseline intake" | "new benchmark evidence without qualifiers" |
 | Within that same frozen support, `cnn_lstm` with max episode aggregation is the strongest learned baseline at AUROC `0.613636`, below the best LeWM row and numerically equal to the best `feature_distance` AUROC row. | allowed with all qualifiers | `docs/research/118_k1_learned_baseline_results.md`, `docs/research/16_claim_registry.md` | "bounded comparison on the current frozen support" | "learned baselines beat LeWM" |
 | The strongest learned-baseline AUROC delta versus the best LeWM row crosses zero, so use "stronger observed separation" rather than "significant superiority." | required limitation | same as above | "stronger observed separation on this split" | "statistically significant superiority" |
+| The local P3 GlitchBench package is validator-backed and ready for a user-operated K2 run, but it remains an image-level synthetic-normal benchmark package rather than a performance result. | allowed now | `docs/research/119_glitchbench_protocol_audit.md`, `docs/research/120_kaggle_k2_glitchbench_runbook.md`, `docs/research/16_claim_registry.md` | "package ready", "validator-backed local preparation" | "GlitchBench metrics already exist" |
+| GlitchBench in this repo is image-level, uses synthetic normal clips, and does not support temporal-localization claims. | required limitation | `docs/research/119_glitchbench_protocol_audit.md`, `docs/research/121_glitchbench_claim_boundary.md`, `docs/research/16_claim_registry.md` | "image-level bounded benchmark" | "temporal localization" |
+| Controlled SIGReg and action-conditioning local ablation tooling exists, but K3 evidence is still pending. | allowed now as tooling only | `docs/research/16_claim_registry.md`, `scripts/run_r6_sigreg_ablation.py`, `scripts/validate_r6_ablations.py` | "tooling/readiness" | "SIGReg helps", "action conditioning helps" |
 | Every empirical paragraph in the bounded submission package is mapped to registered claims and evidence sources. | required manuscript control | `docs/research/106_first_bounded_paper_claim_audit.md` | "bounded evidence-backed package" | "new evidence created by manuscript prose" |
 
 ## Still Blocked For Submission Finalization
@@ -44,6 +47,8 @@ Forbidden framing:
 - Direct cross-source metric comparison
 - Phase D empirical conclusions
 - Any broad `R5-XGame` or WOB generalization statement
+- Any GlitchBench metric statement before K2 validates
+- Any SIGReg or action-conditioning effect statement before K3 validates
 - Any locked-test result statement
 - Official-kit compile, page-fit review, and build-warning audit
 - Final anonymization and similarity-screen confirmation

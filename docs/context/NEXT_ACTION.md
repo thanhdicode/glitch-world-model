@@ -1,36 +1,37 @@
 # NEXT_ACTION.md
 
-Last updated: 2026-06-24T12:05:00+00:00
-Commit: `d475724e49acbd024daed3f2b4dfe9c1ba071c33`
+Last updated: 2026-06-24T17:20:00+00:00
+Commit: `731fef69f76d6025fe7e14a2d9498c49746b8a62`
 
 ## Current Priority
-Stop at roadmap V4 after K1 intake. The K1 learned-baseline Kaggle run has been downloaded,
-validated locally, and compared against the existing TempGlitch follow-up evidence. The next local
-action is P3 preparation for the GlitchBench benchmark while keeping locked test closed.
+Stop at roadmap V4 after local P3 preparation. The GlitchBench subset package, protocol audit,
+freeze, validator, and K2 runbook now exist locally, and controlled SIGReg/action ablation tooling
+is scaffolded locally without any K3 evidence claim. The next external action is the user-operated
+Kaggle K2 run.
 Authority roadmap: `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v4.md`.
 
-## Next Gate (Phase P3 local preparation, before Kaggle K2)
-1. Freeze the exact public-benchmark protocol, split policy, and claim boundary for GlitchBench.
-2. Prepare the local packaging/validator path for K2 so the Kaggle handoff uses the same
-   train-normal, validation-only, locked-test-closed discipline as earlier gates.
-3. Register the benchmark-facing paper/table slots and keep all K1 learned-baseline claims bounded
-   to the validated TempGlitch follow-up support.
-4. Stop before any Kaggle K2 launch until the local package, validator, and claim wording are
-   ready.
+## Next Gate (User-Operated Kaggle K2)
+1. Upload `lewm-k2-glitchbench-inputs.zip` as a Kaggle Dataset named
+   `lewm-k2-glitchbench-inputs`.
+2. Attach the required LeWM seed artifact dataset for K2 if LeWM scoring is desired in the same
+   run.
+3. Run `scripts/run_kaggle_glitchbench_benchmark.py` on Kaggle using the documented K2 command.
+4. Download the working directory and validate the resulting benchmark artifact locally before any
+   GlitchBench metric claim is registered.
 
 ## Success Criteria
-- K1 learned-baseline intake remains validator-backed with false locked-test flags.
-- The strongest learned baseline stays documented as bounded evidence on the exact TempGlitch
-  follow-up support only.
-- The GlitchBench local package/validator path is ready for a user-operated Kaggle K2 run.
+- The packaged K2 input bundle remains validator-backed with false locked-test flags.
+- The K2 run produces method outputs for the exact frozen image-level GlitchBench subset support.
+- Any downloaded K2 artifact validates locally before the claim registry expands.
 - Locked test remains closed and the repository verification suite stays green.
 
 ## Phase Sequence After This Task
-P3 GlitchBench benchmark (Kaggle K2), P4 SIGReg/action ablation (Kaggle K3), P5 temporal
-localization (Kaggle K4 optional), P6 demo, P7 full paper rewrite.
-Codex does every local task autonomously and stops only at Kaggle gates K2-K4.
+P3 GlitchBench benchmark (Kaggle K2), P4 controlled SIGReg/action ablation artifact run
+(Kaggle K3), P5 temporal localization or explicit future-work scoping, P6 demo, P7 full paper
+rewrite.
+Codex continues local support work autonomously and stops only at Kaggle gates K2-K4.
 
 ## Current Known Blocker
-The next roadmap step requires local P3 packaging and validator preparation for a user-operated
-Kaggle K2 benchmark run. Official Springer kit / TeX toolchain work still belongs later at P7.
-Locked test remains closed.
+K2 is now blocked only on the user-operated Kaggle launch plus any required LeWM seed-artifact
+attachment. GlitchBench remains image-level and synthetic-normal, so even after K2 it cannot
+support temporal-localization claims. Locked test remains closed.

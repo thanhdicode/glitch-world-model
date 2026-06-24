@@ -59,3 +59,15 @@ def test_research_training_config_exposes_update_controls():
     assert config.target_optimizer_updates == 15000
     assert config.evaluation_interval_updates == 500
     assert config.checkpoint_interval_updates == 500
+
+
+def test_training_config_accepts_zero_action_and_sigreg_toggle():
+    config = LeWMTrainConfig(action_mode="zero_action", sigreg_enabled=False)
+
+    assert config.action_mode == "zero_action"
+    assert config.sigreg_enabled is False
+
+
+def test_training_config_rejects_action_free_training_mode():
+    with pytest.raises(ValueError, match="action_free"):
+        LeWMTrainConfig(action_mode="action_free")
