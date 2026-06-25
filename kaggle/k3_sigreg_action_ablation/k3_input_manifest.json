@@ -1,0 +1,8 @@
+{
+  "status": "pointer_only",
+  "local_prepared_manifest": "outputs/k3_ablation_inputs/k3_input_manifest.json",
+  "notes": [
+    "The local packaging step should copy the prepared K3 input manifest here when inputs exist.",
+    "If the local prepared manifest reports missing_required_inputs, the Kaggle package remains blocked."
+  ]
+}

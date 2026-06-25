@@ -1,35 +1,39 @@
 # NEXT_ACTION.md
 
-Last updated: 2026-06-25T00:00:00+00:00
-Commit: `6f4bfe99742a9a376b8a16369eb1658982177221`
+Last updated: 2026-06-25T04:06:16+00:00
+Commit: `7875c492883562001c1eaeeb55efe31a2d79b507`
 
 ## Current Priority
-Advance from validated P3/K2 intake to Phase P4 controlled ablations. The downloaded scientific K2
-bundle is now locally SHA256-verified and intake-validated, so the next roadmap task is no longer a
-K2 rerun. The next external gate is Kaggle K3 on the controlled SIGReg and action-conditioning
-matrix defined in `scripts/run_r6_sigreg_ablation.py`.
-Authority roadmap: `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v4.md`.
+Stop at roadmap V4 Kaggle gate K3. The local K3 packaging path is prepared, but the exact
+R5-XGame raw/source archives required to materialize the non-locked train and validation Lance
+inputs are missing on this machine. Authority roadmap:
+`docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v4.md`.
 
-## Next Gate (User-Operated Kaggle K3)
-1. Confirm the train and validation inputs for the controlled ablation lane.
-2. Run the K3 dry-run defined in `docs/research/123_kaggle_k3_ablation_runbook.md`.
-3. Launch the scientific K3 job for seed42/43/44 with the full `sigreg_on/off x real/zero_action`
-   matrix.
-4. Download the K3 output bundle and validate it locally before any SIGReg or action-conditioning
-   claim enters the claim registry.
+## Next Gate (Phase P4, Kaggle K3, user-operated after local inputs exist)
+1. Place the required non-locked R5-XGame raw/source episode archives under one supported input
+   root so `scripts/prepare_k3_ablation_inputs.py` can materialize:
+   `outputs/r5_xgame/_r5_xgame_train_normal.lance` and
+   `outputs/r5_xgame/_r5_xgame_calibration_eval_normal.lance`.
+2. Re-run `python scripts/prepare_k3_ablation_inputs.py` and confirm
+   `outputs/k3_ablation_inputs/k3_input_manifest.json` reports `status=ready`.
+3. Upload the local K3 package skeleton to Kaggle, run the ablation matrix there, then download
+   the bundle and validate it locally with `scripts/ingest_k3_ablation_bundle.py`.
+4. Register no SIGReg or action-conditioning claim unless the downloaded K3 bundle intake-validates.
 
 ## Success Criteria
-- all 12 controlled variants complete
-- `validate_r6_ablations.py` accepts the declared controlled pairs
-- locked test remains closed
-- K3 artifacts validate locally before any mechanistic claim expands
+- The required R5-XGame train and validation Lance directories exist locally and are hash-recorded
+  in `outputs/k3_ablation_inputs/k3_input_manifest.json`.
+- The local K3 package path is complete and the Kaggle-facing runner still enforces false
+  locked-test flags plus exact dataset-hash matching.
+- The eventual downloaded Kaggle bundle contains all 12 variants and passes
+  `scripts/ingest_k3_ablation_bundle.py`.
+- Locked test remains closed and the repository verification suite stays green.
 
-## Phase Sequence After This Task
-P4 controlled SIGReg/action ablation artifact run (Kaggle K3), P5 temporal localization or
-explicit future-work scoping, P6 demo, P7 full paper rewrite.
+## Phase Sequence After K3
+P5 temporal localization (Kaggle K4 optional), P6 demo, P7 full paper rewrite. Earlier phases
+K1-K2 are already artifact-backed on this branch.
 
 ## Current Known Blocker
-K3 remains user-operated on Kaggle and still needs a downloaded post-run artifact before any
-SIGReg or action-conditioning statement is allowed. GlitchBench remains image-level and
-synthetic-normal, so K2 does not unlock temporal-localization or broad generalization language.
-Locked test remains closed.
+K3 is blocked locally by missing raw/source R5-XGame inputs. The exact missing paths are recorded in
+`outputs/k3_ablation_inputs/k3_input_manifest.json` and
+`outputs/k3_ablation_inputs/K3_INPUTS_REPORT.md`. Locked test remains closed.
