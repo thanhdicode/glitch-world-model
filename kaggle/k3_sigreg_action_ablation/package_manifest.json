@@ -1,0 +1,21 @@
+{
+  "status": "blocked_missing_inputs",
+  "surface": "k3_sigreg_action_ablation",
+  "selected_support_source": "R5-XGame train_normal + calibration/eval_normal Lance",
+  "k3_input_manifest_pointer": "outputs/k3_ablation_inputs/k3_input_manifest.json",
+  "entrypoint": "kaggle/k3_sigreg_action_ablation/run_k3_ablation.py",
+  "required_repo_scripts": [
+    "scripts/run_r6_sigreg_ablation.py",
+    "scripts/ingest_k3_ablation_bundle.py"
+  ],
+  "required_repo_modules": [
+    "src/glitch_detection/__init__.py",
+    "src/glitch_detection/kaggle_automation.py",
+    "src/glitch_detection/lewm_adapter.py",
+    "src/glitch_detection/lewm_training.py"
+  ],
+  "notes": [
+    "This is a local packaging manifest only.",
+    "Scientific claims remain blocked until a downloaded K3 bundle validates locally."
+  ]
+}
