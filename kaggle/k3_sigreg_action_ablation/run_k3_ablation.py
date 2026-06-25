@@ -29,6 +29,18 @@ def _read_manifest(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8-sig"))
 
 
+def _resolve_input_path(path: Path) -> Path:
+    if path.exists():
+        return path.resolve()
+    for candidate in (
+        REPO_ROOT / "outputs" / "r5_xgame" / path.name,
+        PACKAGE_DIR / "inputs" / path.name,
+    ):
+        if candidate.exists():
+            return candidate.resolve()
+    raise FileNotFoundError(f"Missing K3 input path: {path}")
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Launch the K3 SIGReg/action ablation matrix.")
     parser.add_argument(
@@ -52,11 +64,10 @@ def main(argv: list[str] | None = None) -> int:
             "K3 scientific run requires a prepared input manifest. "
             f"Current manifest status: {manifest.get('status')!r}"
         )
-    train_path = (args.train_path or Path(manifest["train_path"])).resolve()
-    validation_path = (args.validation_path or Path(manifest["validation_path"])).resolve()
-    for name, path in (("train", train_path), ("validation", validation_path)):
-        if not path.exists():
-            raise FileNotFoundError(f"Missing K3 {name} input path: {path}")
+    train_path = _resolve_input_path(args.train_path or Path(manifest["train_path"]))
+    validation_path = _resolve_input_path(
+        args.validation_path or Path(manifest["validation_path"])
+    )
     if args.device != "cuda":
         raise ValueError("Scientific K3 runs must request --device cuda.")
 

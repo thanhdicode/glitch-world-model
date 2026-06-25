@@ -1,9 +1,29 @@
 {
-  "status": "blocked_missing_inputs",
+  "status": "ready_for_user_operated_kaggle",
   "surface": "k3_sigreg_action_ablation",
   "selected_support_source": "R5-XGame train_normal + calibration/eval_normal Lance",
-  "k3_input_manifest_pointer": "outputs/k3_ablation_inputs/k3_input_manifest.json",
+  "k3_input_manifest_pointer": "kaggle/k3_sigreg_action_ablation/k3_input_manifest.json",
   "entrypoint": "kaggle/k3_sigreg_action_ablation/run_k3_ablation.py",
+  "prepared_inputs": {
+    "train_path": "outputs/r5_xgame/_r5_xgame_train_normal.lance",
+    "validation_path": "outputs/r5_xgame/_r5_xgame_calibration_eval_normal.lance",
+    "auxiliary_buggy_eval_path": "outputs/r5_xgame/_r5_xgame_eval_buggy.lance",
+    "train_sha256": "34ef70fd3e7cb288646b8e5e1fb4f8ae60e9308cddcd2401c8d77c717c076efc",
+    "validation_sha256": "ecb4c9ef1349b8e1896b783a7ae7b3f6761b2d445370ff814e2cfc179ebbfa19",
+    "auxiliary_buggy_eval_sha256": "496a81078b3aba2e7ed9253805dc7ab759ef363e431d1dfbe0502402f9c539bb"
+  },
+  "dry_run": {
+    "status": "dry_run_ready",
+    "variant_count": 12,
+    "pair_count": 12,
+    "seeds": [
+      42,
+      43,
+      44
+    ],
+    "locked_test_materialized": false,
+    "locked_test_scored": false
+  },
   "required_repo_scripts": [
     "scripts/run_r6_sigreg_ablation.py",
     "scripts/ingest_k3_ablation_bundle.py"
@@ -15,7 +35,8 @@
     "src/glitch_detection/lewm_training.py"
   ],
   "notes": [
-    "This is a local packaging manifest only.",
-    "Scientific claims remain blocked until a downloaded K3 bundle validates locally."
+    "The package is ready for user-operated Kaggle K3 execution once uploaded with the prepared inputs.",
+    "K3 is not scientifically validated until the downloaded Kaggle output bundle validates locally.",
+    "No SIGReg or action-conditioning claim is allowed yet."
   ]
 }
