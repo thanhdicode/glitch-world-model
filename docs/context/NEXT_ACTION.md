@@ -17,9 +17,9 @@ Authority roadmap: `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v4.md`.
 2. Upload `lewm-k2-lewm-seed-artifacts.zip` as Kaggle dataset `lewm-k2-lewm-seed-artifacts`.
 3. Run the direct `/kaggle/input` dry-run command from
    `docs/research/120_kaggle_k2_glitchbench_runbook.md`.
-4. If the dry-run returns `dry_run_ready`, run the scientific full K2 command with
-   `--lewm-seed-artifact-root /kaggle/input/lewm-k2-lewm-seed-artifacts` on the latest pinned
-   commit for the constructor fix.
+4. If the dry-run returns `dry_run_ready`, run the scientific full K2 launcher
+   `bash cloud/k2_glitchbench/run_kaggle_k2_full.sh` on the latest pinned commit so the isolated
+   LeWM runtime is installed and import-verified before scoring starts.
 5. Download the full `glitchbench_k2` working directory and validate the resulting artifact locally
    before any K2 metric enters the claim registry.
 

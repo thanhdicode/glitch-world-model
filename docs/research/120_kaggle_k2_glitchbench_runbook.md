@@ -85,6 +85,28 @@ Expected dry-run status:
 This is the intended evidence-producing K2 path. It is fail-closed when the LeWM seed artifact
 dataset is missing.
 
+## Install Isolated LeWM Runtime
+
+Before the scientific full K2 command, install the isolated LeWM runtime rather than relying on
+`pip install -e .` alone. The repo now provides a Kaggle launcher that copies the proven XGame
+pattern:
+
+- installs `stable-worldmodel==0.1.1`
+- installs `hydra-core==1.3.3`
+- installs `stable-pretraining==0.1.7` without `--no-deps`
+- installs `transformers==4.57.6`
+- verifies imports before starting K2 scoring
+
+Preferred launcher:
+
+```bash
+bash cloud/k2_glitchbench/run_kaggle_k2_full.sh
+```
+
+The launcher script is:
+
+- `cloud/k2_glitchbench/run_kaggle_k2_full.sh`
+
 ```bash
 python scripts/run_kaggle_glitchbench_benchmark.py \
   --manifest /kaggle/input/lewm-k2-glitchbench-inputs/combined_manifest.csv \

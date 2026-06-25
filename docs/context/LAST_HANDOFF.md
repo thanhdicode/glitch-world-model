@@ -12,6 +12,11 @@ Date: 2026-06-25T00:00:00Z
   `score_records_with_checkpoint(...)`.
 - Added regression tests covering the learned-baseline constructor path and a full-K2 setup path
   that reaches learned-baseline setup without the Kaggle `TypeError`.
+- Added `cloud/k2_glitchbench/run_kaggle_k2_full.sh`, which installs the isolated LeWM runtime,
+  verifies imports, and only then runs the scientific full K2 benchmark command.
+- Extended staged-install completeness tests so K2 now fails CI if `hydra-core`,
+  `stable-pretraining`, `stable-worldmodel`, `lancedb`, or the fast-fail import verification step
+  are dropped from the K2 launcher.
 - Patched `scripts/validate_glitchbench_bundle.py` so protocol-materialization temp files are now
   written outside `package_root`, making direct `/kaggle/input` validation read-only safe.
 - Added a regression test that proves validation leaves the mounted package untouched and writes the
@@ -65,8 +70,8 @@ Date: 2026-06-25T00:00:00Z
 ## Next Recommended Task
 
 - Rerun the scientific K2 Kaggle job on the pinned commit that includes the learned-baseline
-  constructor fix, then validate the downloaded artifact locally before any K2 metric enters the
-  claim registry.
+  constructor fix and the new runtime-install launcher, then validate the downloaded artifact
+  locally before any K2 metric enters the claim registry.
 
 ## Files Likely Relevant Next
 
