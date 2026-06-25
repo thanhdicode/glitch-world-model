@@ -1,8 +1,8 @@
 # 120 - Kaggle K2 GlitchBench Runbook
 
 Date: 2026-06-25
-Status: local K2 runner repaired; rerun Kaggle dry-run directly from `/kaggle/input` before the
-first scientific full K2 launch
+Status: scientific K2 rerun completed on Kaggle and the downloaded bundle now passes local intake
+validation
 
 ## Scope
 
@@ -10,6 +10,29 @@ K2 is a bounded image-level GlitchBench subset benchmark. The current public pat
 bug images only, so this repo materializes repeated-frame clips and explicit synthetic normal
 companions. K2 cannot support temporal-localization, cross-game generalization, broad superiority,
 or SOTA claims.
+
+## Validated Run Receipt
+
+- Kaggle scientific run commit: `6f4bfe99742a9a376b8a16369eb1658982177221`
+- Downloaded tarball:
+  `C:\Users\ADMIN\Downloads\glitchbench_k2_outputs.tar.gz`
+- Downloaded tarball SHA256:
+  `a2a69b615b2988d952b8f753dca0f0fc204b60b1bef66823ce731a84a92ff5df`
+- Local K2 intake summary:
+  `outputs/glitchbench_k2_intake/k2_glitchbench_intake_summary.json`
+- Local K2 intake summary SHA256:
+  `31a59c634b9348b1a10a12cd829db382aeea64ea10a80c38c2345266e70c9493`
+- Local K2 report SHA256:
+  `2fa38145448d7bf6c23c4825132d37a1ea91ce8d3c28c4561a69b45a95c246f0`
+
+The validated run reports:
+
+- status `k2_complete_lewm_and_baselines`
+- `12` train-normal clips
+- `24` validation clips
+- LeWM seed artifacts detected and hash-matched for seed42/43/44
+- `locked_test_materialized=false`
+- `locked_test_scored=false`
 
 ## Required Kaggle Datasets
 
@@ -48,7 +71,7 @@ Optional but supported:
 The repo now provides `scripts/build_k2_lewm_seed_artifact_dataset.py` to normalize local seed
 roots into this Kaggle-ready layout.
 
-## Kaggle Failure Note (2026-06-25)
+## Kaggle Failure Note (Historical, Repaired)
 
 An initial full K2 Kaggle attempt failed after the direct dry-run passed because
 `scripts/run_kaggle_glitchbench_benchmark.py` incorrectly passed `device=...` into learned-baseline
@@ -60,6 +83,9 @@ config constructors. The repaired runner now constructs:
 
 without a `device` keyword and passes `device` only to `train_model(...)` and
 `score_records_with_checkpoint(...)`.
+
+That repair plus the isolated-runtime launcher are now validated by the successful scientific rerun
+above.
 
 ## Direct `/kaggle/input` Dry-Run Command
 
@@ -208,7 +234,7 @@ Retain at minimum:
 
 ## Claim Boundary
 
-- Allowed after local intake validation of the downloaded K2 artifact only:
+- Allowed now that the downloaded K2 artifact is intake-validated:
   bounded image-level GlitchBench metrics on the exact frozen K2 split
 - Forbidden even after K2:
   temporal localization, natural-normal evidence, cross-game generalization, SOTA, broad

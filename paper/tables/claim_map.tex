@@ -12,6 +12,8 @@ Within that frozen non-locked split, the best LeWM row shows stronger observed s
 AUROC intervals overlap and the best LeWM FPR@95TPR is 0.7500. & required limitation & \path{docs/research/101_tempglitch_followup_results.md} \\
 \texttt{cnn\_lstm} with episode \texttt{max} is the strongest learned baseline on the same support, at AUROC 0.6136. & C-100 qualified & \path{docs/research/118_k1_learned_baseline_results.md} \\
 The strongest learned-baseline AUROC delta versus the best LeWM row crosses zero, so only stronger observed separation wording is allowed. & C-102 required & \path{docs/research/118_k1_learned_baseline_results.md} \\
+\texttt{feature\_distance} and all three learned baselines reach AUROC/AUPRC 1.0 on the validated bounded K2 GlitchBench split, while the best recorded LeWM rows reach AUROC 0.5. & C-110/C-111 qualified & \path{docs/research/122_k2_glitchbench_results.md} \\
+The K2 AUROC 1.0 non-LeWM rows still share F1 0.6667 and balanced accuracy 0.5 under the train-normal p95 rule, so ranking quality and threshold calibration must be separated. & C-112 required & \path{docs/research/122_k2_glitchbench_results.md} \\
 \texttt{locked\_test\_materialized = false} and \texttt{locked\_test\_scored = false}. & required boundary & \path{docs/research/101_tempglitch_followup_results.md}, \path{docs/research/16_claim_registry.md} \\
 R5-XGame is a separate bounded non-locked result and is not directly comparable with TempGlitch. & allowed status statement & \path{docs/research/96_r6_xgame_bounded_comparison.md} \\
 Every empirical paragraph maps to registered evidence. & C-093 required & \path{docs/research/106_first_bounded_paper_claim_audit.md} \\

@@ -12,7 +12,7 @@ Current submission-safe tables:
 - `literature_matrix.tex`
 - `r5_xgame_results.tex`
 - `r6_ablation_results.tex`
-- `glitchbench_benchmark_pending.tex`
+- `glitchbench_benchmark_pending.tex` (now populated with the validated bounded K2 result)
 - `limitations_claim_boundary.tex`
 - `reviewer_risk.tex`
 
