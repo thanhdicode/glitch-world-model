@@ -35,6 +35,7 @@ XGAME_RESUME_SCRIPT = (
     / "wob_r5_xgame"
     / "run_kaggle_r5_xgame_resume_missing_seed44_and_finalize.sh"
 )
+K2_SCRIPT = Path(__file__).parent.parent / "cloud" / "k2_glitchbench" / "run_kaggle_k2_full.sh"
 KAGGLE_RUNTIME = Path(__file__).parent.parent / "requirements" / "kaggle_runtime.txt"
 _LANCEDB_MIN_VERSION = "0.30.0"
 _PYLANCE_MIN_VERSION = "4.0.0"
@@ -337,4 +338,99 @@ def test_xgame_resume_launcher_verifies_runtime_before_resume():
     assert "scripts/run_r5_xgame_resume_missing_seed44.py" in text
     assert text.find("stable_worldmodel.data") < text.find(
         "scripts/run_r5_xgame_resume_missing_seed44.py"
+    )
+
+
+# --- K2 GlitchBench launcher install-completeness ----------------------------
+
+
+def test_k2_script_exists():
+    assert K2_SCRIPT.is_file(), f"Shell script not found: {K2_SCRIPT}"
+
+
+def test_k2_stable_worldmodel_installed():
+    text = K2_SCRIPT.read_text(encoding="utf-8")
+    assert "stable-worldmodel" in text, (
+        "stable-worldmodel must appear in the pip install block of run_kaggle_k2_full.sh"
+    )
+
+
+def test_k2_stable_pretraining_installed():
+    text = K2_SCRIPT.read_text(encoding="utf-8")
+    assert "stable-pretraining" in text, (
+        "stable-pretraining must appear in the pip install block of "
+        "run_kaggle_k2_full.sh. It is required by the LeWM scoring lane via "
+        "stable_pretraining.backbone.utils.vit_hf."
+    )
+
+
+def test_k2_hydra_core_installed():
+    text = K2_SCRIPT.read_text(encoding="utf-8")
+    assert "hydra-core" in text, (
+        "hydra-core must appear in the pip install block of run_kaggle_k2_full.sh"
+    )
+
+
+def test_k2_lancedb_installed():
+    text = K2_SCRIPT.read_text(encoding="utf-8")
+    assert "lancedb" in text, (
+        "lancedb must appear in the pip install block of run_kaggle_k2_full.sh"
+    )
+
+
+def test_k2_lancedb_pin_meets_stable_worldmodel_floor():
+    version = _parse_pin(K2_SCRIPT.read_text(encoding="utf-8"), "lancedb")
+    assert _version_tuple(version) >= _version_tuple(_LANCEDB_MIN_VERSION), (
+        f"lancedb=={version} is too old for stable-worldmodel 0.1.1. "
+        f"Pin at least {_LANCEDB_MIN_VERSION}."
+    )
+
+
+def test_k2_pylance_pin_meets_stable_worldmodel_floor():
+    version = _parse_pin(K2_SCRIPT.read_text(encoding="utf-8"), "pylance")
+    assert _version_tuple(version) >= _version_tuple(_PYLANCE_MIN_VERSION), (
+        f"pylance=={version} is below the stable-worldmodel 0.1.1 metadata floor "
+        f"of {_PYLANCE_MIN_VERSION}."
+    )
+
+
+def test_k2_lancedb_and_pylance_match_optional_runtime_file():
+    script_text = K2_SCRIPT.read_text(encoding="utf-8")
+    assert _parse_pin(script_text, "lancedb") == _parse_runtime_pin("lancedb")
+    assert _parse_pin(script_text, "pylance") == _parse_runtime_pin("pylance")
+
+
+def test_k2_stable_pretraining_version_matches_runtime():
+    text = K2_SCRIPT.read_text(encoding="utf-8")
+    match = re.search(r'"stable-pretraining==([^"]+)"', text)
+    assert match, "stable-pretraining must be version-pinned in run_kaggle_k2_full.sh"
+    assert match.group(1) == "0.1.7", (
+        f"stable-pretraining is pinned to {match.group(1)!r} but lewm-runtime.txt requires 0.1.7."
+    )
+
+
+def test_k2_stable_pretraining_not_in_no_deps_block():
+    text = K2_SCRIPT.read_text(encoding="utf-8")
+    no_deps_match = re.search(
+        r"pip install[^\n]*--no-deps(.*?)(?=\npython -m pip install|\Z)",
+        text,
+        re.DOTALL,
+    )
+    assert no_deps_match, "Expected a --no-deps pip install block in the K2 launcher"
+    assert "stable-pretraining" not in no_deps_match.group(1), (
+        "stable-pretraining must NOT be inside the --no-deps pip install block. "
+        "Install it in a separate 'pip install stable-pretraining==X.Y.Z' call."
+    )
+
+
+def test_k2_verifies_runtime_imports_before_full_run():
+    text = K2_SCRIPT.read_text(encoding="utf-8")
+    assert "stable_worldmodel.data" in text, (
+        "The K2 launcher must verify 'from stable_worldmodel.data import ...' before "
+        "running full K2 so a missing runtime fails fast."
+    )
+    verify_index = text.find("stable_worldmodel.data")
+    run_index = text.find("scripts/run_kaggle_glitchbench_benchmark.py")
+    assert verify_index != -1 and run_index != -1 and verify_index < run_index, (
+        "The import-verification step must run before the K2 benchmark command."
     )

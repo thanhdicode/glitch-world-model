@@ -1,7 +1,8 @@
 # 119 - GlitchBench Protocol Audit
 
 Date: 2026-06-24
-Status: local P3 preparation complete; benchmark metrics still pending K2
+Status: local P3 preparation is complete and the scientific K2 bundle now validates locally under
+the same bounded protocol
 
 ## Source And Access
 

@@ -1,16 +1,19 @@
 \begin{table}[t]
 \centering
-\caption{Pending GlitchBench K2 benchmark slot. Local P3 preparation is complete, but no K2
-metrics may appear here until the downloaded benchmark artifact validates.}
-\label{tab:glitchbench-benchmark-pending}
+\caption{Validated bounded K2 GlitchBench benchmark results on the frozen image-level
+synthetic-normal split.}
+\label{tab:glitchbench-benchmark}
 \small
-\begin{tabular}{lll}
+\begin{tabular}{lccccc}
 \toprule
-Benchmark lane & Local status & Paper status \\
+Method & AUROC & AUPRC & F1 & Balanced accuracy & FPR@95TPR \\
 \midrule
-GlitchBench subset package & validator-backed & metrics pending K2 \\
-Synthetic-normal protocol & explicit limitation & required note \\
-Temporal labels & unavailable in current path & no localization claim \\
+\texttt{frame\_diff} & 0.500 & 0.500 & 0.667 & 0.500 & 1.000 \\
+\texttt{feature\_distance} & 1.000 & 1.000 & 0.667 & 0.500 & 0.000 \\
+\texttt{video\_autoencoder} & 1.000 & 1.000 & 0.667 & 0.500 & 0.000 \\
+\texttt{cnn\_lstm} & 1.000 & 1.000 & 0.667 & 0.500 & 0.000 \\
+\texttt{video\_transformer} & 1.000 & 1.000 & 0.667 & 0.500 & 0.000 \\
+\texttt{lewm} best row & 0.500 & 0.719 & 0.400 & 0.250 & 1.000 \\
 \bottomrule
 \end{tabular}
 \end{table}

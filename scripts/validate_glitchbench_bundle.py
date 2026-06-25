@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import tempfile
 from pathlib import Path, PurePosixPath
 from typing import Any
 
@@ -38,11 +39,14 @@ def _resolve_downloaded_kaggle_path(path_text: str, package_root: Path) -> Path:
 
 
 def _protocol_manifest_from_package(
-    package_root: Path, combined_manifest: list[ClipRecord], split_path: Path
+    package_root: Path,
+    combined_manifest: list[ClipRecord],
+    split_path: Path,
+    output_dir: Path,
 ) -> Path:
     split_records = read_grouped_split_csv(split_path)
     split_by_source = {row.source: row for row in split_records}
-    protocol_manifest_path = package_root / "_validator_glitchbench_records.csv"
+    protocol_manifest_path = output_dir / "_validator_glitchbench_records.csv"
     rows: list[dict[str, str]] = []
     for record in combined_manifest:
         split_row = split_by_source[record.source]
@@ -108,11 +112,15 @@ def validate_glitchbench_bundle(package_root: Path) -> dict[str, Any]:
         raise FileNotFoundError(
             f"GlitchBench package is missing {len(missing_clips)} clip folders."
         )
-    temp_protocol_manifest = _protocol_manifest_from_package(
-        package_root, rebased_records, split_path
-    )
-    manifest_summary = validate_glitchbench_manifest(temp_protocol_manifest)
-    split_summary = validate_glitchbench_split(temp_protocol_manifest, split_path)
+    with tempfile.TemporaryDirectory(prefix="glitchbench_bundle_validator_") as temp_dir:
+        temp_protocol_manifest = _protocol_manifest_from_package(
+            package_root,
+            rebased_records,
+            split_path,
+            Path(temp_dir),
+        )
+        manifest_summary = validate_glitchbench_manifest(temp_protocol_manifest)
+        split_summary = validate_glitchbench_split(temp_protocol_manifest, split_path)
     return {
         "status": "validated",
         "package_root": str(package_root),

@@ -7,6 +7,7 @@ from pathlib import Path
 import pytest
 from PIL import Image
 
+from scripts import validate_glitchbench_bundle as validator_module
 from scripts.validate_glitchbench_bundle import validate_glitchbench_bundle
 
 
@@ -137,3 +138,31 @@ def test_validate_glitchbench_bundle_rejects_locked_test_true(tmp_path: Path):
 
     with pytest.raises(ValueError, match="locked_test_materialized=false"):
         validate_glitchbench_bundle(package_root)
+
+
+def test_validate_glitchbench_bundle_uses_external_temp_output(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
+    package_root = _package_root(tmp_path)
+    external_temp = tmp_path / "external_temp"
+    before_files = sorted(path.relative_to(package_root) for path in package_root.rglob("*"))
+
+    class _TemporaryDirectory:
+        def __init__(self, *args, **kwargs) -> None:
+            return None
+
+        def __enter__(self) -> str:
+            external_temp.mkdir(parents=True, exist_ok=True)
+            return str(external_temp)
+
+        def __exit__(self, exc_type, exc, tb) -> None:
+            return None
+
+    monkeypatch.setattr(validator_module.tempfile, "TemporaryDirectory", _TemporaryDirectory)
+
+    receipt = validate_glitchbench_bundle(package_root)
+
+    after_files = sorted(path.relative_to(package_root) for path in package_root.rglob("*"))
+    assert receipt["status"] == "validated"
+    assert before_files == after_files
+    assert (external_temp / "_validator_glitchbench_records.csv").is_file()

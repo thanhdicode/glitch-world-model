@@ -1,37 +1,35 @@
 # NEXT_ACTION.md
 
-Last updated: 2026-06-24T17:20:00+00:00
-Commit: `731fef69f76d6025fe7e14a2d9498c49746b8a62`
+Last updated: 2026-06-25T00:00:00+00:00
+Commit: `6f4bfe99742a9a376b8a16369eb1658982177221`
 
 ## Current Priority
-Stop at roadmap V4 after local P3 preparation. The GlitchBench subset package, protocol audit,
-freeze, validator, and K2 runbook now exist locally, and controlled SIGReg/action ablation tooling
-is scaffolded locally without any K3 evidence claim. The next external action is the user-operated
-Kaggle K2 run.
+Advance from validated P3/K2 intake to Phase P4 controlled ablations. The downloaded scientific K2
+bundle is now locally SHA256-verified and intake-validated, so the next roadmap task is no longer a
+K2 rerun. The next external gate is Kaggle K3 on the controlled SIGReg and action-conditioning
+matrix defined in `scripts/run_r6_sigreg_ablation.py`.
 Authority roadmap: `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v4.md`.
 
-## Next Gate (User-Operated Kaggle K2)
-1. Upload `lewm-k2-glitchbench-inputs.zip` as a Kaggle Dataset named
-   `lewm-k2-glitchbench-inputs`.
-2. Attach the required LeWM seed artifact dataset for K2 if LeWM scoring is desired in the same
-   run.
-3. Run `scripts/run_kaggle_glitchbench_benchmark.py` on Kaggle using the documented K2 command.
-4. Download the working directory and validate the resulting benchmark artifact locally before any
-   GlitchBench metric claim is registered.
+## Next Gate (User-Operated Kaggle K3)
+1. Confirm the train and validation inputs for the controlled ablation lane.
+2. Run the K3 dry-run defined in `docs/research/123_kaggle_k3_ablation_runbook.md`.
+3. Launch the scientific K3 job for seed42/43/44 with the full `sigreg_on/off x real/zero_action`
+   matrix.
+4. Download the K3 output bundle and validate it locally before any SIGReg or action-conditioning
+   claim enters the claim registry.
 
 ## Success Criteria
-- The packaged K2 input bundle remains validator-backed with false locked-test flags.
-- The K2 run produces method outputs for the exact frozen image-level GlitchBench subset support.
-- Any downloaded K2 artifact validates locally before the claim registry expands.
-- Locked test remains closed and the repository verification suite stays green.
+- all 12 controlled variants complete
+- `validate_r6_ablations.py` accepts the declared controlled pairs
+- locked test remains closed
+- K3 artifacts validate locally before any mechanistic claim expands
 
 ## Phase Sequence After This Task
-P3 GlitchBench benchmark (Kaggle K2), P4 controlled SIGReg/action ablation artifact run
-(Kaggle K3), P5 temporal localization or explicit future-work scoping, P6 demo, P7 full paper
-rewrite.
-Codex continues local support work autonomously and stops only at Kaggle gates K2-K4.
+P4 controlled SIGReg/action ablation artifact run (Kaggle K3), P5 temporal localization or
+explicit future-work scoping, P6 demo, P7 full paper rewrite.
 
 ## Current Known Blocker
-K2 is now blocked only on the user-operated Kaggle launch plus any required LeWM seed-artifact
-attachment. GlitchBench remains image-level and synthetic-normal, so even after K2 it cannot
-support temporal-localization claims. Locked test remains closed.
+K3 remains user-operated on Kaggle and still needs a downloaded post-run artifact before any
+SIGReg or action-conditioning statement is allowed. GlitchBench remains image-level and
+synthetic-normal, so K2 does not unlock temporal-localization or broad generalization language.
+Locked test remains closed.
