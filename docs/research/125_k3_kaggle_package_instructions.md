@@ -1,11 +1,11 @@
 # 125 - K3 Kaggle Package Instructions
 
 Date: 2026-06-25
-Status: package skeleton prepared; scientific run blocked until local K3 inputs exist
+Status: package prepared; ready for user-operated Kaggle K3
 
 ## Current State
 
-The repository now contains a K3 package surface under:
+The repository contains a K3 package surface under:
 
 - `kaggle/k3_sigreg_action_ablation/`
 
@@ -14,64 +14,50 @@ It also contains:
 - local input preparation: `scripts/prepare_k3_ablation_inputs.py`
 - local post-Kaggle intake: `scripts/ingest_k3_ablation_bundle.py`
 
-However, the latest local input preparation result is still:
+The latest local input preparation result is:
 
-- `missing_required_inputs`
+- `prepared`
 
-So the package is not yet scientifically runnable on Kaggle.
+The local K3 dry-run result is:
+
+- `dry_run_ready`
+
+The current package archive is:
+
+- `outputs/k3_kaggle_package/lewm_k3_sigreg_action_ablation_package.zip`
+- SHA256:
+  `9820c50c1b4196bb66c754adde70e89c6e9916599567765d6857a9d5e35574cc`
 
 ## What Is Ready
 
 - K3 package wrapper docs and entrypoint
-- deterministic K3 input contract
+- prepared R5-XGame train and validation Lance inputs
+- deterministic K3 input manifest with dataset hashes
+- local 12-variant dry-run matrix
 - deterministic post-Kaggle intake validator
 - explicit no-claim boundary for pre-K3 state
 
-## What Is Missing
+## Prepared Inputs
 
-Before the user can run Kaggle K3, the local workspace still needs the raw/source R5-XGame
-archives required by the frozen manifest:
+- train: `outputs/r5_xgame/_r5_xgame_train_normal.lance`
+- validation: `outputs/r5_xgame/_r5_xgame_calibration_eval_normal.lance`
+- auxiliary buggy-eval provenance: `outputs/r5_xgame/_r5_xgame_eval_buggy.lance`
+- train SHA256: `34ef70fd3e7cb288646b8e5e1fb4f8ae60e9308cddcd2401c8d77c717c076efc`
+- validation SHA256: `ecb4c9ef1349b8e1896b783a7ae7b3f6761b2d445370ff814e2cfc179ebbfa19`
 
-- `NORMAL-TRAIN/.../*.tar` coverage for train, calibration, and normal-negative rows
-- `TEST/.../*.tar` coverage for the 60 buggy-positive rows
+## Kaggle Upload Steps
 
-The exact missing-file list is written into:
+1. Upload `outputs/k3_kaggle_package/lewm_k3_sigreg_action_ablation_package.zip` to Kaggle.
+2. In the Kaggle notebook, unzip the archive into the working directory so `kaggle/`, `scripts/`,
+   `src/`, and `outputs/r5_xgame/` sit under one root.
+3. Run the scientific command below with CUDA enabled.
 
-- `outputs/k3_ablation_inputs/k3_input_manifest.json`
-
-## Shortest Deterministic Path To Ready
-
-1. Place the missing R5-XGame raw archives under a clean root that does not contain old
-   `R5-WOB` checkpoint/output directories.
-2. Rerun:
-
-```powershell
-python scripts/prepare_k3_ablation_inputs.py
-```
-
-3. Confirm the result switches to:
-
-- status `prepared`
-- real paths exist for:
-  - `outputs/r5_xgame/_r5_xgame_train_normal.lance`
-  - `outputs/r5_xgame/_r5_xgame_calibration_eval_normal.lance`
-
-4. Run the local K3 dry-run:
-
-```powershell
-python scripts/run_r6_sigreg_ablation.py ^
-  --train-path outputs/r5_xgame/_r5_xgame_train_normal.lance ^
-  --validation-path outputs/r5_xgame/_r5_xgame_calibration_eval_normal.lance ^
-  --output-root outputs/r6_sigreg_ablation_dryrun ^
-  --device cpu ^
-  --dry-run
-```
-
-5. Package and upload the refreshed K3 surface to Kaggle.
+The Kaggle runner resolves relocated prepared inputs by dataset directory name and verifies the
+recorded SHA256 hashes before launching the 12 scientific variants.
 
 ## Kaggle Scientific Command
 
-Once step 3 succeeds, the intended Kaggle scientific command is:
+The intended Kaggle scientific command is:
 
 ```bash
 python kaggle/k3_sigreg_action_ablation/run_k3_ablation.py \

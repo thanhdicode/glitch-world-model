@@ -1,8 +1,48 @@
 {
-  "status": "pointer_only",
-  "local_prepared_manifest": "outputs/k3_ablation_inputs/k3_input_manifest.json",
+  "status": "prepared",
+  "selected_support_source": "R5-XGame train_normal + calibration/eval_normal Lance",
+  "source_protocol": "configs/wob_protocol/r5_xgame_split.csv",
+  "materialization_mode": "existing_materialized",
+  "candidate_root_used": null,
+  "candidate_roots_checked": [
+    "C:\\Users\\ADMIN\\Desktop\\glitch-world-model\\outputs\\r5_xgame"
+  ],
+  "train_path": "C:\\Users\\ADMIN\\Desktop\\glitch-world-model\\outputs\\r5_xgame\\_r5_xgame_train_normal.lance",
+  "validation_path": "C:\\Users\\ADMIN\\Desktop\\glitch-world-model\\outputs\\r5_xgame\\_r5_xgame_calibration_eval_normal.lance",
+  "auxiliary_buggy_eval_path": "C:\\Users\\ADMIN\\Desktop\\glitch-world-model\\outputs\\r5_xgame\\_r5_xgame_eval_buggy.lance",
+  "frozen_manifest_path": "C:\\Users\\ADMIN\\Desktop\\glitch-world-model\\outputs\\r5_xgame\\r5_xgame_manifest.csv",
+  "window_manifest_path": "C:\\Users\\ADMIN\\Desktop\\glitch-world-model\\outputs\\r5_xgame\\r5_xgame_window_manifest.csv",
+  "dataset_hashes": {
+    "train": "34ef70fd3e7cb288646b8e5e1fb4f8ae60e9308cddcd2401c8d77c717c076efc",
+    "validation": "ecb4c9ef1349b8e1896b783a7ae7b3f6761b2d445370ff814e2cfc179ebbfa19",
+    "buggy_eval": "496a81078b3aba2e7ed9253805dc7ab759ef363e431d1dfbe0502402f9c539bb"
+  },
+  "role_counts": {
+    "train_normal": 36,
+    "calibration_normal": 12,
+    "evaluation_normal_negative": 12,
+    "evaluation_buggy_positive": 60
+  },
+  "train_episode_count": 36,
+  "validation_episode_count": 24,
+  "validation_role_counts": {
+    "calibration_normal": 12,
+    "evaluation_normal_negative": 12
+  },
+  "k3_training_inputs_only": true,
+  "locked_test_materialized": false,
+  "locked_test_scored": false,
+  "rerun_command": "python scripts/prepare_k3_ablation_inputs.py",
   "notes": [
-    "The local packaging step should copy the prepared K3 input manifest here when inputs exist.",
-    "If the local prepared manifest reports missing_required_inputs, the Kaggle package remains blocked."
-  ]
+    "K3 currently consumes train_normal and calibration/eval_normal Lance inputs only.",
+    "The buggy-positive R5-XGame Lance remains recorded for provenance but is not passed to run_r6_sigreg_ablation.py.",
+    "No SIGReg or action-conditioning scientific claim is supported until a downloaded K3 bundle validates locally."
+  ],
+  "manifest_role_snapshot_sha256": "4f4b0ca5fe6e7ea207dd5a8f4ec97a0d00af486a109d2f215e9c83880c89182c",
+  "validated_manifest_role_counts": {
+    "train_normal": 36,
+    "evaluation_normal_negative": 12,
+    "calibration_normal": 12,
+    "evaluation_buggy_positive": 60
+  }
 }

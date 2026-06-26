@@ -1,18 +1,18 @@
 # 124 - K3 Local Readiness Report
 
 Date: 2026-06-25
-Status: local K3 preparation blocked by missing R5-XGame raw inputs
+Status: local K3 inputs prepared; dry-run passed; ready for user-operated Kaggle K3
 
 ## Authority Confirmation
 
 - Current roadmap authority: [MASTER_ROADMAP_LeWM_Glitch_v4.md](../roadmap/MASTER_ROADMAP_LeWM_Glitch_v4.md)
 - K1 / Phase P2: complete and artifact-backed
 - K2 / Phase P3: complete and artifact-backed
-- K3 / Phase P4: pending
+- K3 / Phase P4: local package-ready, scientific artifact pending user-operated Kaggle
 - Locked test: closed
 
-The current context cache correctly places the repo after validated K2 intake and before user-run
-K3. No validated K3 artifact exists yet.
+The current context cache places the repo after validated K2 intake and at the K3 user-operated
+Kaggle gate. No validated K3 scientific artifact exists yet.
 
 ## Selected K3 Support Source
 
@@ -38,41 +38,51 @@ Local K3 preparation now has a deterministic entry point:
 
 Latest local result:
 
-- status: `missing_required_inputs`
+- status: `prepared`
 - prepared manifest: `outputs/k3_ablation_inputs/k3_input_manifest.json`
 - prepared report: `outputs/k3_ablation_inputs/K3_INPUTS_REPORT.md`
 
-The expected K3 input paths remain:
+The prepared K3 input paths are:
 
 - `outputs/r5_xgame/_r5_xgame_train_normal.lance`
 - `outputs/r5_xgame/_r5_xgame_calibration_eval_normal.lance`
 - auxiliary provenance path:
   `outputs/r5_xgame/_r5_xgame_eval_buggy.lance`
 
-Those Lance directories are not currently materialized in this workspace.
+Dataset hashes:
 
-## Exact Blocker
+- train: `34ef70fd3e7cb288646b8e5e1fb4f8ae60e9308cddcd2401c8d77c717c076efc`
+- validation: `ecb4c9ef1349b8e1896b783a7ae7b3f6761b2d445370ff814e2cfc179ebbfa19`
+- auxiliary buggy eval:
+  `496a81078b3aba2e7ed9253805dc7ab759ef363e431d1dfbe0502402f9c539bb`
 
-The repository does not currently contain the raw/source WOB archives needed to materialize the
-frozen R5-XGame lane locally.
+## Source Import
 
-The preparation script checked these candidate roots:
+The successful local source was:
 
-- repo root
-- `data/`
-- `artifacts/`
-- `C:\Users\ADMIN\Downloads`
+- `C:\Users\ADMIN\Downloads\results\r5_xgame`
 
-Results:
+This source contains materialized non-locked R5-XGame Lance artifacts plus:
 
-- repo-local and ignored-local roots do not contain the required `NORMAL-TRAIN/.../*.tar` and
-  `TEST/.../*.tar` coverage
-- `Downloads` is additionally unsafe as a generic root because it contains old `R5-WOB`
-  artifact-style directories, which the R5-XGame runner correctly rejects
+- `stage_preflight.json`
+- `stage_materialize.json`
+- `r5_xgame_leakage_audit.json`
 
-The exact per-role missing-file contract is written into:
+Those provenance records report 36 train-normal, 12 calibration-normal, 12 normal-negative, and
+60 buggy-positive rows, with `locked_test_materialized=false`, `locked_test_scored=false`, and
+`validation_buggy_used_for_fit_select=false`.
 
-- `outputs/k3_ablation_inputs/k3_input_manifest.json`
+## Dry-Run Status
+
+The local K3 dry-run passed:
+
+- output root: `outputs/r6_sigreg_ablation_dryrun`
+- status: `dry_run_ready`
+- variants: `12`
+- controlled pairs: `12`
+- seeds: `[42, 43, 44]`
+- locked test materialized: `false`
+- locked test scored: `false`
 
 ## TempGlitch Support Mismatch Note
 
@@ -89,18 +99,19 @@ R5-XGame input plan.
 
 ## Readiness Verdict
 
-Local K3 prep is now deterministic but not yet input-complete:
+Local K3 prep is now input-complete and package-ready:
 
-- package surface: partially prepared
+- package surface: prepared
 - intake surface: prepared
-- exact missing artifact contract: prepared
-- user-only Kaggle handoff: not yet possible until the required R5-XGame raw archives are placed
-  under a clean root and `scripts/prepare_k3_ablation_inputs.py` is rerun
+- prepared input manifest: prepared
+- dry-run matrix: passed
+- user-operated Kaggle handoff: ready
 
 ## Allowed Claims Now
 
 - The repo provides a deterministic local K3 preparation path.
 - The current K3 lane is tied to the frozen R5-XGame train/validation-normal inputs.
+- The local K3 dry-run constructs the intended 12-variant controlled matrix.
 - No validated K3 scientific artifact exists yet.
 - Locked test remains closed.
 

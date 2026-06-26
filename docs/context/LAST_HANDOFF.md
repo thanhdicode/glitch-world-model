@@ -1,75 +1,59 @@
 # LAST_HANDOFF.md
 
-Last completed task: K3 local preparation, package skeleton, and blocked-input contract
+Last completed task: P5 temporal localization audit, future-work closure, and qualitative timeline support
 Commit: latest branch commit for this task (see `git log -1`)
-Date: 2026-06-25T04:00:00Z
+Date: 2026-06-26T18:10:00+07:00
 
 ## What Changed
 
-- Added `scripts/prepare_k3_ablation_inputs.py`, an idempotent fail-closed local preparer for the
-  K3 ablation inputs.
-- Added `scripts/ingest_k3_ablation_bundle.py` plus
-  `tests/test_ingest_k3_ablation_bundle.py` to validate downloaded K3 scientific bundles.
-- Added K3 package-facing docs:
-  - `docs/research/124_k3_local_readiness_report.md`
-  - `docs/research/125_k3_kaggle_package_instructions.md`
-- Created the Kaggle package skeleton under `kaggle/k3_sigreg_action_ablation/` with runner,
-  manifests, expected-output instructions, and post-Kaggle intake instructions.
-- Generated local ignored readiness artifacts and documented them in
-  `docs/research/124_k3_local_readiness_report.md` and
-  `docs/research/125_k3_kaggle_package_instructions.md`.
-- Confirmed the K3 source-of-truth support is the non-locked R5-XGame train-normal plus
-  calibration/eval-normal Lance lane.
-- Recorded an exact blocked-input contract because the required raw/source archives are absent under
-  all checked candidate roots.
+- Audited current validated datasets and artifacts for true temporal span support.
+- Added [127_temporal_localization_span_audit.md](../research/127_temporal_localization_span_audit.md)
+  and [128_temporal_localization_future_work.md](../research/128_temporal_localization_future_work.md).
+- Added `scripts/generate_qualitative_surprise_timelines.py` and extended
+  `scripts/plot_lewm_surprise_timeline.py` for reusable qualitative plotting.
+- Added focused tests for the qualitative timeline path.
+- Updated the claim registry, paper limitations, and context cache so P5 is closed on the
+  future-work path rather than left ambiguous.
+- Generated ignored qualitative timeline artifacts retained outside Git; receipt SHA256
+  `066db64e4d9f6ecc7e231849b7e2843bb8c0461f89855fe954bc440e2824de96`.
 
 ## Checks Passed
 
-- `python -m pytest tests/test_statistics.py tests/test_seed_aggregation.py tests/test_sigreg_ablation.py tests/test_ingest_k3_ablation_bundle.py -q`
-- `python scripts/check_claim_registry.py`
-- `python scripts/validate_context_cache.py`
-- `python scripts/doctor.py`
-- `python -m pytest -q`
-- `python -m ruff check .`
-- `python -m ruff format --check .`
-- `python scripts/validate_research_release.py --ci`
+- P5 span audit completed with `TEMPORAL_LOCALIZATION_METRICS_ALLOWED = false`.
 
 ## Safety Status
 
 - No locked-test access, materialization, or scoring occurred in this task.
 - No fake Lance datasets were created.
-- No SIGReg or action-conditioning scientific claim was added.
-- K3 remains tooling/package preparation only until a downloaded Kaggle bundle passes local intake.
+- No scientific code was changed.
+- No scientific code path was widened into a fake localization metric.
+- Temporal localization remains future work; only qualitative non-locked timelines are allowed.
 
 ## Gate Status After Task
 
 - P3/K2 remains complete and artifact-backed.
-- P4/K3 local preparation is implemented but blocked by missing local raw/source inputs.
-- The next external action is still Kaggle K3, but only after the missing R5-XGame archives are
-  placed locally and `scripts/prepare_k3_ablation_inputs.py` succeeds.
-- P5 remains blocked until K3 validates.
+- P4/K3 is intake-validated and artifact-backed.
+- P5 is complete on the documented-future-work path.
+- P6 is now the next roadmap phase.
 - Gate 10 remains closed.
 
 ## Open Blockers
 
-- The required non-locked R5-XGame train and validation Lance inputs do not exist locally because
-  the raw/source episode archives are missing.
-- `C:\Users\ADMIN\Downloads\r5_wob_outputs_verified` is explicitly rejected as an old R5-WOB-style
-  source for R5-XGame materialization.
-- No mechanistic claim may enter the paper until K3 validates.
+- No P5 blocker remains.
+- Current validated artifacts still do not support temporal-localization claims.
+- P6 demo scope still needs implementation.
 
 ## Next Recommended Task
 
-- Place the exact missing non-locked R5-XGame raw/source archives under a supported root, rerun
-  `python scripts/prepare_k3_ablation_inputs.py`, and only then perform the user-operated Kaggle K3
-  launch plus local intake.
+- Start Phase P6: build the reproducible demo lane while preserving the same non-locked claim
+  boundary.
 
 ## Files Likely Relevant Next
 
-- `kaggle/k3_sigreg_action_ablation/run_k3_ablation.py`
-- `scripts/prepare_k3_ablation_inputs.py`
-- `scripts/ingest_k3_ablation_bundle.py`
-- `scripts/run_r6_sigreg_ablation.py`
-- `scripts/validate_r6_ablations.py`
-- `docs/research/123_kaggle_k3_ablation_runbook.md`
+- `docs/research/126_k3_sigreg_action_ablation_results.md`
+- `docs/research/127_temporal_localization_span_audit.md`
+- `docs/research/128_temporal_localization_future_work.md`
+- `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v4.md`
 - `docs/context/NEXT_ACTION.md`
+- `docs/research/16_claim_registry.md`
+- `scripts/generate_qualitative_surprise_timelines.py`

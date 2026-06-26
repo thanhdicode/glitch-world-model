@@ -90,6 +90,19 @@ def _require_safe_false(payload: dict[str, Any], *, context: str) -> None:
             raise ValueError(f"Unsafe {context} flag: {field}")
 
 
+def _resolve_stage_file(files: dict[str, Any], name: str) -> Path:
+    recorded_path = Path(files[name]["path"])
+    if recorded_path.exists():
+        return recorded_path
+    relocated_path = R5_XGAME_OUTPUT_DIR / name
+    if relocated_path.exists():
+        return relocated_path
+    raise FileNotFoundError(
+        f"R5-XGame stage marker points to a missing path: {recorded_path}; "
+        f"relocated path also missing: {relocated_path}"
+    )
+
+
 def _candidate_roots() -> list[Path]:
     values = [
         os.environ.get("K3_INPUT_ROOT"),
@@ -122,28 +135,23 @@ def _existing_materialized_state() -> dict[str, Any] | None:
         _require_safe_false(stage, context="stage_materialize")
         files = stage.get("files", {})
         try:
-            train_path = Path(files[REQUIRED_K3_FILES["train"]]["path"])
-            validation_path = Path(files[REQUIRED_K3_FILES["validation"]]["path"])
-            buggy_path = Path(files[REQUIRED_K3_FILES["buggy_eval"]]["path"])
+            train_path = _resolve_stage_file(files, REQUIRED_K3_FILES["train"])
+            validation_path = _resolve_stage_file(files, REQUIRED_K3_FILES["validation"])
+            buggy_path = _resolve_stage_file(files, REQUIRED_K3_FILES["buggy_eval"])
         except KeyError as exc:
             raise ValueError(
                 f"stage_materialize.json is missing a required file record: {exc}"
             ) from exc
-        for path in (train_path, validation_path, buggy_path):
-            if not path.exists():
-                raise FileNotFoundError(f"R5-XGame stage marker points to a missing path: {path}")
-        frozen_manifest = Path(files[REQUIRED_K3_FILES["frozen_manifest"]]["path"])
-        if not frozen_manifest.is_file():
-            raise FileNotFoundError(
-                f"R5-XGame stage marker points to a missing frozen manifest: {frozen_manifest}"
-            )
+        frozen_manifest = _resolve_stage_file(files, REQUIRED_K3_FILES["frozen_manifest"])
         return {
             "mode": "existing_materialized",
             "train_path": train_path,
             "validation_path": validation_path,
             "buggy_eval_path": buggy_path,
             "frozen_manifest_path": frozen_manifest,
-            "window_manifest_path": Path(files[REQUIRED_K3_FILES["window_manifest"]]["path"]),
+            "window_manifest_path": _resolve_stage_file(
+                files, REQUIRED_K3_FILES["window_manifest"]
+            ),
             "dataset_hashes": {
                 "train": FingerprintBuilder.inventory_sha256(train_path),
                 "validation": FingerprintBuilder.inventory_sha256(validation_path),

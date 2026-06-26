@@ -1,7 +1,7 @@
 # BOOT.md - Fast Start Context For Agents
 
-Generated: 2026-06-25T00:00:00+00:00
-Commit: `ea7c8609e9cead37d90bcd8c97e9d6e72393a173`
+Generated: 2026-06-26T09:46:56+00:00
+Commit: `cff8e5875ddcced84c45e4b626d5cac1050f5a75`
 
 ## Read Order
 1. `RULES.md`
@@ -21,28 +21,39 @@ The current execution roadmap is `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v4.md`
 - Gate 5 passed strict Kaggle CUDA/resume artifact validation.
 - Gate 6 v8 completed normal-only CUDA training and passed strict checkpoint/reload/encoding
   validation with locked-test flags false.
-- Gates 7-9 completed a validation-only, non-locked evidence lane on canonical TempGlitch support.
+- Gates 7-9 completed a validation-only, non-locked, window-level pilot on one canonical Lance
+  manifest.
+- A separate non-locked research MVP source is ready with 36 train-normal, 14 validation-normal,
+  and 22 validation-buggy episodes across all five categories.
+- The exact 500-update research-MVP GPU profile completed as engineering evidence only.
+- R4 rerun seed43/44 training artifacts are local SHA256-verified and pass per-seed validators.
+- R5 identical-episode evaluation completed on the non-locked research MVP and wrote
+  provenance-bound episode-level outputs.
+- Local `WOB-P0` remains blocked on missing tar files, the Kaggle-native `WOB-P0` pass is
+  verified from the downloaded evidence bundle, and WOB-P1 seed42/seed43/seed44 training
+  artifact verification is complete.
+- The seed42 non-locked WOB evaluation-readiness gate is frozen, all three planned WOB-P1
+  training artifacts are now validator-backed, `R5-WOB` is validated as a positive-probe bundle,
+  and `R5-XGame` compute is now intake-validated for both the live output directory and the
+  repaired tarball/sidecar bundle.
+- The best recorded `R5-XGame` configuration reached AUROC `0.909722` on the frozen non-locked
+  12-negative / 60-positive split, but this remains bounded validation evidence only.
 - The pair-disjoint TempGlitch follow-up is validator-backed on 2 calibration-normal, 12
   evaluation normal-negative, and 22 evaluation buggy-positive episodes with zero cross-role
   source, pair, and episode overlap.
-- K1 learned-baseline intake is validator-backed locally and remains bounded to the cited
-  TempGlitch support.
-- P3 local GlitchBench preparation remains complete and the K2 input zip SHA256 is
-  `d2c6be8f83d99cb6a04578532f0f80d620c168342ff3e630b4e6b5389c62b038`.
-- The K2 runner is now repaired:
-  - direct read-only `/kaggle/input` validation is supported
-  - the scientific full K2 path now includes real LeWM scoring
-  - the local LeWM seed-artifact zip SHA256 is
-    `bf227ef26ac8316ccbc7456425e6218d2ac2172576fa874c35041b4913d04e69`
-- The current executable GlitchBench path remains image-level, synthetic-normal, and not temporal.
-- P4 local controlled SIGReg/action tooling exists, but no K3 artifact has been validated.
-- Roadmap V4 remains canonical and locked test remains closed.
+- Roadmap V4 is now canonical and reopens the evidence lane for a full Topic-A method-paper
+  upgrade while preserving the existing anti-overclaim and locked-test rules.
+- Gate 10 is closed.
+- Locked test is closed.
+- LeWM gameplay evaluation now exists for the non-locked TempGlitch research MVP only; locked
+  test remains unopened, and WOB remains limited to audit-plus-training-artifact evidence.
 
 ## Immediate Next Task
-- Rerun the direct `/kaggle/input` K2 dry-run on Kaggle.
-- Run the scientific full K2 command with the LeWM seed artifact dataset attached.
-- Validate the downloaded K2 artifact locally before registering any benchmark metric claim.
-- Keep K3 closed until K2 intake is complete.
+- Execute roadmap V4 Phase P6. Phase P5 is complete on the documented future-work path because the
+  current validated artifacts do not expose true temporal span labels.
+- Build the reproducible demo lane while preserving the same bounded non-locked claim surface.
+- Keep locked test closed and do not introduce temporal-localization metrics without a validated
+  span-labeled artifact.
 
 ## Safety
 - Non-locked-test Kaggle actions use standing Kaggle authorization after security, license,
@@ -54,6 +65,8 @@ The current execution roadmap is `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v4.md`
 - No new performance, superiority, SIGReg-benefit, action-benefit, cross-game, temporal-
   localization, SOTA, or neural locked-test claim may appear until a supporting artifact is
   validated.
+- No broad WOB/R5-XGame detection-performance, cross-game, action-conditioning, or
+  SIGReg-benefit claim outside the exact qualified non-locked bundles.
 
 ## Required Checks
 ```powershell
