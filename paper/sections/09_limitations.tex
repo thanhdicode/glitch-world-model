@@ -7,11 +7,13 @@ estimated from only two normal episodes. Its AUROC confidence intervals are wide
 and baseline intervals overlap, and the best LeWM FPR@95TPR is 0.7500. R5-XGame also has only 12
 normal negatives, is positive-heavy with 60 buggy positives, and exhibits seed sensitivity.
 
-TempGlitch provides binary video-level labels rather than verified temporal spans. Window scores
-therefore cannot be interpreted as validated glitch localization. The two evidence families are
-not directly comparable because their support, calibration, domain, action mode, and training
-lineage differ. R5-WOB has no normal-negative evaluation episodes and remains positive-probe
-evidence only.
+TempGlitch provides binary video-level labels rather than verified temporal spans, while the
+current executable GlitchBench path is image-level and the current validated WOB/XGame artifacts
+carry episode-level roles only. Window scores therefore cannot be interpreted as validated glitch
+localization. Qualitative surprise timelines may illustrate score dynamics, but they do not
+measure onset, offset, duration, or event-level recall. The two evidence families are not
+directly comparable because their support, calibration, domain, action mode, and training lineage
+differ. R5-WOB has no normal-negative evaluation episodes and remains positive-probe evidence only.
 
 The study includes simple frame-difference and feature-distance baselines but no learned video
 baseline evaluated on the exact follow-up support. It contains no controlled evidence for SIGReg

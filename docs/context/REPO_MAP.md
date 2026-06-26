@@ -1,7 +1,7 @@
 # REPO_MAP.md
 
-Generated: 2026-06-25T04:06:16+00:00
-Commit: `7875c492883562001c1eaeeb55efe31a2d79b507`
+Generated: 2026-06-26T09:46:56+00:00
+Commit: `cff8e5875ddcced84c45e4b626d5cac1050f5a75`
 Generator: `scripts/update_context_cache.py`
 
 ## Top-Level Map
@@ -63,11 +63,13 @@ Generator: `scripts/update_context_cache.py`
 | `scripts/freeze_wob_protocol.py` | _kaggle_csv, _sha256, build_parser, main | Python module. |
 | `scripts/ingest_k1_learned_baselines.py` | _read_json, _read_csv_rows, _write_json, _write_csv_rows, _float_text, _config_key, _aggregate_scores, _support_rows_from_followup, _evaluation_rows, _load_followup_bundle, _build_learned_rows, _best_row | Python module. |
 | `scripts/ingest_k2_glitchbench_benchmark.py` | _read_json, _read_csv_rows, _write_json, _float_text, locate_bundle_root, _best_row, _best_rows_by_method, _lewm_seed_aggregate, _validate_score_file, ingest_k2_glitchbench_benchmark, build_parser, main | Python module. |
+| `scripts/ingest_k3_ablation_bundle.py` | _read_json, _write_json, _sha256, _parse_sidecar, _verify_optional_sidecar, _safe_extract_tar, _safe_extract_zip, _resolve_bundle_root, _variant_lookup, _assert_false_flags, _validate_controlled_pairs, _write_report | Python module. |
 | `scripts/ingest_phase6e_kaggle_artifacts.py` | _read_json, _validate_required_artifacts, _read_and_validate_scores, _write_report, ingest_phase6e_kaggle_artifacts, build_parser, main | Python module. |
 | `scripts/inspect_lewm_dataset.py` | build_parser, main | Python module. |
 | `scripts/make_paper_tables.py` | write_tables, main | Python module. |
 | `scripts/plan_frozen_video_representation_baseline.py` | build_parser, main | Python module. |
-| `scripts/plot_lewm_surprise_timeline.py` | plot_scores, main | Python module. |
+| `scripts/plot_lewm_surprise_timeline.py` | plot_series, plot_scores, main | Python module. |
+| `scripts/prepare_k3_ablation_inputs.py` | _load_script_module, _read_json, _write_json, _write_sha256, _read_manifest_rows, _require_safe_false, _resolve_stage_file, _candidate_roots, _existing_materialized_state, _materialize_from_raw, _manifest_payload_for_missing, _manifest_payload_for_ready | Python module. |
 | `scripts/prepare_lewm_gate6_package.py` | build_parser, main | Python module. |
 | `scripts/prepare_lewm_gpu_profile_package.py` | _git, main | Python module. |
 | `scripts/prepare_lewm_kaggle_package.py` | build_parser, main | Python module. |
@@ -223,11 +225,13 @@ Generator: `scripts/update_context_cache.py`
 | `scripts/freeze_wob_protocol.py` | CLI/helper script. | general |
 | `scripts/ingest_k1_learned_baselines.py` | CLI/helper script. | general |
 | `scripts/ingest_k2_glitchbench_benchmark.py` | CLI/helper script. | general |
+| `scripts/ingest_k3_ablation_bundle.py` | CLI/helper script. | general |
 | `scripts/ingest_phase6e_kaggle_artifacts.py` | CLI/helper script. | Gate 5 |
 | `scripts/inspect_lewm_dataset.py` | CLI/helper script. | Gate 5 |
 | `scripts/make_paper_tables.py` | CLI/helper script. | general |
 | `scripts/plan_frozen_video_representation_baseline.py` | CLI/helper script. | general |
 | `scripts/plot_lewm_surprise_timeline.py` | CLI/helper script. | Gate 5 |
+| `scripts/prepare_k3_ablation_inputs.py` | CLI/helper script. | general |
 | `scripts/prepare_lewm_gate6_package.py` | CLI/helper script. | Gate 5 |
 | `scripts/prepare_lewm_gpu_profile_package.py` | CLI/helper script. | Gate 5 |
 | `scripts/prepare_lewm_kaggle_package.py` | CLI/helper script. | Gate 5 |
@@ -270,7 +274,6 @@ Generator: `scripts/update_context_cache.py`
 | `scripts/run_worldofbugs_asset_demo.py` | CLI/helper script. | general |
 | `scripts/select_tempglitch_protocol_config.py` | CLI/helper script. | general |
 | `scripts/smoke_lewm_checkpoint.py` | CLI/helper script. | Gate 5 |
-| `scripts/summarize_all_experiments.py` | CLI/helper script. | general |
 
 ## Tests
 | Test | Coverage |
@@ -302,6 +305,7 @@ Generator: `scripts/update_context_cache.py`
 | `tests/test_glitchbench_protocol.py` | glitchbench_protocol |
 | `tests/test_imports.py` | imports |
 | `tests/test_ingest_k2_glitchbench_benchmark.py` | ingest_k2_glitchbench_benchmark |
+| `tests/test_ingest_k3_ablation_bundle.py` | ingest_k3_ablation_bundle |
 | `tests/test_ingest_phase6e_kaggle_artifacts.py` | ingest_phase6e_kaggle_artifacts |
 | `tests/test_kaggle_automation_foundation.py` | kaggle_automation_foundation |
 | `tests/test_kaggle_automation_orchestrator.py` | kaggle_automation_orchestrator |
@@ -435,6 +439,8 @@ Generator: `scripts/update_context_cache.py`
 | `docs/research/121_glitchbench_claim_boundary.md` | 121 glitchbench claim boundary |
 | `docs/research/122_k2_glitchbench_results.md` | 122 k2 glitchbench results |
 | `docs/research/123_kaggle_k3_ablation_runbook.md` | 123 kaggle k3 ablation runbook |
+| `docs/research/124_k3_local_readiness_report.md` | 124 k3 local readiness report |
+| `docs/research/125_k3_kaggle_package_instructions.md` | 125 k3 kaggle package instructions |
 | `docs/research/12_experiment_results_log.md` | 12 experiment results log |
 | `docs/research/15_reproducibility_checklist.md` | 15 reproducibility checklist |
 | `docs/research/16_claim_registry.md` | 16 claim registry |
@@ -466,5 +472,3 @@ Generator: `scripts/update_context_cache.py`
 | `docs/research/42_experiment_tracking_plan.md` | 42 experiment tracking plan |
 | `docs/research/42_gate5_kernel_approval_status.md` | 42 gate5 kernel approval status |
 | `docs/research/43_gate5_kaggle_cuda_smoke_results.md` | 43 gate5 kaggle cuda smoke results |
-| `docs/research/44_gate5_cuda_smoke_validation.md` | 44 gate5 cuda smoke validation |
-| `docs/research/45_gate6_lewm_normal_training_plan.md` | 45 gate6 lewm normal training plan |

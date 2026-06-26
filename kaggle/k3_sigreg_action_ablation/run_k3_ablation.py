@@ -1,3 +1,5 @@
+# ruff: noqa: E402
+
 from __future__ import annotations
 
 import argparse
@@ -50,7 +52,9 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--train-path", type=Path, default=None)
     parser.add_argument("--validation-path", type=Path, default=None)
-    parser.add_argument("--output-root", type=Path, default=Path("/kaggle/working/r6_sigreg_ablation"))
+    parser.add_argument(
+        "--output-root", type=Path, default=Path("/kaggle/working/r6_sigreg_ablation")
+    )
     parser.add_argument("--device", default="cuda")
     parser.add_argument("--resume", action="store_true")
     return parser
@@ -65,9 +69,7 @@ def main(argv: list[str] | None = None) -> int:
             f"Current manifest status: {manifest.get('status')!r}"
         )
     train_path = _resolve_input_path(args.train_path or Path(manifest["train_path"]))
-    validation_path = _resolve_input_path(
-        args.validation_path or Path(manifest["validation_path"])
-    )
+    validation_path = _resolve_input_path(args.validation_path or Path(manifest["validation_path"]))
     if args.device != "cuda":
         raise ValueError("Scientific K3 runs must request --device cuda.")
 
