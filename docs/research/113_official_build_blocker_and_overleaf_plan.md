@@ -1,6 +1,6 @@
 # 113 - Official Build Blocker And Overleaf Plan
 
-Date: 2026-06-24
+Date: 2026-06-27
 Status: local build blocked; manual/Overleaf plan prepared
 
 ## Exact Missing Local Requirements
@@ -36,12 +36,13 @@ build success, page count, or warning clearance from this machine.
    - `paper/sections/*.tex`
    - `paper/appendices/*.tex`
    - referenced table files from `paper/tables/`
-4. Do not upload internal helper files such as:
+4. Upload only publication-ready figure assets exported separately from validated outputs.
+5. Do not upload internal helper files such as:
    - `paper/README.md`
    - `paper/TODO.md`
    - `paper/figures/PLAN.md`
    - `docs/research/*.md`
-5. Keep the anonymous-submission metadata in `paper/main.tex` for the review build.
+6. Keep the anonymous-submission metadata in `paper/main.tex` for the review build.
 
 ## Referenced Table Upload Set
 
@@ -50,16 +51,21 @@ Upload these table files:
 - `paper/tables/artifact_hashes.tex`
 - `paper/tables/claim_map.tex`
 - `paper/tables/dataset_inventory.tex`
+- `paper/tables/glitchbench_benchmark.tex`
+- `paper/tables/k1_learned_baselines.tex`
+- `paper/tables/k3_ablation_results.tex`
 - `paper/tables/limitations_claim_boundary.tex`
 - `paper/tables/literature_matrix.tex`
+- `paper/tables/qualitative_timeline_summary.tex`
 - `paper/tables/r5_bounded_results.tex`
 - `paper/tables/r5_xgame_results.tex`
-- `paper/tables/r6_ablation_results.tex`
 - `paper/tables/reviewer_risk.tex`
 
 Do not upload these unless they are intentionally reintroduced:
 
+- `paper/tables/glitchbench_benchmark_pending.tex`
 - `paper/tables/r5_wob_results.tex`
+- `paper/tables/r6_ablation_results.tex`
 - `paper/tables/phase6d_results.tex`
 - `paper/tables/phase6e_validation_metrics.tex`
 

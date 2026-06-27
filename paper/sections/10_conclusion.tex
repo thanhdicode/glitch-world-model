@@ -1,17 +1,22 @@
 \section{Conclusion}
 \label{sec:conclusion}
 
-This study establishes a leakage-aware, provenance-bound evaluation of latent-surprise signals for
-gameplay glitch detection. On one frozen pair-disjoint non-locked TempGlitch split, the best
-recorded LeWM configuration shows stronger observed same-support separation than the recorded
-simple baselines. The result is accompanied by small support, wide and overlapping AUROC
-intervals, and a high operating-point false-positive rate. A separate R5-XGame family offers
-additional bounded evidence without serving as a cross-game comparison.
+This study presents a fuller but still bounded method-paper evaluation of a JEPA-style
+latent-surprise detector for gameplay glitch detection. On the frozen pair-disjoint TempGlitch
+follow-up, the best recorded LeWM row remains stronger than the simple baselines and stronger than
+the exact-support learned baselines in observed AUROC. At the same time, the strongest
+learned-baseline comparison is statistically inconclusive, the negative support and calibration
+support remain small, and the operating-point false-positive rate is high.
 
-The evidence supports continued investigation of latent surprise, particularly with stronger
-learned baselines, larger negative support, predeclared ablations, and datasets with verified
-temporal annotations. It does not establish universal glitch detection, practical deployment
-readiness, temporal localization, broad superiority, or locked-test performance. The immediate
-next step is to execute Roadmap V4: harden the statistics and evaluation support locally, then add
-learned-baseline, benchmark, and controlled-ablation evidence without relaxing the locked-test or
-anti-overclaim boundaries.
+The broader evidence lanes sharpen the method story rather than simply enlarging it. K2 provides a
+bounded public-benchmark slice on which the current LeWM rows underperform validated simple and
+learned-baseline rows. K3 provides a controlled mechanistic readout with no observed SIGReg
+prediction-loss benefit and no stable real-action-over-zero-action gain. Qualitative timelines
+improve interpretability but do not unlock temporal localization because span labels are absent.
+
+The resulting contribution is an artifact-backed, leakage-aware detector evaluation with explicit
+positive and negative findings. It does not establish broad superiority, cross-game
+generalization, temporal localization, deployment readiness, or locked-test performance. The next
+submission step is operational rather than scientific: run the official LLNCS build in Overleaf
+or the Springer author kit, record bibliography/reference warnings, verify anonymization and PDF
+metadata, and complete external similarity screening.

@@ -1,6 +1,6 @@
 # 114 - Submission Package Inventory
 
-Date: 2026-06-24
+Date: 2026-06-27
 Status: local submission-package inventory
 
 ## Include In Submission Source Package
@@ -17,12 +17,20 @@ Referenced table files:
 - `paper/tables/artifact_hashes.tex`
 - `paper/tables/claim_map.tex`
 - `paper/tables/dataset_inventory.tex`
+- `paper/tables/glitchbench_benchmark.tex`
+- `paper/tables/k1_learned_baselines.tex`
+- `paper/tables/k3_ablation_results.tex`
 - `paper/tables/limitations_claim_boundary.tex`
 - `paper/tables/literature_matrix.tex`
+- `paper/tables/qualitative_timeline_summary.tex`
 - `paper/tables/r5_bounded_results.tex`
 - `paper/tables/r5_xgame_results.tex`
-- `paper/tables/r6_ablation_results.tex`
 - `paper/tables/reviewer_risk.tex`
+
+Publication-ready figure assets:
+
+- upload only final figure files actually referenced by the Overleaf project
+- do not upload planning notes or raw output directories
 
 ## Exclude From Submission Source Package
 
@@ -37,7 +45,9 @@ Internal helper files:
 
 Internal-only or currently excluded table files:
 
+- `paper/tables/glitchbench_benchmark_pending.tex`
 - `paper/tables/r5_wob_results.tex`
+- `paper/tables/r6_ablation_results.tex`
 - `paper/tables/phase6d_results.tex`
 - `paper/tables/phase6e_validation_metrics.tex`
 - `paper/tables/README.md`

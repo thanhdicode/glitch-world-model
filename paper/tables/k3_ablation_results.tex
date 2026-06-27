@@ -1,0 +1,43 @@
+\begin{table}[t]
+\centering
+\caption{Validated K3 mechanistic ablation readout on the frozen validation-normal support. Lower
+prediction loss is better; SIGReg and action comparisons remain bounded mechanistic diagnostics,
+not detection metrics.}
+\label{tab:k3-ablation-results}
+\small
+\textbf{Panel A: group means}
+\begin{tabular}{llrr}
+\toprule
+SIGReg & Action mode & Mean best total val. loss & Mean best prediction loss \\
+\midrule
+off & real & 0.001181 & 0.001181 \\
+off & zero\_action & 0.001075 & 0.001075 \\
+on & real & 0.280237 & 0.019721 \\
+on & zero\_action & 0.284195 & 0.018489 \\
+\bottomrule
+\end{tabular}
+
+\medskip
+\textbf{Panel B: SIGReg-on minus SIGReg-off prediction-loss delta}
+\begin{tabular}{lrr}
+\toprule
+Seed & Real-action delta & Zero-action delta \\
+\midrule
+42 & +0.016560 & +0.019388 \\
+43 & +0.020677 & +0.017309 \\
+44 & +0.018384 & +0.015546 \\
+\bottomrule
+\end{tabular}
+
+\medskip
+\textbf{Panel C: real-action minus zero-action prediction-loss delta}
+\begin{tabular}{lrr}
+\toprule
+Seed & SIGReg-on delta & SIGReg-off delta \\
+\midrule
+42 & -0.003042 & -0.000215 \\
+43 & +0.003361 & -0.000008 \\
+44 & +0.003377 & +0.000539 \\
+\bottomrule
+\end{tabular}
+\end{table}

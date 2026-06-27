@@ -1,58 +1,60 @@
 # LAST_HANDOFF.md
 
-Last completed task: P6 demo lane implementation and reproducibility handoff
-Commit: latest branch commit for this task (see `git log -1`)
-Date: 2026-06-27T19:30:00+07:00
+Last completed task: P7 full method-paper rewrite and submission handoff
+Commit: `latest branch commit for this task (see git log -1)`
+Date: 2026-06-27T21:05:00+07:00
 
 ## What Changed
 
-- Created `demo/run_glitch_demo.py` as a reproducible thin wrapper around
-  `scripts/generate_qualitative_surprise_timelines.py`.
-- Created `demo/README.md` documenting inputs, commands, outputs, and the P6 claim boundary.
-- Added `tests/test_p6_demo.py` covering dry-run behavior, receipt flags, and source-level safety
-  constraints.
-- Appended a `Phase P6 demo reproduction` section to
-  `docs/research/15_reproducibility_checklist.md`.
-- Refreshed `scripts/update_context_cache.py` and `tests/test_context_cache.py` so the generated
-  context now advances to P7 after P6 is complete.
-- Ran both dry-run and full non-locked demo execution, producing timeline plots and an ignored demo
-  receipt in the demo output directory.
+- Replaced the old bounded-only paper framing with a full method-paper manuscript that now
+  integrates the validated TempGlitch follow-up, K1 learned baselines, K2 GlitchBench, K3
+  mechanistic ablation, qualitative surprise timelines, and the separate R5-XGame family.
+- Rewrote `scripts/make_paper_tables.py` so the paper tables are regenerated from validated
+  TempGlitch, K1, K2, K3, and qualitative-timeline artifacts.
+- Added a new `paper/sections/08_results.tex` and refreshed the paper-side claim map, figure
+  plan, submission checklist, bibliography audit, anonymization audit, similarity plan, and
+  Overleaf/submission inventory docs.
+- Updated `scripts/update_context_cache.py` and its tests so the context cache now advances from
+  local P7 completion to the official LLNCS build/submission handoff.
 
 ## Checks Passed
 
-- `python demo/run_glitch_demo.py --dry-run`
-- `python demo/run_glitch_demo.py`
-- `python -m pytest tests/test_p6_demo.py tests/test_generate_qualitative_surprise_timelines.py -q`
+- `python scripts/make_paper_tables.py`
+- `python -m pytest tests/test_research_release_tools.py -k paper_table_generator`
 
 ## Safety Status
 
 - No locked-test access, materialization, or scoring occurred in this task.
 - No Kaggle action was launched.
-- No temporal-localization metric was introduced.
-- No scientific claim surface was widened beyond qualitative demo support.
-- No locked-test path was opened.
+- No new scientific claim was added outside the validated claim registry.
+- Qualitative timelines remain explicitly non-metric and do not support temporal localization.
+- Output artifacts remain outside Git.
 
 ## Gate Status After Task
 
-- P6 demo lane is now implemented on validated non-locked artifacts.
-- P7 is now the next roadmap phase.
+- The local P7 paper rewrite is complete.
+- The next step is the official LLNCS build, anonymization/PDF metadata check, and submission
+  handoff.
 - Gate 10 remains closed.
 
 ## Open Blockers
 
-- The paper rewrite remains outstanding and must stay fully synchronized with the claim registry.
+- This workspace still lacks `llncs.cls`, `splncs04.bst`, `pdflatex`, `bibtex`, `biber`, and
+  `latexmk`.
+- The first real PDF build, page-fit review, compile-time warning review, and external similarity
+  screening must happen in the official Springer/Overleaf environment.
 - Temporal localization remains future work until a validated span-labeled artifact exists.
 
 ## Next Recommended Task
 
-- Start Phase P7: full paper rewrite and submission-package preparation under the current bounded
-  claim surface.
+- Upload the current anonymized paper source into the official Springer/Overleaf LLNCS kit,
+  compile the first PDF, and record the build, anonymization, and similarity checklist outputs.
 
 ## Files Likely Relevant Next
 
-- `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v4.md`
-- `docs/context/NEXT_ACTION.md`
-- `docs/context/PROJECT_STATE.md`
-- `docs/research/16_claim_registry.md`
-- `demo/run_glitch_demo.py`
-- `docs/research/15_reproducibility_checklist.md`
+- `paper/main.tex`
+- `paper/sections/08_results.tex`
+- `paper/tables/README.md`
+- `docs/research/106_first_bounded_paper_claim_audit.md`
+- `docs/research/113_official_build_blocker_and_overleaf_plan.md`
+- `docs/research/114_submission_package_inventory.md`

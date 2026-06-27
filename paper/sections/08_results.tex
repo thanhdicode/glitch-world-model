@@ -1,0 +1,81 @@
+\section{Results}
+\label{sec:results}
+
+\subsection{Main TempGlitch Pair-Disjoint Follow-up}
+
+Table~\ref{tab:r5-bounded-results} reports the frozen pair-disjoint, non-locked, same-support
+TempGlitch comparison. Every row uses 12 normal-negative and 22 buggy-positive evaluation
+episodes after calibration on two normal episodes; source, pair, and episode overlap across roles
+is zero.
+
+\input{tables/r5_bounded_results}
+
+The best recorded LeWM row is seed44 \texttt{lewm\_l2\_max} with mean episode aggregation. It
+reaches AUROC 0.7159, AUPRC 0.8026, F1 0.7143, precision 0.7500, recall 0.6818, balanced
+accuracy 0.6326, and FPR@95TPR 0.7500. The strongest simple baseline by AUROC is
+\texttt{feature\_distance} with \texttt{top2\_mean} aggregation at AUROC 0.6136 and AUPRC 0.7310.
+Within this exact frozen support, the best LeWM row shows stronger observed same-support
+separation than the simple baselines, but the AUROC intervals overlap and the operating-point
+false-positive rate remains high.
+
+\subsection{Exact-Support Learned Baselines}
+
+Table~\ref{tab:k1-learned-baselines} extends the same TempGlitch follow-up support with three
+learned video baselines.
+
+\input{tables/k1_learned_baselines}
+
+The strongest learned baseline is \texttt{cnn\_lstm} with \texttt{max} episode aggregation, at
+AUROC 0.6136, AUPRC 0.7249, and F1 0.7111. Its AUROC numerically matches the strongest simple
+baseline and remains below the best LeWM row. The paired delta-AUROC versus the best LeWM row is
+-0.1023 with 95\% bootstrap interval [-0.2425, 0.0372] and DeLong $p=0.2091$, so the evidence
+supports only bounded stronger-observed-separation wording for LeWM rather than a significant
+superiority claim.
+
+\subsection{Bounded GlitchBench K2 Benchmark}
+
+Table~\ref{tab:glitchbench-benchmark} reports the validated K2 GlitchBench slice.
+
+\input{tables/glitchbench_benchmark}
+
+On this exact image-level synthetic-normal split, \texttt{feature\_distance},
+\texttt{video\_autoencoder}, \texttt{cnn\_lstm}, and \texttt{video\_transformer} each reach AUROC
+1.0 and AUPRC 1.0, while the best recorded LeWM row reaches AUROC 0.5. At the same time, the
+non-LeWM AUROC-1.0 rows still share F1 0.6667 and balanced accuracy 0.5 under the shared
+train-normal \texttt{p95} threshold rule. K2 therefore acts as a bounded negative comparison
+surface for the current LeWM configuration and also highlights the distinction between ranking
+quality and threshold calibration.
+
+\subsection{K3 Mechanistic Ablation}
+
+Table~\ref{tab:k3-ablation-results} summarizes the controlled K3 validation-normal readout.
+
+\input{tables/k3_ablation_results}
+
+Across the six matched SIGReg-on versus SIGReg-off comparisons, the lower-is-better prediction
+loss never improves when SIGReg is enabled. Real-action versus zero-action prediction-loss deltas
+are also not directionally stable across seeds. This is an honest negative mechanistic readout for
+the specific K3 training objective; it is not a detection-performance result.
+
+\subsection{Qualitative Surprise Timelines}
+
+The qualitative timeline lane is summarized in Table~\ref{tab:qualitative-timelines}.
+
+\input{tables/qualitative_timeline_summary}
+
+These figures show that the best validated TempGlitch LeWM configuration yields interpretable
+within-episode score trajectories, but the current artifacts do not expose real temporal span
+labels. The timelines therefore remain qualitative illustrations only and do not support temporal
+IoU, temporal AP, onset, offset, or duration claims.
+
+\subsection{Secondary R5-XGame Evidence}
+
+Table~\ref{tab:r5-xgame-results} reports the separate frozen non-locked R5-XGame family. On its
+12-normal-negative and 60-buggy-positive evaluation support, the best recorded LeWM row reaches
+AUROC 0.9097, compared with 0.7681 for feature distance and 0.7167 for frame difference.
+
+\input{tables/r5_xgame_results}
+
+These values are not directly compared with TempGlitch values. The two result families differ in
+dataset distribution, class balance, calibration support, action mode, and training lineage. The
+R5-XGame result is evidence about its own frozen split, not a test of cross-game generalization.

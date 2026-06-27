@@ -1,6 +1,6 @@
 # 112 - Similarity Screening Plan
 
-Date: 2026-06-24
+Date: 2026-06-27
 Status: planning only; no external checker has been run
 
 ## Current Status
@@ -20,6 +20,10 @@ Potential overlap sources inside this repository:
 
 - `docs/research/101_tempglitch_followup_results.md`
 - `docs/research/106_first_bounded_paper_claim_audit.md`
+- `docs/research/118_k1_learned_baseline_results.md`
+- `docs/research/122_k2_glitchbench_results.md`
+- `docs/research/126_k3_sigreg_action_ablation_results.md`
+- `docs/research/128_temporal_localization_future_work.md`
 - `docs/research/107_paper_draft_reviewer_audit.md`
 - `docs/research/108_submission_gap_analysis.md`
 - `PLAYBOOK.md`
@@ -42,13 +46,15 @@ should be manually reviewed for repetitive phrasing.
 - avoid long direct quotations unless absolutely necessary;
 - prefer paraphrase plus citation for related-work material;
 - keep metric sentences tied to repository evidence, not to prose from support memos;
+- check that repeated phrases such as "bounded negative comparison surface" and
+  "stronger observed same-support separation" are used only where scientifically necessary;
 - recheck all bibliography entries after the first official-kit build for citation-style warnings.
 
 ## Paraphrase Quality Checklist
 
 - sentence remains factually identical to the source claim;
 - wording is narrower, not broader, than the evidence;
-- repeated phrases such as "stronger observed same-support separation" are used only where needed;
+- repeated phrases are used only where needed;
 - no sentence implies SOTA, broad superiority, generalization, localization, or deployment.
 
 ## Final Manual Step

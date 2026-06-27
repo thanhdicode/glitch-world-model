@@ -7,28 +7,35 @@ calibration normals from sharing source, suspected pair, or episode identity wit
 episodes. This matters because paired normal and buggy captures may share scene layout, assets,
 camera motion, or recording conditions. A threshold calibrated on a related normal could encode
 pair-specific information rather than a transferable notion of normality. The repaired split does
-not eliminate every possible dataset bias, but it closes the documented cross-role overlap.
+not eliminate every possible dataset bias, but it closes the documented cross-role overlap and
+makes the learned-baseline comparison materially more interpretable.
 
-\paragraph{What the main result says.}
-The best recorded LeWM row has higher AUROC and AUPRC than the strongest simple baseline row on
-the exact same frozen TempGlitch support. Its thresholded F1 is also substantially higher. At the
-same time, overlapping AUROC intervals, two-episode calibration, 12 normal negatives, and
-FPR@95TPR of 0.7500 make the observation fragile. The scientifically useful conclusion is that
-latent surprise warrants further controlled study, not that it has won a general benchmark.
+\paragraph{What the exact-support comparison says.}
+The best recorded LeWM row remains the strongest observed TempGlitch row once learned baselines are
+added on the same support, but the strength of that observation is limited. The strongest
+learned-baseline AUROC delta crosses zero, the calibration support remains only two episodes, the
+negative support remains 12 episodes, and FPR@95TPR is still 0.7500. The scientifically useful
+conclusion is that latent surprise remains competitive on this split and merits further controlled
+study, not that it has won a benchmark generally.
 
-\paragraph{Why R5-WOB is not a binary benchmark.}
-The R5-WOB bundle validates execution and records positive-class behavior under a threshold
-calibrated from normal episodes. Because its evaluation role has no normal-negative episodes,
-AUROC and false-positive behavior cannot be estimated as a binary benchmark. R5-XGame adds held
-normal negatives and therefore supports bounded binary metrics, but it remains a separate,
-positive-heavy non-locked family.
+\paragraph{Why the negative evidence matters.}
+K2 and K3 strengthen the paper precisely because they are not uniformly favorable to LeWM. K2 is a
+bounded public-benchmark slice on which the current LeWM rows trail the validated simple and
+learned-baseline top rows. K3 is a controlled mechanistic readout on which neither SIGReg nor
+real-action conditioning shows a positive directional pattern. Keeping those negative findings in
+the paper makes the method story more honest and more useful than a selective positive report.
 
-\paragraph{Future comparisons.}
-The current simple baselines are useful controls but do not exhaust plausible alternatives.
-Stronger evidence would require an exact-support learned video baseline, additional seeds,
-predeclared SIGReg and action-conditioning comparisons, and broader datasets with verified
-temporal annotations. Those experiments require a new compute phase and are not inferred from the
-existing artifacts.
+\paragraph{Why qualitative timelines are still worthwhile.}
+Even without span labels, window-level surprise plots remain helpful for diagnosing whether a high
+episode score comes from a single peak, a sustained elevation, or a noisy trajectory. That is a
+useful interpretability aid for a method paper. The boundary remains clear: these plots do not
+convert the study into a temporal-localization benchmark.
+
+\paragraph{Why the evidence surfaces stay separate.}
+R5-XGame and R5-WOB still serve different purposes from TempGlitch. R5-XGame provides a secondary
+positive-heavy binary family with real-action evidence, while R5-WOB remains positive-probe only.
+Their role in this manuscript is to broaden the empirical picture without erasing protocol
+differences or implying cross-game generalization.
 
 \input{tables/limitations_claim_boundary}
 \input{tables/reviewer_risk}

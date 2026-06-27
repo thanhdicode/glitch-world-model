@@ -26,14 +26,15 @@ or treated as proof of cross-game generalization.
 
 The contributions are:
 \begin{itemize}[leftmargin=*]
-\item a source-, pair-, and episode-aware protocol that separates normal-only fitting,
-calibration, and evaluation before windowing;
-\item an episode-level comparison of artifact-backed LeWM latent surprise against frame-difference
-and train-normal-fitted feature-distance baselines on identical support;
-\item uncertainty, operating-point, provenance, and claim-boundary reporting that keeps negative
-evidence visible; and
-\item a reproducible evidence package whose validators, hashes, and registered claims constrain
-the manuscript.
+\item a JEPA-style latent-surprise detector formulation, instantiated from artifact-backed LeWM
+checkpoints, with source-, pair-, and episode-aware role separation before windowing;
+\item an exact-support episode-level comparison of latent surprise against simple and learned video
+baselines on the frozen non-locked TempGlitch follow-up;
+\item two additional controlled evidence lanes: a bounded public-benchmark negative comparison on
+the K2 GlitchBench slice and a K3 mechanistic SIGReg/action ablation on validation-normal
+training readouts; and
+\item a reproducible paper surface in which tables, qualitative timelines, provenance records, and
+claim-registry mappings constrain what the manuscript may and may not say.
 \end{itemize}
 
 The scope is intentionally bounded. The study does not claim a universal glitch detector,

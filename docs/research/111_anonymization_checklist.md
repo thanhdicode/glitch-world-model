@@ -1,7 +1,7 @@
 # 111 - Anonymization Checklist
 
-Date: 2026-06-24
-Status: local review-package anonymization audit
+Date: 2026-06-27
+Status: local review-package anonymization audit after P7 rewrite
 
 ## Current Paper-Source Status
 
@@ -31,6 +31,8 @@ Findings:
 
 - the manuscript source itself does not contain local machine paths;
 - internal helper docs do contain absolute local paths and repo-management notes;
+- `paper/README.md` contains a local absolute path link for collaborator convenience and must stay
+  outside the uploaded review package;
 - those helper files must remain outside the submission upload.
 
 ## Manual Checks Still Required
@@ -43,4 +45,4 @@ Findings:
 ## Submission Rule
 
 Use the anonymous-ready `paper/main.tex` metadata for the review package. Do not swap in real
-author, affiliation, or email metadata during the bounded submission finalization pass.
+author, affiliation, or email metadata during the review-build finalization pass.

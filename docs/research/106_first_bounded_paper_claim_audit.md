@@ -1,37 +1,41 @@
-# 106 - First Bounded Paper Draft Claim Audit
+# 106 - Full Method-Paper Claim Audit
 
-Date: 2026-06-24
-Status: bounded paper package claim control
+Date: 2026-06-27
+Status: full method-paper claim control after P7 rewrite
 
 ## Framing
 
-The manuscript is framed as:
+The manuscript is now framed as:
 
-> a leakage-aware empirical evaluation of latent-surprise signals for gameplay glitch detection
+> a leakage-aware evaluation of a JEPA-style latent-surprise detector for gameplay glitch detection
 
-It is not framed as a state-of-the-art method paper, full game-QA solution, temporal-localization
-benchmark, cross-game generalization proof, or SIGReg contribution.
+It is still not framed as a state-of-the-art benchmark paper, universal game-QA solution,
+cross-game generalization proof, temporal-localization benchmark, SIGReg-improvement paper, or
+locked-test result.
 
-## Results Paragraph Map
+## Paragraph Map
 
-| Manuscript paragraph | Registered claims | Required qualifiers |
+| Manuscript surface | Registered claims | Required qualifiers |
 | --- | --- | --- |
 | TempGlitch support and leakage paragraph | C-090, C-092 | frozen, pair-disjoint, non-locked, same support |
-| TempGlitch best LeWM metrics paragraph | C-091 | seed44/config exactness, 12/22 support, bounded |
-| TempGlitch baseline and interpretation paragraph | C-091 | AUROC CI overlap, small support, high FPR, no broad superiority |
-| R5-XGame result paragraph | C-084, C-088 | frozen non-locked 12/60 split, overlapping CI |
-| Cross-family non-comparability paragraph | C-082, C-084, C-088 | separate distribution/protocol, no generalization |
-| Exploratory aggregation/seed paragraph | C-089 | descriptive recorded-row summary, not causal ablation |
-| R5-WOB discussion paragraph | C-079, C-082 | positive-probe only, zero normal-negative evaluation |
+| TempGlitch best LeWM metrics paragraph | C-091 | seed44/config exactness, 12/22 support, high FPR remains visible |
+| Exact-support learned-baseline paragraph | C-095, C-100, C-101, C-102 | strongest learned row is `cnn_lstm` + `max`; paired AUROC delta crosses zero |
+| K2 benchmark paragraph | C-096, C-103, C-110, C-111, C-112 | image-level, synthetic-normal, bounded negative comparison, threshold-calibration caveat |
+| K3 ablation paragraph | C-097, C-106, C-113, C-114 | validation-normal mechanistic readout only; no detection-performance language |
+| Qualitative timeline paragraph | C-098, C-115 | qualitative only, no temporal metric, no span labels |
+| R5-XGame paragraph | C-084, C-088 | separate frozen non-locked family, no direct cross-family comparison |
+| Cross-family non-comparability paragraph | C-082, C-084, C-088 | separate distribution/protocol/action mode/training lineage |
+| R5-WOB boundary paragraph | C-079, C-082 | positive-probe only, zero normal-negative evaluation |
 
 ## Abstract And Conclusion Map
 
-- The abstract's TempGlitch support and metrics map to C-090--C-092.
-- Its R5-XGame status statement maps to C-084/C-088.
-- Its negative claim boundary maps to C-082 and the notes for C-088/C-091.
-- The conclusion repeats the same bounded observations without adding a deployment, localization,
-  generalization, SIGReg, or locked-test conclusion, and now points to local submission
-  finalization rather than a new compute gate.
+- The abstract maps its TempGlitch row to C-090--C-092.
+- The abstract's learned-baseline statement maps to C-095/C-100/C-102.
+- The abstract's K2 negative comparison maps to C-096/C-110/C-111/C-112.
+- The abstract's K3 statement maps to C-097/C-113/C-114.
+- The abstract's qualitative-timeline limitation maps to C-098/C-115.
+- The conclusion repeats the same evidence boundary and ends with the official-build/submission
+  handoff rather than a new compute promise.
 
 ## Wording Audit
 
@@ -40,27 +44,32 @@ Required wording retained:
 - frozen split;
 - non-locked;
 - same-support where methods are compared;
-- bounded;
-- small evaluation/calibration support;
-- wide and overlapping AUROC confidence intervals;
-- high TempGlitch FPR@95TPR.
+- pair-disjoint for the main TempGlitch family;
+- bounded or split-bounded interpretation;
+- AUROC confidence-interval overlap and/or inconclusive paired comparison where relevant;
+- high TempGlitch FPR@95TPR;
+- qualitative-only wording for timelines.
 
 Rejected or rewritten:
 
 - "LeWM beats baselines" -> "the best recorded LeWM row shows stronger observed same-support
-  separation within the frozen non-locked split";
-- "detects glitches generally" -> bounded episode discrimination only;
-- "generalizes" -> result families are explicitly separate and not directly comparable;
-- "temporal localization" -> binary video labels do not support localization;
-- "SIGReg improves performance" -> no controlled SIGReg evidence;
+  separation on the frozen split";
+- "learned baselines lose" -> bounded split-specific comparison only;
+- "GlitchBench proves LeWM fails" -> bounded negative comparison on the exact K2 slice only;
+- "SIGReg hurts performance" -> no measured prediction-loss benefit in the validated K3 artifact;
+- "action conditioning helps or hurts" -> no stable directional action delta in K3;
+- "temporal localization" -> no true span annotations, qualitative timelines only;
 - any locked-test wording -> locked test remains unmaterialized and unscored.
 
 ## Artifact And Build Audit
 
 - TempGlitch result source: report 101 and claims C-090--C-092.
+- K1 source: report 118 and claims C-095/C-100/C-101/C-102.
+- K2 source: report 122 and claims C-096/C-103/C-110/C-111/C-112.
+- K3 source: report 126 and claims C-097/C-106/C-113/C-114.
+- Timeline boundary source: reports 127/128 and claims C-098/C-115.
 - R5-XGame source: reports 96/97 and claims C-084/C-088/C-089.
 - R5-WOB boundary: C-079/C-082.
-- Output artifacts remain outside Git; exact hashes are in report 101 and the provenance appendix.
 - Local `pdflatex`, `bibtex`, `biber`, and `latexmk` are unavailable, and the repository does not
-  vendor `llncs.cls` or `splncs04.bst`. Typeset compilation and page-fit review therefore remain
-  pending.
+  vendor `llncs.cls` or `splncs04.bst`. The paper is therefore source-ready and audit-ready, but
+  not locally PDF-verified from this workspace.
