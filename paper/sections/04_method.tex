@@ -1,37 +1,61 @@
 \section{Method}
 \label{sec:method}
 
-\subsection{Normal-Only Latent Prediction}
+\subsection{JEPA-Style Latent-Surprise Detector}
 
-The LeWM evidence used here comes from previously validated checkpoints trained under a
-normal-only gameplay protocol. For an observation window, the encoder produces latent targets and
-the predictor estimates future latent representations. A scalar surprise score is derived from
-the discrepancy between predicted and target latents. The evaluated score registry includes
-mean-, maximum-, and top-two summaries of mean-squared or L2 latent error. This study treats these
-as recorded scoring variants, not as novel architectural contributions.
+The evaluated LeWM path is a JEPA-style latent predictor trained on normal gameplay only. For a
+window $w_{e,t}$ with context frames and optional actions, an encoder produces target latent
+representations and a predictor estimates future latent states from the available context. Let
+$z_{e,t}$ denote the target latent tensor and $\hat{z}_{e,t}$ the predicted tensor. A window-level
+surprise signal is then derived from their discrepancy. The validated score registry includes
+mean, maximum, and top-two-mean summaries of either elementwise mean-squared error or L2 error:
+\begin{equation}
+d_{e,t} \in \{\texttt{lewm\_mse\_mean},\texttt{lewm\_mse\_max},\texttt{lewm\_mse\_top2\_mean},
+\texttt{lewm\_l2\_mean},\texttt{lewm\_l2\_max},\texttt{lewm\_l2\_top2\_mean}\}.
+\end{equation}
+We treat these as recorded detector variants exposed by validated artifacts rather than as new
+architectural contributions.
 
-TempGlitch does not provide verified action traces for the current adapter, so its LeWM path uses
-an explicitly documented zero-action input. The R5-XGame path uses its separately validated
-real-action protocol. This difference is one reason the two evidence families are not directly
-compared and cannot support an action-conditioning conclusion.
+TempGlitch does not provide verified action traces in the current adapter path, so its LeWM
+evaluation uses an explicitly documented zero-action input. The separate R5-XGame family uses its
+own real-action protocol. Because the evidence families differ in both domain and action mode,
+their absolute scores are not used to claim action-conditioning benefit.
 
-\subsection{Episode Aggregation}
+\subsection{Episode-Level Detector}
 
-Each window scorer is combined with mean, maximum, or top-two-mean episode aggregation. Mean
-captures sustained elevation, whereas maximum and top-two-mean emphasize short high-surprise
-segments. The main TempGlitch row uses mean episode aggregation. The manuscript reports recorded
-variants without claiming that one aggregation is universally optimal.
+Window scores are aggregated to one episode score
+\begin{equation}
+S_e = A\left(d_{e,1}, \ldots, d_{e,T_e}\right),
+\end{equation}
+where $A$ is one of \texttt{mean}, \texttt{max}, or \texttt{top2\_mean}. Mean emphasizes
+sustained elevated surprise, whereas \texttt{max} and \texttt{top2\_mean} emphasize short,
+high-scoring segments. The paper reports the strongest recorded rows and their uncertainty without
+claiming that any aggregation is universally optimal.
 
-\subsection{Simple Baselines}
+\subsection{Baseline Families}
 
-\texttt{frame\_diff} measures visual change between adjacent frames and requires no learned fit.
-\texttt{feature\_distance} fits its reference representation on allowed train-normal data only and
-measures distance from that normal reference. Both baselines are scored and aggregated on the
-same frozen evaluation support as LeWM within each evidence family.
+Two simple baselines share the same episode-level reporting interface. \texttt{frame\_diff}
+measures visual change between adjacent frames and requires no train-time fit.
+\texttt{feature\_distance} fits a normal reference on allowed train-normal data only and scores
+distance from that reference at evaluation time.
+
+The exact-support K1 comparison adds three learned video baselines:
+\texttt{video\_autoencoder}, \texttt{cnn\_lstm}, and \texttt{video\_transformer}. These models are
+also fit only on allowed train-normal data and are aggregated with the same
+\texttt{mean}/\texttt{max}/\texttt{top2\_mean} episode operators before comparison with LeWM.
+
+\subsection{Qualitative Timelines and Mechanistic Readouts}
+
+The detector also exposes window-level score series. These series are sufficient for qualitative
+timeline figures but not for temporal localization metrics because the validated artifacts do not
+contain true executable span annotations. Separately, the K3 ablation uses the same LeWM training
+family to compare SIGReg-on/off and real-action/zero-action variants under a frozen
+validation-normal objective. Those K3 rows are interpreted only through validation losses, not
+through detection AUROC or F1.
 
 \subsection{Normal-Only Threshold Calibration}
 
-For every configuration, $\tau$ is the empirical 95th percentile of designated calibration-normal
-episode scores. Buggy evaluation episodes are not used for fitting, configuration selection, or
-threshold calibration. This is an operating-point rule, not neural probability calibration
-\cite{guo2017calibration}. Locked test is neither materialized nor scored.
+For every detection configuration, $\tau$ is the empirical 95th percentile of designated
+calibration-normal episode scores. Buggy evaluation episodes are not used for fitting,
+configuration selection, or threshold calibration. This is an operating-point rule, not neural
+probability calibration \cite{guo2017calibration}. Locked test is neither materialized nor scored.

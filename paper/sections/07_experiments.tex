@@ -1,22 +1,47 @@
 \section{Experimental Setup}
 \label{sec:experiments}
 
-The TempGlitch follow-up evaluates artifact-backed LeWM checkpoints from seeds 42, 43, and 44.
-Six latent-surprise window scorers are combined with three episode aggregations, producing 54 LeWM
-rows. The two baselines, \texttt{frame\_diff} and \texttt{feature\_distance}, are each combined
-with the same three episode aggregations, producing six baseline rows. The headline comparison
-selects the highest recorded AUROC row within each family for descriptive reporting; it does not
-use evaluation results to retrain a model or refit a threshold.
+The paper now integrates five validated evidence lanes plus one secondary family, each with its
+own claim boundary.
 
-R5-XGame contains the same 60-row configuration structure on its own frozen 72-episode evaluation
-support. Its best recorded rows are presented as a separate secondary comparison. Descriptive
-seed, scorer, and aggregation summaries from that bundle are exploratory; no causal SIGReg,
-action-conditioning, temporal-smoothing, or training-budget ablation exists.
+\paragraph{Main TempGlitch follow-up.}
+Artifact-backed LeWM checkpoints from seeds 42, 43, and 44 are scored with six latent-surprise
+window scorers and three episode aggregations, producing 54 LeWM rows. The two simple baselines,
+\texttt{frame\_diff} and \texttt{feature\_distance}, are each combined with the same three episode
+aggregations, producing six baseline rows. The headline comparison reports the highest recorded
+AUROC row within each family on the exact same frozen support; it does not retrain a model or
+refit a threshold after looking at evaluation outcomes.
 
-The repository also preserves window-level LeWM score series for qualitative inspection, but the
-current validated artifacts do not expose true temporal event spans. Those timelines therefore
-support illustrative figures only and are not evaluated with temporal localization metrics.
+\paragraph{K1 exact-support learned baselines.}
+Three learned video baselines are scored on the same TempGlitch follow-up support used by the main
+table. Each learned baseline is reported across \texttt{mean}, \texttt{max}, and
+\texttt{top2\_mean} episode aggregation, producing nine rows. Paper tables retain only the best
+aggregation per learned method plus the paired comparison against the best LeWM row.
 
-The earlier one-buggy-episode window pilot, old exposed sequential-subset results, and results from
-different manifests are excluded from the main tables. Learned baselines that were not evaluated
-on the exact frozen follow-up support are also excluded rather than treated as comparable.
+\paragraph{K2 bounded GlitchBench benchmark.}
+The current executable GlitchBench path is a bounded image-level synthetic-normal split with 12
+train-normal clips and 24 validation clips. The K2 table reports the validated simple,
+learned-baseline, and LeWM rows produced by that exact package. Because the package is image-level
+and uses synthetic normal counterparts, K2 is treated as a bounded public-benchmark surface, not
+as a final gameplay QA benchmark.
+
+\paragraph{K3 mechanistic ablation.}
+The K3 artifact contains 12 controlled validation-normal training variants: SIGReg on/off crossed
+with real-action/zero-action mode for seeds 42, 43, and 44. K3 is read out through the best total
+validation loss and the minimum recorded prediction-loss diagnostic. It is a mechanistic training
+objective comparison only; no detection AUROC, locked-test, or superiority claim follows from it.
+
+\paragraph{Qualitative timeline lane.}
+The repository preserves window-level LeWM score series and now provides a validated qualitative
+timeline generator. The current receipt produces six figures with the best TempGlitch LeWM
+configuration, but the artifact boundary explicitly states \texttt{temporal\_metrics\_claimed =
+false}. These figures are therefore illustrative and do not count as temporal localization.
+
+\paragraph{Secondary R5-XGame evidence.}
+R5-XGame retains the same 60-row configuration structure on its own frozen 72-episode evaluation
+support. Its best recorded rows are presented as separate secondary evidence. Descriptive seed,
+scorer, and aggregation summaries from that bundle remain exploratory, and the family is not used
+to support cross-game generalization.
+
+The earlier one-buggy-episode pilot, exposed sequential-subset results, and rows scored on
+different manifests remain excluded from the main paper tables.

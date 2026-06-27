@@ -1,7 +1,7 @@
 # BOOT.md - Fast Start Context For Agents
 
-Generated: 2026-06-27T12:31:39+00:00
-Commit: `3ce684c8197ef57f4856d663ae14e2f46cb53f47`
+Generated: 2026-06-27T13:10:59+00:00
+Commit: `a4bee6fd0adfc97a80752b610f9e8ff1ab9ddc25`
 
 ## Read Order
 1. `RULES.md`
@@ -43,14 +43,19 @@ The current execution roadmap is `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v4.md`
   source, pair, and episode overlap.
 - Roadmap V4 is now canonical and reopens the evidence lane for a full Topic-A method-paper
   upgrade while preserving the existing anti-overclaim and locked-test rules.
+- The full P7 method-paper rewrite is now complete locally, with regenerated paper tables from
+  validated P2-P6 artifacts plus refreshed claim, bibliography, anonymization, and similarity
+  audit docs.
 - Gate 10 is closed.
 - Locked test is closed.
 - LeWM gameplay evaluation now exists for the non-locked TempGlitch research MVP only; locked
   test remains unopened, and WOB remains limited to audit-plus-training-artifact evidence.
 
 ## Immediate Next Task
-- Execute roadmap V4 Phase P7. The P6 demo lane is now present, so the next work is the full
-  paper rewrite and submission packaging on top of the validated bounded evidence.
+- Prepare the official LLNCS/Overleaf build and submission handoff on top of the completed local
+  P7 paper rewrite.
+- Upload only the current anonymized paper source, validated table set, and publication-ready
+  figures referenced by the manuscript.
 - Keep all paper-facing numbers, figures, and conclusions synchronized with
   `docs/research/16_claim_registry.md`.
 - Keep locked test closed and preserve the P5/P6 claim boundary: qualitative timelines are allowed,

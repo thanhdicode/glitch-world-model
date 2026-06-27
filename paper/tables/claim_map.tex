@@ -14,11 +14,14 @@ AUROC intervals overlap and the best LeWM FPR@95TPR is 0.7500. & required limita
 The strongest learned-baseline AUROC delta versus the best LeWM row crosses zero, so only stronger observed separation wording is allowed. & C-102 required & \path{docs/research/118_k1_learned_baseline_results.md} \\
 \texttt{feature\_distance} and all three learned baselines reach AUROC/AUPRC 1.0 on the validated bounded K2 GlitchBench split, while the best recorded LeWM rows reach AUROC 0.5. & C-110/C-111 qualified & \path{docs/research/122_k2_glitchbench_results.md} \\
 The K2 AUROC 1.0 non-LeWM rows still share F1 0.6667 and balanced accuracy 0.5 under the train-normal p95 rule, so ranking quality and threshold calibration must be separated. & C-112 required & \path{docs/research/122_k2_glitchbench_results.md} \\
+The completed K3 downloaded bundle intake-validates with 12 executed variants, 12 controlled pairs, seeds 42/43/44, and false locked-test flags. & C-113 verified & \path{docs/research/126_k3_sigreg_action_ablation_results.md} \\
+Within that validated K3 artifact, SIGReg-on does not improve the lower-is-better prediction-loss diagnostic and real-action versus zero-action deltas are not directionally stable. & C-114 qualified & \path{docs/research/126_k3_sigreg_action_ablation_results.md} \\
+Window-level surprise timelines are qualitative only because the validated artifacts do not expose true executable temporal spans. & C-098/C-115 required & \path{docs/research/128_temporal_localization_future_work.md} \\
 \texttt{locked\_test\_materialized = false} and \texttt{locked\_test\_scored = false}. & required boundary & \path{docs/research/101_tempglitch_followup_results.md}, \path{docs/research/16_claim_registry.md} \\
 R5-XGame is a separate bounded non-locked result and is not directly comparable with TempGlitch. & allowed status statement & \path{docs/research/96_r6_xgame_bounded_comparison.md} \\
 Every empirical paragraph maps to registered evidence. & C-093 required & \path{docs/research/106_first_bounded_paper_claim_audit.md} \\
 LeWM is state of the art or broadly superior. & forbidden & \path{docs/research/16_claim_registry.md}, \path{PLAYBOOK.md} \\
-The paper reports locked-test performance, WOB binary-benchmark performance, or cross-game generalization. & forbidden & \path{docs/research/16_claim_registry.md}, \path{PLAYBOOK.md} \\
+The paper reports locked-test performance, WOB binary-benchmark performance, temporal localization, or cross-game generalization. & forbidden & \path{docs/research/16_claim_registry.md}, \path{PLAYBOOK.md} \\
 \bottomrule
 \end{tabularx}
 \end{table}

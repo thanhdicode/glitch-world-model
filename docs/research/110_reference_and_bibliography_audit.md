@@ -1,7 +1,7 @@
 # 110 - Reference And Bibliography Audit
 
-Date: 2026-06-24
-Status: local paper-source bibliography audit
+Date: 2026-06-27
+Status: local paper-source bibliography audit after P7 rewrite
 
 ## Active Bibliography File
 
@@ -19,7 +19,7 @@ Audit method:
 - scanned all `paper/**/*.tex` files for `\cite{...}` keys;
 - compared the cited keys against entry keys in `paper/references.bib`.
 
-Results:
+Results after the P7 rewrite:
 
 - cited keys: `dreamerv3`, `glitchbench`, `guo2017calibration`, `hendrycks2017baseline`,
   `ijepa`, `kapoor2023leakage`, `kaufman2011leakage`, `lewm`, `park2020mnad`,
@@ -41,6 +41,8 @@ No obviously placeholder bibliography entries were found in `paper/references.bi
 
 - The current workspace cannot run an official BibTeX-based paper build, so this audit does not
   replace a real compile-time warning check.
+- The P7 rewrite keeps the bibliography key set unchanged, but citation and bibliography warnings
+  still need to be recorded from the first official LLNCS compile.
 - Several entries are arXiv preprints, which is acceptable for local drafting but should still be
   rechecked against final venue preferences during the official-kit compile pass.
 - Final bibliography style compliance still depends on `splncs04.bst` during an actual build.

@@ -12,6 +12,8 @@ Calibration fragility & TempGlitch threshold uses two normal episodes & Name cal
 High false-positive rate & TempGlitch FPR@95TPR is 0.7500 & Report explicitly rather than relying on AUROC alone \\
 Seed sensitivity & R5-XGame seed44 is strongest & Treat best-row ranking as split-bounded \\
 Binary label granularity & No verified temporal spans & Forbid temporal-localization wording \\
+Benchmark mismatch & K2 is image-level and synthetic-normal & Treat K2 as a bounded negative comparison surface only \\
+Mechanistic negative readout & K3 does not show a positive SIGReg/action trend & Keep K3 in loss-diagnostic language rather than detector language \\
 Protocol mismatch & Zero-action TempGlitch and real-action XGame & Keep result families separate \\
 Public non-locked evidence & No locked-test result & Avoid final-benchmark language \\
 \bottomrule

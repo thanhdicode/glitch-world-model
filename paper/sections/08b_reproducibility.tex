@@ -5,7 +5,8 @@ The paper is generated from validator-backed evidence rather than copied from te
 The TempGlitch follow-up validator checks required files, hashes, support equality across all 60
 rows, calibration episode identities, leakage counts, and false locked-test flags. R5-XGame has
 separate output and package-intake validators. Key commands and SHA256 identifiers are retained in
-the research reports and summarized in Appendix~\ref{app:artifact-provenance}.
+the research reports and summarized in Appendix~\ref{app:artifact-provenance}. K1, K2, K3, and the
+qualitative timeline lane each add their own intake receipts and protocol-specific validators.
 
 Paper-facing statements are registered before use. The repository claim registry identifies the
 evidence source, status, intended manuscript location, and prohibited interpretation for each
@@ -13,10 +14,10 @@ claim. A paper claim map then translates those entries into allowed wording. The
 keeps the current gate, claim boundary, next action, and handoff synchronized for subsequent
 agents.
 
-The current repository roadmap no longer stops at a bounded submission package. Roadmap V4 reopens
-the evidence lane through staged local-first upgrades and user-operated Kaggle gates only after
-the corresponding local code, validators, and protocols are ready.
-Generated data, raw scores, checkpoints, and output directories remain outside Git; tracked
-documents preserve hashes, support, commands, and exact summaries. Learned baselines, controlled
-ablations, broader scoring, and any later GPU execution still require their own validated protocol
-surfaces before they can support paper claims. Locked-test access remains independently closed.
+Submission tables are regenerated from repository evidence with
+\texttt{scripts/make\_paper\_tables.py}, which reads the TempGlitch follow-up metrics, K1 summary,
+K2 intake summary, K3 controlled-ablation bundle, and qualitative timeline receipt. Generated
+data, raw scores, checkpoints, and output directories remain outside Git; tracked documents
+preserve hashes, support, commands, and exact summaries. Locked-test access remains independently
+closed, and the local workspace still cannot claim an official LLNCS PDF build without the
+external Springer class files and toolchain.

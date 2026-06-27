@@ -1,7 +1,7 @@
 # REPO_MAP.md
 
-Generated: 2026-06-27T12:31:39+00:00
-Commit: `3ce684c8197ef57f4856d663ae14e2f46cb53f47`
+Generated: 2026-06-27T13:10:59+00:00
+Commit: `a4bee6fd0adfc97a80752b610f9e8ff1ab9ddc25`
 Generator: `scripts/update_context_cache.py`
 
 ## Top-Level Map
@@ -18,6 +18,7 @@ Generator: `scripts/update_context_cache.py`
 | `RULES.md/` | Tracked repository path. |
 | `cloud/` | Tracked repository path. |
 | `configs/` | Experiment and runtime configuration. |
+| `demo/` | Tracked repository path. |
 | `docs/` | Research evidence, workflows, context cache, and roadmap. |
 | `dvc.yaml/` | Tracked repository path. |
 | `kaggle/` | Validation-only launch packages. |
@@ -67,7 +68,7 @@ Generator: `scripts/update_context_cache.py`
 | `scripts/ingest_k3_ablation_bundle.py` | _read_json, _write_json, _sha256, _parse_sidecar, _verify_optional_sidecar, _safe_extract_tar, _safe_extract_zip, _resolve_bundle_root, _variant_lookup, _assert_false_flags, _validate_controlled_pairs, _write_report | Python module. |
 | `scripts/ingest_phase6e_kaggle_artifacts.py` | _read_json, _validate_required_artifacts, _read_and_validate_scores, _write_report, ingest_phase6e_kaggle_artifacts, build_parser, main | Python module. |
 | `scripts/inspect_lewm_dataset.py` | build_parser, main | Python module. |
-| `scripts/make_paper_tables.py` | write_tables, main | Python module. |
+| `scripts/make_paper_tables.py` | load_json, fmt_metric, fmt_signed, latex_escape, tt, row_ci, best_by_auroc, find_method_row, render_tempglitch_table, render_k1_table, render_k2_table, resolve_k3_bundle_root | Python module. |
 | `scripts/plan_frozen_video_representation_baseline.py` | build_parser, main | Python module. |
 | `scripts/plot_lewm_surprise_timeline.py` | plot_series, plot_scores, main | Python module. |
 | `scripts/prepare_k3_ablation_inputs.py` | _load_script_module, _read_json, _write_json, _write_sha256, _read_manifest_rows, _require_safe_false, _resolve_stage_file, _candidate_roots, _existing_materialized_state, _materialize_from_raw, _manifest_payload_for_missing, _manifest_payload_for_ready | Python module. |
@@ -340,6 +341,7 @@ Generator: `scripts/update_context_cache.py`
 | `tests/test_mini_latent.py` | mini_latent |
 | `tests/test_model_selection.py` | model_selection |
 | `tests/test_neural_protocol.py` | neural_protocol |
+| `tests/test_p6_demo.py` | p6_demo |
 | `tests/test_pairs.py` | pairs |
 | `tests/test_phase6e_kaggle_automation_cli.py` | phase6e_kaggle_automation_cli |
 | `tests/test_phase6e_kaggle_docs.py` | phase6e_kaggle_docs |

@@ -11,8 +11,8 @@
 \usepackage{enumitem}
 \usepackage[hidelinks]{hyperref}
 
-\title{Leakage-Aware Evaluation of Latent Surprise for Gameplay Glitch Detection}
-\titlerunning{Leakage-Aware Latent Surprise Evaluation}
+\title{Leakage-Aware Evaluation of a JEPA-Style Latent-Surprise Detector for Gameplay Glitch Detection}
+\titlerunning{Leakage-Aware Latent-Surprise Evaluation}
 
 \author{Anonymous Submission}
 \authorrunning{Anonymous Submission}
@@ -23,20 +23,23 @@
 
 \begin{abstract}
 Gameplay glitches often unfold over time, making sequence-level evidence important for automated
-video-based quality assurance. We present a leakage-aware empirical evaluation of latent-surprise
-signals derived from artifact-backed LeWorldModel checkpoints. The protocol uses normal-only
-training evidence, separates calibration from evaluation before windowing, aggregates window
-scores at episode level, and retains source-, pair-, and episode-disjoint roles. On the main frozen
-non-locked TempGlitch follow-up split, every method is evaluated on the same 12 normal-negative and
-22 buggy-positive episodes after threshold calibration on two normal episodes. The best recorded
-LeWM configuration reaches AUROC 0.7159 and AUPRC 0.8026, compared with AUROC 0.6136 and AUPRC
-0.7310 for the strongest simple baseline by AUROC. The AUROC confidence intervals overlap,
-evaluation support is small, and FPR@95TPR remains 0.7500. A separate R5-XGame result provides
-additional bounded non-locked evidence but is not treated as directly comparable. These findings
-support further investigation of latent surprise under stronger baselines and broader protocols;
-they do not establish broad superiority, cross-game generalization, temporal localization, or
-deployment readiness.
-\keywords{gameplay glitch detection \and latent surprise \and world models \and leakage-aware evaluation \and reproducibility}
+video-based quality assurance. We study an artifact-backed JEPA-style latent-surprise detector
+derived from LeWorldModel checkpoints under a leakage-aware normal-only protocol that separates
+fitting, calibration, and evaluation before windowing. On the main frozen non-locked TempGlitch
+pair-disjoint follow-up, every method is evaluated on the same 12 normal-negative and 22
+buggy-positive episodes after threshold calibration on two normal episodes. The best recorded
+LeWM row reaches AUROC 0.7159 and AUPRC 0.8026. Exact-support learned baselines add a strongest
+CNN-LSTM row at AUROC 0.6136, with paired delta-AUROC -0.1023 versus the best LeWM row and a 95\%
+bootstrap interval that crosses zero. On the validated bounded image-level K2 GlitchBench split,
+\texttt{feature\_distance} and all three learned baselines reach AUROC/AUPRC 1.0 while the best
+recorded LeWM row reaches AUROC 0.5, yielding an honest negative comparison surface for the
+current LeWM configuration. A controlled K3 validation-normal ablation shows no measured
+prediction-loss benefit from enabling SIGReg and no stable real-action-over-zero-action gain.
+Window-level surprise timelines are reproducibly generated for qualitative inspection, but
+temporal localization remains future work because the validated artifacts do not expose true span
+annotations. The evidence is non-locked and split-bounded; it does not establish broad
+superiority, cross-game generalization, temporal localization, or deployment readiness.
+\keywords{gameplay glitch detection \and latent surprise \and JEPA-style prediction \and leakage-aware evaluation \and reproducibility}
 \end{abstract}
 
 \input{sections/01_introduction}
@@ -46,7 +49,7 @@ deployment readiness.
 \input{sections/05_protocol}
 \input{sections/06_datasets}
 \input{sections/07_experiments}
-\input{sections/08_results_bounded}
+\input{sections/08_results}
 \input{sections/08a_discussion}
 \input{sections/08b_reproducibility}
 \input{sections/09_limitations}

@@ -11,14 +11,19 @@ TempGlitch provides binary video-level labels rather than verified temporal span
 current executable GlitchBench path is image-level and the current validated WOB/XGame artifacts
 carry episode-level roles only. Window scores therefore cannot be interpreted as validated glitch
 localization. Qualitative surprise timelines may illustrate score dynamics, but they do not
-measure onset, offset, duration, or event-level recall. The two evidence families are not
-directly comparable because their support, calibration, domain, action mode, and training lineage
-differ. R5-WOB has no normal-negative evaluation episodes and remains positive-probe evidence only.
+measure onset, offset, duration, or event-level recall.
 
-The study includes simple frame-difference and feature-distance baselines but no learned video
-baseline evaluated on the exact follow-up support. It contains no controlled evidence for SIGReg
-benefit, action-conditioning benefit, broad cross-game generalization, real-time operation, or
-deployment readiness. Locked test remains unmaterialized and unscored. Finally, the current
-bounded package has not been compiled with the official Springer template because the required
-local class and toolchain are unavailable; page fit and typesetting remain a submission-
-preparation task.
+K2 is a tiny synthetic-normal image-level split. Its negative comparison is informative, but it is
+not the same task as episode-level gameplay QA on naturally occurring normal footage. K3 is a
+mechanistic validation-normal training readout, not a binary glitch-detection benchmark. The two
+TempGlitch and R5-XGame evidence families remain non-comparable because their support, calibration,
+domain, action mode, and training lineage differ. R5-WOB has no normal-negative evaluation
+episodes and remains positive-probe evidence only.
+
+The study contains no locked-test result, no broad cross-game generalization result, no real-time
+latency study, and no deployment trial. K3 also does not show a positive SIGReg or
+action-conditioning readout for the specific validated artifact, so any broader claim in those
+directions remains unsupported. Finally, the current manuscript package has not been compiled with
+the official Springer template from this workspace because the required local class files and
+toolchain are unavailable; page fit, bibliography warnings, and PDF metadata still require the
+external official-kit build pass.
