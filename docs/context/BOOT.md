@@ -1,7 +1,7 @@
 # BOOT.md - Fast Start Context For Agents
 
-Generated: 2026-06-26T09:46:56+00:00
-Commit: `cff8e5875ddcced84c45e4b626d5cac1050f5a75`
+Generated: 2026-06-27T12:31:39+00:00
+Commit: `3ce684c8197ef57f4856d663ae14e2f46cb53f47`
 
 ## Read Order
 1. `RULES.md`
@@ -49,11 +49,12 @@ The current execution roadmap is `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v4.md`
   test remains unopened, and WOB remains limited to audit-plus-training-artifact evidence.
 
 ## Immediate Next Task
-- Execute roadmap V4 Phase P6. Phase P5 is complete on the documented future-work path because the
-  current validated artifacts do not expose true temporal span labels.
-- Build the reproducible demo lane while preserving the same bounded non-locked claim surface.
-- Keep locked test closed and do not introduce temporal-localization metrics without a validated
-  span-labeled artifact.
+- Execute roadmap V4 Phase P7. The P6 demo lane is now present, so the next work is the full
+  paper rewrite and submission packaging on top of the validated bounded evidence.
+- Keep all paper-facing numbers, figures, and conclusions synchronized with
+  `docs/research/16_claim_registry.md`.
+- Keep locked test closed and preserve the P5/P6 claim boundary: qualitative timelines are allowed,
+  temporal-localization metrics are not.
 
 ## Safety
 - Non-locked-test Kaggle actions use standing Kaggle authorization after security, license,

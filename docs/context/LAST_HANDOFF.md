@@ -1,59 +1,58 @@
 # LAST_HANDOFF.md
 
-Last completed task: P5 temporal localization audit, future-work closure, and qualitative timeline support
+Last completed task: P6 demo lane implementation and reproducibility handoff
 Commit: latest branch commit for this task (see `git log -1`)
-Date: 2026-06-26T18:10:00+07:00
+Date: 2026-06-27T19:30:00+07:00
 
 ## What Changed
 
-- Audited current validated datasets and artifacts for true temporal span support.
-- Added [127_temporal_localization_span_audit.md](../research/127_temporal_localization_span_audit.md)
-  and [128_temporal_localization_future_work.md](../research/128_temporal_localization_future_work.md).
-- Added `scripts/generate_qualitative_surprise_timelines.py` and extended
-  `scripts/plot_lewm_surprise_timeline.py` for reusable qualitative plotting.
-- Added focused tests for the qualitative timeline path.
-- Updated the claim registry, paper limitations, and context cache so P5 is closed on the
-  future-work path rather than left ambiguous.
-- Generated ignored qualitative timeline artifacts retained outside Git; receipt SHA256
-  `066db64e4d9f6ecc7e231849b7e2843bb8c0461f89855fe954bc440e2824de96`.
+- Created `demo/run_glitch_demo.py` as a reproducible thin wrapper around
+  `scripts/generate_qualitative_surprise_timelines.py`.
+- Created `demo/README.md` documenting inputs, commands, outputs, and the P6 claim boundary.
+- Added `tests/test_p6_demo.py` covering dry-run behavior, receipt flags, and source-level safety
+  constraints.
+- Appended a `Phase P6 demo reproduction` section to
+  `docs/research/15_reproducibility_checklist.md`.
+- Refreshed `scripts/update_context_cache.py` and `tests/test_context_cache.py` so the generated
+  context now advances to P7 after P6 is complete.
+- Ran both dry-run and full non-locked demo execution, producing timeline plots and an ignored demo
+  receipt in the demo output directory.
 
 ## Checks Passed
 
-- P5 span audit completed with `TEMPORAL_LOCALIZATION_METRICS_ALLOWED = false`.
+- `python demo/run_glitch_demo.py --dry-run`
+- `python demo/run_glitch_demo.py`
+- `python -m pytest tests/test_p6_demo.py tests/test_generate_qualitative_surprise_timelines.py -q`
 
 ## Safety Status
 
 - No locked-test access, materialization, or scoring occurred in this task.
-- No fake Lance datasets were created.
-- No scientific code was changed.
-- No scientific code path was widened into a fake localization metric.
-- Temporal localization remains future work; only qualitative non-locked timelines are allowed.
+- No Kaggle action was launched.
+- No temporal-localization metric was introduced.
+- No scientific claim surface was widened beyond qualitative demo support.
+- No locked-test path was opened.
 
 ## Gate Status After Task
 
-- P3/K2 remains complete and artifact-backed.
-- P4/K3 is intake-validated and artifact-backed.
-- P5 is complete on the documented-future-work path.
-- P6 is now the next roadmap phase.
+- P6 demo lane is now implemented on validated non-locked artifacts.
+- P7 is now the next roadmap phase.
 - Gate 10 remains closed.
 
 ## Open Blockers
 
-- No P5 blocker remains.
-- Current validated artifacts still do not support temporal-localization claims.
-- P6 demo scope still needs implementation.
+- The paper rewrite remains outstanding and must stay fully synchronized with the claim registry.
+- Temporal localization remains future work until a validated span-labeled artifact exists.
 
 ## Next Recommended Task
 
-- Start Phase P6: build the reproducible demo lane while preserving the same non-locked claim
-  boundary.
+- Start Phase P7: full paper rewrite and submission-package preparation under the current bounded
+  claim surface.
 
 ## Files Likely Relevant Next
 
-- `docs/research/126_k3_sigreg_action_ablation_results.md`
-- `docs/research/127_temporal_localization_span_audit.md`
-- `docs/research/128_temporal_localization_future_work.md`
 - `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v4.md`
 - `docs/context/NEXT_ACTION.md`
+- `docs/context/PROJECT_STATE.md`
 - `docs/research/16_claim_registry.md`
-- `scripts/generate_qualitative_surprise_timelines.py`
+- `demo/run_glitch_demo.py`
+- `docs/research/15_reproducibility_checklist.md`

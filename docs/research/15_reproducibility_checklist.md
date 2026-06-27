@@ -120,3 +120,29 @@ Use this checklist before any result is copied into a paper draft, slide deck, o
 - [ ] Do not claim TempGlitch is downloaded or parsed before verified local files exist.
 - [ ] Do not claim all game bugs are detectable.
 - [ ] Do not claim VLM superiority or inferiority unless measured under the same protocol.
+
+## Phase P6 demo reproduction
+
+- [x] Demo entry point: `python demo/run_glitch_demo.py --dry-run` (no artifacts required).
+- [x] Full demo command: `python demo/run_glitch_demo.py` (requires non-locked R5 TempGlitch
+  artifacts in `outputs/tempglitch_followup_pair_disjoint/`).
+
+### Expected output paths
+
+| Output | Path |
+| --- | --- |
+| Timeline PNG plots | `outputs/demo_timelines/*.png` |
+| Receipt JSON | `outputs/demo_timelines/demo_receipt.json` |
+
+### Safety / claim-boundary checks
+
+- [ ] `demo_receipt.json` contains `"temporal_metrics_claimed": false`.
+- [ ] `demo_receipt.json` contains `"locked_test_used": false`.
+- [ ] `demo_receipt.json` contains `"kaggle_required": false`.
+- [ ] `demo_receipt.json` contains `"ground_truth_spans_available": false`.
+- [ ] All timeline plots are labelled **qualitative only**.
+- [ ] No temporal-localization metric appears in any plot or receipt.
+- [ ] Locked test was not opened, materialized, or scored during this run.
+- [ ] No new performance, superiority, SIGReg-benefit, action-benefit, or cross-game claims were
+  added to the claim registry.
+- [ ] `python -m pytest tests/test_p6_demo.py -v` passes.
