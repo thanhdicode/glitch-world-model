@@ -113,16 +113,16 @@ def test_generated_context_records_gate7_to_gate9_pilot_without_opening_gate10(
     assert "Locked test is closed" in boot
 
 
-def test_generated_context_points_to_v4_k1_gate(tmp_path: Path):
+def test_generated_context_points_to_v4_p7_gate(tmp_path: Path):
     _init_repo(tmp_path)
     _write_minimal_repo(tmp_path)
     update_context_cache(tmp_path, refresh_boot=True)
 
     next_action = (tmp_path / CONTEXT_DIR / "NEXT_ACTION.md").read_text(encoding="utf-8")
 
-    assert "Kaggle gate K1" in next_action
+    assert "Phase P7" in next_action
     assert "docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v4.md" in next_action
-    assert "K1 requires an external Kaggle notebook run" in next_action
+    assert "paper rewrite" in next_action
 
 
 def test_repo_map_includes_key_modules_and_ignores_outputs(tmp_path: Path):

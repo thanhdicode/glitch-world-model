@@ -1,7 +1,7 @@
 # REPO_MAP.md
 
-Generated: 2026-06-26T09:46:56+00:00
-Commit: `cff8e5875ddcced84c45e4b626d5cac1050f5a75`
+Generated: 2026-06-27T12:31:39+00:00
+Commit: `3ce684c8197ef57f4856d663ae14e2f46cb53f47`
 Generator: `scripts/update_context_cache.py`
 
 ## Top-Level Map
@@ -61,6 +61,7 @@ Generator: `scripts/update_context_cache.py`
 | `scripts/freeze_r5_xgame_split.py` | build_r5_xgame_rows, write_rows, build_parser, main | Freeze a deterministic, non-locked R5-XGame manifest from the WOB source split. |
 | `scripts/freeze_tempglitch_protocol.py` | _sha256, _exposed_groups, build_parser, main | Python module. |
 | `scripts/freeze_wob_protocol.py` | _kaggle_csv, _sha256, build_parser, main | Python module. |
+| `scripts/generate_qualitative_surprise_timelines.py` | EpisodeTimeline, _read_csv_rows, _resolve_repo_path, _float_key, select_best_comparison_row, lewm_window_score_from_row, build_episode_timelines, select_qualitative_episode_rows, _safe_name, generate_qualitative_surprise_timelines, build_parser, main | Python module. |
 | `scripts/ingest_k1_learned_baselines.py` | _read_json, _read_csv_rows, _write_json, _write_csv_rows, _float_text, _config_key, _aggregate_scores, _support_rows_from_followup, _evaluation_rows, _load_followup_bundle, _build_learned_rows, _best_row | Python module. |
 | `scripts/ingest_k2_glitchbench_benchmark.py` | _read_json, _read_csv_rows, _write_json, _float_text, locate_bundle_root, _best_row, _best_rows_by_method, _lewm_seed_aggregate, _validate_score_file, ingest_k2_glitchbench_benchmark, build_parser, main | Python module. |
 | `scripts/ingest_k3_ablation_bundle.py` | _read_json, _write_json, _sha256, _parse_sidecar, _verify_optional_sidecar, _safe_extract_tar, _safe_extract_zip, _resolve_bundle_root, _variant_lookup, _assert_false_flags, _validate_controlled_pairs, _write_report | Python module. |
@@ -223,6 +224,7 @@ Generator: `scripts/update_context_cache.py`
 | `scripts/freeze_r5_xgame_split.py` | Freeze a deterministic, non-locked R5-XGame manifest from the WOB source split. | general |
 | `scripts/freeze_tempglitch_protocol.py` | CLI/helper script. | general |
 | `scripts/freeze_wob_protocol.py` | CLI/helper script. | general |
+| `scripts/generate_qualitative_surprise_timelines.py` | CLI/helper script. | general |
 | `scripts/ingest_k1_learned_baselines.py` | CLI/helper script. | general |
 | `scripts/ingest_k2_glitchbench_benchmark.py` | CLI/helper script. | general |
 | `scripts/ingest_k3_ablation_bundle.py` | CLI/helper script. | general |
@@ -273,7 +275,6 @@ Generator: `scripts/update_context_cache.py`
 | `scripts/run_wob_p0_materialization_audit.py` | CLI/helper script. | general |
 | `scripts/run_worldofbugs_asset_demo.py` | CLI/helper script. | general |
 | `scripts/select_tempglitch_protocol_config.py` | CLI/helper script. | general |
-| `scripts/smoke_lewm_checkpoint.py` | CLI/helper script. | Gate 5 |
 
 ## Tests
 | Test | Coverage |
@@ -302,6 +303,7 @@ Generator: `scripts/update_context_cache.py`
 | `tests/test_gate7_manifest.py` | gate7_manifest |
 | `tests/test_gate8_baselines.py` | gate8_baselines |
 | `tests/test_gate9_ablations.py` | gate9_ablations |
+| `tests/test_generate_qualitative_surprise_timelines.py` | generate_qualitative_surprise_timelines |
 | `tests/test_glitchbench_protocol.py` | glitchbench_protocol |
 | `tests/test_imports.py` | imports |
 | `tests/test_ingest_k2_glitchbench_benchmark.py` | ingest_k2_glitchbench_benchmark |
@@ -441,6 +443,9 @@ Generator: `scripts/update_context_cache.py`
 | `docs/research/123_kaggle_k3_ablation_runbook.md` | 123 kaggle k3 ablation runbook |
 | `docs/research/124_k3_local_readiness_report.md` | 124 k3 local readiness report |
 | `docs/research/125_k3_kaggle_package_instructions.md` | 125 k3 kaggle package instructions |
+| `docs/research/126_k3_sigreg_action_ablation_results.md` | 126 k3 sigreg action ablation results |
+| `docs/research/127_temporal_localization_span_audit.md` | 127 temporal localization span audit |
+| `docs/research/128_temporal_localization_future_work.md` | 128 temporal localization future work |
 | `docs/research/12_experiment_results_log.md` | 12 experiment results log |
 | `docs/research/15_reproducibility_checklist.md` | 15 reproducibility checklist |
 | `docs/research/16_claim_registry.md` | 16 claim registry |
@@ -469,6 +474,3 @@ Generator: `scripts/update_context_cache.py`
 | `docs/research/40_research_tooling_stack.md` | 40 research tooling stack |
 | `docs/research/41_dvc_hydra_migration_plan.md` | 41 dvc hydra migration plan |
 | `docs/research/41_gate5_current_state.md` | 41 gate5 current state |
-| `docs/research/42_experiment_tracking_plan.md` | 42 experiment tracking plan |
-| `docs/research/42_gate5_kernel_approval_status.md` | 42 gate5 kernel approval status |
-| `docs/research/43_gate5_kaggle_cuda_smoke_results.md` | 43 gate5 kaggle cuda smoke results |
