@@ -5,6 +5,7 @@ from pathlib import Path
 
 import pytest
 
+import scripts.run_tempglitch_followup_pair_disjoint as followup_cli
 from glitch_detection.tempglitch_followup import (
     build_followup_episode_rows,
     build_followup_manifest_rows,
@@ -91,6 +92,32 @@ def test_build_followup_manifest_retags_pair_disjoint_calibration():
 
     assert summary["calibration_episode_ids"] == ["cal-a", "eval-normal"]
     assert summary["role_overlap"]["pair_id_overlap"] == 0
+
+
+def test_followup_helpers_accept_expanded_support_parameters():
+    rows = [
+        _manifest_row("w1", "cal-1", "pair/cal-1", "Normal", "evaluation"),
+        _manifest_row("w2", "cal-2", "pair/cal-2", "Normal", "evaluation"),
+        _manifest_row("w3", "eval-normal-1", "pair/eval-normal-1", "Normal", "evaluation"),
+        _manifest_row("w4", "eval-normal-2", "pair/eval-normal-2", "Normal", "evaluation"),
+        _manifest_row("w5", "eval-buggy-1", "pair/eval-buggy-1", "Buggy", "evaluation"),
+        _manifest_row("w6", "eval-buggy-2", "pair/eval-buggy-2", "Buggy", "evaluation"),
+    ]
+    followup_rows = build_followup_manifest_rows(
+        rows,
+        calibration_episode_ids=("cal-1", "cal-2"),
+        expected_evaluation_normal_count=2,
+        expected_evaluation_buggy_count=2,
+    )
+    summary = validate_followup_manifest_rows(
+        followup_rows,
+        calibration_episode_ids=("cal-1", "cal-2"),
+        expected_evaluation_normal_count=2,
+        expected_evaluation_buggy_count=2,
+    )
+    assert summary["calibration_episode_count"] == 2
+    assert summary["evaluation_normal_episode_count"] == 2
+    assert summary["evaluation_buggy_episode_count"] == 2
 
 
 def test_build_followup_episode_rows_preserves_support_per_config():
@@ -226,6 +253,15 @@ def test_evaluate_followup_configuration_reports_pair_grouped_ci_and_balanced_ac
     assert result["threshold_source"] == "calibration_normal_p95"
     assert result["confidence_interval_group_key"] == "pair_id"
     assert result["metrics"]["balanced_accuracy"] == pytest.approx(1.0)
+
+
+def test_parse_expected_support_accepts_four_counts():
+    assert followup_cli.parse_expected_support("2,60,30,30") == ("2", "60", "30", "30")
+
+
+def test_parse_expected_support_rejects_bad_shape():
+    with pytest.raises(Exception):
+        followup_cli.parse_expected_support("2,60,30")
 
 
 def test_validate_followup_manifest_rows_requires_four_calibration_episodes_by_default():

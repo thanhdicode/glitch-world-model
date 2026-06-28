@@ -621,6 +621,10 @@ def run_tempglitch_followup_pair_disjoint(
     bootstrap_seed: int = 42,
     n_bootstrap: int = 1000,
     command_text: str,
+    calibration_episode_ids: tuple[str, ...] = CALIBRATION_NORMAL_EPISODE_IDS,
+    expected_evaluation_normal_count: int = EXPECTED_EVALUATION_NORMAL_COUNT,
+    expected_evaluation_buggy_count: int = EXPECTED_EVALUATION_BUGGY_COUNT,
+    expected_support: tuple[str, str, str, str] | None = None,
 ) -> dict[str, Any]:
     source_bundle = _load_source_bundle(
         r5_output_dir=r5_output_dir,
@@ -629,9 +633,25 @@ def run_tempglitch_followup_pair_disjoint(
         validation_buggy_lance=validation_buggy_lance,
     )
     output_dir.mkdir(parents=True, exist_ok=True)
+    support_tuple = expected_support or (
+        str(len(calibration_episode_ids)),
+        str(expected_evaluation_normal_count + expected_evaluation_buggy_count),
+        str(expected_evaluation_buggy_count),
+        str(expected_evaluation_normal_count),
+    )
 
-    followup_manifest_rows = build_followup_manifest_rows(source_bundle["r5_manifest_rows"])
-    manifest_summary = validate_followup_manifest_rows(followup_manifest_rows)
+    followup_manifest_rows = build_followup_manifest_rows(
+        source_bundle["r5_manifest_rows"],
+        calibration_episode_ids=calibration_episode_ids,
+        expected_evaluation_normal_count=expected_evaluation_normal_count,
+        expected_evaluation_buggy_count=expected_evaluation_buggy_count,
+    )
+    manifest_summary = validate_followup_manifest_rows(
+        followup_manifest_rows,
+        calibration_episode_ids=calibration_episode_ids,
+        expected_evaluation_normal_count=expected_evaluation_normal_count,
+        expected_evaluation_buggy_count=expected_evaluation_buggy_count,
+    )
     followup_manifest_path = write_csv_rows(
         output_dir / "followup_manifest.csv",
         followup_manifest_rows,
@@ -642,8 +662,18 @@ def run_tempglitch_followup_pair_disjoint(
         output_dir / "followup_manifest.sha256",
     )
 
-    followup_episode_rows = build_followup_episode_rows(source_bundle["r5_episode_rows"])
-    grouped_episode_rows = validate_followup_episode_rows(followup_episode_rows)
+    followup_episode_rows = build_followup_episode_rows(
+        source_bundle["r5_episode_rows"],
+        calibration_episode_ids=calibration_episode_ids,
+        expected_evaluation_normal_count=expected_evaluation_normal_count,
+        expected_evaluation_buggy_count=expected_evaluation_buggy_count,
+    )
+    grouped_episode_rows = validate_followup_episode_rows(
+        followup_episode_rows,
+        calibration_episode_ids=calibration_episode_ids,
+        expected_evaluation_normal_count=expected_evaluation_normal_count,
+        expected_evaluation_buggy_count=expected_evaluation_buggy_count,
+    )
     followup_episode_path = write_csv_rows(
         output_dir / "followup_episode_scores.csv",
         followup_episode_rows,
@@ -717,7 +747,10 @@ def run_tempglitch_followup_pair_disjoint(
         "source_r5_manifest_sha256": source_bundle["r5_metrics"]["manifest_sha256"],
         "source_r5_metrics_sha256": sha256_file(source_bundle["source_paths"]["r5_metrics"]),
         "source_r5_provenance_sha256": sha256_file(source_bundle["source_paths"]["r5_provenance"]),
-        "calibration_episode_ids": list(CALIBRATION_NORMAL_EPISODE_IDS),
+        "calibration_episode_ids": list(calibration_episode_ids),
+        "expected_evaluation_normal_count": expected_evaluation_normal_count,
+        "expected_evaluation_buggy_count": expected_evaluation_buggy_count,
+        "expected_support": list(support_tuple),
         "manifest_path": str(followup_manifest_path),
         "manifest_sha256": sha256_file(followup_manifest_path),
         "manifest_summary": manifest_summary,
@@ -774,7 +807,10 @@ def run_tempglitch_followup_pair_disjoint(
             "validation_buggy_lance": str(validation_buggy_lance),
         },
         "input_lance_fingerprints": source_bundle["lance_fingerprints"],
-        "calibration_episode_ids": list(CALIBRATION_NORMAL_EPISODE_IDS),
+        "calibration_episode_ids": list(calibration_episode_ids),
+        "expected_evaluation_normal_count": expected_evaluation_normal_count,
+        "expected_evaluation_buggy_count": expected_evaluation_buggy_count,
+        "expected_support": list(support_tuple),
         "outputs": {
             "followup_manifest.csv": sha256_file(followup_manifest_path),
             "followup_manifest.sha256": sha256_file(followup_manifest_sha_path),
@@ -793,7 +829,12 @@ def run_tempglitch_followup_pair_disjoint(
     _write_json(followup_provenance_path, provenance_payload)
 
     receipt_path = output_dir / "followup_validator_receipt.json"
-    receipt = validate_tempglitch_followup_output(output_dir=output_dir, receipt_path=receipt_path)
+    receipt = validate_tempglitch_followup_output(
+        output_dir=output_dir,
+        receipt_path=receipt_path,
+        expected_support=support_tuple,
+        calibration_episode_ids=calibration_episode_ids,
+    )
     return {
         "status": FOLLOWUP_STATUS,
         "output_dir": str(output_dir),
@@ -826,6 +867,7 @@ def validate_tempglitch_followup_output(
     output_dir: Path,
     receipt_path: Path | None = None,
     expected_support: tuple[str, str, str, str] = FROZEN_FOLLOWUP_SUPPORT_TUPLE,
+    calibration_episode_ids: tuple[str, ...] = CALIBRATION_NORMAL_EPISODE_IDS,
 ) -> dict[str, Any]:
     output_dir = output_dir.resolve()
     refuse_locked_test_path(output_dir, description="follow-up output directory")
@@ -848,10 +890,20 @@ def validate_tempglitch_followup_output(
     if actual_manifest_sha != expected_manifest_sha:
         raise ValueError("Follow-up manifest SHA256 sidecar does not match the manifest bytes.")
     manifest_rows = read_csv_rows(manifest_path)
-    manifest_summary = validate_followup_manifest_rows(manifest_rows)
+    manifest_summary = validate_followup_manifest_rows(
+        manifest_rows,
+        calibration_episode_ids=calibration_episode_ids,
+        expected_evaluation_normal_count=int(expected_support[3]),
+        expected_evaluation_buggy_count=int(expected_support[2]),
+    )
 
     episode_rows = read_csv_rows(episode_path)
-    grouped_episode_rows = validate_followup_episode_rows(episode_rows)
+    grouped_episode_rows = validate_followup_episode_rows(
+        episode_rows,
+        calibration_episode_ids=calibration_episode_ids,
+        expected_evaluation_normal_count=int(expected_support[3]),
+        expected_evaluation_buggy_count=int(expected_support[2]),
+    )
     comparison_rows = read_csv_rows(comparison_path)
     if len(comparison_rows) != len(grouped_episode_rows):
         raise ValueError(
@@ -873,7 +925,7 @@ def validate_tempglitch_followup_output(
             f"Follow-up support mismatch: {support_tuples}; expected {expected_support_set}"
         )
 
-    calibration_text = ",".join(CALIBRATION_NORMAL_EPISODE_IDS)
+    calibration_text = ",".join(calibration_episode_ids)
     required_fields = [
         "auroc",
         "auprc",
@@ -948,12 +1000,12 @@ def validate_tempglitch_followup_output(
         "baseline_methods": sorted(baseline_methods),
         "lewm_seeds": sorted(lewm_seeds),
         "support_tuple": {
-            "calibration_episode_count": 4,
-            "evaluation_episode_count": 32,
-            "positive_episode_count": 22,
-            "negative_episode_count": 10,
+            "calibration_episode_count": int(expected_support[0]),
+            "evaluation_episode_count": int(expected_support[1]),
+            "positive_episode_count": int(expected_support[2]),
+            "negative_episode_count": int(expected_support[3]),
         },
-        "calibration_episode_ids": list(CALIBRATION_NORMAL_EPISODE_IDS),
+        "calibration_episode_ids": list(calibration_episode_ids),
         "validation_buggy_used_for_fit_select": False,
         "locked_test_materialized": False,
         "locked_test_scored": False,

@@ -130,7 +130,9 @@ def _load_module_from_path(module_path: Path) -> ModuleType:
 
 def load_timeline_generator() -> Callable[[list[str] | None], int]:
     try:
-        from scripts.generate_qualitative_surprise_timelines import main as generator_main  # noqa: PLC0415
+        from scripts.generate_qualitative_surprise_timelines import (  # noqa: PLC0415
+            main as generator_main,
+        )
 
         return generator_main
     except ImportError:

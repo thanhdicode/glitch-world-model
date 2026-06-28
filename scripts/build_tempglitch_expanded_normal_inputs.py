@@ -20,11 +20,13 @@ delegating the split to the frozen-split logic. Designed to run on Kaggle with
 internet ON. Raw videos are written under <output_dir>/videos and the three Lance
 datasets under <output_dir>/lance.
 
-Example (target >= 30 normal evaluation episodes -> 5 categories x 8 per group):
+Example (target >= 30 normal-negative evaluation episodes -> 5 categories x 35 per group):
 
     python scripts/build_tempglitch_expanded_normal_inputs.py \
         --output-dir /kaggle/working/tempglitch_expanded \
-        --limit-per-group 8 \
+        --limit-per-group 35 \
+        --target-validation-normal-count 34 \
+        --target-validation-buggy-count 34 \
         --image-size 112 --frame-stride 1
 
 The resulting Lance paths are printed as JSON for the K-A run cells to consume.
@@ -39,7 +41,11 @@ import sys
 from datetime import date
 from pathlib import Path
 
-from glitch_detection.dataset_protocols import freeze_tempglitch_split, write_frozen_split
+from glitch_detection.dataset_protocols import (
+    FrozenSplitRecord,
+    freeze_tempglitch_split,
+    write_frozen_split,
+)
 from glitch_detection.pairs import infer_tempglitch_pair_id
 from glitch_detection.tempglitch import (
     DATASET_ID,
@@ -75,6 +81,65 @@ def _build_split_rows(metadata_path: Path) -> list[dict[str, str]]:
     return rows
 
 
+def _split_support_counts(records: list[FrozenSplitRecord]) -> dict[str, int]:
+    train_normal = {
+        record.episode_id
+        for record in records
+        if record.split == "train" and record.label == "Normal"
+    }
+    validation_normal = {
+        record.episode_id
+        for record in records
+        if record.split == "validation" and record.label == "Normal"
+    }
+    validation_buggy = {
+        record.episode_id
+        for record in records
+        if record.split == "validation" and record.label == "Buggy"
+    }
+    test_normal = {
+        record.episode_id
+        for record in records
+        if record.split == "test" and record.label == "Normal"
+    }
+    test_buggy = {
+        record.episode_id
+        for record in records
+        if record.split == "test" and record.label == "Buggy"
+    }
+    return {
+        "train_normal_episode_count": len(train_normal),
+        "validation_normal_episode_count": len(validation_normal),
+        "validation_buggy_episode_count": len(validation_buggy),
+        "test_normal_episode_count": len(test_normal),
+        "test_buggy_episode_count": len(test_buggy),
+    }
+
+
+def _raise_if_under_target_support(
+    support: dict[str, int],
+    *,
+    target_validation_normal_count: int,
+    target_validation_buggy_count: int,
+    allow_under_target_support: bool,
+) -> None:
+    if allow_under_target_support:
+        return
+    actual_normal = support["validation_normal_episode_count"]
+    actual_buggy = support["validation_buggy_episode_count"]
+    if (
+        actual_normal < target_validation_normal_count
+        or actual_buggy < target_validation_buggy_count
+    ):
+        raise ValueError(
+            "Expanded TempGlitch split is below K-A target support: "
+            f"validation_normal={actual_normal}/{target_validation_normal_count}, "
+            f"validation_buggy={actual_buggy}/{target_validation_buggy_count}. "
+            "Increase --limit-per-group or pass --allow-under-target-support only "
+            "when documenting maximum public support."
+        )
+
+
 def _materialize_lance(
     *,
     metadata: Path,
@@ -91,14 +156,22 @@ def _materialize_lance(
     argv = [
         sys.executable,
         str(REPO_ROOT / "scripts" / "build_tempglitch_lewm_lance.py"),
-        "--metadata", str(metadata),
-        "--split", str(split),
-        "--video-root", str(video_root),
-        "--output", str(output),
-        "--partition", partition,
-        "--image-size", str(image_size),
-        "--frame-stride", str(frame_stride),
-        "--seed", str(seed),
+        "--metadata",
+        str(metadata),
+        "--split",
+        str(split),
+        "--video-root",
+        str(video_root),
+        "--output",
+        str(output),
+        "--partition",
+        partition,
+        "--image-size",
+        str(image_size),
+        "--frame-stride",
+        str(frame_stride),
+        "--seed",
+        str(seed),
     ]
     if label_filter is not None:
         argv += ["--label-filter", label_filter]
@@ -115,9 +188,14 @@ def build_expanded_inputs(
     image_size: int = 112,
     frame_stride: int = 1,
     seed: int = 42,
+    target_validation_normal_count: int = 34,
+    target_validation_buggy_count: int = 34,
+    allow_under_target_support: bool = False,
 ) -> dict[str, object]:
     if limit_per_group < 1:
         raise ValueError("limit_per_group must be >= 1.")
+    if target_validation_normal_count < 1 or target_validation_buggy_count < 1:
+        raise ValueError("Target validation support counts must be >= 1.")
     categories = categories or list(DEFAULT_CATEGORIES)
     output_dir = output_dir.resolve()
     video_dir = output_dir / "videos"
@@ -140,6 +218,13 @@ def build_expanded_inputs(
     # 2) Freeze a pair-disjoint train/validation split (no exposed groups).
     split_rows = _build_split_rows(metadata_path)
     records = freeze_tempglitch_split(split_rows, exposed_groups=set(), seed=seed)
+    support = _split_support_counts(records)
+    _raise_if_under_target_support(
+        support,
+        target_validation_normal_count=target_validation_normal_count,
+        target_validation_buggy_count=target_validation_buggy_count,
+        allow_under_target_support=allow_under_target_support,
+    )
     split_path, _audit_path, _prov_path = write_frozen_split(
         split_dir / "split.csv",
         records,
@@ -152,6 +237,10 @@ def build_expanded_inputs(
             "limit_per_group": limit_per_group,
             "categories": categories,
             "expanded_support": True,
+            "target_validation_normal_count": target_validation_normal_count,
+            "target_validation_buggy_count": target_validation_buggy_count,
+            "allow_under_target_support": allow_under_target_support,
+            "split_support": support,
         },
     )
 
@@ -161,19 +250,40 @@ def build_expanded_inputs(
     val_buggy_lance = lance_dir / "tempglitch_validation_buggy_all_local.lance"
 
     _materialize_lance(
-        metadata=metadata_path, split=split_path, video_root=video_dir,
-        output=train_lance, partition="train", label_filter="Normal",
-        image_size=image_size, frame_stride=frame_stride, max_episodes=None, seed=seed,
+        metadata=metadata_path,
+        split=split_path,
+        video_root=video_dir,
+        output=train_lance,
+        partition="train",
+        label_filter="Normal",
+        image_size=image_size,
+        frame_stride=frame_stride,
+        max_episodes=None,
+        seed=seed,
     )
     _materialize_lance(
-        metadata=metadata_path, split=split_path, video_root=video_dir,
-        output=val_normal_lance, partition="validation", label_filter="Normal",
-        image_size=image_size, frame_stride=frame_stride, max_episodes=None, seed=seed,
+        metadata=metadata_path,
+        split=split_path,
+        video_root=video_dir,
+        output=val_normal_lance,
+        partition="validation",
+        label_filter="Normal",
+        image_size=image_size,
+        frame_stride=frame_stride,
+        max_episodes=None,
+        seed=seed,
     )
     _materialize_lance(
-        metadata=metadata_path, split=split_path, video_root=video_dir,
-        output=val_buggy_lance, partition="validation", label_filter="Buggy",
-        image_size=image_size, frame_stride=frame_stride, max_episodes=None, seed=seed,
+        metadata=metadata_path,
+        split=split_path,
+        video_root=video_dir,
+        output=val_buggy_lance,
+        partition="validation",
+        label_filter="Buggy",
+        image_size=image_size,
+        frame_stride=frame_stride,
+        max_episodes=None,
+        seed=seed,
     )
 
     summary = {
@@ -182,6 +292,10 @@ def build_expanded_inputs(
         "downloaded_buggy_episodes": buggy_count,
         "limit_per_group": limit_per_group,
         "categories": categories,
+        "target_validation_normal_count": target_validation_normal_count,
+        "target_validation_buggy_count": target_validation_buggy_count,
+        "allow_under_target_support": allow_under_target_support,
+        "split_support": support,
         "metadata_path": str(metadata_path),
         "split_path": str(split_path),
         "train_lance": str(train_lance),
@@ -208,13 +322,19 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--limit-per-group",
         type=int,
-        default=8,
-        help="Videos per (category, label) group. 5 categories x N normal = max normals.",
+        default=35,
+        help=(
+            "Videos per (category, label) group. With five categories and the default "
+            "20%% validation split, 35 targets about 35 validation normals."
+        ),
     )
     parser.add_argument("--categories", nargs="+", default=None)
     parser.add_argument("--image-size", type=int, default=112)
     parser.add_argument("--frame-stride", type=int, default=1)
     parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument("--target-validation-normal-count", type=int, default=34)
+    parser.add_argument("--target-validation-buggy-count", type=int, default=34)
+    parser.add_argument("--allow-under-target-support", action="store_true")
     return parser
 
 
@@ -227,6 +347,9 @@ def main(argv: list[str] | None = None) -> int:
         image_size=args.image_size,
         frame_stride=args.frame_stride,
         seed=args.seed,
+        target_validation_normal_count=args.target_validation_normal_count,
+        target_validation_buggy_count=args.target_validation_buggy_count,
+        allow_under_target_support=args.allow_under_target_support,
     )
     print(json.dumps(summary, indent=2))
     return 0
