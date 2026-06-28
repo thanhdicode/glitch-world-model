@@ -20,10 +20,28 @@ def test_lewm_surprise_is_registered():
 
 @pytest.mark.parametrize(
     ("aggregation", "expected"),
-    [("mean", 2.5), ("max", 4.0), ("topk_mean", 3.0)],
+    [("mean", 2.5), ("max", 4.0), ("topk_mean", 3.0), ("top2_mean", 3.5)],
 )
 def test_aggregation_modes(aggregation: str, expected: float):
     assert aggregate_scores([1.0, 2.0, 3.0, 4.0], aggregation) == expected
+
+
+def test_percentile95_aggregation():
+    values = [float(v) for v in range(1, 101)]
+    assert aggregate_scores(values, "percentile95") == pytest.approx(95.05)
+
+
+def test_max_plus_std_aggregation():
+    import numpy as np
+
+    values = [1.0, 2.0, 3.0, 4.0]
+    expected = 4.0 + 0.5 * float(np.std(np.asarray(values)))
+    assert aggregate_scores(values, "max_plus_std") == pytest.approx(expected)
+
+
+def test_unknown_aggregation_is_rejected():
+    with pytest.raises(ValueError, match="Unknown LeWM surprise aggregation"):
+        aggregate_scores([1.0, 2.0], "does_not_exist")
 
 
 def test_topk_mean_uses_available_values():
