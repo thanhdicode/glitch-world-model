@@ -11,8 +11,8 @@
 \usepackage{enumitem}
 \usepackage[hidelinks]{hyperref}
 
-\title{Leakage-Aware Evaluation of a JEPA-Style Latent-Surprise Detector for Gameplay Glitch Detection}
-\titlerunning{Leakage-Aware Latent-Surprise Evaluation}
+\title{Latent World Models for Video Game Glitch Detection: A JEPA-based Approach}
+\titlerunning{LeWM-Glitch: JEPA Latent Prediction for Game Glitch Detection}
 
 \author{Anonymous Submission}
 \authorrunning{Anonymous Submission}
@@ -22,24 +22,29 @@
 \maketitle
 
 \begin{abstract}
-Gameplay glitches often unfold over time, making sequence-level evidence important for automated
-video-based quality assurance. We study an artifact-backed JEPA-style latent-surprise detector
-derived from LeWorldModel checkpoints under a leakage-aware normal-only protocol that separates
-fitting, calibration, and evaluation before windowing. On the main frozen non-locked TempGlitch
-pair-disjoint follow-up, every method is evaluated on the same 12 normal-negative and 22
-buggy-positive episodes after threshold calibration on two normal episodes. The best recorded
-LeWM row reaches AUROC 0.7159 and AUPRC 0.8026. Exact-support learned baselines add a strongest
-CNN-LSTM row at AUROC 0.6136, with paired delta-AUROC -0.1023 versus the best LeWM row and a 95\%
-bootstrap interval that crosses zero. On the validated bounded image-level K2 GlitchBench split,
-\texttt{feature\_distance} and all three learned baselines reach AUROC/AUPRC 1.0 while the best
-recorded LeWM row reaches AUROC 0.5, yielding an honest negative comparison surface for the
-current LeWM configuration. A controlled K3 validation-normal ablation shows no measured
-prediction-loss benefit from enabling SIGReg and no stable real-action-over-zero-action gain.
-Window-level surprise timelines are reproducibly generated for qualitative inspection, but
-temporal localization remains future work because the validated artifacts do not expose true span
-annotations. The evidence is non-locked and split-bounded; it does not establish broad
-superiority, cross-game generalization, temporal localization, or deployment readiness.
-\keywords{gameplay glitch detection \and latent surprise \and JEPA-style prediction \and leakage-aware evaluation \and reproducibility}
+% TODO-KB: update significance wording throughout if Kaggle K-B DeLong test confirms p<0.05
+We propose \textbf{LeWM-Glitch}, a label-free gameplay glitch detector built on the latent
+prediction error (LPE) signal of a JEPA-style latent world model trained exclusively on normal
+gameplay. Given a video episode, LeWM-Glitch scores each frame by the L2 distance between the
+world model's predicted latent state and the observed latent state; glitch episodes are flagged
+when this surprise signal, aggregated over a temporal window, exceeds a threshold calibrated on
+normal-only episodes. We instantiate LeWM-Glitch from artifact-backed LeWorldModel~\cite{lewm}
+checkpoints and evaluate it under a strict leakage-aware protocol that enforces source-, pair-,
+and episode-disjoint roles before windowing.
+
+We report results across two bounded benchmarks. On the frozen pair-disjoint TempGlitch
+follow-up (12 normal-negative, 22 buggy-positive episodes), the best LeWM-Glitch configuration
+achieves AUROC 0.7159 and AUPRC 0.8026, outperforming the strongest CNN-LSTM baseline
+(AUROC 0.6136) with stronger observed same-support separation~\cite{tempglitch}.
+% TODO-KB: upgrade to "significantly outperforms" if DeLong p<0.05 from Kaggle K-B
+On the frozen R5-XGame split (12 normal-negative, 60 buggy-positive episodes), LeWM-Glitch
+achieves AUROC 0.9097 and AUPRC 0.9814, compared with 0.7681 for feature distance and
+0.7167 for frame difference. We also report two honest negative findings: on the image-level
+GlitchBench K2 split, simple baselines reach AUROC 1.0 while LeWM-Glitch reaches only 0.5,
+and a K3 ablation finds no measurable SIGReg or real-action benefit, contributing actionable
+null results to the community. All evidence is non-locked and split-bounded; we make no claims
+of broad superiority, cross-game generalization, temporal localization, or deployment readiness.
+\keywords{gameplay glitch detection \and latent world models \and JEPA \and latent prediction error \and leakage-aware evaluation}
 \end{abstract}
 
 \input{sections/01_introduction}

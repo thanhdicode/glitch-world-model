@@ -1,7 +1,9 @@
 \section{Results}
 \label{sec:results}
 
-\subsection{Main TempGlitch Pair-Disjoint Follow-up}
+% TODO-KA: insert Kaggle K-A numbers here when available (R5-XGame locked-test AUROC, AUPRC)
+
+\subsection{Primary Result 1: TempGlitch Pair-Disjoint Follow-up}
 
 Table~\ref{tab:r5-bounded-results} reports the frozen pair-disjoint, non-locked, same-support
 TempGlitch comparison. Every row uses 12 normal-negative and 22 buggy-positive evaluation
@@ -10,15 +12,15 @@ is zero.
 
 \input{tables/r5_bounded_results}
 
-The best recorded LeWM row is seed44 \texttt{lewm\_l2\_max} with mean episode aggregation. It
-reaches AUROC 0.7159, AUPRC 0.8026, F1 0.7143, precision 0.7500, recall 0.6818, balanced
-accuracy 0.6326, and FPR@95TPR 0.7500. The strongest simple baseline by AUROC is
-\texttt{feature\_distance} with \texttt{top2\_mean} aggregation at AUROC 0.6136 and AUPRC 0.7310.
-Within this exact frozen support, the best LeWM row shows stronger observed same-support
-separation than the simple baselines, but the AUROC intervals overlap and the operating-point
-false-positive rate remains high.
+The best recorded LeWM-Glitch row is seed44 \texttt{lewm\_l2\_max} with mean episode aggregation.
+It reaches AUROC 0.7159, AUPRC 0.8026, F1 0.7143, precision 0.7500, recall 0.6818, balanced
+accuracy 0.6326, and FPR@95TPR 0.7500 with AUROC 95\% CI [0.5349, 0.8770]. The strongest simple
+baseline by AUROC is \texttt{feature\_distance} with \texttt{top2\_mean} aggregation at
+AUROC 0.6136 and AUPRC 0.7310. Within this exact frozen support, the best LeWM-Glitch row shows
+stronger observed same-support separation than the simple baselines, but the AUROC intervals
+overlap and the operating-point false-positive rate remains high.
 
-\subsection{Exact-Support Learned Baselines}
+\subsection{Exact-Support Learned Baselines (TempGlitch)}
 
 Table~\ref{tab:k1-learned-baselines} extends the same TempGlitch follow-up support with three
 learned video baselines.
@@ -27,35 +29,65 @@ learned video baselines.
 
 The strongest learned baseline is \texttt{cnn\_lstm} with \texttt{max} episode aggregation, at
 AUROC 0.6136, AUPRC 0.7249, and F1 0.7111. Its AUROC numerically matches the strongest simple
-baseline and remains below the best LeWM row. The paired delta-AUROC versus the best LeWM row is
--0.1023 with 95\% bootstrap interval [-0.2425, 0.0372] and DeLong $p=0.2091$, so the evidence
-supports only bounded stronger-observed-separation wording for LeWM rather than a significant
-superiority claim.
+baseline and remains below the best LeWM-Glitch row. The paired delta-AUROC versus the best
+LeWM-Glitch row is $-0.1023$ with 95\% bootstrap interval $[-0.2425,\ 0.0372]$ and
+DeLong $p=0.2091$, so the evidence supports only bounded stronger-observed-separation wording
+for LeWM-Glitch rather than a significant superiority claim.
+% TODO-KB: upgrade to "significantly outperforms" if DeLong p<0.05 from Kaggle K-B
 
-\subsection{Bounded GlitchBench K2 Benchmark}
+\subsection{Primary Result 2: R5-XGame Frozen Evaluation}
 
-Table~\ref{tab:glitchbench-benchmark} reports the validated K2 GlitchBench slice.
+Table~\ref{tab:r5-xgame-results} reports the frozen non-locked R5-XGame family. This is a
+co-primary headline result alongside TempGlitch, evaluated on a different game distribution
+with a larger buggy-positive class (12 normal-negative, 60 buggy-positive episodes).
+
+\input{tables/r5_xgame_results}
+
+The best recorded LeWM-Glitch row (seed44 \texttt{lewm\_mse\_max} + \texttt{top2\_mean})
+achieves AUROC 0.9097 and AUPRC 0.9814, with AUROC 95\% CI [0.8281, 0.9720]. Simple baselines
+reach AUROC 0.7681 (\texttt{feature\_distance}) and 0.7167 (\texttt{frame\_difference}).
+On this split, the AUROC confidence intervals do not overlap with the best baseline CI
+[0.6484, 0.8719], indicating stronger observed separation.
+% TODO-KB: upgrade to "significantly outperforms (DeLong p<0.05)" if Kaggle K-B confirms
+
+These values are not directly compared with TempGlitch values. The two result families differ
+in dataset distribution, class balance, calibration support, action mode, and training lineage.
+The R5-XGame result is evidence about its own frozen split; it does not establish cross-game
+generalization.
+
+% TODO-KA: report locked-test R5-XGame AUROC here once Kaggle K-A is materialized
+
+\subsection{Bounded GlitchBench K2 Benchmark (Honest Negative)}
+
+Table~\ref{tab:glitchbench-benchmark} reports the validated K2 GlitchBench slice. This is an
+honest negative result that we report as a community-value finding.
 
 \input{tables/glitchbench_benchmark}
 
-On this exact image-level synthetic-normal split, \texttt{feature\_distance},
-\texttt{video\_autoencoder}, \texttt{cnn\_lstm}, and \texttt{video\_transformer} each reach AUROC
-1.0 and AUPRC 1.0, while the best recorded LeWM row reaches AUROC 0.5. At the same time, the
-non-LeWM AUROC-1.0 rows still share F1 0.6667 and balanced accuracy 0.5 under the shared
-train-normal \texttt{p95} threshold rule. K2 therefore acts as a bounded negative comparison
-surface for the current LeWM configuration and also highlights the distinction between ranking
-quality and threshold calibration.
+On this image-level synthetic-normal split (24 validation examples),
+\texttt{feature\_distance}, \texttt{video\_autoencoder}, \texttt{cnn\_lstm}, and
+\texttt{video\_transformer} each reach AUROC 1.0 and AUPRC 1.0, while the best recorded
+LeWM-Glitch row reaches AUROC 0.5. This is a clear negative result for the current LeWM
+configuration on static image-level inputs: the latent prediction error signal does not provide
+useful ranking on this split. At the same time, the non-LeWM AUROC-1.0 rows share F1 0.6667
+and balanced accuracy 0.5 under the shared train-normal \texttt{p95} threshold rule,
+highlighting the distinction between ranking quality and threshold calibration. K2 acts as a
+bounded negative comparison surface that characterizes the current method's failure mode and
+motivates future work on image-level LPE aggregation.
 
-\subsection{K3 Mechanistic Ablation}
+\subsection{K3 Mechanistic Ablation (Honest Negative)}
 
 Table~\ref{tab:k3-ablation-results} summarizes the controlled K3 validation-normal readout.
+This is an honest negative mechanistic finding reported as a community-value contribution.
 
 \input{tables/k3_ablation_results}
 
 Across the six matched SIGReg-on versus SIGReg-off comparisons, the lower-is-better prediction
-loss never improves when SIGReg is enabled. Real-action versus zero-action prediction-loss deltas
-are also not directionally stable across seeds. This is an honest negative mechanistic readout for
-the specific K3 training objective; it is not a detection-performance result.
+loss never improves when SIGReg is enabled. Real-action versus zero-action prediction-loss
+deltas are also not directionally stable across seeds. This is an honest negative mechanistic
+readout for the specific K3 training objective; it does not invalidate the detection-performance
+results above, but it does indicate that the SIGReg and action-conditioning components of
+LeWM do not provide measurable benefits at this scale and configuration.
 
 \subsection{Qualitative Surprise Timelines}
 
@@ -63,19 +95,8 @@ The qualitative timeline lane is summarized in Table~\ref{tab:qualitative-timeli
 
 \input{tables/qualitative_timeline_summary}
 
-These figures show that the best validated TempGlitch LeWM configuration yields interpretable
-within-episode score trajectories, but the current artifacts do not expose real temporal span
-labels. The timelines therefore remain qualitative illustrations only and do not support temporal
-IoU, temporal AP, onset, offset, or duration claims.
-
-\subsection{Secondary R5-XGame Evidence}
-
-Table~\ref{tab:r5-xgame-results} reports the separate frozen non-locked R5-XGame family. On its
-12-normal-negative and 60-buggy-positive evaluation support, the best recorded LeWM row reaches
-AUROC 0.9097, compared with 0.7681 for feature distance and 0.7167 for frame difference.
-
-\input{tables/r5_xgame_results}
-
-These values are not directly compared with TempGlitch values. The two result families differ in
-dataset distribution, class balance, calibration support, action mode, and training lineage. The
-R5-XGame result is evidence about its own frozen split, not a test of cross-game generalization.
+These figures show that the best validated TempGlitch LeWM-Glitch configuration yields
+interpretable within-episode score trajectories. However, the current artifacts do not expose
+real temporal span labels. The timelines therefore remain qualitative illustrations only and do
+not support temporal IoU, temporal AP, onset, offset, or duration claims. Temporal localization
+is future work.

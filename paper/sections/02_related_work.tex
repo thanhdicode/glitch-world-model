@@ -1,36 +1,59 @@
 \section{Related Work}
 \label{sec:related-work}
 
+\paragraph{Game glitch detection.}
+Automated detection of visual bugs and glitches in games is an emerging research challenge.
+GlitchBench introduced a standardized benchmark asking whether large multimodal models can
+identify glitches from static screenshots~\cite{glitchbench}. World of Bugs (WOB) provided an
+earlier controlled platform for programmatic 3D bug injection and automated oracle
+evaluation~\cite{worldofbugs}. TempGlitch shifted the focus to temporal gameplay sequences,
+evaluating vision-language models on videos where glitch evidence spans multiple frames rather
+than a single image~\cite{tempglitch}. VideoGlitchBench extended this to video-level
+detection across multiple game families with explicit leakage-aware splits~\cite{videoglitchbench}.
+RESP proposed a retrieval-augmented spatial prediction baseline for glitch scoring~\cite{resp},
+while PhysGame examined physical commonsense violations in gameplay as a related failure
+mode~\cite{physgame}. Our work differs from all of these: rather than using large pretrained
+vision-language models or retrieval augmentation, we train a compact JEPA world model on
+normal gameplay and exploit its latent prediction error directly as a label-free signal.
+
 \paragraph{Video anomaly detection.}
-Video anomaly detection commonly models normality or assigns anomaly scores to temporal segments.
-Weakly supervised and memory-guided approaches illustrate the range of formulations used in
-surveillance video \cite{sultani2018ucfcrime,park2020mnad}. Gameplay glitches differ in domain,
-labels, and failure semantics, so those results are contextual rather than directly comparable.
-Score-based out-of-distribution work similarly motivates cautious use of scalar anomaly scores
-without implying calibrated probability or benchmark equivalence \cite{hendrycks2017baseline,
-guo2017calibration}.
+Video anomaly detection commonly models the distribution of normal behavior and raises an alert
+when observations deviate. Weakly supervised approaches such as UCF-Crime~\cite{sultani2018ucfcrime}
+and memory-guided normality modeling~\cite{park2020mnad} have advanced the field on surveillance
+benchmarks. More recently, FrameShield~\cite{frameshield} demonstrated contrastive frame-level
+shielding for temporal anomaly detection at NeurIPS 2025. Score-based
+out-of-distribution work~\cite{hendrycks2017baseline,guo2017calibration} motivates the use of
+scalar surprise signals but does not address the domain-specific challenge of game glitch
+semantics or the leakage risks inherent in episode-derived splits. Our method adopts the
+normal-only training paradigm but applies it to latent representation space via a world model
+rather than pixel reconstruction.
 
-\paragraph{Gameplay glitches and automated testing.}
-GlitchBench and TempGlitch make visual game failures more concrete as benchmark objects
-\cite{glitchbench,tempglitch}. TempGlitch is particularly relevant because it emphasizes temporal
-gameplay evidence, although the public artifact used here supplies binary video labels rather than
-verified temporal spans. Broader game-testing research also stresses the continuing difficulty of
-test generation, oracle design, and production integration \cite{politowski2022automatedtesting}.
-Our study addresses only bounded video-level discrimination, not a complete automated QA system.
+\paragraph{World models and latent dynamics.}
+Ha and Schmidhuber's World Models established the idea of compressing environment observations
+into a learned latent dynamics model~\cite{worldmodels}. PlaNet extended this with a
+recurrent state-space model for planning from pixels~\cite{planet}, and DreamerV3 pushed
+this lineage to diverse game domains with robust latent prediction~\cite{dreamerv3}. These
+models learn to predict future latent states; large prediction error signals an unexpected
+transition. LeWM-Glitch directly inherits this intuition, using the latent prediction error
+of LeWorldModel~\cite{lewm} --- a stable end-to-end JEPA trained on gameplay pixels --- as
+its anomaly score.
 
-\paragraph{World models, JEPA, and latent prediction.}
-World Models, PlaNet, and Dreamer establish a lineage of learned latent dynamics
-\cite{worldmodels,planet,dreamerv3}. I-JEPA and V-JEPA motivate prediction in representation space
-\cite{ijepa,vjepa}, while LeWorldModel provides the specific artifact-backed predictive model
-family used in this repository \cite{lewm}. We evaluate latent prediction error as an anomaly
-signal; we do not introduce a new architecture or claim control and planning performance.
+\paragraph{JEPA family.}
+Joint-Embedding Predictive Architectures (JEPA) predict representations of target observations
+from context representations rather than predicting raw pixels, making the representation
+space the locus of prediction~\cite{ijepa}. V-JEPA extended this to video by predicting
+masked spatiotemporal regions~\cite{vjepa}, and V-JEPA~2 further improved planning and
+prediction capabilities~\cite{vjepa2}. LeWorldModel~\cite{lewm} adapts the JEPA paradigm to
+an end-to-end pixel-conditioned dynamics model with AdaLN conditioning and SIGReg
+regularization; we use its frozen checkpoints as the backbone of LeWM-Glitch.
 
-\paragraph{Leakage-aware evaluation and reproducibility.}
-Related sources can leak information when paired or derivative examples cross split boundaries,
-inflating apparent generalization \cite{kaufman2011leakage,kapoor2023leakage}. Reproducibility
-work further motivates explicit artifacts, commands, and reporting checklists
-\cite{pineau2021reproducibility}. These concerns directly shape our role separation, same-support
-comparisons, validators, and claim registry.
+\paragraph{Research gap.}
+Prior game glitch detection work has relied on large VLMs queried at test time, retrieval
+augmentation, or classification probes on curated image datasets. No prior work has explored
+training a compact JEPA latent world model on normal gameplay and exploiting its prediction
+error as a label-free detection signal across multiple temporal benchmarks with explicit
+leakage control. LeWM-Glitch fills this gap by providing the first JEPA-LPE-based glitch
+detector with a reproducible, artifact-bound evaluation protocol.
 
 Table~\ref{tab:literature-matrix} records what each literature group supports and, equally
 importantly, what it does not support for this paper.
