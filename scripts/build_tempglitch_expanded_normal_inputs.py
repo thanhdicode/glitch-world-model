@@ -27,6 +27,7 @@ Example (target >= 30 normal-negative evaluation episodes -> 5 categories x 35 p
         --limit-per-group 35 \
         --target-validation-normal-count 34 \
         --target-validation-buggy-count 34 \
+        --target-evaluation-normal-count 30 \
         --image-size 112 --frame-stride 1
 
 The resulting Lance paths are printed as JSON for the K-A run cells to consume.
@@ -121,23 +122,41 @@ def _raise_if_under_target_support(
     *,
     target_validation_normal_count: int,
     target_validation_buggy_count: int,
+    target_evaluation_normal_count: int,
+    minimum_calibration_normal_count: int,
     allow_under_target_support: bool,
 ) -> None:
     if allow_under_target_support:
         return
     actual_normal = support["validation_normal_episode_count"]
     actual_buggy = support["validation_buggy_episode_count"]
-    if (
-        actual_normal < target_validation_normal_count
-        or actual_buggy < target_validation_buggy_count
-    ):
+    normal_support_is_usable = actual_normal >= target_validation_normal_count or (
+        actual_normal >= target_evaluation_normal_count + minimum_calibration_normal_count
+    )
+    if not normal_support_is_usable or actual_buggy < target_validation_buggy_count:
         raise ValueError(
             "Expanded TempGlitch split is below K-A target support: "
             f"validation_normal={actual_normal}/{target_validation_normal_count}, "
-            f"validation_buggy={actual_buggy}/{target_validation_buggy_count}. "
+            f"validation_buggy={actual_buggy}/{target_validation_buggy_count}, "
+            f"evaluation_normal_target={target_evaluation_normal_count} with "
+            f"minimum_calibration={minimum_calibration_normal_count}. "
             "Increase --limit-per-group or pass --allow-under-target-support only "
             "when documenting maximum public support."
         )
+
+
+def _recommended_calibration_normal_count(
+    support: dict[str, int],
+    *,
+    target_evaluation_normal_count: int,
+    preferred_calibration_normal_count: int = 4,
+) -> int:
+    available_for_calibration = (
+        support["validation_normal_episode_count"] - target_evaluation_normal_count
+    )
+    if available_for_calibration < 1:
+        return 0
+    return min(preferred_calibration_normal_count, available_for_calibration)
 
 
 def _materialize_lance(
@@ -190,12 +209,19 @@ def build_expanded_inputs(
     seed: int = 42,
     target_validation_normal_count: int = 34,
     target_validation_buggy_count: int = 34,
+    target_evaluation_normal_count: int = 30,
+    minimum_calibration_normal_count: int = 1,
     allow_under_target_support: bool = False,
 ) -> dict[str, object]:
     if limit_per_group < 1:
         raise ValueError("limit_per_group must be >= 1.")
-    if target_validation_normal_count < 1 or target_validation_buggy_count < 1:
-        raise ValueError("Target validation support counts must be >= 1.")
+    if (
+        target_validation_normal_count < 1
+        or target_validation_buggy_count < 1
+        or target_evaluation_normal_count < 1
+        or minimum_calibration_normal_count < 1
+    ):
+        raise ValueError("Target support counts must be >= 1.")
     categories = categories or list(DEFAULT_CATEGORIES)
     output_dir = output_dir.resolve()
     video_dir = output_dir / "videos"
@@ -223,7 +249,13 @@ def build_expanded_inputs(
         support,
         target_validation_normal_count=target_validation_normal_count,
         target_validation_buggy_count=target_validation_buggy_count,
+        target_evaluation_normal_count=target_evaluation_normal_count,
+        minimum_calibration_normal_count=minimum_calibration_normal_count,
         allow_under_target_support=allow_under_target_support,
+    )
+    recommended_calibration_normal_count = _recommended_calibration_normal_count(
+        support,
+        target_evaluation_normal_count=target_evaluation_normal_count,
     )
     split_path, _audit_path, _prov_path = write_frozen_split(
         split_dir / "split.csv",
@@ -239,6 +271,9 @@ def build_expanded_inputs(
             "expanded_support": True,
             "target_validation_normal_count": target_validation_normal_count,
             "target_validation_buggy_count": target_validation_buggy_count,
+            "target_evaluation_normal_count": target_evaluation_normal_count,
+            "minimum_calibration_normal_count": minimum_calibration_normal_count,
+            "recommended_calibration_normal_count": recommended_calibration_normal_count,
             "allow_under_target_support": allow_under_target_support,
             "split_support": support,
         },
@@ -294,6 +329,16 @@ def build_expanded_inputs(
         "categories": categories,
         "target_validation_normal_count": target_validation_normal_count,
         "target_validation_buggy_count": target_validation_buggy_count,
+        "target_evaluation_normal_count": target_evaluation_normal_count,
+        "minimum_calibration_normal_count": minimum_calibration_normal_count,
+        "recommended_calibration_normal_count": recommended_calibration_normal_count,
+        "validation_normal_target_met": (
+            support["validation_normal_episode_count"] >= target_validation_normal_count
+        ),
+        "evaluation_normal_target_met": (
+            support["validation_normal_episode_count"]
+            >= target_evaluation_normal_count + minimum_calibration_normal_count
+        ),
         "allow_under_target_support": allow_under_target_support,
         "split_support": support,
         "metadata_path": str(metadata_path),
@@ -334,6 +379,8 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--target-validation-normal-count", type=int, default=34)
     parser.add_argument("--target-validation-buggy-count", type=int, default=34)
+    parser.add_argument("--target-evaluation-normal-count", type=int, default=30)
+    parser.add_argument("--minimum-calibration-normal-count", type=int, default=1)
     parser.add_argument("--allow-under-target-support", action="store_true")
     return parser
 
@@ -349,6 +396,8 @@ def main(argv: list[str] | None = None) -> int:
         seed=args.seed,
         target_validation_normal_count=args.target_validation_normal_count,
         target_validation_buggy_count=args.target_validation_buggy_count,
+        target_evaluation_normal_count=args.target_evaluation_normal_count,
+        minimum_calibration_normal_count=args.minimum_calibration_normal_count,
         allow_under_target_support=args.allow_under_target_support,
     )
     print(json.dumps(summary, indent=2))

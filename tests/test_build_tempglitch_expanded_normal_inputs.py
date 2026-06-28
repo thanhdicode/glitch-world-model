@@ -99,6 +99,8 @@ def test_build_parser_defaults():
     assert args.limit_per_group == 35
     assert args.target_validation_normal_count == 34
     assert args.target_validation_buggy_count == 34
+    assert args.target_evaluation_normal_count == 30
+    assert args.minimum_calibration_normal_count == 1
     assert not args.allow_under_target_support
     assert args.image_size == 112
     assert args.frame_stride == 1
@@ -114,8 +116,32 @@ def test_raise_if_under_target_support_blocks_weak_expanded_split():
             support,
             target_validation_normal_count=30,
             target_validation_buggy_count=30,
+            target_evaluation_normal_count=30,
+            minimum_calibration_normal_count=1,
             allow_under_target_support=False,
         )
+
+
+def test_support_guard_allows_kaggle_v2_adaptive_calibration_case():
+    support = {
+        "validation_normal_episode_count": 31,
+        "validation_buggy_episode_count": 38,
+    }
+    mod._raise_if_under_target_support(
+        support,
+        target_validation_normal_count=34,
+        target_validation_buggy_count=34,
+        target_evaluation_normal_count=30,
+        minimum_calibration_normal_count=1,
+        allow_under_target_support=False,
+    )
+    assert (
+        mod._recommended_calibration_normal_count(
+            support,
+            target_evaluation_normal_count=30,
+        )
+        == 1
+    )
 
 
 def test_limit_per_group_validation(tmp_path: Path):

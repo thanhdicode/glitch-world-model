@@ -38,6 +38,8 @@ python scripts/build_tempglitch_expanded_normal_inputs.py \
   --limit-per-group 35 \
   --target-validation-normal-count 34 \
   --target-validation-buggy-count 34 \
+  --target-evaluation-normal-count 30 \
+  --minimum-calibration-normal-count 1 \
   --image-size 112 --frame-stride 1 --seed 42
 ```
 > Với 5 category và split hiện tại `validation_ratio=0.2`, `--limit-per-group 8`, `10`, hoặc `12`
@@ -46,6 +48,8 @@ python scripts/build_tempglitch_expanded_normal_inputs.py \
 > `expanded_inputs_summary.json` → `split_support`. Nếu public support theo category không đều,
 > tăng `--limit-per-group`; chỉ dùng `--allow-under-target-support` khi muốn ghi nhận maximum support
 > công khai nhưng chưa đạt target.
+> Nếu split thực tế như Kaggle V2 chỉ có 31 validation-normal, script vẫn chấp nhận vì Cell 3 sẽ
+> dùng 1 calibration normal và giữ 30 normal-negative evaluation episode.
 > Đường dẫn 3 Lance nằm trong JSON output.
 
 ---
@@ -128,7 +132,16 @@ normal_ids = sorted(
         if row["label"].lower() == "normal"
     }
 )
-calibration_ids = normal_ids[:4]
+target_evaluation_normal_count = 30
+preferred_calibration_count = 4
+available_for_calibration = len(normal_ids) - target_evaluation_normal_count
+if available_for_calibration < 1:
+    raise SystemExit(
+        f"Need at least {target_evaluation_normal_count + 1} validation-normal episodes; "
+        f"found {len(normal_ids)}"
+    )
+calibration_count = min(preferred_calibration_count, available_for_calibration)
+calibration_ids = normal_ids[:calibration_count]
 evaluation_normal_count = len(normal_ids) - len(calibration_ids)
 evaluation_buggy_count = len(
     {
