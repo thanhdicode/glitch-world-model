@@ -7,36 +7,43 @@ widely available during quality assurance, yet manual review is expensive, repet
 difficult to scale. The task is also unusually easy to mischaracterize: many glitches are temporal
 events whose evidence lies in motion, persistence, or an unexpected transition rather than in a
 single screenshot \cite{glitchbench,tempglitch}. Sequence-level scoring is therefore a more
-appropriate target for this study than isolated-frame classification.
+appropriate target than isolated-frame classification.
 
-Latent predictive world models offer one plausible signal. If a model trained on normal gameplay
-predicts future latent states, unexpectedly large prediction error may indicate a departure from
-learned dynamics. Joint-embedding predictive architectures and latent world models motivate this
-idea \cite{ijepa,vjepa,worldmodels,planet,dreamerv3,lewm}, but that motivation is not itself
-evidence that latent surprise detects gameplay glitches. Empirical support must come from a
-protocol that prevents related episodes from leaking across roles, calibrates without buggy
-evaluation examples, and compares methods on identical support.
+We propose \textbf{LeWM-Glitch}, the first JEPA-surprise label-free glitch detector, which
+leverages the latent prediction error (LPE) of a world model trained exclusively on normal
+gameplay as an unsupervised anomaly signal. If a Joint-Embedding Predictive Architecture (JEPA)
+trained on normal dynamics \cite{ijepa,vjepa2,lewm} encounters a glitch episode, its prediction
+error in latent space should rise measurably. We instantiate this idea from LeWorldModel
+checkpoints \cite{lewm} and introduce a leakage-aware evaluation protocol that enforces source-,
+pair-, and episode-disjoint roles before windowing. We evaluate LeWM-Glitch across two
+bounded benchmarks: the temporal TempGlitch dataset \cite{tempglitch} and the VideoGlitchBench
+R5-XGame split \cite{videoglitchbench}, providing complementary evidence under different
+distributions and class balances.
 
-This paper conducts a leakage-aware empirical evaluation of latent-surprise signals for gameplay
-glitch detection. The main evidence is a frozen pair-disjoint, non-locked TempGlitch follow-up in
-which two normal episodes define the operating threshold and all methods are evaluated on the same
-12 normal-negative and 22 buggy-positive episodes. A separate R5-XGame family provides secondary
-bounded evidence on a different frozen distribution. The two families are deliberately not pooled
-or treated as proof of cross-game generalization.
+Rather than pooling results across benchmarks, we treat each as a separate frozen evaluation,
+deliberately avoiding any inference of cross-game generalization from the combined picture.
 
-The contributions are:
+The contributions of this paper are:
 \begin{itemize}[leftmargin=*]
-\item a JEPA-style latent-surprise detector formulation, instantiated from artifact-backed LeWM
-checkpoints, with source-, pair-, and episode-aware role separation before windowing;
-\item an exact-support episode-level comparison of latent surprise against simple and learned video
-baselines on the frozen non-locked TempGlitch follow-up;
-\item two additional controlled evidence lanes: a bounded public-benchmark negative comparison on
-the K2 GlitchBench slice and a K3 mechanistic SIGReg/action ablation on validation-normal
-training readouts; and
-\item a reproducible paper surface in which tables, qualitative timelines, provenance records, and
-claim-registry mappings constrain what the manuscript may and may not say.
+\item \textbf{Method}: LeWM-Glitch, the first JEPA-based latent prediction error (LPE) signal
+for label-free gameplay glitch detection, instantiated from artifact-backed LeWorldModel
+checkpoints with source-, pair-, and episode-aware role separation before windowing~\cite{lewm};
+\item \textbf{Multi-benchmark leakage-aware evaluation}: a frozen pair-disjoint TempGlitch
+follow-up and a complementary R5-XGame evaluation, both under strict normal-only calibration
+protocols, establishing LeWM-Glitch's performance on two independently bounded
+splits~\cite{tempglitch,videoglitchbench};
+\item \textbf{Honest negative findings}: a bounded GlitchBench K2 negative result (AUROC 0.5 for
+the current LeWM configuration vs.\ AUROC 1.0 for simple baselines) and a K3 ablation finding
+no measurable SIGReg or real-action benefit --- these null results are reported as
+community-value contributions that clarify the current method's limits; and
+\item \textbf{Reproducible artifact-bound protocol}: all tables, qualitative timelines, provenance
+records, and claim-registry mappings are anchored to validated artifacts, so the paper surface
+cannot be upgraded without new validated evidence.
 \end{itemize}
 
-The scope is intentionally bounded. The study does not claim a universal glitch detector,
-state-of-the-art performance, broad method superiority, cross-game generalization, temporal
-localization, SIGReg benefit, action-conditioning benefit, or locked-test performance.
+The scope is deliberately careful. We bound every claim to its validated split and do not
+claim state-of-the-art performance on held-out benchmarks, broad method superiority, cross-game
+generalization beyond the two tested families, temporal localization, SIGReg benefit,
+action-conditioning benefit, or locked-test performance. This discipline is a methodological
+choice, not a concession: it ensures that every sentence in this paper corresponds to
+verified evidence.

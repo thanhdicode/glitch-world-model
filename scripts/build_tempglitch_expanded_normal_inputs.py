@@ -1,0 +1,236 @@
+"""Build EXPANDED-support TempGlitch Lance inputs for the K-A re-evaluation.
+
+The frozen TempGlitch follow-up uses only ~14 normal episodes total (2 calibration +
+12 evaluation). To shrink the wide/overlapping AUROC confidence intervals, this
+orchestrator downloads MORE normal (and matching buggy) episodes from the public
+TempGlitch dataset and materializes three Lance datasets that the existing R5 and
+follow-up runners consume unchanged:
+
+  - tempglitch_train_normal_all_local.lance       (train-normal fit pool)
+  - tempglitch_validation_normal_all_local.lance  (calibration + normal-negative eval)
+  - tempglitch_validation_buggy_all_local.lance   (buggy-positive eval)
+
+It is a thin, deterministic wrapper around three existing, validated utilities:
+  1. download_tempglitch_subset(...)  -> pulls videos + writes metadata.csv
+  2. freeze_tempglitch_split(...)     -> assigns train/validation, pair-disjoint
+  3. build_tempglitch_lewm_lance      -> materializes each Lance partition
+
+It NEVER touches locked test, never trains, and keeps pair-disjoint leakage = 0 by
+delegating the split to the frozen-split logic. Designed to run on Kaggle with
+internet ON. Raw videos are written under <output_dir>/videos and the three Lance
+datasets under <output_dir>/lance.
+
+Example (target >= 30 normal evaluation episodes -> 5 categories x 8 per group):
+
+    python scripts/build_tempglitch_expanded_normal_inputs.py \
+        --output-dir /kaggle/working/tempglitch_expanded \
+        --limit-per-group 8 \
+        --image-size 112 --frame-stride 1
+
+The resulting Lance paths are printed as JSON for the K-A run cells to consume.
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import subprocess
+import sys
+from datetime import date
+from pathlib import Path
+
+from glitch_detection.dataset_protocols import freeze_tempglitch_split, write_frozen_split
+from glitch_detection.pairs import infer_tempglitch_pair_id
+from glitch_detection.tempglitch import (
+    DATASET_ID,
+    DATASET_PAGE_URL,
+    DEFAULT_CATEGORIES,
+    download_tempglitch_subset,
+)
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+
+
+def _build_split_rows(metadata_path: Path) -> list[dict[str, str]]:
+    """Read the downloaded metadata.csv and produce freeze-split input rows."""
+    import csv
+
+    rows: list[dict[str, str]] = []
+    with metadata_path.open("r", newline="", encoding="utf-8-sig") as handle:
+        for record in csv.DictReader(handle):
+            source = record["source"]
+            category = record.get("category", "")
+            label = record.get("public_label") or record.get("label") or ""
+            rows.append(
+                {
+                    "source": source,
+                    "episode_id": source,
+                    "pair_id": f"{category}/{infer_tempglitch_pair_id(source)}",
+                    "category": category,
+                    "label": label,
+                }
+            )
+    if not rows:
+        raise ValueError(f"No TempGlitch metadata rows parsed from {metadata_path}.")
+    return rows
+
+
+def _materialize_lance(
+    *,
+    metadata: Path,
+    split: Path,
+    video_root: Path,
+    output: Path,
+    partition: str,
+    label_filter: str | None,
+    image_size: int,
+    frame_stride: int,
+    max_episodes: int | None,
+    seed: int,
+) -> None:
+    argv = [
+        sys.executable,
+        str(REPO_ROOT / "scripts" / "build_tempglitch_lewm_lance.py"),
+        "--metadata", str(metadata),
+        "--split", str(split),
+        "--video-root", str(video_root),
+        "--output", str(output),
+        "--partition", partition,
+        "--image-size", str(image_size),
+        "--frame-stride", str(frame_stride),
+        "--seed", str(seed),
+    ]
+    if label_filter is not None:
+        argv += ["--label-filter", label_filter]
+    if max_episodes is not None:
+        argv += ["--max-episodes", str(max_episodes)]
+    subprocess.run(argv, check=True)
+
+
+def build_expanded_inputs(
+    *,
+    output_dir: Path,
+    limit_per_group: int,
+    categories: list[str] | None = None,
+    image_size: int = 112,
+    frame_stride: int = 1,
+    seed: int = 42,
+) -> dict[str, object]:
+    if limit_per_group < 1:
+        raise ValueError("limit_per_group must be >= 1.")
+    categories = categories or list(DEFAULT_CATEGORIES)
+    output_dir = output_dir.resolve()
+    video_dir = output_dir / "videos"
+    lance_dir = output_dir / "lance"
+    split_dir = output_dir / "split"
+    for path in (video_dir, lance_dir, split_dir):
+        path.mkdir(parents=True, exist_ok=True)
+
+    # 1) Download an expanded, stratified subset (both labels, all categories).
+    samples, metadata_path, _readme = download_tempglitch_subset(
+        output_dir=video_dir,
+        categories=categories,
+        limit_per_group=limit_per_group,
+        sample_mode="random-stratified",
+        seed=seed,
+    )
+    normal_count = sum(1 for s in samples if s.public_label.lower() == "normal")
+    buggy_count = sum(1 for s in samples if s.public_label.lower() == "buggy")
+
+    # 2) Freeze a pair-disjoint train/validation split (no exposed groups).
+    split_rows = _build_split_rows(metadata_path)
+    records = freeze_tempglitch_split(split_rows, exposed_groups=set(), seed=seed)
+    split_path, _audit_path, _prov_path = write_frozen_split(
+        split_dir / "split.csv",
+        records,
+        seed=seed,
+        exposed_groups=set(),
+        provenance={
+            "dataset_id": DATASET_ID,
+            "source_url": DATASET_PAGE_URL,
+            "access_date": date.today().isoformat(),
+            "limit_per_group": limit_per_group,
+            "categories": categories,
+            "expanded_support": True,
+        },
+    )
+
+    # 3) Materialize the three Lance datasets the runners expect.
+    train_lance = lance_dir / "tempglitch_train_normal_all_local.lance"
+    val_normal_lance = lance_dir / "tempglitch_validation_normal_all_local.lance"
+    val_buggy_lance = lance_dir / "tempglitch_validation_buggy_all_local.lance"
+
+    _materialize_lance(
+        metadata=metadata_path, split=split_path, video_root=video_dir,
+        output=train_lance, partition="train", label_filter="Normal",
+        image_size=image_size, frame_stride=frame_stride, max_episodes=None, seed=seed,
+    )
+    _materialize_lance(
+        metadata=metadata_path, split=split_path, video_root=video_dir,
+        output=val_normal_lance, partition="validation", label_filter="Normal",
+        image_size=image_size, frame_stride=frame_stride, max_episodes=None, seed=seed,
+    )
+    _materialize_lance(
+        metadata=metadata_path, split=split_path, video_root=video_dir,
+        output=val_buggy_lance, partition="validation", label_filter="Buggy",
+        image_size=image_size, frame_stride=frame_stride, max_episodes=None, seed=seed,
+    )
+
+    summary = {
+        "status": "expanded_inputs_ready",
+        "downloaded_normal_episodes": normal_count,
+        "downloaded_buggy_episodes": buggy_count,
+        "limit_per_group": limit_per_group,
+        "categories": categories,
+        "metadata_path": str(metadata_path),
+        "split_path": str(split_path),
+        "train_lance": str(train_lance),
+        "validation_normal_lance": str(val_normal_lance),
+        "validation_buggy_lance": str(val_buggy_lance),
+        "locked_test_materialized": False,
+        "note": (
+            "Pass the three lance paths to "
+            "run_r5_tempglitch_identical_episode_evaluation.py and then "
+            "run_tempglitch_followup_pair_disjoint.py."
+        ),
+    }
+    (output_dir / "expanded_inputs_summary.json").write_text(
+        json.dumps(summary, indent=2), encoding="utf-8"
+    )
+    return summary
+
+
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        description="Build expanded-support TempGlitch Lance inputs (download + freeze + materialize)."
+    )
+    parser.add_argument("--output-dir", required=True, type=Path)
+    parser.add_argument(
+        "--limit-per-group",
+        type=int,
+        default=8,
+        help="Videos per (category, label) group. 5 categories x N normal = max normals.",
+    )
+    parser.add_argument("--categories", nargs="+", default=None)
+    parser.add_argument("--image-size", type=int, default=112)
+    parser.add_argument("--frame-stride", type=int, default=1)
+    parser.add_argument("--seed", type=int, default=42)
+    return parser
+
+
+def main(argv: list[str] | None = None) -> int:
+    args = build_parser().parse_args(argv)
+    summary = build_expanded_inputs(
+        output_dir=args.output_dir,
+        limit_per_group=args.limit_per_group,
+        categories=args.categories,
+        image_size=args.image_size,
+        frame_stride=args.frame_stride,
+        seed=args.seed,
+    )
+    print(json.dumps(summary, indent=2))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -128,3 +128,4 @@ paper/*.synctex.gz
 
 # Keep external/ trackable for Git submodules or reference code.
 # Do not ignore external/ globally.
+!/kaggle/p1_expanded_support/KAGGLE_K_A_EXPANDED.md
