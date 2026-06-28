@@ -106,6 +106,8 @@ lewm_data/
 !/kaggle/phase6e_video_autoencoder/phase6e_kaggle_cells.md
 !/kaggle/phase6e_video_autoencoder/dataset-metadata.template.json
 !/kaggle/phase6e_video_autoencoder/DO_NOT_COMMIT_ARTIFACTS.md
+!/kaggle/p1_expanded_support/
+!/kaggle/p1_expanded_support/*.md
 
 checkpoints/
 *.tar.gz

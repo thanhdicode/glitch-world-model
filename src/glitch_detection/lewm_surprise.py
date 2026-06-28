@@ -31,6 +31,15 @@ def aggregate_scores(values: Iterable[float], aggregation: str) -> float:
     if aggregation == "topk_mean":
         count = min(3, len(array))
         return float(np.partition(array, len(array) - count)[-count:].mean())
+    if aggregation == "top2_mean":
+        count = min(2, len(array))
+        return float(np.partition(array, len(array) - count)[-count:].mean())
+    if aggregation == "percentile95":
+        return float(np.percentile(array, 95))
+    if aggregation == "max_plus_std":
+        # Peak surprise plus dispersion: sensitive to both short spikes and
+        # sustained variance in the per-window surprise series.
+        return float(array.max() + 0.5 * array.std())
     raise ValueError(f"Unknown LeWM surprise aggregation: {aggregation}")
 
 

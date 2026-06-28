@@ -813,10 +813,19 @@ def run_tempglitch_followup_pair_disjoint(
     }
 
 
+# Frozen pair-disjoint protocol support tuple:
+# (calibration_episode_count, evaluation_episode_count, positive_episode_count,
+#  negative_episode_count). The expanded-support Phase P1 runs may override this
+# with a larger tuple while keeping leakage = 0; the frozen default is preserved
+# so historical evidence keeps validating exactly as before.
+FROZEN_FOLLOWUP_SUPPORT_TUPLE = ("4", "32", "22", "10")
+
+
 def validate_tempglitch_followup_output(
     *,
     output_dir: Path,
     receipt_path: Path | None = None,
+    expected_support: tuple[str, str, str, str] = FROZEN_FOLLOWUP_SUPPORT_TUPLE,
 ) -> dict[str, Any]:
     output_dir = output_dir.resolve()
     refuse_locked_test_path(output_dir, description="follow-up output directory")
@@ -858,9 +867,11 @@ def validate_tempglitch_followup_output(
         )
         for row in comparison_rows
     }
-    expected_support = {("4", "32", "22", "10")}
-    if support_tuples != expected_support:
-        raise ValueError(f"Follow-up support mismatch: {support_tuples}")
+    expected_support_set = {tuple(str(part) for part in expected_support)}
+    if support_tuples != expected_support_set:
+        raise ValueError(
+            f"Follow-up support mismatch: {support_tuples}; expected {expected_support_set}"
+        )
 
     calibration_text = ",".join(CALIBRATION_NORMAL_EPISODE_IDS)
     required_fields = [
