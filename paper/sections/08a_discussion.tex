@@ -37,14 +37,13 @@ positive-heavy binary family with real-action evidence, while R5-WOB remains pos
 Their role in this manuscript is to broaden the empirical picture without erasing protocol
 differences or implying cross-game generalization.
 
-\subsection{Why the Positive and Negative Results Fit One Method Story}
+\subsection{How the Positive and Negative Results Fit One Method Story}
 
-The TempGlitch, R5-XGame, and K2 results are coherent when read through the lens of temporal
-latent surprise. TempGlitch and R5-XGame contain episode-level temporal evidence, so elevated
-latent prediction error can accumulate into useful ranking signals. GlitchBench K2, by contrast,
-is an image-level slice constructed from static visual evidence; it removes the temporal dynamics
-that LeWM-Glitch is designed to model. The performance inversion is therefore informative:
-LeWM-Glitch is not a generic screenshot glitch classifier, and its strongest evidence appears
-when the task contains anomalous dynamics.
+The TempGlitch, R5-XGame, and K2 results are consistent with the method's intended temporal
+scope. TempGlitch and R5-XGame contain episode-level evidence, while GlitchBench K2 is an
+image-level slice constructed from static visual evidence. This contrast does not prove that
+temporal dynamics cause the positive results, but it gives a useful interpretation of the
+evidence boundary: LeWM-Glitch should be treated as an episode-level latent-surprise scorer, not
+as a generic screenshot glitch classifier.
 
 \input{tables/limitations_claim_boundary}
