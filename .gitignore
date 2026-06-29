@@ -100,6 +100,10 @@ artifacts/downloads/
 artifacts/verified/
 lewm_outputs/
 lewm_data/
+exports/
+paper*.zip
+paperfinal/
+perplexity upload ready/
 /kaggle/*
 !/kaggle/phase6e_video_autoencoder/
 !/kaggle/phase6e_video_autoencoder/README.md
