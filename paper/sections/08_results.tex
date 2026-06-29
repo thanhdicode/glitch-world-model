@@ -38,11 +38,10 @@ or scoring design.
 
 \paragraph{Comparison with VLM baselines on TempGlitch.}
 The TempGlitch benchmark reports that current vision-language models remain near chance on
-temporal glitch sequences~\cite{tempglitch}. The best LeWM-Glitch configuration on our frozen
-pair-disjoint follow-up reaches AUROC 0.7159, providing stronger observed separation than those
-reported VLM behaviors on the temporal binary task. This comparison is contextual rather than
-same-split: the exact evaluation episodes and prompting protocols differ, and the claim does not
-extend to static screenshot tasks where VLMs and image-level classifiers may be stronger.
+temporal glitch sequences~\cite{tempglitch}. We use this result as background motivation for
+normal-only episode-level surprise signals rather than as a same-split comparison: our exact
+evaluation episodes, prompts, model family, and scoring protocol differ, and this paper does not
+claim superiority over VLM detectors.
 
 \subsection{Secondary R5-XGame Frozen Evaluation}
 
@@ -76,13 +75,12 @@ honest negative result that we report as a community-value finding.
 On this image-level synthetic-normal split (24 validation examples),
 \texttt{feature\_distance}, \texttt{video\_autoencoder}, \texttt{cnn\_lstm}, and
 \texttt{video\_transformer} each reach AUROC 1.0 and AUPRC 1.0, while the best recorded
-LeWM-Glitch row reaches AUROC 0.5. This is an expected architectural mismatch rather than a
-hidden positive result: GlitchBench K2 presents static image-level evidence, while LeWM-Glitch
-derives its signal from temporal latent prediction error. The non-LeWM AUROC-1.0 rows still share
+LeWM-Glitch row reaches AUROC 0.5. This split does not test the method's intended temporal
+setting: GlitchBench K2 presents static image-level evidence, while LeWM-Glitch is evaluated
+above as an episode-level latent prediction error scorer. The non-LeWM AUROC-1.0 rows still share
 F1 0.6667 and balanced accuracy 0.5 under the shared train-normal \texttt{p95} threshold rule,
 highlighting the distinction between ranking quality and threshold calibration. K2 therefore acts
-as an honest negative comparison surface: the current method captures temporal surprise, not a
-generic static visual-glitch prior.
+as an honest negative comparison surface rather than a hidden positive result.
 
 \subsection{K3 Mechanistic Ablation (Honest Negative)}
 
