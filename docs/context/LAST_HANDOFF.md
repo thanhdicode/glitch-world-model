@@ -1,52 +1,66 @@
 # LAST_HANDOFF.md
 
-Last completed task: K-B R5-XGame final intake context refresh
-Commit: `0289c5bfcc825502f1ca76564de0f81a3df4b60d`
+Last completed task: Paper revision v6 evidence-safe compact pass
+Commit: pending final merge commit
 Date: 2026-06-29T00:00:00+00:00
 
 ## What Changed
 
-- Added the final K-B / R5-XGame local intake note for the user-downloaded output in
-  `C:\Users\ADMIN\Downloads\results K-B\r5_xgame`.
-- Updated claim registry and current research notes so the authoritative K-B tarball SHA256 is
-  `e41b5940a6a79713c25b03437fa76e360308fa310db9c35f812b4864ec6fff02` and the metrics SHA256 is
-  `6ec94af80a40eeff718aefa285be870694eeadeaaefa6624babe3a5ee84f8474`.
-- Refreshed context generator wording so K-B is final-intake-validated and K-A expanded
-  TempGlitch remains pending until a downloaded output bundle passes local validation.
-- Loaded LaTeX/paper-writing operating guidance for the next evidence-safe paper revision pass.
+- Reframed the manuscript as `Latent World Models for Video Game Glitch Detection: A JEPA-based
+  Approach` with a stronger Topic-A method-paper narrative while preserving bounded claims.
+- Integrated K-B / R5-XGame as secondary frozen non-locked evidence with AUROC `0.9097` and AUPRC
+  `0.9814`, plus the full metric vector in the paper table and claim registry.
+- Added an artifact-backed qualitative TempGlitch surprise timeline figure generated from local
+  follow-up selection files plus validated raw LeWM window scores; the receipt explicitly keeps
+  `temporal_metrics_claimed=false`.
+- Compactly prepared the reviewer-facing LLNCS manuscript by moving appendices and wide audit
+  tables out of `paper/main.tex` while preserving the source-package audit trail.
+- Verified a local official-template sandbox build using the downloaded Springer template at
+  `C:\Users\ADMIN\Downloads\Springer_Latex_Template.zip`; the reviewer-facing PDF builds to
+  16 pages.
 
 ## Checks Passed
 
-- `python scripts/validate_r5_xgame_output_bundle.py --tarball "C:\Users\ADMIN\Downloads\results K-B\r5_xgame\r5_xgame_outputs.tar.gz" --sha256-file "C:\Users\ADMIN\Downloads\results K-B\r5_xgame\r5_xgame_outputs.tar.gz.sha256" --frozen-manifest configs/wob_protocol/r5_xgame_split.csv`
-- `python scripts/validate_r5_xgame_output_bundle.py --output-dir "C:\Users\ADMIN\Downloads\results K-B\r5_xgame" --frozen-manifest configs/wob_protocol/r5_xgame_split.csv`
+- `python -m pytest`
+- `python -m ruff check .`
+- `python -m ruff format --check .`
+- `python scripts/validate_research_release.py --ci`
+- `python scripts/check_claim_registry.py`
+- `python scripts/doctor.py`
+- `python scripts/validate_context_cache.py`
+- `pre-commit run --all-files`
+- Local Tectonic sandbox build with Springer `llncs.cls`/`splncs04.bst`: produced a 16-page PDF
+  at `%TEMP%\lewm-paper-build-v6-finalcheck\main.pdf`.
 
 ## Safety Status
 
 - No Kaggle launch, retraining, remote deletion, or locked-test action was performed in this task.
-- Downloaded K-B outputs, Lance datasets, scores, checkpoints, and tarballs remain outside Git.
+- Downloaded K-B outputs, K-A in-progress outputs, Lance datasets, scores, checkpoints, and
+  tarballs remain outside Git.
 - K-B claims remain bounded to the frozen non-locked 12-normal-negative / 60-buggy-positive split.
 - K-A expanded results are not evidence yet because no K-A output bundle has been locally validated.
 
 ## Gate Status After Task
 
-- K-B / R5-XGame is final-intake-validated locally with validator statuses
-  `r5_xgame_output_validated` and `r5_xgame_tarball_validated`.
-- The best recorded K-B row remains LeWM seed44, `lewm_mse_max`, `top2_mean`, with AUROC
-  `0.909722` and AUPRC `0.981384`.
+- Reviewer-facing paper revision v6 is evidence-safe, claim-audited, and locally buildable to a
+  16-page LLNCS PDF in the sandbox template.
+- K-B / R5-XGame is final-intake-validated locally; the best recorded row remains LeWM seed44,
+  `lewm_mse_max`, `top2_mean`, with AUROC `0.909722` and AUPRC `0.981384`.
 - K-A expanded TempGlitch remains pending validated output.
 - Locked test remains closed.
 
 ## Open Blockers
 
 - K-A expanded TempGlitch has not yet produced a locally validated output bundle.
-- The official Springer/LLNCS build toolchain remains external to this workspace.
-- VLM-specific TempGlitch AUROC numbers from external papers must not be added until verified from
-  primary sources.
+- Final conference PDF metadata and camera-ready details still need the official submission
+  environment, even though the local official-template sandbox build succeeds.
+- Any future stronger TempGlitch or VLM-specific numeric claim must be backed by a primary source
+  or a locally validated artifact bundle before entering the manuscript.
 
 ## Next Recommended Task
 
-- Run the evidence-safe paper revision v6 pass from `CODEX_MASTER_PROMPT_LeWM_v6.md`, using K-B
-  only within its frozen non-locked split boundary and excluding K-A expanded claims until validated.
+- Merge the paper revision branch into `main`, push, and then validate any future K-A expanded
+  output bundle before promoting additional TempGlitch claims.
 
 ## Files Likely Relevant Next
 

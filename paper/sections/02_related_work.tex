@@ -10,9 +10,8 @@ evaluation~\cite{worldofbugs}. TempGlitch shifted the focus to temporal gameplay
 evaluating vision-language models on videos where glitch evidence spans multiple frames rather
 than a single image~\cite{tempglitch}. VideoGlitchBench extended this to video-level
 detection across multiple game families with explicit leakage-aware splits~\cite{videoglitchbench}.
-RESP proposed a retrieval-augmented spatial prediction baseline for glitch scoring~\cite{resp},
-while PhysGame examined physical commonsense violations in gameplay as a related failure
-mode~\cite{physgame}. Our work differs from all of these: rather than using large pretrained
+RESP proposed a retrieval-augmented spatial prediction baseline for glitch scoring~\cite{resp}.
+Our work differs from all of these: rather than using large pretrained
 vision-language models or retrieval augmentation, we train a compact JEPA world model on
 normal gameplay and exploit its latent prediction error directly as a label-free signal.
 
@@ -20,11 +19,9 @@ normal gameplay and exploit its latent prediction error directly as a label-free
 Video anomaly detection commonly models the distribution of normal behavior and raises an alert
 when observations deviate. Weakly supervised approaches such as UCF-Crime~\cite{sultani2018ucfcrime}
 and memory-guided normality modeling~\cite{park2020mnad} have advanced the field on surveillance
-benchmarks. More recently, FrameShield~\cite{frameshield} demonstrated contrastive frame-level
-shielding for temporal anomaly detection at NeurIPS 2025. Score-based
-out-of-distribution work~\cite{hendrycks2017baseline,guo2017calibration} motivates the use of
-scalar surprise signals but does not address the domain-specific challenge of game glitch
-semantics or the leakage risks inherent in episode-derived splits. Our method adopts the
+benchmarks. Score-based out-of-distribution work~\cite{hendrycks2017baseline,guo2017calibration}
+motivates the use of scalar surprise signals but does not address the domain-specific challenge
+of game glitch semantics or the leakage risks inherent in episode-derived splits. Our method adopts the
 normal-only training paradigm but applies it to latent representation space via a world model
 rather than pixel reconstruction.
 TempGlitch~\cite{tempglitch} further reports that current vision-language models remain near
@@ -58,8 +55,8 @@ gameplay and exploiting its prediction error as a label-free detection signal ac
 temporal benchmarks with explicit leakage control. LeWM-Glitch fills this gap by providing a
 JEPA-LPE-based glitch detector with a reproducible, artifact-bound evaluation protocol.
 
-Table~\ref{tab:literature-matrix} records what each literature group supports and, equally
-importantly, what it does not support for this paper.
+The source package retains a claim-support matrix recording what each literature group supports
+and, equally importantly, what it does not support for this paper.
 
 \paragraph{Concurrent work.}
 Two concurrent preprints are relevant. RESP~\cite{resp} proposes a retrieval-enhanced spatial
@@ -69,5 +66,3 @@ synthetic-aperture radar imagery, demonstrating that JEPA prediction error can b
 natural video; however, it does not address temporal game dynamics. LeWM-Glitch differs from both
 by using a compact JEPA world model trained on normal gameplay to produce a label-free
 episode-level surprise signal under strict leakage-aware evaluation.
-
-\input{tables/literature_matrix}
