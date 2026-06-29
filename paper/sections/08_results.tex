@@ -31,18 +31,32 @@ baseline and remains below the best LeWM-Glitch row. The paired delta-AUROC vers
 LeWM-Glitch row is $-0.1023$ with 95\% bootstrap interval $[-0.2425,\ 0.0372]$ and
 DeLong $p=0.2091$, so the evidence supports only bounded stronger-observed-separation wording
 for LeWM-Glitch rather than a significant superiority claim.
+The VideoMAE-small feature-distance baseline is included as a transformer-based learned
+comparison; on this support it remains below the best LeWM-Glitch row, but this single bounded
+result is not sufficient to isolate a JEPA-specific advantage from training budget, support size,
+or scoring design.
 
-\subsection{Primary Result 2: R5-XGame Frozen Evaluation}
+\paragraph{Comparison with VLM baselines on TempGlitch.}
+The TempGlitch benchmark reports that current vision-language models remain near chance on
+temporal glitch sequences~\cite{tempglitch}. The best LeWM-Glitch configuration on our frozen
+pair-disjoint follow-up reaches AUROC 0.7159, providing stronger observed separation than those
+reported VLM behaviors on the temporal binary task. This comparison is contextual rather than
+same-split: the exact evaluation episodes and prompting protocols differ, and the claim does not
+extend to static screenshot tasks where VLMs and image-level classifiers may be stronger.
+
+\subsection{Secondary R5-XGame Frozen Evaluation}
 
 Table~\ref{tab:r5-xgame-results} reports the frozen non-locked R5-XGame family. This is a
-co-primary headline result alongside TempGlitch, evaluated on a different game distribution
-with a larger buggy-positive class (12 normal-negative, 60 buggy-positive episodes).
+secondary bounded result alongside TempGlitch, evaluated on a different game distribution with a
+larger buggy-positive class (12 normal-negative, 60 buggy-positive episodes).
 
 \input{tables/r5_xgame_results}
 
 The best recorded LeWM-Glitch row (seed44 \texttt{lewm\_mse\_max} + \texttt{top2\_mean})
-achieves AUROC 0.9097 and AUPRC 0.9814, with AUROC 95\% CI [0.8281, 0.9720]. Simple baselines
-reach AUROC 0.7681 (\texttt{feature\_distance}) and 0.7167 (\texttt{frame\_difference}).
+achieves AUROC 0.9097, AUPRC 0.9814, F1 0.7921, precision 0.9756, recall 0.6667,
+balanced accuracy 0.7917, and FPR@95TPR 0.4167, with AUROC 95\% CI [0.8281, 0.9720].
+Simple baselines reach AUROC 0.7681 (\texttt{feature\_distance}) and 0.7167
+(\texttt{frame\_difference}).
 On this split, the best LeWM-Glitch AUROC is numerically above the best baseline AUROC, but the
 AUROC confidence intervals still overlap ([0.8281, 0.9720] versus [0.6484, 0.8719]); this
 supports bounded stronger observed separation, not significant superiority.
@@ -62,13 +76,13 @@ honest negative result that we report as a community-value finding.
 On this image-level synthetic-normal split (24 validation examples),
 \texttt{feature\_distance}, \texttt{video\_autoencoder}, \texttt{cnn\_lstm}, and
 \texttt{video\_transformer} each reach AUROC 1.0 and AUPRC 1.0, while the best recorded
-LeWM-Glitch row reaches AUROC 0.5. This is a clear negative result for the current LeWM
-configuration on static image-level inputs: the latent prediction error signal does not provide
-useful ranking on this split. At the same time, the non-LeWM AUROC-1.0 rows share F1 0.6667
-and balanced accuracy 0.5 under the shared train-normal \texttt{p95} threshold rule,
-highlighting the distinction between ranking quality and threshold calibration. K2 acts as a
-bounded negative comparison surface that characterizes the current method's failure mode and
-motivates future work on image-level LPE aggregation.
+LeWM-Glitch row reaches AUROC 0.5. This is an expected architectural mismatch rather than a
+hidden positive result: GlitchBench K2 presents static image-level evidence, while LeWM-Glitch
+derives its signal from temporal latent prediction error. The non-LeWM AUROC-1.0 rows still share
+F1 0.6667 and balanced accuracy 0.5 under the shared train-normal \texttt{p95} threshold rule,
+highlighting the distinction between ranking quality and threshold calibration. K2 therefore acts
+as an honest negative comparison surface: the current method captures temporal surprise, not a
+generic static visual-glitch prior.
 
 \subsection{K3 Mechanistic Ablation (Honest Negative)}
 
