@@ -39,19 +39,23 @@ echo "=== OK ==="
 cd /kaggle/working/glitch-world-model
 python scripts/build_tempglitch_expanded_normal_inputs.py \
   --output-dir /kaggle/working/tempglitch_expanded \
-  --limit-per-group 50 \
-  --target-validation-normal-count 44 \
-  --target-validation-buggy-count 44 \
-  --target-evaluation-normal-count 40 \
+  --limit-per-group 35 \
+  --target-validation-normal-count 34 \
+  --target-validation-buggy-count 34 \
+  --target-evaluation-normal-count 30 \
   --minimum-calibration-normal-count 4 \
-  --image-size 112 --frame-stride 1 --seed 42
+  --image-size 112 \
+  --frame-stride 4 \
+  --max-steps-per-episode 512 \
+  --train-max-episodes 48 \
+  --seed 42
 ```
 > Với 5 category và split hiện tại `validation_ratio=0.2`, `--limit-per-group 8`, `10`, hoặc `12`
-> không đủ cho K-A expanded. Dùng `50` để ưu tiên ít nhất 4 calibration-normal và khoảng 40
-> normal-negative evaluation episode. Xem `expanded_inputs_summary.json` → `split_support`.
-> Nếu public support theo category không đều, tăng `--limit-per-group`; không hạ
-> `--minimum-calibration-normal-count` xuống 1 nữa vì run trước cho thấy threshold từ 1 episode làm
-> FPR@95TPR rất xấu.
+> không đủ cho K-A expanded. Dùng `35` để ưu tiên ít nhất 4 calibration-normal và khoảng 30
+> normal-negative evaluation episode. Không dùng profile `50/44/40` trên Kaggle vì Version 12 đã
+> chứng minh nó có thể phồng output lên ~21GB và lỗi `No space left on device` khi ghi Lance.
+> `--frame-stride 4`, `--max-steps-per-episode 512`, và `--train-max-episodes 48` là budget guardrail
+> cho K-A background job. Xem `expanded_inputs_summary.json` → `split_support`.
 > Đường dẫn 3 Lance nằm trong JSON output.
 
 ---
@@ -133,7 +137,7 @@ for row in rows:
         continue
     normal_by_category.setdefault(row.get("category", ""), set()).add(row["source_episode_id"])
 normal_ids = sorted({episode_id for ids in normal_by_category.values() for episode_id in ids})
-target_evaluation_normal_count = 40
+target_evaluation_normal_count = 30
 preferred_calibration_count = 4
 available_for_calibration = len(normal_ids) - target_evaluation_normal_count
 if available_for_calibration < preferred_calibration_count:
@@ -194,7 +198,7 @@ cat /kaggle/working/tempglitch_followup_expanded/followup_comparison.csv | head
 ```
 > Cell này lấy calibration IDs và support tuple trực tiếp từ `r5_manifest.csv`, nên không còn phải
 > sửa tay tuple frozen `(4,32,22,10)`. Acceptance target: `calibration_count >= 4`,
-> `evaluation_normal_count >= 40`, `evaluation_buggy_count >= 40`, role overlap = 0,
+> `evaluation_normal_count >= 30`, `evaluation_buggy_count >= 30`, role overlap = 0,
 > locked-test flags = false.
 
 ## Cell 4 — Significance (chung)
@@ -261,7 +265,7 @@ cat /kaggle/working/tempglitch_expanded_significance.json
 - `/kaggle/working/tempglitch_significance_selection.json`
 
 ## Acceptance
-- calibration normals ≥ 4 và normal-negative evaluation episodes ≥ 40.
+- calibration normals ≥ 4 và normal-negative evaluation episodes ≥ 30.
 - AUROC LeWM ≥ 0.70; nếu DeLong p<0.05 và bootstrap ΔAUROC CI loại 0 → "significantly
   outperforms".
 - FPR@95TPR phải giảm rõ so với run calibration=1; nếu vẫn gần 1.0 thì chỉ dùng K-A như bounded

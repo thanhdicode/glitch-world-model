@@ -28,7 +28,7 @@ Example (target >= 30 normal-negative evaluation episodes -> 5 categories x 35 p
         --target-validation-normal-count 34 \
         --target-validation-buggy-count 34 \
         --target-evaluation-normal-count 30 \
-        --image-size 112 --frame-stride 1
+        --image-size 112 --frame-stride 4 --max-steps-per-episode 512
 
 The resulting Lance paths are printed as JSON for the K-A run cells to consume.
 """
@@ -169,6 +169,7 @@ def _materialize_lance(
     label_filter: str | None,
     image_size: int,
     frame_stride: int,
+    max_steps: int | None,
     max_episodes: int | None,
     seed: int,
 ) -> None:
@@ -192,6 +193,8 @@ def _materialize_lance(
         "--seed",
         str(seed),
     ]
+    if max_steps is not None:
+        argv += ["--max-steps", str(max_steps)]
     if label_filter is not None:
         argv += ["--label-filter", label_filter]
     if max_episodes is not None:
@@ -206,6 +209,8 @@ def build_expanded_inputs(
     categories: list[str] | None = None,
     image_size: int = 112,
     frame_stride: int = 1,
+    max_steps_per_episode: int | None = None,
+    train_max_episodes: int | None = None,
     seed: int = 42,
     target_validation_normal_count: int = 34,
     target_validation_buggy_count: int = 34,
@@ -222,6 +227,10 @@ def build_expanded_inputs(
         or minimum_calibration_normal_count < 1
     ):
         raise ValueError("Target support counts must be >= 1.")
+    if max_steps_per_episode is not None and max_steps_per_episode < 2:
+        raise ValueError("max_steps_per_episode must be >= 2 when provided.")
+    if train_max_episodes is not None and train_max_episodes < 1:
+        raise ValueError("train_max_episodes must be >= 1 when provided.")
     categories = categories or list(DEFAULT_CATEGORIES)
     output_dir = output_dir.resolve()
     video_dir = output_dir / "videos"
@@ -273,6 +282,9 @@ def build_expanded_inputs(
             "target_validation_buggy_count": target_validation_buggy_count,
             "target_evaluation_normal_count": target_evaluation_normal_count,
             "minimum_calibration_normal_count": minimum_calibration_normal_count,
+            "frame_stride": frame_stride,
+            "max_steps_per_episode": max_steps_per_episode,
+            "train_max_episodes": train_max_episodes,
             "recommended_calibration_normal_count": recommended_calibration_normal_count,
             "allow_under_target_support": allow_under_target_support,
             "split_support": support,
@@ -293,7 +305,8 @@ def build_expanded_inputs(
         label_filter="Normal",
         image_size=image_size,
         frame_stride=frame_stride,
-        max_episodes=None,
+        max_steps=max_steps_per_episode,
+        max_episodes=train_max_episodes,
         seed=seed,
     )
     _materialize_lance(
@@ -305,6 +318,7 @@ def build_expanded_inputs(
         label_filter="Normal",
         image_size=image_size,
         frame_stride=frame_stride,
+        max_steps=max_steps_per_episode,
         max_episodes=None,
         seed=seed,
     )
@@ -317,6 +331,7 @@ def build_expanded_inputs(
         label_filter="Buggy",
         image_size=image_size,
         frame_stride=frame_stride,
+        max_steps=max_steps_per_episode,
         max_episodes=None,
         seed=seed,
     )
@@ -331,6 +346,9 @@ def build_expanded_inputs(
         "target_validation_buggy_count": target_validation_buggy_count,
         "target_evaluation_normal_count": target_evaluation_normal_count,
         "minimum_calibration_normal_count": minimum_calibration_normal_count,
+        "frame_stride": frame_stride,
+        "max_steps_per_episode": max_steps_per_episode,
+        "train_max_episodes": train_max_episodes,
         "recommended_calibration_normal_count": recommended_calibration_normal_count,
         "validation_normal_target_met": (
             support["validation_normal_episode_count"] >= target_validation_normal_count
@@ -376,6 +394,24 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--categories", nargs="+", default=None)
     parser.add_argument("--image-size", type=int, default=112)
     parser.add_argument("--frame-stride", type=int, default=1)
+    parser.add_argument(
+        "--max-steps-per-episode",
+        type=int,
+        default=None,
+        help=(
+            "Optional cap on decoded frames per episode after frame stride. Use this on Kaggle "
+            "expanded runs to keep Lance output below the working-disk quota."
+        ),
+    )
+    parser.add_argument(
+        "--train-max-episodes",
+        type=int,
+        default=None,
+        help=(
+            "Optional cap on train-normal episodes materialized into the train Lance. "
+            "Validation support is never capped by this flag."
+        ),
+    )
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--target-validation-normal-count", type=int, default=34)
     parser.add_argument("--target-validation-buggy-count", type=int, default=34)
@@ -393,6 +429,8 @@ def main(argv: list[str] | None = None) -> int:
         categories=args.categories,
         image_size=args.image_size,
         frame_stride=args.frame_stride,
+        max_steps_per_episode=args.max_steps_per_episode,
+        train_max_episodes=args.train_max_episodes,
         seed=args.seed,
         target_validation_normal_count=args.target_validation_normal_count,
         target_validation_buggy_count=args.target_validation_buggy_count,

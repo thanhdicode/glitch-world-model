@@ -104,6 +104,58 @@ def test_build_parser_defaults():
     assert not args.allow_under_target_support
     assert args.image_size == 112
     assert args.frame_stride == 1
+    assert args.max_steps_per_episode is None
+    assert args.train_max_episodes is None
+
+
+def test_build_parser_accepts_kaggle_disk_budget_controls():
+    parser = mod.build_parser()
+    args = parser.parse_args(
+        [
+            "--output-dir",
+            "/tmp/x",
+            "--frame-stride",
+            "4",
+            "--max-steps-per-episode",
+            "512",
+            "--train-max-episodes",
+            "48",
+        ]
+    )
+    assert args.frame_stride == 4
+    assert args.max_steps_per_episode == 512
+    assert args.train_max_episodes == 48
+
+
+def test_materialize_lance_threads_budget_controls(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
+    calls: list[list[str]] = []
+
+    def fake_run(argv: list[str], check: bool) -> None:
+        calls.append(argv)
+        assert check
+
+    monkeypatch.setattr(mod.subprocess, "run", fake_run)
+    mod._materialize_lance(
+        metadata=tmp_path / "metadata.csv",
+        split=tmp_path / "split.csv",
+        video_root=tmp_path / "videos",
+        output=tmp_path / "out.lance",
+        partition="train",
+        label_filter="Normal",
+        image_size=112,
+        frame_stride=4,
+        max_steps=512,
+        max_episodes=48,
+        seed=42,
+    )
+    assert calls
+    argv = calls[0]
+    assert "--frame-stride" in argv
+    assert argv[argv.index("--frame-stride") + 1] == "4"
+    assert "--max-steps" in argv
+    assert argv[argv.index("--max-steps") + 1] == "512"
+    assert "--max-episodes" in argv
+    assert argv[argv.index("--max-episodes") + 1] == "48"
 
 
 def test_raise_if_under_target_support_blocks_weak_expanded_split():
@@ -151,3 +203,18 @@ def test_limit_per_group_validation(tmp_path: Path):
         assert "limit_per_group" in str(exc)
     else:  # pragma: no cover
         raise AssertionError("Expected ValueError for limit_per_group < 1.")
+
+
+def test_kaggle_budget_control_validation(tmp_path: Path):
+    with pytest.raises(ValueError, match="max_steps_per_episode"):
+        mod.build_expanded_inputs(
+            output_dir=tmp_path,
+            limit_per_group=1,
+            max_steps_per_episode=1,
+        )
+    with pytest.raises(ValueError, match="train_max_episodes"):
+        mod.build_expanded_inputs(
+            output_dir=tmp_path,
+            limit_per_group=1,
+            train_max_episodes=0,
+        )
