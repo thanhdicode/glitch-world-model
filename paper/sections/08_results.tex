@@ -36,12 +36,16 @@ comparison; on this support it remains below the best LeWM-Glitch row, but this 
 result is not sufficient to isolate a JEPA-specific advantage from training budget, support size,
 or scoring design.
 
-\paragraph{Comparison with VLM baselines on TempGlitch.}
-The TempGlitch benchmark reports that current vision-language models remain near chance on
-temporal glitch sequences~\cite{tempglitch}. We use this result as background motivation for
-normal-only episode-level surprise signals rather than as a same-split comparison: our exact
-evaluation episodes, prompts, model family, and scoring protocol differ, and this paper does not
-claim superiority over VLM detectors.
+\paragraph{Comparison with VLM references from TempGlitch.}
+The TempGlitch paper reports that current zero-shot vision-language models remain weak on the
+same temporal binary glitch-detection problem, although under a different prompting and evaluation
+protocol from ours~\cite{tempglitch}. For example, GPT-5.4 Mini at 5 FPS is reported at
+54.1\% accuracy with F1 0.334, while Gemini 3.1 Pro on raw video is reported at 49.7\%
+accuracy with F1 0.534~\cite{tempglitch}. We include those rows only as external context, not as
+same-split AUROC baselines: the exact episodes, model family, prompt design, and reported metrics
+differ, and the TempGlitch paper does not publish AUROC or AUPRC for these VLMs. This comparison
+therefore motivates temporal latent-surprise modeling, but it does not license a direct
+head-to-head superiority claim.
 
 \subsection{Secondary R5-XGame Frozen Evaluation}
 
@@ -65,6 +69,22 @@ in dataset distribution, class balance, calibration support, action mode, and tr
 The R5-XGame result is evidence about its own frozen split; it does not establish cross-game
 generalization.
 
+Figure~\ref{fig:temporal-spike} provides a qualitative diagnostic from the validated seed44
+R5-XGame outputs using the recorded \texttt{lewm\_l2\_max} plus \texttt{mean} configuration.
+The selected normal episode stays close to the calibration threshold, while the selected buggy
+episode shows sustained threshold exceedance and substantially larger latent prediction error.
+As with the TempGlitch timeline lane below, this is a qualitative score-trace view only:
+the shaded region marks threshold exceedance, not a ground-truth temporal span annotation.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.92\linewidth]{figures/fig_temporal_spike.pdf}
+  \caption{Latent prediction error $E(t)$ for a buggy (red) and normal (blue) episode from the
+  frozen R5-XGame evaluation (seed 44). The anomaly region where $E(t)$ exceeds the calibration
+  threshold is shaded. Shading marks threshold exceedance only, not a temporal-ground-truth span.}
+  \label{fig:temporal-spike}
+\end{figure}
+
 \subsection{Bounded GlitchBench K2 Benchmark (Honest Negative)}
 
 Table~\ref{tab:glitchbench-benchmark} reports the validated K2 GlitchBench slice. This is an
@@ -72,15 +92,23 @@ honest negative result that we report as a community-value finding.
 
 \input{tables/glitchbench_benchmark}
 
-On this image-level synthetic-normal split (24 validation examples),
-\texttt{feature\_distance}, \texttt{video\_autoencoder}, \texttt{cnn\_lstm}, and
-\texttt{video\_transformer} each reach AUROC 1.0 and AUPRC 1.0, while the best recorded
-LeWM-Glitch row reaches AUROC 0.5. This split does not test the method's intended temporal
-setting: GlitchBench K2 presents static image-level evidence, while LeWM-Glitch is evaluated
-above as an episode-level latent prediction error scorer. The non-LeWM AUROC-1.0 rows still share
-F1 0.6667 and balanced accuracy 0.5 under the shared train-normal \texttt{p95} threshold rule,
-highlighting the distinction between ranking quality and threshold calibration. K2 therefore acts
-as an honest negative comparison surface rather than a hidden positive result.
+On this bounded image-level synthetic-normal split (24 validation examples), the best recorded
+LeWM-Glitch row reaches AUROC 0.5, while \texttt{feature\_distance},
+\texttt{video\_autoencoder}, \texttt{cnn\_lstm}, and \texttt{video\_transformer} each reach
+AUROC 1.0 and AUPRC 1.0. We report this as an honest negative result, not as a hidden positive.
+GlitchBench K2 is fundamentally an image-level task: each example is a repeated-frame clip built
+from a single screenshot, so the temporal dynamics seen by LeWM-Glitch are trivial. In that
+regime the latent prediction error collapses toward a nearly constant within-example signal, and
+the episode-level scorer loses the temporal-violation cue that motivates the method.
+
+This behavior is consistent with our central hypothesis rather than contradictory to it. Latent
+prediction error is informative when a sequence departs from learned normal dynamics, not when a
+static frame is repeated. The fact that the static-cue baselines separate K2 perfectly on the
+same bounded split therefore suggests that K2 rewards image-level visual anomaly cues more than
+temporal surprise. The AUROC-1.0 non-LeWM rows still share F1 0.6667 and balanced accuracy 0.5
+under the shared train-normal \texttt{p95} threshold rule, highlighting again that ranking
+quality and threshold calibration are distinct. A promising next step is to inject glitch frames
+into normal sequences to create synthetic temporal context; we leave that as future work.
 
 \subsection{K3 Mechanistic Ablation (Honest Negative)}
 

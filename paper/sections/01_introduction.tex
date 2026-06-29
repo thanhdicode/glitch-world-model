@@ -9,20 +9,30 @@ Benchmarks such as GlitchBench, TempGlitch, and VideoGlitchBench make this disti
 some tasks ask whether a single frame looks unusual, while temporal glitch detection asks whether
 an episode evolves in an unexpected way~\cite{glitchbench,tempglitch,videoglitchbench}.
 
-The core hypothesis of this paper is that a gameplay glitch should appear as a violation of a
-learned latent world model. A model trained only on normal gameplay should predict the next
-latent state accurately when the episode follows ordinary dynamics, and less accurately when the
-episode contains an anomalous transition. Joint-Embedding Predictive Architectures (JEPAs)
-are a natural fit for this idea because they predict in representation space rather than pixel
-space~\cite{ijepa,vjepa,vjepa2}. LeWorldModel extends this family to pixel-based world modeling,
-providing the backbone we use for a label-free latent prediction error signal~\cite{lewm}.
+The core insight of this paper is that a gameplay glitch is a violation of expected game
+dynamics. When a character teleports unexpectedly, a projectile freezes, or an avatar becomes
+stuck, the observed transition no longer matches the latent dynamics that normal gameplay would
+have implied. This maps naturally onto world-model surprise: if a model has learned only normal
+gameplay, a glitch should manifest as an anomalously large prediction error in latent space.
+Unlike pixel-level anomaly detection, latent-space surprise is less sensitive to superficial
+visual variation such as camera angle, lighting, or texture detail that may change during normal
+play but do not themselves indicate a bug.
 
-We propose \textbf{LeWM-Glitch}, a JEPA-style latent-surprise detector for gameplay glitches.
-LeWM-Glitch trains or reuses LeWorldModel checkpoints on normal gameplay, scores each window by
-latent prediction error, aggregates window scores at the episode level, and calibrates thresholds
-using normal-only episodes. The method is deliberately simple: the contribution is not a new
-large detector, but a leakage-aware evaluation of whether compact world-model surprise is useful
-for temporal game QA.
+Joint-Embedding Predictive Architectures (JEPAs) are a particularly natural fit for this
+setting because they predict in representation space rather than reconstructing pixels directly,
+focusing the objective on semantically meaningful dynamics instead of every visual detail
+in the frame~\cite{lecun2022path,ijepa,vjepa,vjepa2}. LeWorldModel extends this family to
+pixel-based world modeling and gives us an artifact-backed gameplay backbone for testing whether
+latent prediction error can serve as a label-free glitch signal~\cite{lewm}. In this paper we
+use that JEPA-style backbone as an unsupervised detector: train on normal gameplay, score each
+window by latent prediction error, aggregate to the episode level, and calibrate thresholds using
+normal-only episodes.
+
+This paper asks a bounded empirical question rather than introducing a new large model:
+does JEPA-style latent surprise produce useful glitch-detection evidence under leakage-aware
+protocols on public gameplay benchmarks? We answer that question with one positive same-support
+TempGlitch comparison, one stronger secondary frozen R5-XGame result family, and two honest
+negative analyses that clarify where temporal latent surprise does and does not help.
 
 The contributions of this paper are:
 \begin{itemize}[leftmargin=*]

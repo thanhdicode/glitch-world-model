@@ -3,7 +3,8 @@
 uses the same 2 calibration-normal episodes and the same
 12 normal-negative / 22
 buggy-positive evaluation episodes. Learned rows report the best aggregation per method over
-\texttt{mean}, \texttt{max}, and \texttt{top2\_mean}.}
+\texttt{mean}, \texttt{max}, and \texttt{top2\_mean}. VLM reference rows from
+\cite{tempglitch} are included for context using only the metrics that paper reports directly.}
 \label{tab:k1-learned-baselines}
 \centering
 \scriptsize
@@ -17,6 +18,12 @@ Simple baseline & \texttt{feature\_distance} + episode \texttt{top2\_mean} & 0.6
 Learned baseline & \texttt{video\_autoencoder} + episode \texttt{mean} & 0.5606 & 0.7005 & 0.6818 & 0.6818 & 0.6818 & 0.5492 & 0.8333 & AUROC [0.3909, 0.7386]; F1 [0.5556, 0.7907] \\
 Learned baseline & \texttt{cnn\_lstm} + episode \texttt{max} & 0.6136 & 0.7249 & 0.7111 & 0.6957 & 0.7273 & 0.5720 & 0.9167 & AUROC [0.4405, 0.8000]; F1 [0.5946, 0.8163] \\
 Learned baseline & \texttt{video\_transformer} + episode \texttt{mean} & 0.5909 & 0.7756 & 0.2400 & 1.0000 & 0.1364 & 0.5682 & 1.0000 & AUROC [0.4615, 0.7273]; F1 [0.0000, 0.4286] \\
+VLM reference & GPT-5.4 Mini (5 FPS; Acc. 0.541) & -- & -- & 0.334 & 0.607 & 0.231 & -- & -- & TempGlitch~\cite{tempglitch} \\
+VLM reference & Gemini 3.1 Pro (raw video; Acc. 0.497) & -- & -- & 0.534 & 0.498 & 0.576 & -- & -- & TempGlitch~\cite{tempglitch} \\
 \bottomrule
 \end{tabularx}
+\parbox{\textwidth}{\footnotesize\textit{Note.} The TempGlitch paper reports these VLM rows on
+the same temporal binary glitch-detection task, but under its own prompting/input protocol and
+evaluation episodes. It does not publish AUROC, AUPRC, balanced accuracy, or FPR@95TPR for these
+rows, so they are included as external context rather than same-split baselines.}
 \end{table}

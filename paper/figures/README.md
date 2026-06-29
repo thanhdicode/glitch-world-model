@@ -19,3 +19,9 @@ threshold; the validated R5 raw LeWM window-score file supplies the per-window t
 corresponding receipt is `fig_timeline_example_receipt.json` and records source hashes, command
 lineage, `temporal_metrics_claimed=false`, `ground_truth_spans_available=false`, and
 `locked_test_used=false`.
+
+`fig_temporal_spike.pdf` and `fig_temporal_spike.png` are publication-ready qualitative-only
+figures generated from the validated downloaded R5-XGame bundle. The receipt
+`fig_temporal_spike_receipt.json` records the exact seed44 threshold row, selected buggy/normal
+episodes, source hashes, and the explicit qualitative-only boundary
+(`temporal_metrics_claimed=false`, `ground_truth_spans_available=false`).
