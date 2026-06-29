@@ -1,8 +1,6 @@
 \section{Results}
 \label{sec:results}
 
-% TODO-KA: insert validated non-locked expanded TempGlitch K-A AUROC, AUPRC, CI, and support here.
-
 \subsection{Primary Result 1: TempGlitch Pair-Disjoint Follow-up}
 
 Table~\ref{tab:r5-bounded-results} reports the frozen pair-disjoint, non-locked, same-support
@@ -33,7 +31,6 @@ baseline and remains below the best LeWM-Glitch row. The paired delta-AUROC vers
 LeWM-Glitch row is $-0.1023$ with 95\% bootstrap interval $[-0.2425,\ 0.0372]$ and
 DeLong $p=0.2091$, so the evidence supports only bounded stronger-observed-separation wording
 for LeWM-Glitch rather than a significant superiority claim.
-% TODO-KB: upgrade to "significantly outperforms" if DeLong p<0.05 from Kaggle K-B
 
 \subsection{Primary Result 2: R5-XGame Frozen Evaluation}
 
@@ -46,16 +43,14 @@ with a larger buggy-positive class (12 normal-negative, 60 buggy-positive episod
 The best recorded LeWM-Glitch row (seed44 \texttt{lewm\_mse\_max} + \texttt{top2\_mean})
 achieves AUROC 0.9097 and AUPRC 0.9814, with AUROC 95\% CI [0.8281, 0.9720]. Simple baselines
 reach AUROC 0.7681 (\texttt{feature\_distance}) and 0.7167 (\texttt{frame\_difference}).
-On this split, the AUROC confidence intervals do not overlap with the best baseline CI
-[0.6484, 0.8719], indicating stronger observed separation.
-% TODO-KB: upgrade to "significantly outperforms (DeLong p<0.05)" if Kaggle K-B confirms
+On this split, the best LeWM-Glitch AUROC is numerically above the best baseline AUROC, but the
+AUROC confidence intervals still overlap ([0.8281, 0.9720] versus [0.6484, 0.8719]); this
+supports bounded stronger observed separation, not significant superiority.
 
 These values are not directly compared with TempGlitch values. The two result families differ
 in dataset distribution, class balance, calibration support, action mode, and training lineage.
 The R5-XGame result is evidence about its own frozen split; it does not establish cross-game
 generalization.
-
-% TODO-KA: report validated non-locked expanded TempGlitch support/significance here once K-A is materialized
 
 \subsection{Bounded GlitchBench K2 Benchmark (Honest Negative)}
 

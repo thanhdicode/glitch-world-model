@@ -22,7 +22,6 @@
 \maketitle
 
 \begin{abstract}
-% TODO-KB: update significance wording throughout if Kaggle K-B DeLong test confirms p<0.05
 We propose \textbf{LeWM-Glitch}, a label-free gameplay glitch detector built on the latent
 prediction error (LPE) signal of a JEPA-style latent world model trained exclusively on normal
 gameplay. Given a video episode, LeWM-Glitch scores each frame by the L2 distance between the
@@ -34,9 +33,8 @@ and episode-disjoint roles before windowing.
 
 We report results across two bounded benchmarks. On the frozen pair-disjoint TempGlitch
 follow-up (12 normal-negative, 22 buggy-positive episodes), the best LeWM-Glitch configuration
-achieves AUROC 0.7159 and AUPRC 0.8026, outperforming the strongest CNN-LSTM baseline
-(AUROC 0.6136) with stronger observed same-support separation~\cite{tempglitch}.
-% TODO-KB: upgrade to "significantly outperforms" if DeLong p<0.05 from Kaggle K-B
+achieves AUROC 0.7159 and AUPRC 0.8026, showing stronger observed same-support separation than
+the strongest CNN-LSTM baseline (AUROC 0.6136)~\cite{tempglitch}.
 On the frozen R5-XGame split (12 normal-negative, 60 buggy-positive episodes), LeWM-Glitch
 achieves AUROC 0.9097 and AUPRC 0.9814, compared with 0.7681 for feature distance and
 0.7167 for frame difference. We also report two honest negative findings: on the image-level
