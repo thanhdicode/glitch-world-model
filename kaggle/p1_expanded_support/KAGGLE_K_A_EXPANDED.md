@@ -127,13 +127,12 @@ manifest_path = "/kaggle/working/r5_tempglitch_expanded/r5_manifest.csv"
 with open(manifest_path, newline="", encoding="utf-8-sig") as handle:
     rows = list(csv.DictReader(handle))
 
-normal_ids = sorted(
-    {
-        row["source_episode_id"]
-        for row in rows
-        if row["label"].lower() == "normal"
-    }
-)
+normal_by_category = {}
+for row in rows:
+    if row["label"].lower() != "normal":
+        continue
+    normal_by_category.setdefault(row.get("category", ""), set()).add(row["source_episode_id"])
+normal_ids = sorted({episode_id for ids in normal_by_category.values() for episode_id in ids})
 target_evaluation_normal_count = 40
 preferred_calibration_count = 4
 available_for_calibration = len(normal_ids) - target_evaluation_normal_count
@@ -143,8 +142,20 @@ if available_for_calibration < preferred_calibration_count:
         "validation-normal episodes; "
         f"found {len(normal_ids)}"
     )
-calibration_count = preferred_calibration_count
-calibration_ids = normal_ids[:calibration_count]
+calibration_ids = []
+for category in sorted(normal_by_category):
+    for episode_id in sorted(normal_by_category[category]):
+        if episode_id not in calibration_ids:
+            calibration_ids.append(episode_id)
+            break
+    if len(calibration_ids) == preferred_calibration_count:
+        break
+if len(calibration_ids) < preferred_calibration_count:
+    for episode_id in normal_ids:
+        if episode_id not in calibration_ids:
+            calibration_ids.append(episode_id)
+        if len(calibration_ids) == preferred_calibration_count:
+            break
 evaluation_normal_count = len(normal_ids) - len(calibration_ids)
 evaluation_buggy_count = len(
     {
