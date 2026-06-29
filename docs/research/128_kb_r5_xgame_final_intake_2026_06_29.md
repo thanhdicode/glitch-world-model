@@ -118,4 +118,3 @@ Required caveats:
 - The AUROC confidence intervals for the best LeWM and best baseline rows overlap.
 - This does not support SOTA, broad glitch-detection, cross-game generalization,
   action-conditioning benefit, or locked-test claims.
-
