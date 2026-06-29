@@ -5,9 +5,6 @@
   "locked_test_used": false,
   "k4_required": false,
   "source_script": "scripts/plot_lewm_surprise_timeline.py via scripts/generate_qualitative_surprise_timelines.py helpers",
-  "comparison_csv": "C:\\Users\\ADMIN\\Desktop\\glitch-world-model\\outputs\\tempglitch_followup_pair_disjoint\\followup_comparison.csv",
-  "episode_scores_csv": "C:\\Users\\ADMIN\\Desktop\\glitch-world-model\\outputs\\tempglitch_followup_pair_disjoint\\followup_episode_scores.csv",
-  "manifest_csv": "C:\\Users\\ADMIN\\Desktop\\glitch-world-model\\outputs\\tempglitch_followup_pair_disjoint\\followup_manifest.csv",
   "selected_config": {
     "method_family": "lewm",
     "window_scorer": "lewm_l2_max",
@@ -15,7 +12,7 @@
     "episode_aggregation": "mean",
     "threshold": "1.11839184011",
     "threshold_source": "calibration_normal_p95",
-    "raw_score_path": "C:\\Users\\ADMIN\\Desktop\\glitch-world-model\\outputs\\r5_tempglitch_identical_episode\\lewm_scores_seed44.csv",
+    "raw_score_path": "outputs/r5_tempglitch_identical_episode/lewm_scores_seed44.csv",
     "raw_score_sha256": "6dc1f0646380f279125c018b630c7abc3a162ab55a2f062564410919b2061019"
   },
   "episode": {
@@ -31,5 +28,26 @@
   "claim_ids": [
     "C-098",
     "C-115"
-  ]
+  ],
+  "generated_utc": "2026-06-29T00:00:00Z",
+  "source_command": "python scripts/generate_qualitative_surprise_timelines.py --comparison-csv outputs/tempglitch_followup_pair_disjoint/followup_comparison.csv --episode-scores-csv outputs/tempglitch_followup_pair_disjoint/followup_episode_scores.csv --manifest-csv outputs/tempglitch_followup_pair_disjoint/followup_manifest.csv --max-buggy 1 --max-normal 0 --output-dir paper/figures (paper figure regenerated with plot_series for PDF/PNG)",
+  "source_lineage_note": "Pair-disjoint follow-up comparison, episode scores, and manifest select the representative episode and threshold; the validated R5 raw LeWM window scores provide the per-window score series referenced by the follow-up comparison row.",
+  "source_hashes": {
+    "comparison_sha256": "81dcfe164d19906f1cb82e7e4108c848778a5f50fdb65303448ad7896b15cdae",
+    "episode_scores_sha256": "7e1a6f3390c933fdd8cfd70adc579e0b464049e3aab92d28e56f97f8ea09103e",
+    "manifest_sha256": "f9e38950dc0c9f156d58a7d228ff0172ec65c86c4063ab4f918006bffc9f1d25",
+    "raw_score_sha256": "6dc1f0646380f279125c018b630c7abc3a162ab55a2f062564410919b2061019"
+  },
+  "source_paths": {
+    "comparison_csv": "outputs/tempglitch_followup_pair_disjoint/followup_comparison.csv",
+    "episode_scores_csv": "outputs/tempglitch_followup_pair_disjoint/followup_episode_scores.csv",
+    "manifest_csv": "outputs/tempglitch_followup_pair_disjoint/followup_manifest.csv",
+    "raw_score_path": "outputs/r5_tempglitch_identical_episode/lewm_scores_seed44.csv"
+  },
+  "local_source_paths": {
+    "comparison_csv": "C:\\Users\\ADMIN\\Desktop\\glitch-world-model\\outputs\\tempglitch_followup_pair_disjoint\\followup_comparison.csv",
+    "episode_scores_csv": "C:\\Users\\ADMIN\\Desktop\\glitch-world-model\\outputs\\tempglitch_followup_pair_disjoint\\followup_episode_scores.csv",
+    "manifest_csv": "C:\\Users\\ADMIN\\Desktop\\glitch-world-model\\outputs\\tempglitch_followup_pair_disjoint\\followup_manifest.csv",
+    "raw_score_path": "C:\\Users\\ADMIN\\Desktop\\glitch-world-model\\outputs\\r5_tempglitch_identical_episode\\lewm_scores_seed44.csv"
+  }
 }
