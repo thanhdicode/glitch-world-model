@@ -21,11 +21,21 @@ Cả hai đường đều cần **Internet ON** để tải video.
 ## Cell 1 — Clone + cài đặt (chung)
 ```python
 %%bash
+set -euo pipefail
 cd /kaggle/working
 rm -rf glitch-world-model
-git clone https://github.com/thanhdicode/glitch-world-model.git
+git clone --branch main --single-branch https://github.com/thanhdicode/glitch-world-model.git
 cd glitch-world-model
-git rev-parse --short HEAD
+git fetch origin main --depth=1
+LOCAL_HEAD=$(git rev-parse HEAD)
+REMOTE_HEAD=$(git rev-parse origin/main)
+echo "LOCAL_HEAD=${LOCAL_HEAD}"
+echo "REMOTE_HEAD=${REMOTE_HEAD}"
+git log -1 --oneline
+if [ "$LOCAL_HEAD" != "$REMOTE_HEAD" ]; then
+  echo "ERROR: local checkout is not origin/main"
+  exit 1
+fi
 pip install -e ".[research,video]" -q
 echo "=== OK ==="
 ```
