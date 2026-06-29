@@ -3,10 +3,10 @@
 
 This study presents a fuller but still bounded method-paper evaluation of a JEPA-style
 latent-surprise detector for gameplay glitch detection. On the frozen pair-disjoint TempGlitch
-follow-up, the best recorded LeWM row remains stronger than the simple baselines and stronger than
-the exact-support learned baselines in observed AUROC. At the same time, the strongest
-learned-baseline comparison is statistically inconclusive, the negative support and calibration
-support remain small, and the operating-point false-positive rate is high.
+follow-up, the best recorded LeWM row remains numerically above the simple baselines and the
+exact-support learned baselines in observed AUROC. At the same time, the strongest learned-baseline
+comparison is statistically inconclusive, the negative support and calibration support remain
+small, and the operating-point false-positive rate is high.
 
 The broader evidence lanes sharpen the method story rather than simply enlarging it. K2 provides a
 bounded public-benchmark slice on which the current LeWM rows underperform validated simple and
@@ -16,7 +16,9 @@ improve interpretability but do not unlock temporal localization because span la
 
 The resulting contribution is an artifact-backed, leakage-aware detector evaluation with explicit
 positive and negative findings. It does not establish broad superiority, cross-game
-generalization, temporal localization, deployment readiness, or locked-test performance. The next
-submission step is operational rather than scientific: run the official LLNCS build in Overleaf
-or the Springer author kit, record bibliography/reference warnings, verify anonymization and PDF
-metadata, and complete external similarity screening.
+generalization, temporal localization, deployment readiness, or locked-test performance. Future
+work has three natural extensions: expanding normal-episode coverage to improve calibration
+robustness and reduce the current false-positive burden; adding verified temporal span
+annotations so qualitative surprise timelines can become true localization metrics; and
+evaluating larger video transformers under matched anomaly-detection protocols to test whether
+JEPA-specific latent prediction offers advantages beyond architecture scale.
