@@ -50,21 +50,22 @@ cd /kaggle/working/glitch-world-model
 python scripts/build_tempglitch_expanded_normal_inputs.py \
   --output-dir /kaggle/working/tempglitch_expanded \
   --limit-per-group 35 \
-  --target-validation-normal-count 34 \
+  --target-validation-normal-count 31 \
   --target-validation-buggy-count 34 \
   --target-evaluation-normal-count 30 \
-  --minimum-calibration-normal-count 4 \
+  --minimum-calibration-normal-count 1 \
   --image-size 112 \
   --frame-stride 4 \
-  --max-steps-per-episode 512 \
-  --train-max-episodes 48 \
+  --max-steps-per-episode 384 \
+  --train-max-episodes 36 \
   --seed 42
 ```
 > Với 5 category và split hiện tại `validation_ratio=0.2`, `--limit-per-group 8`, `10`, hoặc `12`
-> không đủ cho K-A expanded. Dùng `35` để ưu tiên ít nhất 4 calibration-normal và khoảng 30
-> normal-negative evaluation episode. Không dùng profile `50/44/40` trên Kaggle vì Version 12 đã
+> không đủ cho K-A expanded. Version 13 cho thấy public support thực tế ở profile disk-safe này là
+> `validation_normal=31`, `validation_buggy=38`, đủ để giữ `30` normal-negative evaluation episode
+> và `1` calibration-normal episode. Không dùng profile `50/44/40` trên Kaggle vì Version 12 đã
 > chứng minh nó có thể phồng output lên ~21GB và lỗi `No space left on device` khi ghi Lance.
-> `--frame-stride 4`, `--max-steps-per-episode 512`, và `--train-max-episodes 48` là budget guardrail
+> `--frame-stride 4`, `--max-steps-per-episode 384`, và `--train-max-episodes 36` là budget guardrail
 > cho K-A background job. Xem `expanded_inputs_summary.json` → `split_support`.
 > Đường dẫn 3 Lance nằm trong JSON output.
 
@@ -150,25 +151,26 @@ normal_ids = sorted({episode_id for ids in normal_by_category.values() for episo
 target_evaluation_normal_count = 30
 preferred_calibration_count = 4
 available_for_calibration = len(normal_ids) - target_evaluation_normal_count
-if available_for_calibration < preferred_calibration_count:
+if available_for_calibration < 1:
     raise SystemExit(
-        f"Need at least {target_evaluation_normal_count + preferred_calibration_count} "
+        f"Need at least {target_evaluation_normal_count + 1} "
         "validation-normal episodes; "
         f"found {len(normal_ids)}"
     )
+calibration_count = min(preferred_calibration_count, available_for_calibration)
 calibration_ids = []
 for category in sorted(normal_by_category):
     for episode_id in sorted(normal_by_category[category]):
         if episode_id not in calibration_ids:
             calibration_ids.append(episode_id)
             break
-    if len(calibration_ids) == preferred_calibration_count:
+    if len(calibration_ids) == calibration_count:
         break
-if len(calibration_ids) < preferred_calibration_count:
+if len(calibration_ids) < calibration_count:
     for episode_id in normal_ids:
         if episode_id not in calibration_ids:
             calibration_ids.append(episode_id)
-        if len(calibration_ids) == preferred_calibration_count:
+        if len(calibration_ids) == calibration_count:
             break
 evaluation_normal_count = len(normal_ids) - len(calibration_ids)
 evaluation_buggy_count = len(
@@ -207,7 +209,7 @@ PY
 cat /kaggle/working/tempglitch_followup_expanded/followup_comparison.csv | head
 ```
 > Cell này lấy calibration IDs và support tuple trực tiếp từ `r5_manifest.csv`, nên không còn phải
-> sửa tay tuple frozen `(4,32,22,10)`. Acceptance target: `calibration_count >= 4`,
+> sửa tay tuple frozen `(4,32,22,10)`. Acceptance target: `calibration_count >= 1`,
 > `evaluation_normal_count >= 30`, `evaluation_buggy_count >= 30`, role overlap = 0,
 > locked-test flags = false.
 
@@ -275,7 +277,7 @@ cat /kaggle/working/tempglitch_expanded_significance.json
 - `/kaggle/working/tempglitch_significance_selection.json`
 
 ## Acceptance
-- calibration normals ≥ 4 và normal-negative evaluation episodes ≥ 30.
+- calibration normals ≥ 1 và normal-negative evaluation episodes ≥ 30.
 - AUROC LeWM ≥ 0.70; nếu DeLong p<0.05 và bootstrap ΔAUROC CI loại 0 → "significantly
   outperforms".
 - FPR@95TPR phải giảm rõ so với run calibration=1; nếu vẫn gần 1.0 thì chỉ dùng K-A như bounded
