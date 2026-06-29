@@ -92,3 +92,53 @@ def test_main_writes_json(tmp_path: Path, capsys):
     payload = json.loads(output.read_text(encoding="utf-8"))
     assert "significant" in payload
     assert "LaTeX significance row" in capsys.readouterr().out
+
+
+def test_combined_followup_scores_with_text_labels_and_filters(tmp_path: Path):
+    combined = tmp_path / "followup_episode_scores.csv"
+    with combined.open("w", newline="", encoding="utf-8") as handle:
+        writer = csv.writer(handle)
+        writer.writerow(
+            [
+                "method_family",
+                "method",
+                "window_scorer",
+                "seed",
+                "episode_aggregation",
+                "source",
+                "score",
+                "label",
+            ]
+        )
+        for source, label, lewm_score, baseline_score in [
+            ("ep0", "Buggy", 0.90, 0.55),
+            ("ep1", "Buggy", 0.80, 0.60),
+            ("ep2", "Normal", 0.10, 0.50),
+            ("ep3", "Normal", 0.20, 0.65),
+        ]:
+            writer.writerow(
+                ["lewm", "lewm", "lewm_l2_max", "43", "mean", source, lewm_score, label]
+            )
+            writer.writerow(
+                ["baseline", "frame_diff", "frame_diff", "", "mean", source, baseline_score, label]
+            )
+
+    summary = compute_significance(
+        combined,
+        combined,
+        n_bootstrap=20,
+        lewm_filters={
+            "method_family": "lewm",
+            "window_scorer": "lewm_l2_max",
+            "seed": "43",
+            "episode_aggregation": "mean",
+        },
+        baseline_filters={
+            "method_family": "baseline",
+            "method": "frame_diff",
+            "episode_aggregation": "mean",
+        },
+    )
+
+    assert summary["n_evaluation_episodes"] == 4
+    assert summary["auroc_lewm"] == pytest.approx(1.0)

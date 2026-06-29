@@ -25,9 +25,13 @@ cd /kaggle/working
 rm -rf glitch-world-model
 git clone https://github.com/thanhdicode/glitch-world-model.git
 cd glitch-world-model
+git rev-parse --short HEAD
 pip install -e ".[research,video]" -q
 echo "=== OK ==="
 ```
+> HEAD phải là `main` mới nhất đã push, không được là `c638076`. Nếu Kaggle vẫn hiện `c638076`,
+> notebook đang dùng bản cache/branch cũ và phải `rm -rf /kaggle/working/glitch-world-model`
+> rồi clone lại.
 
 ## Cell 2 — Build dữ liệu mở rộng (chung, ~15-30 phút tải video)
 ```python
@@ -35,21 +39,19 @@ echo "=== OK ==="
 cd /kaggle/working/glitch-world-model
 python scripts/build_tempglitch_expanded_normal_inputs.py \
   --output-dir /kaggle/working/tempglitch_expanded \
-  --limit-per-group 35 \
-  --target-validation-normal-count 34 \
-  --target-validation-buggy-count 34 \
-  --target-evaluation-normal-count 30 \
-  --minimum-calibration-normal-count 1 \
+  --limit-per-group 50 \
+  --target-validation-normal-count 44 \
+  --target-validation-buggy-count 44 \
+  --target-evaluation-normal-count 40 \
+  --minimum-calibration-normal-count 4 \
   --image-size 112 --frame-stride 1 --seed 42
 ```
 > Với 5 category và split hiện tại `validation_ratio=0.2`, `--limit-per-group 8`, `10`, hoặc `12`
-> không đủ cho K-A expanded. Dùng `35` trước để có khoảng 35 validation-normal; sau khi dành 4
-> calibration normal vẫn còn khoảng 31 normal-negative evaluation episode. Xem
-> `expanded_inputs_summary.json` → `split_support`. Nếu public support theo category không đều,
-> tăng `--limit-per-group`; chỉ dùng `--allow-under-target-support` khi muốn ghi nhận maximum support
-> công khai nhưng chưa đạt target.
-> Nếu split thực tế như Kaggle V2 chỉ có 31 validation-normal, script vẫn chấp nhận vì Cell 3 sẽ
-> dùng 1 calibration normal và giữ 30 normal-negative evaluation episode.
+> không đủ cho K-A expanded. Dùng `50` để ưu tiên ít nhất 4 calibration-normal và khoảng 40
+> normal-negative evaluation episode. Xem `expanded_inputs_summary.json` → `split_support`.
+> Nếu public support theo category không đều, tăng `--limit-per-group`; không hạ
+> `--minimum-calibration-normal-count` xuống 1 nữa vì run trước cho thấy threshold từ 1 episode làm
+> FPR@95TPR rất xấu.
 > Đường dẫn 3 Lance nằm trong JSON output.
 
 ---
@@ -132,15 +134,16 @@ normal_ids = sorted(
         if row["label"].lower() == "normal"
     }
 )
-target_evaluation_normal_count = 30
+target_evaluation_normal_count = 40
 preferred_calibration_count = 4
 available_for_calibration = len(normal_ids) - target_evaluation_normal_count
-if available_for_calibration < 1:
+if available_for_calibration < preferred_calibration_count:
     raise SystemExit(
-        f"Need at least {target_evaluation_normal_count + 1} validation-normal episodes; "
+        f"Need at least {target_evaluation_normal_count + preferred_calibration_count} "
+        "validation-normal episodes; "
         f"found {len(normal_ids)}"
     )
-calibration_count = min(preferred_calibration_count, available_for_calibration)
+calibration_count = preferred_calibration_count
 calibration_ids = normal_ids[:calibration_count]
 evaluation_normal_count = len(normal_ids) - len(calibration_ids)
 evaluation_buggy_count = len(
@@ -179,18 +182,64 @@ PY
 cat /kaggle/working/tempglitch_followup_expanded/followup_comparison.csv | head
 ```
 > Cell này lấy calibration IDs và support tuple trực tiếp từ `r5_manifest.csv`, nên không còn phải
-> sửa tay tuple frozen `(4,32,22,10)`. Acceptance target: `evaluation_normal_count >= 30`,
-> `evaluation_buggy_count >= 30`, role overlap = 0, locked-test flags = false.
+> sửa tay tuple frozen `(4,32,22,10)`. Acceptance target: `calibration_count >= 4`,
+> `evaluation_normal_count >= 40`, `evaluation_buggy_count >= 40`, role overlap = 0,
+> locked-test flags = false.
 
 ## Cell 4 — Significance (chung)
 ```python
 %%bash
+set -euo pipefail
 cd /kaggle/working/glitch-world-model
-python scripts/compute_significance_table.py \
-  --lewm-scores /kaggle/working/tempglitch_followup_expanded/followup_episode_scores.csv \
-  --baseline-scores /kaggle/working/tempglitch_followup_expanded/followup_episode_scores.csv \
-  --group-key source --n-bootstrap 2000 --seed 42 \
-  --output /kaggle/working/tempglitch_expanded_significance.json
+python - <<'PY'
+import csv
+import json
+import subprocess
+import sys
+from pathlib import Path
+
+comparison = Path("/kaggle/working/tempglitch_followup_expanded/followup_comparison.csv")
+scores = Path("/kaggle/working/tempglitch_followup_expanded/followup_episode_scores.csv")
+rows = list(csv.DictReader(comparison.open(newline="", encoding="utf-8-sig")))
+best_lewm = max(
+    (r for r in rows if r["method_family"] == "lewm"),
+    key=lambda r: (float(r["auroc"]), float(r["auprc"]), float(r["f1"])),
+)
+best_baseline = max(
+    (r for r in rows if r["method_family"] == "baseline"),
+    key=lambda r: (float(r["auroc"]), float(r["auprc"]), float(r["f1"])),
+)
+selection = {
+    "best_lewm": best_lewm,
+    "best_baseline": best_baseline,
+}
+Path("/kaggle/working/tempglitch_significance_selection.json").write_text(
+    json.dumps(selection, indent=2) + "\n",
+    encoding="utf-8",
+)
+cmd = [
+    sys.executable,
+    "scripts/compute_significance_table.py",
+    "--lewm-scores", str(scores),
+    "--baseline-scores", str(scores),
+    "--group-key", "source",
+    "--n-bootstrap", "2000",
+    "--seed", "42",
+    "--method-label", "LeWM",
+    "--baseline-label", best_baseline["method"],
+    "--lewm-method-family", "lewm",
+    "--lewm-window-scorer", best_lewm["window_scorer"],
+    "--lewm-seed", best_lewm["seed"],
+    "--lewm-episode-aggregation", best_lewm["episode_aggregation"],
+    "--baseline-method-family", "baseline",
+    "--baseline-method", best_baseline["method"],
+    "--baseline-episode-aggregation", best_baseline["episode_aggregation"],
+    "--output", "/kaggle/working/tempglitch_expanded_significance.json",
+]
+print("Selected LeWM:", best_lewm)
+print("Selected baseline:", best_baseline)
+subprocess.run(cmd, check=True)
+PY
 cat /kaggle/working/tempglitch_expanded_significance.json
 ```
 
@@ -198,8 +247,11 @@ cat /kaggle/working/tempglitch_expanded_significance.json
 - `/kaggle/working/tempglitch_expanded/expanded_inputs_summary.json`
 - toàn bộ `/kaggle/working/tempglitch_followup_expanded/`
 - `/kaggle/working/tempglitch_expanded_significance.json`
+- `/kaggle/working/tempglitch_significance_selection.json`
 
 ## Acceptance
-- normal-negative evaluation episodes ≥ 30 → CI hẹp hơn [0.535, 0.877] cũ.
-- AUROC LeWM ≥ 0.70; nếu DeLong p<0.05 → "significantly outperforms".
-- FPR@95TPR giảm so với 0.75 là tín hiệu tốt.
+- calibration normals ≥ 4 và normal-negative evaluation episodes ≥ 40.
+- AUROC LeWM ≥ 0.70; nếu DeLong p<0.05 và bootstrap ΔAUROC CI loại 0 → "significantly
+  outperforms".
+- FPR@95TPR phải giảm rõ so với run calibration=1; nếu vẫn gần 1.0 thì chỉ dùng K-A như bounded
+  auxiliary/diagnostic evidence, không làm headline.
