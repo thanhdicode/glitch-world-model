@@ -102,8 +102,18 @@ The qualitative timeline lane is summarized in Table~\ref{tab:qualitative-timeli
 
 \input{tables/qualitative_timeline_summary}
 
-These figures show that the best validated TempGlitch LeWM-Glitch configuration yields
-interpretable within-episode score trajectories. However, the current artifacts do not expose
-real temporal span labels. The timelines therefore remain qualitative illustrations only and do
-not support temporal IoU, temporal AP, onset, offset, or duration claims. Temporal localization
-is future work.
+These qualitative records indicate that the best validated TempGlitch LeWM-Glitch configuration
+can produce interpretable within-episode score trajectories. However, the current artifacts do
+not expose real temporal span labels. The timeline lane therefore remains qualitative only and
+does not support temporal IoU, temporal AP, onset, offset, or duration claims. Temporal
+localization is future work.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.92\linewidth]{figures/fig_timeline_example.pdf}
+  \caption{Qualitative latent-surprise trajectory for a representative non-locked TempGlitch
+  buggy episode. The horizontal line is the normal-only calibration threshold. This figure is
+  diagnostic only: no temporal span labels are available, and no temporal localization metric is
+  claimed.}
+  \label{fig:timeline-example}
+\end{figure}
