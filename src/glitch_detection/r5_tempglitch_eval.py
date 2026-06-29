@@ -499,6 +499,7 @@ def run_r5_tempglitch_identical_episode_evaluation(
         buggy_lance=validation_buggy_lance,
         output_dir=output_dir,
         batch_size=batch_size,
+        expected_calibration_episode_count=CALIBRATION_EPISODE_COUNT,
     )
     baseline_score_path = output_dir / "baseline_scores.csv"
     baseline_rows = read_csv_rows(baseline_score_path)

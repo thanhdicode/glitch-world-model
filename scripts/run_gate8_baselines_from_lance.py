@@ -170,10 +170,12 @@ def run_gate8_baselines(
     buggy_lance: Path,
     output_dir: Path,
     batch_size: int = 64,
+    expected_calibration_episode_count: int = _WOB_CALIBRATION_EPISODE_COUNT,
 ) -> dict[str, Any]:
     manifest_rows = read_csv_rows(manifest_path)
     validate_manifest_rows(
-        manifest_rows, expected_calibration_episode_count=_WOB_CALIBRATION_EPISODE_COUNT
+        manifest_rows,
+        expected_calibration_episode_count=expected_calibration_episode_count,
     )
     fingerprints = _validate_fingerprints(manifest_rows, normal_lance, buggy_lance)
     centroid = _fit_train_centroid(train_lance, batch_size=batch_size)
@@ -201,6 +203,7 @@ def run_gate8_baselines(
         "feature_definition": "mean over four frames of RGB channel means and population stds",
         "frame_diff_definition": "mean adjacent-frame absolute grayscale difference",
         "batch_size": batch_size,
+        "expected_calibration_episode_count": expected_calibration_episode_count,
         "git_sha": _git_sha(),
         "environment": runtime_provenance(include_lewm=True),
         "locked_test_materialized": False,
@@ -223,6 +226,15 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--buggy-lance", required=True, type=Path)
     parser.add_argument("--output-dir", required=True, type=Path)
     parser.add_argument("--batch-size", type=int, default=64)
+    parser.add_argument(
+        "--expected-calibration-episode-count",
+        type=int,
+        default=_WOB_CALIBRATION_EPISODE_COUNT,
+        help=(
+            "Expected unique calibration-normal episode count for this protocol. "
+            "Defaults to the WOB expansion value."
+        ),
+    )
     parser.add_argument("--dry-run", action="store_true")
     return parser
 
@@ -256,6 +268,7 @@ def main(argv: list[str] | None = None) -> None:
                 buggy_lance=args.buggy_lance,
                 output_dir=args.output_dir,
                 batch_size=args.batch_size,
+                expected_calibration_episode_count=args.expected_calibration_episode_count,
             ),
             indent=2,
         )

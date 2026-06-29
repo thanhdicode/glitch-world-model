@@ -14,10 +14,13 @@ Fix: added _WOB_CALIBRATION_EPISODE_COUNT = 12 constant and passed it explicitly
 from __future__ import annotations
 
 import inspect
+from pathlib import Path
 
+import numpy as np
 import pytest
 
-from glitch_detection.lewm_lance_eval import validate_manifest_rows
+import scripts.run_gate8_baselines_from_lance as gate8_cli
+from glitch_detection.lewm_lance_eval import MANIFEST_FIELDS, validate_manifest_rows, write_csv_rows
 from scripts.run_gate8_baselines_from_lance import (
     _WOB_CALIBRATION_EPISODE_COUNT,
     run_gate8_baselines,
@@ -78,11 +81,16 @@ class TestWobCalibrationEpisodeCountConstant:
         assert _WOB_CALIBRATION_EPISODE_COUNT == 12
 
     def test_run_gate8_baselines_passes_wob_count_not_tempglitch_default(self):
-        """Prove the call site no longer uses the bare default of 2."""
+        """Prove the call site still defaults to WOB while allowing protocol overrides."""
+        signature = inspect.signature(run_gate8_baselines)
+        assert (
+            signature.parameters["expected_calibration_episode_count"].default
+            == _WOB_CALIBRATION_EPISODE_COUNT
+        )
         source = inspect.getsource(run_gate8_baselines)
-        assert "expected_calibration_episode_count=_WOB_CALIBRATION_EPISODE_COUNT" in source, (
-            "run_gate8_baselines must pass _WOB_CALIBRATION_EPISODE_COUNT to "
-            "validate_manifest_rows, not the TempGlitch default of 2."
+        assert "expected_calibration_episode_count=expected_calibration_episode_count" in source, (
+            "run_gate8_baselines must pass the protocol-specific expected "
+            "calibration count to validate_manifest_rows."
         )
 
     def test_run_gate8_baselines_does_not_use_bare_default_of_2(self):
@@ -172,3 +180,107 @@ class TestValidateManifestRowsWobCalibrationCount:
             )
         with pytest.raises(ValueError, match="invalid calibration episode count: 11"):
             validate_manifest_rows(rows_11, expected_calibration_episode_count=12)
+
+
+def _make_tempglitch_r5_manifest_rows() -> list[dict[str, str]]:
+    rows: list[dict[str, str]] = []
+    for ep_index in range(2):
+        rows.append(
+            {
+                "window_id": f"temp_calib_ep{ep_index}_w0",
+                "source_episode_id": f"temp_normal_ep{ep_index}",
+                "dataset_name": "normal_validation",
+                "dataset_fingerprint": "normal-sha",
+                "dataset_window_index": str(ep_index),
+                "source": f"temp_normal_ep{ep_index}",
+                "pair_id": f"normal_pair_{ep_index}",
+                "category": "Blinking",
+                "label": "Normal",
+                "split": "validation",
+                "action_mode": "zero_action",
+                "evaluation_role": "calibration_normal",
+            }
+        )
+    rows.append(
+        {
+            "window_id": "temp_eval_normal_w0",
+            "source_episode_id": "temp_normal_eval",
+            "dataset_name": "normal_validation",
+            "dataset_fingerprint": "normal-sha",
+            "dataset_window_index": "2",
+            "source": "temp_normal_eval",
+            "pair_id": "normal_pair_eval",
+            "category": "Blinking",
+            "label": "Normal",
+            "split": "validation",
+            "action_mode": "zero_action",
+            "evaluation_role": "evaluation",
+        }
+    )
+    rows.append(
+        {
+            "window_id": "temp_eval_buggy_w0",
+            "source_episode_id": "temp_buggy_eval",
+            "dataset_name": "buggy_probe",
+            "dataset_fingerprint": "buggy-sha",
+            "dataset_window_index": "0",
+            "source": "temp_buggy_eval",
+            "pair_id": "buggy_pair_eval",
+            "category": "Blinking",
+            "label": "Buggy",
+            "split": "validation",
+            "action_mode": "zero_action",
+            "evaluation_role": "evaluation",
+        }
+    )
+    return rows
+
+
+def test_run_gate8_baselines_accepts_tempglitch_r5_calibration_override(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
+    rows = _make_tempglitch_r5_manifest_rows()
+    manifest_path = write_csv_rows(tmp_path / "r5_manifest.csv", rows, MANIFEST_FIELDS)
+
+    monkeypatch.setattr(
+        gate8_cli,
+        "_validate_fingerprints",
+        lambda manifest_rows, normal_lance, buggy_lance: {
+            "normal_validation": "normal-sha",
+            "buggy_probe": "buggy-sha",
+        },
+    )
+    monkeypatch.setattr(
+        gate8_cli, "_fit_train_centroid", lambda train_lance, batch_size: np.zeros(1)
+    )
+
+    def fake_score_target(dataset_path, manifest_rows, centroid, *, batch_size):
+        return [
+            {
+                "window_id": row["window_id"],
+                "frame_diff": "0.1",
+                "feature_distance": "0.2",
+            }
+            for row in manifest_rows
+        ]
+
+    monkeypatch.setattr(gate8_cli, "_score_target", fake_score_target)
+    monkeypatch.setattr(gate8_cli, "_git_sha", lambda: "fixture-sha")
+    monkeypatch.setattr(gate8_cli, "runtime_provenance", lambda include_lewm: {"fixture": True})
+    monkeypatch.setattr(
+        gate8_cli.FingerprintBuilder,
+        "inventory_sha256",
+        staticmethod(lambda path: "train-sha"),
+    )
+
+    metadata = run_gate8_baselines(
+        manifest_path=manifest_path,
+        train_lance=tmp_path / "train.lance",
+        normal_lance=tmp_path / "normal.lance",
+        buggy_lance=tmp_path / "buggy.lance",
+        output_dir=tmp_path / "out",
+        expected_calibration_episode_count=2,
+    )
+
+    assert metadata["status"] == "gate8_scored"
+    assert metadata["expected_calibration_episode_count"] == 2
