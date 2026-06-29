@@ -17,13 +17,13 @@ Date: 2026-06-23
 - The staged `R5-XGame` runner, Kaggle launcher, and output-bundle validator exist in the repo,
   and the downloaded bundle now passes both `r5_xgame_output_validated` and
   `r5_xgame_tarball_validated`.
-- The repaired `R5-XGame` tarball SHA256 is
-  `65f8b21bf9b31dd6498cb2b46ca0d368f7d4b1f8fef15480b915a1ff9a8204ac`.
+- The final K-B / `R5-XGame` tarball SHA256 is
+  `e41b5940a6a79713c25b03437fa76e360308fa310db9c35f812b4864ec6fff02`.
 - `R5-XGame` now provides bounded non-locked binary validation evidence; the best recorded
   configuration reached AUROC `0.909722`, AUPRC `0.981384`, F1 `0.792079`, precision `0.975610`,
   recall `0.666667`, and balanced accuracy `0.791667`.
-- The repaired tarball receipt reflects a packaging-only fix; no retraining or new Kaggle run was
-  launched.
+- The final K-B tarball and sidecar reflect the user-downloaded successful Kaggle output; no
+  retraining, new Kaggle launch, or locked-test action was performed by local intake.
 
 ## Blocked
 

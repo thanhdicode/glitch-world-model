@@ -106,15 +106,16 @@ Conclusion:
 The downloaded live output directory and the tarball both contain `stage_package.json`, which
 keeps the tarball extract intake-valid.
 
-However, the downloaded marker still records legacy tarball metadata:
+The 2026-06-29 user-downloaded K-B bundle no longer reports legacy tarball metadata in the local
+validator's stage-package marker:
 
-- legacy tarball SHA recorded in `stage_package.json`:
-  `05d298c29904142d9e28db97e485db80b8b68eb56b520450594936593970fbd2`
-- repaired sidecar SHA:
-  `65f8b21bf9b31dd6498cb2b46ca0d368f7d4b1f8fef15480b915a1ff9a8204ac`
+- `has_legacy_tarball_record=false`
+- `has_legacy_sidecar_record=false`
+- `stale_legacy_tarball_sha256=false`
+- final tarball SHA:
+  `e41b5940a6a79713c25b03437fa76e360308fa310db9c35f812b4864ec6fff02`
 
-This stale SHA is a legacy package receipt detail, not the authoritative repaired bundle hash.
-The authoritative repaired tarball hash remains the `.sha256` sidecar plus direct tarball hashing.
+The authoritative tarball hash remains the `.sha256` sidecar plus direct tarball hashing.
 
 ## Contract Decision
 
@@ -122,10 +123,9 @@ The authoritative intake contract is now:
 
 1. The checked-in frozen manifest content remains authoritative.
 2. Manifest validation is based on normalized CSV content equality, not raw line-ending bytes.
-3. The repaired tarball SHA is taken from the tarball plus sidecar pair, not from legacy fields in
-   `stage_package.json`.
-4. `stage_package.json` is required as a package-stage marker, but legacy tarball/hash fields in
-   older downloaded bundles are informational only.
+3. The final tarball SHA is taken from the tarball plus sidecar pair.
+4. `stage_package.json` is required as a package-stage marker; older legacy receipt fields are
+   historical only and are absent from the 2026-06-29 K-B validator marker.
 5. `stage_validate_package.json` in the current downloaded output should be interpreted as a
    live-output validation receipt only; the tarball-green state is established by the repaired
    local validator run.
@@ -145,12 +145,12 @@ Validated output-dir result now reports:
 
 - `manifest_raw_sha256_match=false`
 - `manifest_normalized_sha256_match=true`
-- `stage_package_marker.stale_legacy_tarball_sha256=true`
+- `stage_package_marker.stale_legacy_tarball_sha256=false`
 
 Validated tarball result now reports:
 
 - bundle SHA256 verified as
-  `65f8b21bf9b31dd6498cb2b46ca0d368f7d4b1f8fef15480b915a1ff9a8204ac`
+  `e41b5940a6a79713c25b03437fa76e360308fa310db9c35f812b4864ec6fff02`
 - extracted output manifest normalized match:
   `true`
 
@@ -161,7 +161,8 @@ without retraining or relaunching Kaggle.
 
 The remaining caveat is documentation-level only:
 
-- the current downloaded `stage_package.json` still contains legacy old-SHA fields
+- earlier downloaded `stage_package.json` receipts contained legacy old-SHA fields; the
+  2026-06-29 K-B validator marker does not
 
 That caveat is now explicitly documented and is no longer treated as the authoritative repaired
 bundle hash source.

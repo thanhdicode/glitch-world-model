@@ -1,6 +1,6 @@
 # R5-XGame Kaggle Package Note
 
-## PACKAGE EXECUTED AND REPAIRED FOR INTAKE
+## PACKAGE EXECUTED AND VALIDATED FOR K-B INTAKE
 
 The staged live package now exists: include repository source, `configs/wob_protocol/r5_xgame_split.csv`, split validator, leakage audit, `scripts/run_r5_xgame_staged.py`, `scripts/validate_r5_xgame_output_bundle.py`, and `cloud/wob_r5_xgame/run_kaggle_r5_xgame_staged.sh`. Exclude `attached_assets`, outputs, caches, checkpoints, and all locked/test data.
 
@@ -8,12 +8,12 @@ The staged live package now exists: include repository source, `configs/wob_prot
 
 The R5-XGame Kaggle computation already completed before this documentation sync. The downloaded
 bundle initially failed tarball intake because `stage_package.json` was written after the archive
-snapshot. Packaging was repaired so the tarball now contains the required stage marker, the live
-output directory validates as `r5_xgame_output_validated`, and the repaired tarball/sidecar
-validates as `r5_xgame_tarball_validated`.
+snapshot. The final user-downloaded K-B bundle now contains the required stage marker, the live
+output directory validates as `r5_xgame_output_validated`, and the tarball/sidecar validates as
+`r5_xgame_tarball_validated`.
 
-Repaired tarball SHA256:
-`65f8b21bf9b31dd6498cb2b46ca0d368f7d4b1f8fef15480b915a1ff9a8204ac`
+Final K-B tarball SHA256:
+`e41b5940a6a79713c25b03437fa76e360308fa310db9c35f812b4864ec6fff02`
 
 This was a packaging/intake fix only. No new Kaggle run or LeWM retraining was launched.
 

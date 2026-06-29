@@ -36,7 +36,7 @@ These are metadata/readiness commands only. They do not create claim-ready metri
 - Tarball/sidecar validator status:
   `r5_xgame_tarball_validated`
 - Repaired tarball SHA256:
-  `65f8b21bf9b31dd6498cb2b46ca0d368f7d4b1f8fef15480b915a1ff9a8204ac`
+  `e41b5940a6a79713c25b03437fa76e360308fa310db9c35f812b4864ec6fff02`
 - Packaging-only repair:
   `stage_package.json` is now snapshotted before tarball sealing; no retraining was launched.
 - Intake reconciliation:

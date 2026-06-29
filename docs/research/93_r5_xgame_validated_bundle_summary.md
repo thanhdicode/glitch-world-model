@@ -15,15 +15,18 @@ downloaded bundle after the packaging repair and does not describe a new scienti
   `r5_xgame_tarball_validated`
 - Old tarball SHA256:
   `05d298c29904142d9e28db97e485db80b8b68eb56b520450594936593970fbd2`
-- Repaired tarball SHA256:
-  `65f8b21bf9b31dd6498cb2b46ca0d368f7d4b1f8fef15480b915a1ff9a8204ac`
+- Final K-B tarball SHA256:
+  `e41b5940a6a79713c25b03437fa76e360308fa310db9c35f812b4864ec6fff02`
+- Final K-B metrics SHA256:
+  `6ec94af80a40eeff718aefa285be870694eeadeaaefa6624babe3a5ee84f8474`
 - Packaging fix:
   `stage_package.json` is now snapshotted before tarball sealing, so the extracted tarball carries
   the same required stage marker as the live output directory.
 - Reconciliation note:
-  the current downloaded bundle still contains legacy tarball/hash fields inside
-  `stage_package.json`; those fields are no longer treated as the authoritative repaired tarball
-  hash source.
+  the 2026-06-29 user-downloaded K-B bundle validates with
+  `stage_package_marker.has_legacy_tarball_record=false`,
+  `stage_package_marker.has_legacy_sidecar_record=false`, and
+  `stage_package_marker.stale_legacy_tarball_sha256=false`.
 - Scientific-run status:
   unchanged. No retraining, no new Kaggle launch, and no locked-test access were introduced by the
   repair.

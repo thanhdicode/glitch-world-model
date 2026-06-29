@@ -19,6 +19,6 @@
 | Gate 9 comparison | ignored `outputs/gate9/comparison.csv` | verified; SHA-256 `102d45cd13c1cdc0fe15bc8291a11cf976bb58daa203f16f8d67ff5002bbc2af` |
 | Gate 9 results | ignored `outputs/gate9/ablation_results.json` | verified window-level pilot; SHA-256 `89d1f3b4c4c66650fa307b542cee5e62a06cbb2ac0c20ca7834ae1be235b100a` |
 | R5-WOB success bundle | ignored downloaded bundle + receipt retained outside Git | SHA-256 verified and offline intake-validated as positive-probe only |
-| R5-XGame repaired success bundle | ignored downloaded repaired bundle + receipt retained outside Git | output_dir `r5_xgame_output_validated`; tarball `r5_xgame_tarball_validated`; SHA-256 `65f8b21bf9b31dd6498cb2b46ca0d368f7d4b1f8fef15480b915a1ff9a8204ac`; packaging-only repair, no retraining |
+| K-B / R5-XGame final success bundle | ignored downloaded bundle + receipt retained outside Git | output_dir `r5_xgame_output_validated`; tarball `r5_xgame_tarball_validated`; SHA-256 `e41b5940a6a79713c25b03437fa76e360308fa310db9c35f812b4864ec6fff02`; metrics SHA-256 `6ec94af80a40eeff718aefa285be870694eeadeaaefa6624babe3a5ee84f8474`; no retraining, no new Kaggle launch during intake |
 
 No data, Lance dataset, checkpoint, Kaggle output, or credential is committed.

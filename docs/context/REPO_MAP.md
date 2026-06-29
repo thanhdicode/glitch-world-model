@@ -1,7 +1,7 @@
 # REPO_MAP.md
 
-Generated: 2026-06-27T13:10:59+00:00
-Commit: `a4bee6fd0adfc97a80752b610f9e8ff1ab9ddc25`
+Generated: 2026-06-29T03:58:00+00:00
+Commit: `0289c5bfcc825502f1ca76564de0f81a3df4b60d`
 Generator: `scripts/update_context_cache.py`
 
 ## Top-Level Map
@@ -44,11 +44,13 @@ Generator: `scripts/update_context_cache.py`
 | `scripts/build_k2_lewm_seed_artifact_dataset.py` | _default_seed_source, _resolve_seed_sources, _link_or_copy_file, _write_readme, _zip_package, build_k2_lewm_seed_artifact_dataset, build_parser, main | Python module. |
 | `scripts/build_lewm_lance_dataset.py` | _read_split, build_lewm_lance_dataset, build_parser, main | Python module. |
 | `scripts/build_lewm_split.py` | _read_rows, _read_exposed, build_parser, main | Python module. |
+| `scripts/build_tempglitch_expanded_normal_inputs.py` | _build_split_rows, _split_support_counts, _raise_if_under_target_support, _recommended_calibration_normal_count, _materialize_lance, build_expanded_inputs, build_parser, main | Build EXPANDED-support TempGlitch Lance inputs for the K-A re-evaluation. |
 | `scripts/build_tempglitch_lewm_lance.py` | build_parser, main | Python module. |
 | `scripts/build_tempglitch_validation_manifest.py` | evenly_spaced_starts, build_validation_manifest, main | Python module. |
 | `scripts/build_wob_lewm_lance.py` | build_parser, main | Python module. |
 | `scripts/check_claim_registry.py` | Claim, parse_claim_registry, validate_claims, build_parser, main | Python module. |
 | `scripts/check_wob_kaggle_listing.py` | build_parser, load_nonlocked_rows, dataset_slug_for_source, parse_kaggle_files_csv, kaggle_files, human_kaggle_setup_instructions, compute_listing_report, render_markdown, main | Python module. |
+| `scripts/compute_significance_table.py` | _read_rows, _aligned_labels, compute_significance, render_latex_row, build_parser, main | Compute DeLong and paired-bootstrap significance between LeWM and a baseline. |
 | `scripts/convert_tempglitch_labels.py` | build_parser, main | Python module. |
 | `scripts/create_dynamics_test_dataset.py` | draw_scene, main | Python module. |
 | `scripts/create_hard_dynamics_dataset.py` | draw_scene, main | Python module. |
@@ -105,7 +107,7 @@ Generator: `scripts/update_context_cache.py`
 | `scripts/run_r6_tempglitch_ablations.py` | run_aggregation_ablation, run_cpu_ablation, build_parser, main | R6 TempGlitch ablation runner. |
 | `scripts/run_r6_wob_ablations.py` | build_parser, main | R6 WOB ablation runner. |
 | `scripts/run_synthetic_demo.py` | write_synthetic_frames, write_synthetic_labels, main | Python module. |
-| `scripts/run_tempglitch_followup_pair_disjoint.py` | build_parser, _command_text, main | Python module. |
+| `scripts/run_tempglitch_followup_pair_disjoint.py` | parse_expected_support, build_parser, _command_text, main | Python module. |
 | `scripts/run_tempglitch_repeated_grouped_splits.py` | _require_file, _clear_score_files, _write_split_artifacts, _write_partitions, _format_metric, _write_locked_summary, _metric_summary, _write_repeated_summary, run_repeated_grouped_experiments, build_parser, main | Python module. |
 | `scripts/run_tempglitch_smoke_test.py` | build_parser, main | Python module. |
 | `scripts/run_tempglitch_split_experiments.py` | write_scores_csv, preprocess_tempglitch_videos, normal_train_records, score_validation_and_test, write_comparison, best_and_worst_categories, positive_clip_counts, clip_counts_by_split, build_parser, main | Python module. |
@@ -207,11 +209,13 @@ Generator: `scripts/update_context_cache.py`
 | `scripts/build_k2_lewm_seed_artifact_dataset.py` | CLI/helper script. | Gate 5 |
 | `scripts/build_lewm_lance_dataset.py` | CLI/helper script. | Gate 5 |
 | `scripts/build_lewm_split.py` | CLI/helper script. | Gate 5 |
+| `scripts/build_tempglitch_expanded_normal_inputs.py` | Build EXPANDED-support TempGlitch Lance inputs for the K-A re-evaluation. | general |
 | `scripts/build_tempglitch_lewm_lance.py` | CLI/helper script. | Gate 5 |
 | `scripts/build_tempglitch_validation_manifest.py` | CLI/helper script. | general |
 | `scripts/build_wob_lewm_lance.py` | CLI/helper script. | Gate 5 |
 | `scripts/check_claim_registry.py` | CLI/helper script. | general |
 | `scripts/check_wob_kaggle_listing.py` | CLI/helper script. | Gate 5 |
+| `scripts/compute_significance_table.py` | Compute DeLong and paired-bootstrap significance between LeWM and a baseline. | general |
 | `scripts/convert_tempglitch_labels.py` | CLI/helper script. | general |
 | `scripts/create_dynamics_test_dataset.py` | CLI/helper script. | general |
 | `scripts/create_hard_dynamics_dataset.py` | CLI/helper script. | general |
@@ -275,7 +279,6 @@ Generator: `scripts/update_context_cache.py`
 | `scripts/run_tempglitch_video_level_experiments.py` | CLI/helper script. | general |
 | `scripts/run_wob_p0_materialization_audit.py` | CLI/helper script. | general |
 | `scripts/run_worldofbugs_asset_demo.py` | CLI/helper script. | general |
-| `scripts/select_tempglitch_protocol_config.py` | CLI/helper script. | general |
 
 ## Tests
 | Test | Coverage |
@@ -285,10 +288,12 @@ Generator: `scripts/update_context_cache.py`
 | `tests/test_build_k1_kaggle_input_dataset.py` | build_k1_kaggle_input_dataset |
 | `tests/test_build_k2_glitchbench_kaggle_dataset.py` | build_k2_glitchbench_kaggle_dataset |
 | `tests/test_build_k2_lewm_seed_artifact_dataset.py` | build_k2_lewm_seed_artifact_dataset |
+| `tests/test_build_tempglitch_expanded_normal_inputs.py` | build_tempglitch_expanded_normal_inputs |
 | `tests/test_calibration.py` | calibration |
 | `tests/test_check_wob_kaggle_listing.py` | check_wob_kaggle_listing |
 | `tests/test_cnn_lstm.py` | cnn_lstm |
 | `tests/test_compare_experiments.py` | compare_experiments |
+| `tests/test_compute_significance_table.py` | compute_significance_table |
 | `tests/test_context_cache.py` | context_cache |
 | `tests/test_dataset_protocols.py` | dataset_protocols |
 | `tests/test_dataset_report.py` | dataset_report |

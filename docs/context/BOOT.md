@@ -1,7 +1,7 @@
 # BOOT.md - Fast Start Context For Agents
 
-Generated: 2026-06-27T13:10:59+00:00
-Commit: `a4bee6fd0adfc97a80752b610f9e8ff1ab9ddc25`
+Generated: 2026-06-29T03:58:00+00:00
+Commit: `0289c5bfcc825502f1ca76564de0f81a3df4b60d`
 
 ## Read Order
 1. `RULES.md`
@@ -34,10 +34,14 @@ The current execution roadmap is `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v4.md`
   artifact verification is complete.
 - The seed42 non-locked WOB evaluation-readiness gate is frozen, all three planned WOB-P1
   training artifacts are now validator-backed, `R5-WOB` is validated as a positive-probe bundle,
-  and `R5-XGame` compute is now intake-validated for both the live output directory and the
-  repaired tarball/sidecar bundle.
-- The best recorded `R5-XGame` configuration reached AUROC `0.909722` on the frozen non-locked
-  12-negative / 60-positive split, but this remains bounded validation evidence only.
+  and the user-downloaded K-B / `R5-XGame` output is final-intake-validated for both the live
+  output directory and the tarball/sidecar bundle.
+- The best recorded K-B / `R5-XGame` configuration is LeWM seed44 with `lewm_mse_max` and
+  `top2_mean`, reaching AUROC `0.909722` and AUPRC `0.981384` on the frozen non-locked
+  12-negative / 60-positive split; this remains bounded validation evidence only.
+- The expanded K-A TempGlitch Kaggle lane is still pending validated outputs. The current
+  checkpoint input mounts under `/kaggle/input/datasets/phmnhtngha/lewm-tempglitch-seeds-full`;
+  it is not paper evidence until a K-A output bundle passes local intake validation.
 - The pair-disjoint TempGlitch follow-up is validator-backed on 2 calibration-normal, 12
   evaluation normal-negative, and 22 evaluation buggy-positive episodes with zero cross-role
   source, pair, and episode overlap.
@@ -52,10 +56,10 @@ The current execution roadmap is `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v4.md`
   test remains unopened, and WOB remains limited to audit-plus-training-artifact evidence.
 
 ## Immediate Next Task
-- Prepare the official LLNCS/Overleaf build and submission handoff on top of the completed local
-  P7 paper rewrite.
-- Upload only the current anonymized paper source, validated table set, and publication-ready
-  figures referenced by the manuscript.
+- Run the evidence-safe paper revision pass from `CODEX_MASTER_PROMPT_LeWM_v6.md` on top of the
+  completed local P7 rewrite and final-intake-validated K-B output.
+- Do not add unverified VLM AUROC numbers, K-A expanded claims, locked-test language, or
+  cross-game-generalization language during the paper pass.
 - Keep all paper-facing numbers, figures, and conclusions synchronized with
   `docs/research/16_claim_registry.md`.
 - Keep locked test closed and preserve the P5/P6 claim boundary: qualitative timelines are allowed,

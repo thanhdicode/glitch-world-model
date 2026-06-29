@@ -14,7 +14,7 @@ Date: 2026-06-23
 - Scientific evidence status: validated locally for both the live output directory and the repaired
   tarball/sidecar bundle.
 - Repaired tarball SHA256:
-  `65f8b21bf9b31dd6498cb2b46ca0d368f7d4b1f8fef15480b915a1ff9a8204ac`.
+  `e41b5940a6a79713c25b03437fa76e360308fa310db9c35f812b4864ec6fff02`.
 - Packaging note: this was a tarball-intake repair only; no retraining or new Kaggle run was
   launched.
 

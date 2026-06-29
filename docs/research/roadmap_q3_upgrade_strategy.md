@@ -18,9 +18,9 @@ Synchronize the repo around a single Q3-safe strategy after the Phase B intake g
 - `R5-WOB` is not a valid binary benchmark because it has zero evaluation normal-negative episodes.
 - `R5-XGame` has now completed as a validated non-locked binary evidence bundle with held-out
   normal negatives and valid binary evaluation roles.
-- The repaired `R5-XGame` tarball SHA256 is
-  `65f8b21bf9b31dd6498cb2b46ca0d368f7d4b1f8fef15480b915a1ff9a8204ac`, and the repair was
-  packaging-only rather than a new run.
+- The final user-downloaded K-B / `R5-XGame` tarball SHA256 is
+  `e41b5940a6a79713c25b03437fa76e360308fa310db9c35f812b4864ec6fff02`; local intake did not
+  relaunch Kaggle, retrain LeWM, or open locked test.
 
 ## Upgrade Logic
 
@@ -31,7 +31,7 @@ Synchronize the repo around a single Q3-safe strategy after the Phase B intake g
 
 ### Phase B
 
-- Preserve the validated tarball/sidecar receipt and the frozen split boundary.
+- Preserve the validated K-B tarball/sidecar receipt and the frozen split boundary.
 - Do not relaunch training for packaging-only issues.
 
 ### Phase C

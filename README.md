@@ -175,9 +175,9 @@ frozen validation-only family and do not support broad superiority or general gl
 claims. Kaggle-native `WOB-P0` has now passed with a verified downloaded evidence bundle, and the
 WOB-P1 seed42, seed43, and seed44 training artifacts are SHA256-verified and validator-passed
 under the train-normal / validation-normal protocol. `R5-WOB` completed as a validated
-positive-probe bundle, and `R5-XGame` compute completed with a repaired downloaded bundle that now
-passes `r5_xgame_output_validated` and `r5_xgame_tarball_validated` locally. The repaired tarball
-SHA256 is `65f8b21bf9b31dd6498cb2b46ca0d368f7d4b1f8fef15480b915a1ff9a8204ac`. The best recorded
+positive-probe bundle, and K-B / `R5-XGame` compute completed with a downloaded bundle that now
+passes `r5_xgame_output_validated` and `r5_xgame_tarball_validated` locally. The final K-B tarball
+SHA256 is `e41b5940a6a79713c25b03437fa76e360308fa310db9c35f812b4864ec6fff02`. The best recorded
 non-locked `R5-XGame` configuration reached AUROC `0.909722` on the frozen 12-normal-negative /
 60-buggy-positive split; this remains bounded validation evidence, not broad generalization or a
 locked-test result. The pair-disjoint TempGlitch follow-up is validator-backed on two calibration

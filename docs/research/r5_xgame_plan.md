@@ -27,7 +27,7 @@ evidence without opening locked test.
 Phase B / `R5-XGame` is now an intake-validated non-locked binary evidence family.
 
 - The required Kaggle execution already completed before this documentation sync.
-- The downloaded live output directory and repaired tarball/sidecar now pass local intake
+- The downloaded live output directory and final K-B tarball/sidecar now pass local intake
   validation.
 - The repair was packaging-only and did not relaunch Kaggle or retrain LeWM.
 
@@ -35,7 +35,7 @@ Phase B / `R5-XGame` is now an intake-validated non-locked binary evidence famil
 
 - Validator statuses: `r5_xgame_output_validated` and `r5_xgame_tarball_validated`
 - Repaired tarball SHA256:
-  `65f8b21bf9b31dd6498cb2b46ca0d368f7d4b1f8fef15480b915a1ff9a8204ac`
+  `e41b5940a6a79713c25b03437fa76e360308fa310db9c35f812b4864ec6fff02`
 - Best recorded configuration:
   seed44 `lewm_mse_max` with `top2_mean`
 - Best recorded metrics:

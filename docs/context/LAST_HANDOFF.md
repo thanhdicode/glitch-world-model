@@ -1,60 +1,60 @@
 # LAST_HANDOFF.md
 
-Last completed task: P7 full method-paper rewrite and submission handoff
-Commit: `latest branch commit for this task (see git log -1)`
-Date: 2026-06-27T21:05:00+07:00
+Last completed task: K-B R5-XGame final intake context refresh
+Commit: `0289c5bfcc825502f1ca76564de0f81a3df4b60d`
+Date: 2026-06-29T00:00:00+00:00
 
 ## What Changed
 
-- Replaced the old bounded-only paper framing with a full method-paper manuscript that now
-  integrates the validated TempGlitch follow-up, K1 learned baselines, K2 GlitchBench, K3
-  mechanistic ablation, qualitative surprise timelines, and the separate R5-XGame family.
-- Rewrote `scripts/make_paper_tables.py` so the paper tables are regenerated from validated
-  TempGlitch, K1, K2, K3, and qualitative-timeline artifacts.
-- Added a new `paper/sections/08_results.tex` and refreshed the paper-side claim map, figure
-  plan, submission checklist, bibliography audit, anonymization audit, similarity plan, and
-  Overleaf/submission inventory docs.
-- Updated `scripts/update_context_cache.py` and its tests so the context cache now advances from
-  local P7 completion to the official LLNCS build/submission handoff.
+- Added the final K-B / R5-XGame local intake note for the user-downloaded output in
+  `C:\Users\ADMIN\Downloads\results K-B\r5_xgame`.
+- Updated claim registry and current research notes so the authoritative K-B tarball SHA256 is
+  `e41b5940a6a79713c25b03437fa76e360308fa310db9c35f812b4864ec6fff02` and the metrics SHA256 is
+  `6ec94af80a40eeff718aefa285be870694eeadeaaefa6624babe3a5ee84f8474`.
+- Refreshed context generator wording so K-B is final-intake-validated and K-A expanded
+  TempGlitch remains pending until a downloaded output bundle passes local validation.
+- Loaded LaTeX/paper-writing operating guidance for the next evidence-safe paper revision pass.
 
 ## Checks Passed
 
-- `python scripts/make_paper_tables.py`
-- `python -m pytest tests/test_research_release_tools.py -k paper_table_generator`
+- `python scripts/validate_r5_xgame_output_bundle.py --tarball "C:\Users\ADMIN\Downloads\results K-B\r5_xgame\r5_xgame_outputs.tar.gz" --sha256-file "C:\Users\ADMIN\Downloads\results K-B\r5_xgame\r5_xgame_outputs.tar.gz.sha256" --frozen-manifest configs/wob_protocol/r5_xgame_split.csv`
+- `python scripts/validate_r5_xgame_output_bundle.py --output-dir "C:\Users\ADMIN\Downloads\results K-B\r5_xgame" --frozen-manifest configs/wob_protocol/r5_xgame_split.csv`
 
 ## Safety Status
 
-- No locked-test access, materialization, or scoring occurred in this task.
-- No Kaggle action was launched.
-- No new scientific claim was added outside the validated claim registry.
-- Qualitative timelines remain explicitly non-metric and do not support temporal localization.
-- Output artifacts remain outside Git.
+- No Kaggle launch, retraining, remote deletion, or locked-test action was performed in this task.
+- Downloaded K-B outputs, Lance datasets, scores, checkpoints, and tarballs remain outside Git.
+- K-B claims remain bounded to the frozen non-locked 12-normal-negative / 60-buggy-positive split.
+- K-A expanded results are not evidence yet because no K-A output bundle has been locally validated.
 
 ## Gate Status After Task
 
-- The local P7 paper rewrite is complete.
-- The next step is the official LLNCS build, anonymization/PDF metadata check, and submission
-  handoff.
-- Gate 10 remains closed.
+- K-B / R5-XGame is final-intake-validated locally with validator statuses
+  `r5_xgame_output_validated` and `r5_xgame_tarball_validated`.
+- The best recorded K-B row remains LeWM seed44, `lewm_mse_max`, `top2_mean`, with AUROC
+  `0.909722` and AUPRC `0.981384`.
+- K-A expanded TempGlitch remains pending validated output.
+- Locked test remains closed.
 
 ## Open Blockers
 
-- This workspace still lacks `llncs.cls`, `splncs04.bst`, `pdflatex`, `bibtex`, `biber`, and
-  `latexmk`.
-- The first real PDF build, page-fit review, compile-time warning review, and external similarity
-  screening must happen in the official Springer/Overleaf environment.
-- Temporal localization remains future work until a validated span-labeled artifact exists.
+- K-A expanded TempGlitch has not yet produced a locally validated output bundle.
+- The official Springer/LLNCS build toolchain remains external to this workspace.
+- VLM-specific TempGlitch AUROC numbers from external papers must not be added until verified from
+  primary sources.
 
 ## Next Recommended Task
 
-- Upload the current anonymized paper source into the official Springer/Overleaf LLNCS kit,
-  compile the first PDF, and record the build, anonymization, and similarity checklist outputs.
+- Run the evidence-safe paper revision v6 pass from `CODEX_MASTER_PROMPT_LeWM_v6.md`, using K-B
+  only within its frozen non-locked split boundary and excluding K-A expanded claims until validated.
 
 ## Files Likely Relevant Next
 
+- `C:\Users\ADMIN\Downloads\CODEX_MASTER_PROMPT_LeWM_v6.md`
 - `paper/main.tex`
+- `paper/sections/01_introduction.tex`
+- `paper/sections/02_related_work.tex`
 - `paper/sections/08_results.tex`
-- `paper/tables/README.md`
-- `docs/research/106_first_bounded_paper_claim_audit.md`
-- `docs/research/113_official_build_blocker_and_overleaf_plan.md`
-- `docs/research/114_submission_package_inventory.md`
+- `paper/sections/09_limitations.tex`
+- `docs/research/16_claim_registry.md`
+- `docs/research/128_kb_r5_xgame_final_intake_2026_06_29.md`
