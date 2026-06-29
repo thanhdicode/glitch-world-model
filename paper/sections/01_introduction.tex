@@ -1,31 +1,32 @@
 \section{Introduction}
 \label{sec:introduction}
 
-Gameplay glitches are visible software failures that can disrupt interaction, presentation, or
-progression. Detecting them from gameplay video is attractive because recorded visual evidence is
-widely available during quality assurance, yet manual review is expensive, repetitive, and
-difficult to scale. The task is also unusually easy to mischaracterize: many glitches are temporal
-events whose evidence lies in motion, persistence, or an unexpected transition rather than in a
-single screenshot \cite{glitchbench,tempglitch}. Sequence-level scoring is therefore a more
-appropriate target than isolated-frame classification.
+Gameplay glitches are visible software failures that disrupt interaction, presentation,
+or progression. They are usually temporal events: a character sticks in place, an animation
+freezes, a projectile behaves inconsistently, or motion violates the expected game dynamics.
+This makes gameplay glitch detection different from static screenshot anomaly detection.
+Benchmarks such as GlitchBench, TempGlitch, and VideoGlitchBench make this distinction visible:
+some tasks ask whether a single frame looks unusual, while temporal glitch detection asks whether
+an episode evolves in an unexpected way~\cite{glitchbench,tempglitch,videoglitchbench}.
 
-We propose \textbf{LeWM-Glitch}, the first JEPA-surprise label-free glitch detector, which
-leverages the latent prediction error (LPE) of a world model trained exclusively on normal
-gameplay as an unsupervised anomaly signal. If a Joint-Embedding Predictive Architecture (JEPA)
-trained on normal dynamics \cite{ijepa,vjepa2,lewm} encounters a glitch episode, its prediction
-error in latent space should rise measurably. We instantiate this idea from LeWorldModel
-checkpoints \cite{lewm} and introduce a leakage-aware evaluation protocol that enforces source-,
-pair-, and episode-disjoint roles before windowing. We evaluate LeWM-Glitch across two
-bounded benchmarks: the temporal TempGlitch dataset \cite{tempglitch} and the VideoGlitchBench
-R5-XGame split \cite{videoglitchbench}, providing complementary evidence under different
-distributions and class balances.
+The core hypothesis of this paper is that a gameplay glitch should appear as a violation of a
+learned latent world model. A model trained only on normal gameplay should predict the next
+latent state accurately when the episode follows ordinary dynamics, and less accurately when the
+episode contains an anomalous transition. Joint-Embedding Predictive Architectures (JEPAs)
+are a natural fit for this idea because they predict in representation space rather than pixel
+space~\cite{ijepa,vjepa,vjepa2}. LeWorldModel extends this family to pixel-based world modeling,
+providing the backbone we use for a label-free latent prediction error signal~\cite{lewm}.
 
-Rather than pooling results across benchmarks, we treat each as a separate frozen evaluation,
-deliberately avoiding any inference of cross-game generalization from the combined picture.
+We propose \textbf{LeWM-Glitch}, a JEPA-style latent-surprise detector for gameplay glitches.
+LeWM-Glitch trains or reuses LeWorldModel checkpoints on normal gameplay, scores each window by
+latent prediction error, aggregates window scores at the episode level, and calibrates thresholds
+using normal-only episodes. The method is deliberately simple: the contribution is not a new
+large detector, but a leakage-aware evaluation of whether compact world-model surprise is useful
+for temporal game QA.
 
 The contributions of this paper are:
 \begin{itemize}[leftmargin=*]
-\item \textbf{Method}: LeWM-Glitch, the first JEPA-based latent prediction error (LPE) signal
+\item \textbf{Method}: LeWM-Glitch, a JEPA-based latent prediction error (LPE) signal
 for label-free gameplay glitch detection, instantiated from artifact-backed LeWorldModel
 checkpoints with source-, pair-, and episode-aware role separation before windowing~\cite{lewm};
 \item \textbf{Multi-benchmark leakage-aware evaluation}: a frozen pair-disjoint TempGlitch
