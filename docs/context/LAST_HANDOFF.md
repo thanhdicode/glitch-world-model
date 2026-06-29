@@ -1,7 +1,7 @@
 # LAST_HANDOFF.md
 
 Last completed task: Paper revision v6 evidence-safe compact pass
-Commit: pending final merge commit
+Commit: final `main` branch tip after merge/push
 Date: 2026-06-29T00:00:00+00:00
 
 ## What Changed
