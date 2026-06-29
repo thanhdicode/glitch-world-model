@@ -27,6 +27,9 @@ scalar surprise signals but does not address the domain-specific challenge of ga
 semantics or the leakage risks inherent in episode-derived splits. Our method adopts the
 normal-only training paradigm but applies it to latent representation space via a world model
 rather than pixel reconstruction.
+TempGlitch~\cite{tempglitch} further reports that current vision-language models remain near
+chance on temporal gameplay glitch sequences, motivating compact episode-level surprise signals
+that do not require prompting a large VLM at test time.
 
 \paragraph{World models and latent dynamics.}
 Ha and Schmidhuber's World Models established the idea of compressing environment observations
@@ -49,13 +52,22 @@ regularization; we use its frozen checkpoints as the backbone of LeWM-Glitch.
 
 \paragraph{Research gap.}
 Prior game glitch detection work has relied on large VLMs queried at test time, retrieval
-augmentation, or classification probes on curated image datasets. No prior work has explored
-training a compact JEPA latent world model on normal gameplay and exploiting its prediction
-error as a label-free detection signal across multiple temporal benchmarks with explicit
-leakage control. LeWM-Glitch fills this gap by providing the first JEPA-LPE-based glitch
-detector with a reproducible, artifact-bound evaluation protocol.
+augmentation, or classification probes on curated image datasets. This paper explores a
+complementary direction: training or reusing a compact JEPA latent world model on normal
+gameplay and exploiting its prediction error as a label-free detection signal across multiple
+temporal benchmarks with explicit leakage control. LeWM-Glitch fills this gap by providing a
+JEPA-LPE-based glitch detector with a reproducible, artifact-bound evaluation protocol.
 
 Table~\ref{tab:literature-matrix} records what each literature group supports and, equally
 importantly, what it does not support for this paper.
+
+\paragraph{Concurrent work.}
+Two concurrent preprints are relevant. RESP~\cite{resp} proposes a retrieval-enhanced spatial
+prediction baseline for video game glitch scoring, operating at the frame level without a
+world-model prior. T-SAR-JEPA~\cite{tsarjepa2026} applies JEPA-style anomaly detection to
+synthetic-aperture radar imagery, demonstrating that JEPA prediction error can be studied outside
+natural video; however, it does not address temporal game dynamics. LeWM-Glitch differs from both
+by using a compact JEPA world model trained on normal gameplay to produce a label-free
+episode-level surprise signal under strict leakage-aware evaluation.
 
 \input{tables/literature_matrix}
