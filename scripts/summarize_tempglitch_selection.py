@@ -39,6 +39,12 @@ INTEGER_COLUMNS = (
     "positive_episode_count",
     "negative_episode_count",
 )
+REQUIRED_NUMERIC_COLUMNS = ("auroc", "auprc", "f1")
+REQUIRED_INTEGER_COLUMNS = (
+    "evaluation_episode_count",
+    "positive_episode_count",
+    "negative_episode_count",
+)
 SAFETY_FLAGS = (
     "validation_buggy_used_for_fit_select",
     "locked_test_materialized",
@@ -54,9 +60,17 @@ class SelectionSummaryError(ValueError):
     """Raised when a comparison artifact is unsafe or malformed."""
 
 
-def _parse_float(row: dict[str, str], column: str, row_number: int) -> float | None:
+def _parse_float(
+    row: dict[str, str],
+    column: str,
+    row_number: int,
+    *,
+    required: bool = False,
+) -> float | None:
     value = row.get(column, "")
     if value == "":
+        if required:
+            raise SelectionSummaryError(f"row {row_number}: blank required numeric field {column}")
         return None
     try:
         parsed = float(value)
@@ -69,9 +83,17 @@ def _parse_float(row: dict[str, str], column: str, row_number: int) -> float | N
     return parsed
 
 
-def _parse_int(row: dict[str, str], column: str, row_number: int) -> int | None:
+def _parse_int(
+    row: dict[str, str],
+    column: str,
+    row_number: int,
+    *,
+    required: bool = False,
+) -> int | None:
     value = row.get(column, "")
     if value == "":
+        if required:
+            raise SelectionSummaryError(f"row {row_number}: blank required count field {column}")
         return None
     try:
         return int(value)
@@ -93,10 +115,20 @@ def load_comparison_rows(path: Path) -> list[dict[str, Any]]:
             parsed: dict[str, Any] = {key: raw.get(key, "") for key in fieldnames}
             for column in NUMERIC_COLUMNS:
                 if column in fieldnames:
-                    parsed[column] = _parse_float(raw, column, row_number)
+                    parsed[column] = _parse_float(
+                        raw,
+                        column,
+                        row_number,
+                        required=column in REQUIRED_NUMERIC_COLUMNS,
+                    )
             for column in INTEGER_COLUMNS:
                 if column in fieldnames:
-                    parsed[column] = _parse_int(raw, column, row_number)
+                    parsed[column] = _parse_int(
+                        raw,
+                        column,
+                        row_number,
+                        required=column in REQUIRED_INTEGER_COLUMNS,
+                    )
             rows.append(parsed)
     if not rows:
         raise SelectionSummaryError(f"comparison CSV has no rows: {path}")
@@ -115,10 +147,13 @@ def load_safety_metadata(path: Path | None) -> dict[str, Any]:
     if path is None:
         return {}
     metadata = json.loads(path.read_text(encoding="utf-8-sig"))
-    for flag in SAFETY_FLAGS:
-        if _flag_is_true(metadata.get(flag, False)):
+    parsed_flags = {
+        flag: _flag_is_true(metadata.get(flag, False)) for flag in SAFETY_FLAGS if flag in metadata
+    }
+    for flag, is_true in parsed_flags.items():
+        if is_true:
             raise SelectionSummaryError(f"{flag} must be false for reporting-safe summaries.")
-    return {flag: bool(metadata.get(flag, False)) for flag in SAFETY_FLAGS if flag in metadata}
+    return parsed_flags
 
 
 def _display_row(row: dict[str, Any]) -> dict[str, Any]:

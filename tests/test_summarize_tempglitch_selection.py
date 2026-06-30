@@ -104,6 +104,36 @@ def test_non_finite_metric_fails_closed(tmp_path: Path) -> None:
         load_comparison_rows(comparison)
 
 
+def test_blank_required_numeric_field_fails_closed(tmp_path: Path) -> None:
+    comparison = tmp_path / "bad.csv"
+    write_comparison(
+        comparison,
+        [
+            "lewm,lewm,lewm_l2_max,44,mean,calibration_normal_p95,"
+            ",0.8026,0.7143,0.75,0.6818,0.6326,0.75,"
+            "34,22,12,0.5349,0.8770,0.5854,0.8293\n",
+        ],
+    )
+
+    with pytest.raises(SelectionSummaryError, match="blank required numeric field"):
+        load_comparison_rows(comparison)
+
+
+def test_blank_required_count_field_fails_closed(tmp_path: Path) -> None:
+    comparison = tmp_path / "bad.csv"
+    write_comparison(
+        comparison,
+        [
+            "lewm,lewm,lewm_l2_max,44,mean,calibration_normal_p95,"
+            "0.7159,0.8026,0.7143,0.75,0.6818,0.6326,0.75,"
+            ",22,12,0.5349,0.8770,0.5854,0.8293\n",
+        ],
+    )
+
+    with pytest.raises(SelectionSummaryError, match="blank required count field"):
+        load_comparison_rows(comparison)
+
+
 def test_empty_csv_fails_closed(tmp_path: Path) -> None:
     comparison = tmp_path / "empty.csv"
     write_comparison(comparison, [])
@@ -118,3 +148,10 @@ def test_locked_test_metadata_fails_closed(tmp_path: Path) -> None:
 
     with pytest.raises(SelectionSummaryError, match="locked_test_scored"):
         load_safety_metadata(metadata)
+
+
+def test_string_false_safety_metadata_returns_false(tmp_path: Path) -> None:
+    metadata = tmp_path / "metrics.json"
+    metadata.write_text(json.dumps({"locked_test_scored": "false"}), encoding="utf-8")
+
+    assert load_safety_metadata(metadata)["locked_test_scored"] is False
