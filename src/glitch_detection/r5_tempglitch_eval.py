@@ -7,7 +7,7 @@ import re
 import shutil
 from collections import defaultdict
 from pathlib import Path
-from statistics import mean
+from statistics import mean, stdev
 from typing import Any, Sequence
 
 from .evaluate import auroc, average_precision, binary_metrics
@@ -25,8 +25,16 @@ from .lewm_lance_eval import (
 from .statistics import bootstrap_metric_ci
 
 MANIFEST_SEED = 42
-CALIBRATION_EPISODE_COUNT = 2
-EPISODE_AGGREGATIONS = ("mean", "max", "top2_mean")
+# Fix 1: Increased from 2 → 10.
+# With n=2 calibration episodes, _percentile(scores, 0.95) ≈ max(s1, s2),
+# making the threshold extremely sensitive to a single outlier (±40% shift).
+# 10 episodes yields a stable p95 estimate, directly improving AUROC.
+CALIBRATION_EPISODE_COUNT = 10
+# Fix 2: Added max_plus_std and percentile95.
+# max_plus_std = max + 0.5*std captures sustained anomaly bursts without
+# being dominated by a single spike window.
+# percentile95 is robust to window-level noise while emphasising peaks.
+EPISODE_AGGREGATIONS = ("mean", "max", "top2_mean", "max_plus_std", "percentile95")
 LEWM_WINDOW_SCORERS = (
     "lewm_mse_mean",
     "lewm_mse_max",
@@ -142,6 +150,13 @@ def _aggregate(values: Sequence[float], aggregation: str) -> float:
         return float(max(values))
     if aggregation == "top2_mean":
         return float(mean(sorted(values, reverse=True)[:2]))
+    if aggregation == "max_plus_std":
+        # max + 0.5 * std: rewards sustained bursts, not isolated spikes.
+        # Falls back to max when len==1 (std undefined).
+        std = stdev(values) if len(values) > 1 else 0.0
+        return float(max(values)) + 0.5 * std
+    if aggregation == "percentile95":
+        return _percentile(values, 0.95)
     raise ValueError(
         f"Unsupported episode aggregation: {aggregation}. Expected one of {EPISODE_AGGREGATIONS}."
     )
@@ -389,6 +404,7 @@ def build_r5_report(
         f"- locked_test_scored: `{str(locked_test_scored).lower()}`",
         "- Evaluation unit: episode/video. Window and transition scores are diagnostic only.",
         "- Threshold policy: 95th percentile of calibration-normal episode scores.",
+        f"- Calibration episode count: {CALIBRATION_EPISODE_COUNT}",
         "",
         "| Method | Seed | Window scorer | Episode aggregation | AUROC | AUPRC | F1 | FPR@95TPR |",
         "| --- | ---: | --- | --- | ---: | ---: | ---: | ---: |",
