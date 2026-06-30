@@ -28,6 +28,8 @@ def test_r5_wob_entrypoints_work_with_src_only_pythonpath():
         REPO_ROOT / "scripts" / "run_r5_wob_stage.py",
         REPO_ROOT / "scripts" / "validate_r5_wob_stage_outputs.py",
         REPO_ROOT / "scripts" / "assemble_r5_wob_from_stages.py",
+        REPO_ROOT / "scripts" / "run_kc_wob_binary.py",
+        REPO_ROOT / "scripts" / "validate_kc_wob_binary_output.py",
     ]
 
     for script in scripts:

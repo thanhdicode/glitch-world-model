@@ -1,52 +1,56 @@
 # LAST_HANDOFF.md
 
-Last completed task: Luong 0 no-GPU paper evidence upgrade
+Last completed task: Prepared K-C WOB binary Kaggle launch scaffolding
 Commit: working tree changes not yet committed
-Date: 2026-06-29T00:00:00+00:00
+Date: 2026-06-30T00:00:00+07:00
 
 ## What Changed
 
-- Added a new artifact-backed R5-XGame qualitative figure at
-  `paper/figures/fig_temporal_spike.pdf` plus `.png` and
-  `paper/figures/fig_temporal_spike_receipt.json`, generated from the validated downloaded
-  seed44 `r5_xgame` bundle with `temporal_metrics_claimed=false`.
-- Rewrote the introduction to make the game-glitch -> world-model violation -> JEPA rationale
-  explicit, and added a citation for LeCun's 2022 JEPA agenda note.
-- Reframed the K2 GlitchBench paragraph as an honest negative mechanistic finding tied to the
-  image-level versus temporal mismatch.
-- Replaced the vague TempGlitch VLM comparison with source-backed external-context wording and
-  table rows using the TempGlitch paper's reported VLM accuracy / precision / recall / F1 values
-  rather than inventing AUROC numbers that the source does not publish.
-- Rebuilt the paper in a local Springer LLNCS sandbox using
-  `C:\Users\ADMIN\Downloads\Springer_Latex_Template.zip` and bundled `tectonic`; the current
-  manuscript now compiles successfully but measures 19 pages, so venue-fit is a live formatting
-  blocker rather than a hypothetical risk.
+- Audited the existing WOB evaluation stack and confirmed the correct K-C execution substrate is
+  the staged non-locked R5-WOB pipeline, not the older monolithic runner.
+- Added `scripts/run_kc_wob_binary.py`, a thin K-C orchestration wrapper that runs the staged
+  sequence from `preflight` through `validate_package` for full runs and skips packaging only in
+  explicit smoke mode.
+- Added `scripts/validate_kc_wob_binary_output.py`, a K-C-specific validator that reuses the
+  strict R5-WOB validator, requires all full-run stage markers, rejects smoke outputs, and preserves
+  the no-locked-test / no-validation-buggy-fit-select flags.
+- Added `kaggle/kc_wob_binary/KAGGLE_K_C_WOB_BINARY.md`, a notebook-ready runbook with required
+  Kaggle inputs, clone/install/preflight/smoke/full/validate cells, and local intake instructions.
+- Added focused unit tests in `tests/test_kc_wob_binary.py` and extended script-entrypoint coverage
+  so the new K-C scripts work in Kaggle-style `src`-only `PYTHONPATH` execution.
 
 ## Checks Passed
 
-- Local Tectonic sandbox build with Springer `llncs.cls` / `splncs04.bst`: produced a 19-page PDF
-  at `%TEMP%\lewm-paper-build-lu0\main.pdf`.
+- `python -m ruff check scripts/run_kc_wob_binary.py scripts/validate_kc_wob_binary_output.py tests/test_kc_wob_binary.py tests/test_r5_wob_script_entrypoints.py`
+- `python -m pytest tests/test_kc_wob_binary.py tests/test_validate_r5_wob_evaluation.py tests/test_r5_wob_script_entrypoints.py -q`
 
 ## Safety Status
 
 - No Kaggle launch, retraining, remote deletion, or locked-test action was performed in this task.
-- Downloaded K-B outputs, K-A in-progress outputs, Lance datasets, scores, checkpoints, and
-  tarballs remain outside Git.
+- No downloaded outputs, Lance datasets, scores, checkpoints, tarballs, or Kaggle credentials were
+  added to Git.
 - K-B claims remain bounded to the frozen non-locked 12-normal-negative / 60-buggy-positive split.
 - K-A expanded results are not evidence yet because no K-A output bundle has been locally validated.
+- K-C WOB binary is launch-ready scaffolding only; it is not paper evidence until the Kaggle
+  success tarball and SHA sidecar pass local `scripts/verify_r5_wob_upload.py` intake.
 
 ## Gate Status After Task
 
-- Reviewer-facing paper revision v6 is evidence-safe, claim-audited, and locally buildable to a
-  16-page LLNCS PDF in the sandbox template.
+- Reviewer-facing paper revision v6 remains evidence-safe, claim-audited, and locally buildable in
+  the sandbox template from the previous paper task.
 - K-B / R5-XGame is final-intake-validated locally; the best recorded row remains LeWM seed44,
   `lewm_mse_max`, `top2_mean`, with AUROC `0.909722` and AUPRC `0.981384`.
 - K-A expanded TempGlitch remains pending validated output.
+- K-C WOB binary now has a dedicated Kaggle runbook/wrapper/validator but has not been run.
 - Locked test remains closed.
 
 ## Open Blockers
 
 - K-A expanded TempGlitch has not yet produced a locally validated output bundle.
+- K-C requires five Kaggle inputs to be mounted: WOB normal root, WOB test root, and validated
+  seed42/43/44 WOB artifact datasets.
+- K-C output cannot be claimed until `kc_wob_binary_outputs.tar.gz` plus `.sha256` are downloaded
+  and pass local intake.
 - Final conference PDF metadata and camera-ready details still need the official submission
   environment, even though the local official-template sandbox build succeeds.
 - The current LLNCS reviewer build is 19 pages, above the verified FISAT regular-paper limit of
@@ -56,9 +60,9 @@ Date: 2026-06-29T00:00:00+00:00
 
 ## Next Recommended Task
 
-- Run the required repository validation commands, then decide whether to keep this richer
-  reviewer draft and cut length, or revert some paper-side expansions before the official
-  Overleaf handoff.
+- Review `kaggle/kc_wob_binary/KAGGLE_K_C_WOB_BINARY.md`, attach the five required Kaggle inputs,
+  and run the K-C background job only when ready. After download, run local intake before recording
+  any WOB binary metric.
 
 ## Files Likely Relevant Next
 
@@ -72,3 +76,7 @@ Date: 2026-06-29T00:00:00+00:00
 - `paper/sections/09_limitations.tex`
 - `docs/research/16_claim_registry.md`
 - `docs/research/128_kb_r5_xgame_final_intake_2026_06_29.md`
+- `scripts/run_kc_wob_binary.py`
+- `scripts/validate_kc_wob_binary_output.py`
+- `kaggle/kc_wob_binary/KAGGLE_K_C_WOB_BINARY.md`
+- `tests/test_kc_wob_binary.py`
