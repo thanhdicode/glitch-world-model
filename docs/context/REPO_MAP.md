@@ -1,7 +1,7 @@
 # REPO_MAP.md
 
-Generated: 2026-06-29T03:58:00+00:00
-Commit: `0289c5bfcc825502f1ca76564de0f81a3df4b60d`
+Generated: 2026-06-30T18:27:44+00:00
+Commit: `7085370e097ef233382c07809f9e8705090e1aa3`
 Generator: `scripts/update_context_cache.py`
 
 ## Top-Level Map
@@ -50,7 +50,7 @@ Generator: `scripts/update_context_cache.py`
 | `scripts/build_wob_lewm_lance.py` | build_parser, main | Python module. |
 | `scripts/check_claim_registry.py` | Claim, parse_claim_registry, validate_claims, build_parser, main | Python module. |
 | `scripts/check_wob_kaggle_listing.py` | build_parser, load_nonlocked_rows, dataset_slug_for_source, parse_kaggle_files_csv, kaggle_files, human_kaggle_setup_instructions, compute_listing_report, render_markdown, main | Python module. |
-| `scripts/compute_significance_table.py` | _read_rows, _aligned_labels, compute_significance, render_latex_row, build_parser, main | Compute DeLong and paired-bootstrap significance between LeWM and a baseline. |
+| `scripts/compute_significance_table.py` | _parse_label, _row_matches_filters, _read_rows, _aligned_labels, compute_significance, render_latex_row, build_parser, main | Compute DeLong and paired-bootstrap significance between LeWM and a baseline. |
 | `scripts/convert_tempglitch_labels.py` | build_parser, main | Python module. |
 | `scripts/create_dynamics_test_dataset.py` | draw_scene, main | Python module. |
 | `scripts/create_hard_dynamics_dataset.py` | draw_scene, main | Python module. |
@@ -65,6 +65,7 @@ Generator: `scripts/update_context_cache.py`
 | `scripts/freeze_tempglitch_protocol.py` | _sha256, _exposed_groups, build_parser, main | Python module. |
 | `scripts/freeze_wob_protocol.py` | _kaggle_csv, _sha256, build_parser, main | Python module. |
 | `scripts/generate_qualitative_surprise_timelines.py` | EpisodeTimeline, _read_csv_rows, _resolve_repo_path, _float_key, select_best_comparison_row, lewm_window_score_from_row, build_episode_timelines, select_qualitative_episode_rows, _safe_name, generate_qualitative_surprise_timelines, build_parser, main | Python module. |
+| `scripts/generate_r5_xgame_temporal_spike_figure.py` | sha256, build_parser, _window_score, _threshold_row, _collect_episode_scores, _pick_episodes, _contiguous_spans, generate_figure, main | Python module. |
 | `scripts/ingest_k1_learned_baselines.py` | _read_json, _read_csv_rows, _write_json, _write_csv_rows, _float_text, _config_key, _aggregate_scores, _support_rows_from_followup, _evaluation_rows, _load_followup_bundle, _build_learned_rows, _best_row | Python module. |
 | `scripts/ingest_k2_glitchbench_benchmark.py` | _read_json, _read_csv_rows, _write_json, _float_text, locate_bundle_root, _best_row, _best_rows_by_method, _lewm_seed_aggregate, _validate_score_file, ingest_k2_glitchbench_benchmark, build_parser, main | Python module. |
 | `scripts/ingest_k3_ablation_bundle.py` | _read_json, _write_json, _sha256, _parse_sidecar, _verify_optional_sidecar, _safe_extract_tar, _safe_extract_zip, _resolve_bundle_root, _variant_lookup, _assert_false_flags, _validate_controlled_pairs, _write_report | Python module. |
@@ -93,6 +94,7 @@ Generator: `scripts/update_context_cache.py`
 | `scripts/run_kaggle_lewm.py` | _guard_cuda_runtime, build_parser, main | Python module. |
 | `scripts/run_kaggle_parity_check.py` | run_utf8_subprocess, kernel_entrypoint_is_guarded, _spawn_probe_source, run_kaggle_parity_check, build_parser, main | Python module. |
 | `scripts/run_kaggle_video_autoencoder.py` | _require_file, _read_grouped_split, _validate_clip_dirs, _write_json, run_kaggle_video_autoencoder, build_parser, main | Python module. |
+| `scripts/run_kc_wob_binary.py` | run_kc_wob_binary, build_parser, main | Python module. |
 | `scripts/run_lewm_gate6_automation.py` | build_parser, main | Python module. |
 | `scripts/run_lewm_gpu_profile_automation.py` | main | Python module. |
 | `scripts/run_lewm_scoring.py` | build_parser, _git_commit, main | Python module. |
@@ -117,10 +119,12 @@ Generator: `scripts/update_context_cache.py`
 | `scripts/select_tempglitch_protocol_config.py` | load_validation_candidates, build_parser, main | Python module. |
 | `scripts/smoke_lewm_checkpoint.py` | build_parser, main | Python module. |
 | `scripts/summarize_all_experiments.py` | read_json, fmt, row_for, main | Python module. |
+| `scripts/summarize_tempglitch_selection.py` | SelectionSummaryError, _parse_float, _parse_int, load_comparison_rows, _flag_is_true, load_safety_metadata, _display_row, summarize_selection, _fmt, render_markdown, build_parser, main | Python module. |
 | `scripts/update_context_cache.py` | CacheMetadata, git_sha, metadata, read_optional, has_gate5_conflict_record, build_boot, build_project_state, build_next_action, build_last_handoff_template, build_context_readme, build_context_policy, build_task_router | Python module. |
 | `scripts/validate_cloud_gpu_runtime.py` | _output_root, inspect_runtime, main | Python module. |
 | `scripts/validate_context_cache.py` | main | Python module. |
 | `scripts/validate_glitchbench_bundle.py` | _resolve_downloaded_kaggle_path, _protocol_manifest_from_package, validate_glitchbench_bundle, build_parser, main | Python module. |
+| `scripts/validate_kc_wob_binary_output.py` | _load_r5_validator, validate_kc_wob_binary, build_parser, main | Python module. |
 | `scripts/validate_learned_baselines.py` | _read_json, _read_sha256_sidecar, _clip_dir_signature, _resolve_downloaded_kaggle_path, _record_signature, _normalized_record_signature, _validate_scores_alignment, validate_learned_baselines, build_parser, main | Python module. |
 | `scripts/validate_lewm_gate6_artifacts.py` | main | Python module. |
 | `scripts/validate_lewm_gpu_profile_artifacts.py` | main | Python module. |
@@ -178,7 +182,7 @@ Generator: `scripts/update_context_cache.py`
 | `src/glitch_detection/preprocess.py` | list_frame_files, resize_and_save_frame, preprocess_frames, extract_video_frames, preprocess_input, build_parser, main | Python module. |
 | `src/glitch_detection/r5_tempglitch_eval.py` | _read_json, _load_script_module, _write_json, _write_sha256, _percentile, _aggregate, _float_text, _fpr_at_95_tpr, refuse_locked_test_path, parse_seed_artifact_roots, resolve_seed_artifact, planned_output_paths | Python module. |
 | `src/glitch_detection/r5_wob_eval.py` | _load_script_module, _read_json, _read_csv_rows, _write_json, _write_report, _parse_keyed_paths, _render_eval_manifest, _validate_readiness_and_manifest, _load_train_rows, _resolve_source_path, summarize_source_coverage, _build_lance_from_rows | Python module. |
-| `src/glitch_detection/r5_wob_staged.py` | _stage_marker_path, _path_sha256, _file_record, _check_runtime_imports, _progress, _repack_seed_artifact, _resolve_seed_inputs, _build_window_manifest, _release_cuda_memory, _smoke_eval_rows, _write_stage_marker, _load_stage_marker | Python module. |
+| `src/glitch_detection/r5_wob_staged.py` | _stage_marker_path, _path_sha256, _file_record, _check_runtime_imports, _progress, _repack_seed_artifact, _resolve_seed_inputs, _validate_compact_seed_artifact, _build_window_manifest, _release_cuda_memory, _smoke_eval_rows, _write_stage_marker | Python module. |
 | `src/glitch_detection/r5_xgame_live.py` | partition_manifest_rows, training_roles, train_fresh_seed | Four-role R5-XGame materialization contracts used by the staged runner. |
 | `src/glitch_detection/r5_xgame_metrics.py` | _fpr_at_95_tpr, evaluate_r5_xgame_binary_scores | Binary episode-level metrics guarded against one-class evaluation. |
 | `src/glitch_detection/r5_xgame_protocol.py` | validate_r5_xgame_manifest | Fail-closed protocol checks for the non-locked R5-XGame evaluation. |
@@ -193,7 +197,7 @@ Generator: `scripts/update_context_cache.py`
 | `src/glitch_detection/video_autoencoder.py` | VideoAutoencoderUnavailableError, VideoAutoencoderConfig, require_torch, resolve_checkpoint, list_clip_frames, select_frame_paths, load_clip_array, ClipTensorDataset, build_model, _resolve_device, _set_deterministic_seed, _data_loader | Python module. |
 | `src/glitch_detection/video_eval.py` | _percentile, _aggregate, aggregate_scores_by_source, source_labels_from_intervals, _split_metadata, build_video_level_rows, compute_video_level_metrics, calibrate_video_threshold, evaluate_video_with_fixed_threshold, write_video_rows_csv, write_json, write_video_comparison | Python module. |
 | `src/glitch_detection/video_transformer.py` | VideoTransformerUnavailableError, VideoTransformerConfig, require_torch, require_transformers, resolve_checkpoint, load_clip_array, ClipTensorDataset, build_model, _resolve_device, _set_deterministic_seed, _data_loader, _pooled_features | Python module. |
-| `src/glitch_detection/wob_kaggle_common.py` | resolve_existing_path, resolve_split_csv, resolve_protocol_audit, resolve_split_audit, _path_from_env, _keyword_score, _select_candidate, iter_kaggle_dataset_roots, detect_kaggle_roots, resolve_wob_seed_input, discover_r5_wob_input_overrides, add_tree_to_tar | Python module. |
+| `src/glitch_detection/wob_kaggle_common.py` | resolve_existing_path, resolve_split_csv, resolve_protocol_audit, resolve_split_audit, _path_from_env, _keyword_score, _select_candidate, iter_kaggle_dataset_roots, is_wob_seed_artifact_root, detect_kaggle_roots, resolve_wob_seed_input, discover_r5_wob_input_overrides | Python module. |
 | `src/glitch_detection/wob_p0_audit.py` | WobP0Config, build_parser, sha256_file, load_csv_rows, load_json, detect_converter_scripts, detect_lance_outputs, resolve_source_path, source_exists, assert_safe_wob_root, build_manifest_rows, write_manifest_preview | Python module. |
 | `src/glitch_detection/wob_protocol.py` | parse_wob_inventory, inspect_wob_episode_tar | Python module. |
 
@@ -230,6 +234,7 @@ Generator: `scripts/update_context_cache.py`
 | `scripts/freeze_tempglitch_protocol.py` | CLI/helper script. | general |
 | `scripts/freeze_wob_protocol.py` | CLI/helper script. | general |
 | `scripts/generate_qualitative_surprise_timelines.py` | CLI/helper script. | general |
+| `scripts/generate_r5_xgame_temporal_spike_figure.py` | CLI/helper script. | general |
 | `scripts/ingest_k1_learned_baselines.py` | CLI/helper script. | general |
 | `scripts/ingest_k2_glitchbench_benchmark.py` | CLI/helper script. | general |
 | `scripts/ingest_k3_ablation_bundle.py` | CLI/helper script. | general |
@@ -258,6 +263,7 @@ Generator: `scripts/update_context_cache.py`
 | `scripts/run_kaggle_lewm.py` | CLI/helper script. | Gate 5 |
 | `scripts/run_kaggle_parity_check.py` | CLI/helper script. | Gate 5 |
 | `scripts/run_kaggle_video_autoencoder.py` | CLI/helper script. | Gate 5 |
+| `scripts/run_kc_wob_binary.py` | CLI/helper script. | general |
 | `scripts/run_lewm_gate6_automation.py` | CLI/helper script. | Gate 5 |
 | `scripts/run_lewm_gpu_profile_automation.py` | CLI/helper script. | Gate 5 |
 | `scripts/run_lewm_scoring.py` | CLI/helper script. | Gate 5 |
@@ -277,8 +283,6 @@ Generator: `scripts/update_context_cache.py`
 | `scripts/run_tempglitch_smoke_test.py` | CLI/helper script. | general |
 | `scripts/run_tempglitch_split_experiments.py` | CLI/helper script. | general |
 | `scripts/run_tempglitch_video_level_experiments.py` | CLI/helper script. | general |
-| `scripts/run_wob_p0_materialization_audit.py` | CLI/helper script. | general |
-| `scripts/run_worldofbugs_asset_demo.py` | CLI/helper script. | general |
 
 ## Tests
 | Test | Coverage |
@@ -323,6 +327,7 @@ Generator: `scripts/update_context_cache.py`
 | `tests/test_kaggle_runtime_environment.py` | kaggle_runtime_environment |
 | `tests/test_kaggle_submission_diagnostics.py` | kaggle_submission_diagnostics |
 | `tests/test_kaggle_video_autoencoder_runner.py` | kaggle_video_autoencoder_runner |
+| `tests/test_kc_wob_binary.py` | kc_wob_binary |
 | `tests/test_leakage_aware_scorers.py` | leakage_aware_scorers |
 | `tests/test_learned_baselines_runner.py` | learned_baselines_runner |
 | `tests/test_lewm_adapter.py` | lewm_adapter |
@@ -377,6 +382,7 @@ Generator: `scripts/update_context_cache.py`
 | `tests/test_splits.py` | splits |
 | `tests/test_staged_install_completeness.py` | staged_install_completeness |
 | `tests/test_statistics.py` | statistics |
+| `tests/test_summarize_tempglitch_selection.py` | summarize_tempglitch_selection |
 | `tests/test_tempglitch.py` | tempglitch |
 | `tests/test_tempglitch_followup.py` | tempglitch_followup |
 | `tests/test_tempglitch_split_runner.py` | tempglitch_split_runner |
@@ -452,8 +458,11 @@ Generator: `scripts/update_context_cache.py`
 | `docs/research/125_k3_kaggle_package_instructions.md` | 125 k3 kaggle package instructions |
 | `docs/research/126_k3_sigreg_action_ablation_results.md` | 126 k3 sigreg action ablation results |
 | `docs/research/127_temporal_localization_span_audit.md` | 127 temporal localization span audit |
+| `docs/research/128_kb_r5_xgame_final_intake_2026_06_29.md` | 128 kb r5 xgame final intake 2026 06 29 |
 | `docs/research/128_temporal_localization_future_work.md` | 128 temporal localization future work |
+| `docs/research/129_ka_tempglitch_expanded_intake_2026_06_30.md` | 129 ka tempglitch expanded intake 2026 06 30 |
 | `docs/research/12_experiment_results_log.md` | 12 experiment results log |
+| `docs/research/130_tempglitch_selection_reporting_audit_2026_07_01.md` | 130 tempglitch selection reporting audit 2026 07 01 |
 | `docs/research/15_reproducibility_checklist.md` | 15 reproducibility checklist |
 | `docs/research/16_claim_registry.md` | 16 claim registry |
 | `docs/research/17_source_verification_log.md` | 17 source verification log |
@@ -478,6 +487,3 @@ Generator: `scripts/update_context_cache.py`
 | `docs/research/38_lewm_data_format.md` | 38 lewm data format |
 | `docs/research/39_lewm_kaggle_training_guide.md` | 39 lewm kaggle training guide |
 | `docs/research/40_gate3_gate4_real_dataset_protocol.md` | 40 gate3 gate4 real dataset protocol |
-| `docs/research/40_research_tooling_stack.md` | 40 research tooling stack |
-| `docs/research/41_dvc_hydra_migration_plan.md` | 41 dvc hydra migration plan |
-| `docs/research/41_gate5_current_state.md` | 41 gate5 current state |

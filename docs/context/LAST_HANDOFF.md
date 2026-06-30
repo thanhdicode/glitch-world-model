@@ -1,95 +1,82 @@
 # LAST_HANDOFF.md
 
-Last completed task: Integrated K-A expanded evidence and hardened K-C seed discovery
-Commit: working tree changes not yet committed
-Date: 2026-06-30T00:00:00+07:00
+Last completed task: TempGlitch selection reporting audit and helper
+Commit: `7085370e097ef233382c07809f9e8705090e1aa3`
+Date: 2026-07-01T00:00:00+07:00
 
 ## What Changed
 
-- Read the user-provided v6 planning/spec documents and used Superpowers-backed subagent audits
-  to avoid redoing completed paper work while K-C runs externally.
-- Integrated K-A expanded TempGlitch into the paper as auxiliary support-expansion evidence:
-  abstract, Results, Discussion, Limitations, Conclusion, claim map, artifact hashes, and a new
-  `paper/tables/ka_tempglitch_expanded_results.tex`.
-- Hardened K-C WOB seed discovery so the compact Kaggle upload dataset
-  `lewm-wob-seeds-full/seed42`, `seed43`, and `seed44` is accepted and validated directly as a
-  checkpoint/config/metadata evaluation package.
-- After the first K-C smoke failure, refined the K-C preflight path so compact seed checkpoint
-  packages are validated directly instead of being treated as full training tarballs requiring
-  optimizer/loss-history-only members.
-- Updated the K-C runbook to document direct seed-folder Kaggle inputs.
+- Added a no-GPU TempGlitch selection summary helper that ranks comparison rows and distinguishes
+  window scorers from episode aggregations.
+- Added focused tests for ranking, malformed comparisons, non-finite metrics, and locked-test
+  safety metadata.
+- Wrote the TempGlitch selection reporting audit report in
+  `docs/research/130_tempglitch_selection_reporting_audit_2026_07_01.md`.
+- Confirmed the immediate issue is reporting hardening, not adding a missing TempGlitch scorer.
 
 ## Checks Passed
 
-- `python scripts/check_claim_registry.py`
+- `python scripts/update_context_cache.py --refresh-boot`
 - `python scripts/validate_context_cache.py`
+- `python -m pytest tests/test_summarize_tempglitch_selection.py tests/test_research_release_tools.py tests/test_context_cache.py -q`
+- `python -m ruff check scripts/summarize_tempglitch_selection.py tests/test_summarize_tempglitch_selection.py`
+- `python -m ruff format --check scripts/summarize_tempglitch_selection.py tests/test_summarize_tempglitch_selection.py`
+- `python scripts/check_claim_registry.py`
 - `python scripts/validate_research_release.py --ci`
+- `python scripts/doctor.py`
 - `python -m ruff check .`
 - `python -m ruff format --check .`
-- `python -m pytest tests/test_kc_wob_binary.py tests/test_r5_wob_script_entrypoints.py tests/test_context_cache.py tests/test_research_release_tools.py -q`
+- `git diff --check`
+- `pre-commit run --all-files`
+
+Full `python -m pytest` was also attempted and passed 654 tests, but one out-of-scope WOB staging
+test failed because `tests/test_r5_wob_stage.py` expected `repacked_extracted_folder` while
+`src/glitch_detection/r5_wob_staged.py` returned `repacked_extracted_root`.
 
 ## Safety Status
 
-- No Kaggle launch, retraining, remote deletion, or locked-test action was performed in this task.
-- No downloaded outputs, Lance datasets, scores, checkpoints, tarballs, or Kaggle credentials were
-  added to Git.
-- K-B claims remain bounded to the frozen non-locked 12-normal-negative / 60-buggy-positive split.
-- K-A expanded is now recorded and manuscript-integrated as auxiliary support-expansion evidence
-  only, not headline superiority, significance, locked-test, temporal-localization, or cross-game
-  evidence.
-- K-C WOB binary remains launch-ready scaffolding only; it is not paper evidence until the Kaggle
-  success tarball and SHA sidecar pass local intake validation.
+- No GPU training, Kaggle launch, window rescoring, locked-test materialization, or locked-test
+  scoring was performed.
+- Output artifacts, checkpoints, Lance datasets, caches, credentials, and Kaggle files remain
+  uncommitted.
+- The TempGlitch audit remains bounded to existing validated non-locked artifacts and does not
+  introduce broad performance, superiority, temporal-localization, cross-game, SIGReg-benefit, or
+  locked-test claims.
+- The existing untracked `_kaggle_upload/` directory remains ignored and uncommitted.
 
 ## Gate Status After Task
 
-- Reviewer-facing paper revision v6 remains evidence-safe, claim-audited, and locally buildable in
-  the sandbox template from the previous paper task.
-- K-B / R5-XGame is final-intake-validated locally; the best recorded row remains LeWM seed44,
-  `lewm_mse_max`, `top2_mean`, with AUROC `0.909722` and AUPRC `0.981384`.
-- K-A expanded TempGlitch has a locally intake-reviewed output and is now included as an
-  auxiliary table/result: best recorded LeWM AUROC `0.700544`, AUPRC `0.796566`, F1 `0.701299`
-  on 67 evaluation episodes, with no significance artifact present.
-- K-C WOB binary now has a dedicated Kaggle runbook/wrapper/validator and supports the compact
-  direct seed-folder upload dataset through compact checkpoint validation, but no K-C output has
-  been locally validated yet.
+- TempGlitch selection reporting now has a focused helper and audit record that make the scorer
+  versus aggregation axes explicit.
+- R5 identical-episode, pair-disjoint TempGlitch, and K-A expanded TempGlitch reporting should
+  continue to describe `lewm_l2_max` as a window scorer and episode `mean` as the best-row
+  aggregation where applicable.
+- K-C WOB binary remains pending until a success tarball plus SHA sidecar are available and pass
+  local intake.
 - Locked test remains closed.
 
 ## Open Blockers
 
-- K-A expanded TempGlitch should be used only as auxiliary support-expansion evidence because the
-  metric is moderate, uncertainty is wide, and FPR@95TPR is high.
-- K-C requires WOB normal/test roots plus seed42/43/44 WOB artifact inputs. The compact
-  `lewm-wob-seeds-full` direct seed-folder dataset is supported after this task, but any currently
-  running Kaggle job may still fail if it cloned an older `main`.
 - K-C output cannot be claimed until `kc_wob_binary_outputs.tar.gz` plus `.sha256` are downloaded
   and pass local intake.
-- Final conference PDF metadata and camera-ready details still need the official submission
-  environment, even though the local official-template sandbox build succeeds.
-- The current LLNCS reviewer build is 19 pages, above the verified FISAT regular-paper limit of
-  12--15 pages, so length reduction is now an explicit blocker.
-- Any future stronger TempGlitch or VLM-specific numeric claim must be backed by a primary source
-  or a locally validated artifact bundle before entering the manuscript.
+- Any GPU retraining or architecture/history-size lane should wait until the K-C intake status and
+  paper narrative gap are known.
+- The full test suite has one out-of-scope WOB staging expectation mismatch:
+  `tests/test_r5_wob_stage.py::test_resolve_seed_inputs_repacks_extracted_seed_folder`.
+- Locked test remains closed and requires a separate direct user command.
 
 ## Next Recommended Task
 
-- If the currently running K-C job fails in preflight seed discovery, rerun after pulling a commit
-  that includes direct seed-folder support. Otherwise, download the K-C tarball plus SHA sidecar
-  and run local intake before recording any WOB binary metric.
+- Continue with K-C WOB binary intake if the success tarball and SHA sidecar are available.
+- Consider GPU retraining only after K-C status and paper narrative gaps are known.
 
 ## Files Likely Relevant Next
 
-- `C:\Users\ADMIN\Downloads\CODEX_MASTER_PROMPT_LeWM_v6.md`
-- `paper/main.tex`
-- `paper/sections/01_introduction.tex`
-- `paper/sections/02_related_work.tex`
-- `paper/sections/08_results.tex`
-- `paper/tables/k1_learned_baselines.tex`
-- `paper/figures/fig_temporal_spike_receipt.json`
-- `paper/sections/09_limitations.tex`
+- `docs/research/130_tempglitch_selection_reporting_audit_2026_07_01.md`
+- `scripts/summarize_tempglitch_selection.py`
+- `tests/test_summarize_tempglitch_selection.py`
 - `docs/research/16_claim_registry.md`
-- `docs/research/128_kb_r5_xgame_final_intake_2026_06_29.md`
+- `docs/research/101_tempglitch_followup_results.md`
 - `docs/research/129_ka_tempglitch_expanded_intake_2026_06_30.md`
-- `scripts/run_kc_wob_binary.py`
 - `scripts/validate_kc_wob_binary_output.py`
 - `kaggle/kc_wob_binary/KAGGLE_K_C_WOB_BINARY.md`
-- `tests/test_kc_wob_binary.py`
