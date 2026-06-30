@@ -12,15 +12,21 @@ Attach these five datasets before starting a background run:
 | --- | --- |
 | WOB normal | A dataset root containing `NORMAL-TRAIN/` |
 | WOB test | A dataset root containing `TEST/` |
-| seed42 artifact | `wob_seed42_artifacts.tar.gz` and `wob_seed42_artifacts.tar.gz.sha256`, or extracted `wob_seed42_artifacts/wob_outputs/wob_seed42/` |
-| seed43 artifact | `wob_seed43_artifacts.tar.gz` and `wob_seed43_artifacts.tar.gz.sha256`, or extracted `wob_seed43_artifacts/wob_outputs/wob_seed43/` |
-| seed44 artifact | `wob_seed44_artifacts.tar.gz` and `wob_seed44_artifacts.tar.gz.sha256`, or extracted `wob_seed44_artifacts/wob_outputs/wob_seed44/` |
+| seed42 artifact | `wob_seed42_artifacts.tar.gz` and `.sha256`, extracted `wob_seed42_artifacts/wob_outputs/wob_seed42/`, or upload-ready direct folder `seed42/` with `best_weights.pt`, `config.json`, and `training_metadata.json` |
+| seed43 artifact | `wob_seed43_artifacts.tar.gz` and `.sha256`, extracted `wob_seed43_artifacts/wob_outputs/wob_seed43/`, or upload-ready direct folder `seed43/` with `best_weights.pt`, `config.json`, and `training_metadata.json` |
+| seed44 artifact | `wob_seed44_artifacts.tar.gz` and `.sha256`, extracted `wob_seed44_artifacts/wob_outputs/wob_seed44/`, or upload-ready direct folder `seed44/` with `best_weights.pt`, `config.json`, and `training_metadata.json` |
 
 Known working slugs from the previous runbook were:
 `phmnhtngha/world-of-bugs-normal`, `phmnhtngha/world-of-bugs-test`,
 `phmnhtngha/wob-seed42-artifacts`, `phmnhtngha/wob-seed43-artifacts`,
 and `phmnhtngha/wob-seed44-artifacts`. If your Kaggle UI mounts them under
 `/kaggle/input/datasets/<owner>/<slug>`, the runner auto-detects that layout.
+The compact upload-ready dataset slug `lewm-wob-seeds-full` is also supported when it mounts as
+`/kaggle/input/lewm-wob-seeds-full/seed42`, `seed43`, and `seed44` or under
+`/kaggle/input/datasets/<owner>/lewm-wob-seeds-full/seed42`, `seed43`, and `seed44`.
+For this compact dataset, K-C validates checkpoint/config/metadata safety directly and does not
+require full training-only files such as optimizer checkpoints, loss histories, or selected-split
+metadata.
 
 Use **GPU T4 x2** or better. P100 is not acceptable for the current CUDA/runtime floor.
 
@@ -88,6 +94,10 @@ PY
 
 Stop here if this cell cannot find both WOB roots and all three seed artifacts. Do not edit the
 frozen manifest to force the run.
+
+If a smoke run fails with a message that compact seed folders are missing full training tarball
+members, the notebook has cloned an older `main`. Rerun Cell 1 after this runbook's compact
+checkpoint support is present on `main`.
 
 ## Cell 3: Optional Smoke Check
 

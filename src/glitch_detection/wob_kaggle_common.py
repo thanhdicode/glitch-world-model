@@ -103,6 +103,22 @@ def iter_kaggle_dataset_roots(input_root: Path) -> list[Path]:
     return roots
 
 
+def is_wob_seed_artifact_root(path: Path, *, seed: int) -> bool:
+    """Return true for a direct Kaggle seed artifact folder.
+
+    Upload-ready Kaggle datasets may expose seeds as ``seed42/`` directories
+    containing the validated checkpoint files directly, instead of the original
+    ``wob_seed42_artifacts/wob_outputs/wob_seed42/`` tarball layout.
+    """
+    if not path.is_dir():
+        return False
+    required = ("best_weights.pt", "config.json", "training_metadata.json")
+    if not all((path / name).is_file() for name in required):
+        return False
+    expected_names = {f"seed{seed}", f"wob_seed{seed}"}
+    return path.name in expected_names or path.parent.name in expected_names
+
+
 def detect_kaggle_roots(input_root: Path) -> tuple[Path, Path]:
     env_normal = _path_from_env(("NORMAL_INPUT_ROOT", "R5_WOB_NORMAL_INPUT_ROOT"), kind="dir")
     env_test = _path_from_env(("TEST_INPUT_ROOT", "R5_WOB_TEST_INPUT_ROOT"), kind="dir")
@@ -169,6 +185,16 @@ def resolve_wob_seed_input(input_root: Path, *, seed: int) -> dict[str, Path | s
         for root in dataset_roots
         if (root / extracted_name / "wob_outputs" / f"wob_seed{seed}").is_dir()
     ]
+    direct_seed_candidates = [
+        root / f"seed{seed}"
+        for root in dataset_roots
+        if is_wob_seed_artifact_root(root / f"seed{seed}", seed=seed)
+    ]
+    direct_seed_candidates.extend(
+        root / f"wob_seed{seed}"
+        for root in dataset_roots
+        if is_wob_seed_artifact_root(root / f"wob_seed{seed}", seed=seed)
+    )
 
     if tar_candidates and sha_candidates:
         tarball = _select_candidate(
@@ -189,6 +215,13 @@ def resolve_wob_seed_input(input_root: Path, *, seed: int) -> dict[str, Path | s
             keywords=(f"seed{seed}", "artifact", "wob"),
         )
         return {"mode": "extracted_root", "source_root": source_root}
+    if direct_seed_candidates:
+        source_root = _select_candidate(
+            direct_seed_candidates,
+            description=f"seed {seed} direct artifact root",
+            keywords=(f"seed{seed}", "artifact", "wob"),
+        )
+        return {"mode": "direct_seed_root", "source_root": source_root}
     if tar_candidates or sha_candidates:
         missing_parts: list[str] = []
         if not tar_candidates:
@@ -201,7 +234,8 @@ def resolve_wob_seed_input(input_root: Path, *, seed: int) -> dict[str, Path | s
         )
 
     raise FileNotFoundError(
-        f"Could not locate seed {seed} artifact tarball, sidecar, or extracted root under {input_root}. "
+        f"Could not locate seed {seed} artifact tarball, sidecar, extracted root, "
+        f"or direct seed root under {input_root}. "
         f"Dataset roots: {[str(path) for path in dataset_roots]}"
     )
 
@@ -219,7 +253,7 @@ def discover_r5_wob_input_overrides(input_root: Path) -> dict[str, str]:
             overrides[f"WOB_SEED{seed}_TARBALL"] = str(resolved["tarball"])
             overrides[f"WOB_SEED{seed}_SHA256"] = str(resolved["sidecar"])
             continue
-        if mode == "extracted_root":
+        if mode in {"extracted_root", "direct_seed_root"}:
             overrides[f"WOB_SEED{seed}_EXTRACTED_ROOT"] = str(resolved["source_root"])
             continue
         raise ValueError(f"Unsupported seed {seed} discovery mode: {mode}")

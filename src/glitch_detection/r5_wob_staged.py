@@ -121,10 +121,13 @@ def _repack_seed_artifact(
     repack_root.mkdir(parents=True, exist_ok=True)
     tar_path = repack_root / f"wob_seed{seed}_artifacts.tar.gz"
     sha_path = repack_root / f"wob_seed{seed}_artifacts.tar.gz.sha256"
+    direct_seed_root = (extracted_root / "training_metadata.json").is_file()
+    arc_prefix = Path("wob_outputs") / f"wob_seed{seed}" if direct_seed_root else Path()
     with tarfile.open(tar_path, "w:gz") as archive:
         for path in sorted(extracted_root.rglob("*")):
             if path.is_file():
-                archive.add(path, arcname=path.relative_to(extracted_root).as_posix())
+                relative = path.relative_to(extracted_root)
+                archive.add(path, arcname=(arc_prefix / relative).as_posix())
     sha_path.write_text(f"{sha256_file(tar_path)}  {tar_path.name}\n", encoding="utf-8")
     return tar_path, sha_path
 
@@ -141,6 +144,13 @@ def _resolve_seed_inputs(input_root: Path, *, seed: int, repack_root: Path) -> d
             "tarball": str(tarball),
             "sidecar": str(sidecar),
         }
+    if mode == "direct_seed_root":
+        source_root = Path(resolved["source_root"])
+        return {
+            "seed": str(seed),
+            "mode": "direct_seed_root",
+            "source_root": str(source_root),
+        }
     if mode != "extracted_root":
         raise ValueError(f"Unsupported seed {seed} input mode: {mode}")
     extracted_root = Path(resolved["source_root"])
@@ -151,10 +161,86 @@ def _resolve_seed_inputs(input_root: Path, *, seed: int, repack_root: Path) -> d
     )
     return {
         "seed": str(seed),
-        "mode": "repacked_extracted_folder",
+        "mode": f"repacked_{mode}",
         "source_root": str(extracted_root),
         "tarball": str(repacked_tarball),
         "sidecar": str(repacked_sidecar),
+    }
+
+
+def _validate_compact_seed_artifact(artifact_root: Path, *, seed: int) -> dict[str, Any]:
+    """Validate an upload-ready checkpoint-only WOB seed root for K-C scoring.
+
+    Full WOB P1 training bundles contain optimizer/loss-history material that is
+    useful for training-audit claims. K-C scoring only needs a validator-backed
+    checkpoint directory with weights, config, training metadata, and false
+    locked-test / validation-buggy-fit flags. This path keeps those evaluation
+    invariants without requiring raw or bulky training-only files in Kaggle input.
+    """
+    required = ("best_weights.pt", "config.json", "training_metadata.json")
+    missing = [name for name in required if not (artifact_root / name).is_file()]
+    if missing:
+        raise ValueError(
+            f"Compact seed{seed} artifact is missing required file(s): {', '.join(missing)}"
+        )
+
+    metadata = _read_json(artifact_root / "training_metadata.json")
+    config = _read_json(artifact_root / "config.json")
+    errors: list[str] = []
+    best_weights = artifact_root / "best_weights.pt"
+    best_weights_sha256 = sha256_file(best_weights)
+    if str(metadata.get("best_weights_sha256", "")).lower() != best_weights_sha256:
+        errors.append(
+            f"seed{seed} best_weights hash mismatch: "
+            f"metadata={metadata.get('best_weights_sha256')} actual={best_weights_sha256}"
+        )
+    if int(metadata.get("config", {}).get("seed", config.get("seed", seed))) != seed:
+        errors.append(f"seed{seed} metadata/config seed mismatch")
+    if int(metadata.get("target_optimizer_updates", 0)) != 15000:
+        errors.append(f"seed{seed} target optimizer update count mismatch")
+    if int(metadata.get("action_dim", 0)) != 4:
+        errors.append(f"seed{seed} action_dim must be 4 for WOB real-action runs")
+    for key in (
+        "validation_buggy_used_for_fit_select",
+        "locked_test_materialized",
+        "locked_test_scored",
+    ):
+        if metadata.get(key) is not False:
+            errors.append(f"seed{seed} {key} must remain false")
+    reload_report = metadata.get("checkpoint_reload", {})
+    if reload_report.get("weights_reload_verified") is not True:
+        errors.append(f"seed{seed} weights reload was not verified")
+    validator_report = artifact_root / "validator_report.json"
+    if validator_report.is_file():
+        validator_payload = _read_json(validator_report)
+        expected_status = f"wob_seed{seed}_validated"
+        if validator_payload.get("status") != expected_status:
+            errors.append(f"seed{seed} validator report status mismatch")
+    raw_tar_members = [
+        str(path.relative_to(artifact_root)) for path in artifact_root.rglob("*.tar")
+    ]
+    if raw_tar_members:
+        errors.append(f"seed{seed} compact artifact contains raw WOB .tar payloads")
+    if errors:
+        raise ValueError("; ".join(errors))
+
+    return {
+        "seed": seed,
+        "mode": "compact_direct_seed_root",
+        "tarball": "",
+        "sidecar": "",
+        "artifact_root": str(artifact_root),
+        "weights_path": str(best_weights),
+        "config_path": str(artifact_root / "config.json"),
+        "checkpoint_sha256": best_weights_sha256,
+        "best_weights_sha256": best_weights_sha256,
+        "updates_completed": int(metadata["updates_completed"]),
+        "best_update": int(metadata["best_update"]),
+        "best_validation_loss": float(metadata["best_validation_loss"]),
+        "target_optimizer_updates": int(metadata["target_optimizer_updates"]),
+        "validation_buggy_used_for_fit_select": False,
+        "locked_test_materialized": False,
+        "locked_test_scored": False,
     }
 
 
@@ -358,13 +444,29 @@ def run_preflight(
         _progress(f"preflight: locating seed{seed} inputs")
         seed_inputs[seed] = _resolve_seed_inputs(input_root, seed=seed, repack_root=repack_root)
         _progress(f"preflight: seed{seed} mode={seed_inputs[seed]['mode']}")
-    _progress("preflight: validating and extracting seed artifacts")
-    artifact_infos = _resolve_seed_artifacts(
-        seed_tarballs={seed: Path(info["tarball"]) for seed, info in seed_inputs.items()},
-        seed_sidecars={seed: Path(info["sidecar"]) for seed, info in seed_inputs.items()},
-        extract_root=output_dir / EXTRACT_ROOT_NAME,
-        progress=_progress,
-    )
+    _progress("preflight: validating seed artifacts")
+    artifact_infos: list[dict[str, Any]] = []
+    tarball_inputs: dict[int, Path] = {}
+    sidecar_inputs: dict[int, Path] = {}
+    for seed, info in seed_inputs.items():
+        if info["mode"] == "direct_seed_root":
+            _progress(f"preflight: validating compact seed{seed} artifact root")
+            artifact_infos.append(
+                _validate_compact_seed_artifact(Path(info["source_root"]), seed=seed)
+            )
+            continue
+        tarball_inputs[seed] = Path(info["tarball"])
+        sidecar_inputs[seed] = Path(info["sidecar"])
+    if tarball_inputs:
+        artifact_infos.extend(
+            _resolve_seed_artifacts(
+                seed_tarballs=tarball_inputs,
+                seed_sidecars=sidecar_inputs,
+                extract_root=output_dir / EXTRACT_ROOT_NAME,
+                progress=_progress,
+            )
+        )
+    artifact_infos = sorted(artifact_infos, key=lambda item: int(item["seed"]))
     _progress("preflight: verifying train-normal source coverage")
     train_coverage = summarize_source_coverage(
         train_rows,
@@ -384,8 +486,10 @@ def run_preflight(
     }
     for artifact in artifact_infos:
         seed = int(artifact["seed"])
-        files[f"seed{seed}_tarball"] = _file_record(Path(artifact["tarball"]))
-        files[f"seed{seed}_sidecar"] = _file_record(Path(artifact["sidecar"]))
+        if artifact.get("tarball"):
+            files[f"seed{seed}_tarball"] = _file_record(Path(artifact["tarball"]))
+        if artifact.get("sidecar"):
+            files[f"seed{seed}_sidecar"] = _file_record(Path(artifact["sidecar"]))
         files[f"seed{seed}_weights"] = _file_record(Path(artifact["weights_path"]))
         files[f"seed{seed}_config"] = _file_record(Path(artifact["config_path"]))
         files[f"seed{seed}_metadata"] = _file_record(

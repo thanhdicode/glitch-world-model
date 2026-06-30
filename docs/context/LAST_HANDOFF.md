@@ -1,19 +1,23 @@
 # LAST_HANDOFF.md
 
-Last completed task: Refreshed evidence context after K-A expanded intake
+Last completed task: Integrated K-A expanded evidence and hardened K-C seed discovery
 Commit: working tree changes not yet committed
 Date: 2026-06-30T00:00:00+07:00
 
 ## What Changed
 
-- Reviewed the user-provided v6 planning/spec documents against the actual repository state.
-- Added `docs/research/129_ka_tempglitch_expanded_intake_2026_06_30.md` to record the
-  user-downloaded K-A expanded TempGlitch evidence without committing artifacts.
-- Updated `docs/research/16_claim_registry.md` with C-117 and C-118 for the K-A expanded
-  protocol and bounded metric claims.
-- Refreshed `docs/context/BOOT.md`, `docs/context/PROJECT_STATE.md`,
-  `docs/context/NEXT_ACTION.md`, and `docs/research/current_state.md` so future work no longer
-  treats K-A expanded as pending.
+- Read the user-provided v6 planning/spec documents and used Superpowers-backed subagent audits
+  to avoid redoing completed paper work while K-C runs externally.
+- Integrated K-A expanded TempGlitch into the paper as auxiliary support-expansion evidence:
+  abstract, Results, Discussion, Limitations, Conclusion, claim map, artifact hashes, and a new
+  `paper/tables/ka_tempglitch_expanded_results.tex`.
+- Hardened K-C WOB seed discovery so the compact Kaggle upload dataset
+  `lewm-wob-seeds-full/seed42`, `seed43`, and `seed44` is accepted and validated directly as a
+  checkpoint/config/metadata evaluation package.
+- After the first K-C smoke failure, refined the K-C preflight path so compact seed checkpoint
+  packages are validated directly instead of being treated as full training tarballs requiring
+  optimizer/loss-history-only members.
+- Updated the K-C runbook to document direct seed-folder Kaggle inputs.
 
 ## Checks Passed
 
@@ -22,7 +26,7 @@ Date: 2026-06-30T00:00:00+07:00
 - `python scripts/validate_research_release.py --ci`
 - `python -m ruff check .`
 - `python -m ruff format --check .`
-- `python -m pytest tests/test_context_cache.py tests/test_research_release_tools.py -q`
+- `python -m pytest tests/test_kc_wob_binary.py tests/test_r5_wob_script_entrypoints.py tests/test_context_cache.py tests/test_research_release_tools.py -q`
 
 ## Safety Status
 
@@ -30,8 +34,9 @@ Date: 2026-06-30T00:00:00+07:00
 - No downloaded outputs, Lance datasets, scores, checkpoints, tarballs, or Kaggle credentials were
   added to Git.
 - K-B claims remain bounded to the frozen non-locked 12-normal-negative / 60-buggy-positive split.
-- K-A expanded is now recorded as auxiliary support-expansion evidence only, not headline
-  superiority, significance, locked-test, temporal-localization, or cross-game evidence.
+- K-A expanded is now recorded and manuscript-integrated as auxiliary support-expansion evidence
+  only, not headline superiority, significance, locked-test, temporal-localization, or cross-game
+  evidence.
 - K-C WOB binary remains launch-ready scaffolding only; it is not paper evidence until the Kaggle
   success tarball and SHA sidecar pass local intake validation.
 
@@ -41,18 +46,21 @@ Date: 2026-06-30T00:00:00+07:00
   the sandbox template from the previous paper task.
 - K-B / R5-XGame is final-intake-validated locally; the best recorded row remains LeWM seed44,
   `lewm_mse_max`, `top2_mean`, with AUROC `0.909722` and AUPRC `0.981384`.
-- K-A expanded TempGlitch has a locally intake-reviewed output: best recorded LeWM AUROC
-  `0.700544`, AUPRC `0.796566`, F1 `0.701299` on 67 evaluation episodes, with no significance
-  artifact present.
-- K-C WOB binary now has a dedicated Kaggle runbook/wrapper/validator but has not been run.
+- K-A expanded TempGlitch has a locally intake-reviewed output and is now included as an
+  auxiliary table/result: best recorded LeWM AUROC `0.700544`, AUPRC `0.796566`, F1 `0.701299`
+  on 67 evaluation episodes, with no significance artifact present.
+- K-C WOB binary now has a dedicated Kaggle runbook/wrapper/validator and supports the compact
+  direct seed-folder upload dataset through compact checkpoint validation, but no K-C output has
+  been locally validated yet.
 - Locked test remains closed.
 
 ## Open Blockers
 
 - K-A expanded TempGlitch should be used only as auxiliary support-expansion evidence because the
   metric is moderate, uncertainty is wide, and FPR@95TPR is high.
-- K-C requires five Kaggle inputs to be mounted: WOB normal root, WOB test root, and validated
-  seed42/43/44 WOB artifact datasets.
+- K-C requires WOB normal/test roots plus seed42/43/44 WOB artifact inputs. The compact
+  `lewm-wob-seeds-full` direct seed-folder dataset is supported after this task, but any currently
+  running Kaggle job may still fail if it cloned an older `main`.
 - K-C output cannot be claimed until `kc_wob_binary_outputs.tar.gz` plus `.sha256` are downloaded
   and pass local intake.
 - Final conference PDF metadata and camera-ready details still need the official submission
@@ -64,9 +72,9 @@ Date: 2026-06-30T00:00:00+07:00
 
 ## Next Recommended Task
 
-- Run the evidence-safe paper revision pass that positions K-B / R5-XGame as the primary result
-  and K-A expanded TempGlitch as auxiliary support-expansion evidence; in parallel, prepare K-C WOB
-  binary Kaggle execution and an optional stronger K-A fresh-training rerun.
+- If the currently running K-C job fails in preflight seed discovery, rerun after pulling a commit
+  that includes direct seed-folder support. Otherwise, download the K-C tarball plus SHA sidecar
+  and run local intake before recording any WOB binary metric.
 
 ## Files Likely Relevant Next
 

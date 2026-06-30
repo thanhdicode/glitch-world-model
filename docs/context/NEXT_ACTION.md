@@ -4,9 +4,8 @@ Last updated: 2026-06-30T00:00:00+07:00
 Commit: `5b45fb656bebde09d8788772f7b02c28be27c8c4`
 
 ## Current Priority
-Run the evidence-safe paper revision pass from `CODEX_MASTER_PROMPT_LeWM_v6.md` after the
-completed local P7 rewrite, final-intake-validated K-B / R5-XGame output, and locally
-intake-reviewed K-A expanded TempGlitch output.
+Continue the evidence-safe paper revision and K-C intake-preparation lane after integrating the
+locally intake-reviewed K-A expanded TempGlitch output into the manuscript as auxiliary evidence.
 Authority roadmap: `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v4.md`.
 
 ## Next Gate (Paper Revision V6)
@@ -14,7 +13,8 @@ Authority roadmap: `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v4.md`.
 2. Use K-B / R5-XGame numbers only within the frozen non-locked 12-negative / 60-positive split.
 3. Use K-A expanded only as bounded auxiliary support-expansion evidence, not as headline
    superiority or statistical-significance evidence.
-4. Compile/check LaTeX when the local or external toolchain is available, then proceed to the
+4. Keep K-C WOB binary pending until its downloaded tarball and SHA sidecar pass local intake.
+5. Compile/check LaTeX when the local or external toolchain is available, then proceed to the
    official Springer/Overleaf LLNCS build handoff.
 
 ## Success Criteria

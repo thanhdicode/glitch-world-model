@@ -18,6 +18,19 @@ AUROC 0.6136 and AUPRC 0.7310. Within this exact frozen support, the best LeWM-G
 stronger observed same-support separation than the simple baselines, but the AUROC intervals
 overlap and the operating-point false-positive rate remains high.
 
+\paragraph{Expanded-support TempGlitch robustness check.}
+Because the original pair-disjoint TempGlitch support is small, we also report the user-downloaded
+K-A expanded follow-up in Table~\ref{tab:ka-tempglitch-expanded}. This auxiliary run increases the
+non-locked pair-disjoint evaluation support to 67 episodes (29 normal-negative, 38
+buggy-positive) while preserving zero cross-role source, pair, and episode overlap. The best
+recorded LeWM row reaches AUROC 0.7005 and AUPRC 0.7966, compared with AUROC 0.6307 for the best
+recorded simple baseline on the same expanded support. This supports the same qualitative reading
+as the smaller TempGlitch follow-up---latent surprise remains above the simple baselines in
+observed AUROC---but it is not a statistical-significance result: intervals remain wide, FPR@95TPR
+is high, and no significance artifact is available for this expanded run.
+
+\input{tables/ka_tempglitch_expanded_results}
+
 \subsection{Exact-Support Learned Baselines (TempGlitch)}
 
 Table~\ref{tab:k1-learned-baselines} extends the same TempGlitch follow-up support with three

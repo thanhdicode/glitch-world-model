@@ -18,6 +18,13 @@ negative support remains 12 episodes, and FPR@95TPR is still 0.7500. The scienti
 conclusion is that latent surprise remains competitive on this split and merits further controlled
 study, not that it has won a benchmark generally.
 
+\paragraph{What K-A expanded adds.}
+The expanded TempGlitch follow-up addresses one obvious weakness of the original support by
+raising the evaluation set from 34 to 67 episodes while preserving the same non-locked,
+pair-disjoint safety boundary. Its best LeWM row again records higher observed AUROC than the best
+simple baseline, but the effect remains moderate and uncertainty remains visible. We therefore use
+K-A expanded as robustness evidence for the method story, not as a new headline claim.
+
 \paragraph{Why the negative evidence matters.}
 K2 and K3 strengthen the paper precisely because they are not uniformly favorable to LeWM. K2 is a
 bounded public-benchmark slice on which the current LeWM rows trail the validated simple and
@@ -45,6 +52,7 @@ image-level slice constructed from static visual evidence. This contrast does no
 temporal dynamics cause the positive results, but it gives a useful interpretation of the
 evidence boundary: LeWM-Glitch should be treated as an episode-level latent-surprise scorer, not
 as a generic screenshot glitch classifier.
-In short, TempGlitch supports the same-support pair-disjoint comparison, R5-XGame supports only
-its own positive-heavy split, K2 and K3 remain honest negative evidence, and the qualitative
-timeline is a diagnostic plot rather than a localization result.
+In short, TempGlitch supports the same-support pair-disjoint comparison, K-A expanded checks that
+the TempGlitch observation is not limited to the smallest support, R5-XGame supports only its own
+positive-heavy split, K2 and K3 remain honest negative evidence, and the qualitative timeline is a
+diagnostic plot rather than a localization result.

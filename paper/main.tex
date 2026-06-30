@@ -23,26 +23,23 @@
 \maketitle
 
 \begin{abstract}
-We propose \textbf{LeWM-Glitch}, a label-free gameplay glitch detector built on the latent
-prediction error (LPE) signal of a JEPA-style latent world model trained exclusively on normal
-gameplay. Given a video episode, LeWM-Glitch scores each frame by the L2 distance between the
-world model's predicted latent state and the observed latent state; glitch episodes are flagged
-when this surprise signal, aggregated over a temporal window, exceeds a threshold calibrated on
-normal-only episodes. We instantiate LeWM-Glitch from artifact-backed LeWorldModel~\cite{lewm}
-checkpoints and evaluate it under a strict leakage-aware protocol that enforces source-, pair-,
-and episode-disjoint roles before windowing.
+We propose \textbf{LeWM-Glitch}, a label-free gameplay glitch detector that uses the latent
+prediction error of a JEPA-style world model trained only on normal gameplay. The method scores
+each video window by the distance between predicted and observed latent states, aggregates this
+surprise signal to the episode level, and calibrates thresholds using normal-only episodes. We
+instantiate LeWM-Glitch from artifact-backed LeWorldModel~\cite{lewm} checkpoints and evaluate it
+with source-, pair-, and episode-disjoint roles before windowing.
 
-We report results across two bounded benchmarks. On the frozen pair-disjoint TempGlitch
-follow-up (12 normal-negative, 22 buggy-positive episodes), the best LeWM-Glitch configuration
-achieves AUROC 0.7159 and AUPRC 0.8026, showing stronger observed same-support separation than
-the strongest CNN-LSTM baseline (AUROC 0.6136)~\cite{tempglitch}.
-On the frozen R5-XGame split (12 normal-negative, 60 buggy-positive episodes), LeWM-Glitch
-achieves AUROC 0.9097 and AUPRC 0.9814, compared with 0.7681 for feature distance and
-0.7167 for frame difference. We also report two honest negative findings: on the image-level
-GlitchBench K2 split, simple baselines reach AUROC 1.0 while LeWM-Glitch reaches only 0.5,
-and a K3 ablation finds no measurable SIGReg or real-action benefit, contributing actionable
-null results to the community. All evidence is non-locked and split-bounded; we make no claims
-of broad superiority, cross-game generalization, temporal localization, or deployment readiness.
+On the frozen pair-disjoint TempGlitch follow-up (12 normal-negative, 22 buggy-positive
+episodes), the best LeWM-Glitch row achieves AUROC 0.7159 and AUPRC 0.8026, above the strongest
+CNN-LSTM baseline AUROC 0.6136~\cite{tempglitch}. An auxiliary expanded TempGlitch run increases
+the evaluation support to 67 episodes and records AUROC 0.7005. On the frozen R5-XGame split
+(12 normal-negative, 60 buggy-positive episodes), LeWM-Glitch achieves AUROC 0.9097 and AUPRC
+0.9814, compared with 0.7681 for feature distance and 0.7167 for frame difference. We also report
+honest negative findings: LeWM-Glitch reaches only AUROC 0.5 on the image-level GlitchBench K2
+split, and K3 finds no measurable SIGReg or real-action benefit. All evidence is non-locked and
+split-bounded; we make no claims of broad superiority, cross-game generalization, temporal
+localization, or deployment readiness.
 \keywords{gameplay glitch detection \and latent world models \and JEPA \and latent prediction error \and leakage-aware evaluation}
 \end{abstract}
 

@@ -1,0 +1,17 @@
+\begin{table}[t]
+\centering
+\caption{Auxiliary K-A expanded TempGlitch follow-up: non-locked pair-disjoint support with
+29 normal-negative and 38 buggy-positive evaluation episodes after calibration on 2 normal
+episodes. This support-expansion result is reported for robustness only; no significance claim is
+made.}
+\label{tab:ka-tempglitch-expanded}
+\scriptsize
+\begin{tabularx}{\textwidth}{@{}lXrrrrrrrX@{}}
+\toprule
+Family & Configuration & AUROC & AUPRC & F1 & Prec. & Recall & Bal. acc. & FPR@95 & AUROC 95\% CI \\
+\midrule
+LeWM & seed43 \texttt{lewm\_l2\_max} + episode \texttt{mean} & 0.7005 & 0.7966 & 0.7013 & 0.6923 & 0.7105 & 0.6484 & 1.0000 & [0.5705, 0.8165] \\
+Baseline & \texttt{frame\_diff} + episode \texttt{mean} & 0.6307 & 0.7338 & 0.5714 & 0.7200 & 0.4737 & 0.6162 & 0.9310 & [0.4943, 0.7610] \\
+\bottomrule
+\end{tabularx}
+\end{table}

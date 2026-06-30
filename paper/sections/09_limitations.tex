@@ -2,10 +2,11 @@
 \label{sec:limitations}
 
 All empirical evidence is non-locked and validation-only. The main TempGlitch follow-up has 12
-normal-negative and 22 buggy-positive evaluation episodes, while its operating threshold is
-estimated from only two normal episodes. Its AUROC confidence intervals are wide, the best LeWM
-and baseline intervals overlap, and the best LeWM FPR@95TPR is 0.7500. R5-XGame also has only 12
-normal negatives, is positive-heavy with 60 buggy positives, and exhibits seed sensitivity.
+normal-negative and 22 buggy-positive evaluation episodes, while its expanded K-A companion has 29
+normal-negative and 38 buggy-positive evaluation episodes. Both use only two calibration-normal
+episodes. Their AUROC confidence intervals are wide, the best LeWM and baseline intervals overlap,
+and operating-point false-positive rates remain high. R5-XGame also has only 12 normal negatives,
+is positive-heavy with 60 buggy positives, and exhibits seed sensitivity.
 
 TempGlitch provides binary video-level labels rather than verified temporal spans, while the
 current executable GlitchBench path is image-level and the current validated WOB/XGame artifacts
