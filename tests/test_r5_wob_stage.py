@@ -18,7 +18,7 @@ def test_resolve_seed_inputs_repacks_extracted_seed_folder(tmp_path: Path):
 
     result = r5_wob_staged._resolve_seed_inputs(input_root, seed=42, repack_root=repack_root)
 
-    assert result["mode"] == "repacked_extracted_folder"
+    assert result["mode"] == "repacked_extracted_root"
     tarball = Path(result["tarball"])
     sidecar = Path(result["sidecar"])
     assert tarball.is_file()
