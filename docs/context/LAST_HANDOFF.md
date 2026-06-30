@@ -29,9 +29,11 @@ Date: 2026-07-01T00:00:00+07:00
 - `git diff --check`
 - `pre-commit run --all-files`
 
-Full `python -m pytest` was also attempted and passed 654 tests, but one out-of-scope WOB staging
-test failed because `tests/test_r5_wob_stage.py` expected `repacked_extracted_folder` while
-`src/glitch_detection/r5_wob_staged.py` returned `repacked_extracted_root`.
+## Checks Attempted / Failed
+
+- Full `python -m pytest` was attempted and passed 654 tests, but failed one out-of-scope WOB
+  staging test because `tests/test_r5_wob_stage.py` expected `repacked_extracted_folder` while
+  `src/glitch_detection/r5_wob_staged.py` returned `repacked_extracted_root`.
 
 ## Safety Status
 
@@ -42,7 +44,7 @@ test failed because `tests/test_r5_wob_stage.py` expected `repacked_extracted_fo
 - The TempGlitch audit remains bounded to existing validated non-locked artifacts and does not
   introduce broad performance, superiority, temporal-localization, cross-game, SIGReg-benefit, or
   locked-test claims.
-- The existing untracked `_kaggle_upload/` directory remains ignored and uncommitted.
+- The existing `_kaggle_upload/` directory remains untracked and uncommitted.
 
 ## Gate Status After Task
 
@@ -67,7 +69,8 @@ test failed because `tests/test_r5_wob_stage.py` expected `repacked_extracted_fo
 
 ## Next Recommended Task
 
-- Continue with K-C WOB binary intake if the success tarball and SHA sidecar are available.
+- Continue the evidence-safe paper revision plus K-C intake-preparation lane.
+- Run K-C WOB binary intake if the success tarball and SHA sidecar are available.
 - Consider GPU retraining only after K-C status and paper narrative gaps are known.
 
 ## Files Likely Relevant Next
