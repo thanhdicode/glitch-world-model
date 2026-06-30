@@ -1,6 +1,6 @@
 # Current Research State
 
-Date: 2026-06-23
+Date: 2026-06-30
 
 ## Verified
 
@@ -24,6 +24,10 @@ Date: 2026-06-23
   recall `0.666667`, and balanced accuracy `0.791667`.
 - The final K-B tarball and sidecar reflect the user-downloaded successful Kaggle output; no
   retraining, new Kaggle launch, or locked-test action was performed by local intake.
+- The user-downloaded K-A expanded TempGlitch output is locally intake-reviewed as a
+  non-locked, pair-disjoint validation artifact with 2 calibration-normal episodes and 67
+  evaluation episodes (38 buggy-positive / 29 normal-negative), zero cross-role overlap, false
+  locked-test flags, and best recorded LeWM AUROC `0.700544` / AUPRC `0.796566`.
 
 ## Blocked
 
@@ -35,6 +39,9 @@ Date: 2026-06-23
 - The current `R5-XGame` evidence is bounded to a frozen, non-locked, positive-heavy evaluation
   split with only 12 normal-negative episodes, so it must not be promoted into broad
   generalization, superiority, state-of-the-art, or locked-test language.
+- The expanded K-A TempGlitch evidence is auxiliary rather than headline evidence: AUROC is
+  moderate, intervals remain wide, best LeWM FPR@95TPR is high, and no significance artifact was
+  present in the downloaded folder.
 - Locked test remains closed.
 
 ## Safe Wording
@@ -51,7 +58,15 @@ Use this wording for `R5-XGame` when a concise summary is needed:
 buggy-positive and normal-negative gameplay episodes, with the best recorded configuration
 reaching AUROC approximately 0.91 on the frozen R5-XGame split.`
 
+Use this wording for K-A expanded TempGlitch when a concise summary is needed:
+
+`The expanded TempGlitch K-A follow-up increases the non-locked pair-disjoint evaluation support
+to 67 episodes and records best LeWM AUROC approximately 0.70, above the best simple-baseline
+AUROC approximately 0.63, while remaining an auxiliary result because uncertainty is wide and no
+significance artifact is available.`
+
 ## Planned Next State
 
 - Downstream work may cite the validated non-locked `R5-XGame` bundle with its limitation note,
-  but cross-source comparison, broad benchmark claims, and locked-test work remain closed.
+  and may cite K-A expanded as auxiliary support-expansion evidence with its limitation note, but
+  cross-source comparison, broad benchmark claims, and locked-test work remain closed.

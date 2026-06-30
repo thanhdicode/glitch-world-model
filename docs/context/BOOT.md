@@ -1,7 +1,7 @@
 # BOOT.md - Fast Start Context For Agents
 
-Generated: 2026-06-29T03:58:00+00:00
-Commit: `0289c5bfcc825502f1ca76564de0f81a3df4b60d`
+Generated: 2026-06-30T00:00:00+07:00
+Commit: `5b45fb656bebde09d8788772f7b02c28be27c8c4`
 
 ## Read Order
 1. `RULES.md`
@@ -39,9 +39,10 @@ The current execution roadmap is `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v4.md`
 - The best recorded K-B / `R5-XGame` configuration is LeWM seed44 with `lewm_mse_max` and
   `top2_mean`, reaching AUROC `0.909722` and AUPRC `0.981384` on the frozen non-locked
   12-negative / 60-positive split; this remains bounded validation evidence only.
-- The expanded K-A TempGlitch Kaggle lane is still pending validated outputs. The current
-  checkpoint input mounts under `/kaggle/input/datasets/phmnhtngha/lewm-tempglitch-seeds-full`;
-  it is not paper evidence until a K-A output bundle passes local intake validation.
+- The expanded K-A TempGlitch Kaggle lane now has a user-downloaded, locally intake-reviewed
+  validation artifact. It is safe only as auxiliary support-expansion evidence: 2 calibration
+  normals, 67 evaluation episodes (38 buggy-positive / 29 normal-negative), zero cross-role
+  overlap, best recorded LeWM AUROC `0.700544`, and no significance artifact.
 - The pair-disjoint TempGlitch follow-up is validator-backed on 2 calibration-normal, 12
   evaluation normal-negative, and 22 evaluation buggy-positive episodes with zero cross-role
   source, pair, and episode overlap.
@@ -52,14 +53,17 @@ The current execution roadmap is `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v4.md`
   audit docs.
 - Gate 10 is closed.
 - Locked test is closed.
-- LeWM gameplay evaluation now exists for the non-locked TempGlitch research MVP only; locked
-  test remains unopened, and WOB remains limited to audit-plus-training-artifact evidence.
+- LeWM gameplay evaluation now includes the original non-locked TempGlitch research MVP family,
+  the expanded K-A TempGlitch auxiliary support-expansion artifact, and final-intake-validated
+  K-B / R5-XGame evidence. Locked test remains unopened, and WOB remains limited to audit,
+  training-artifact, positive-probe, and K-C launch-readiness evidence.
 
 ## Immediate Next Task
 - Run the evidence-safe paper revision pass from `CODEX_MASTER_PROMPT_LeWM_v6.md` on top of the
-  completed local P7 rewrite and final-intake-validated K-B output.
-- Do not add unverified VLM AUROC numbers, K-A expanded claims, locked-test language, or
-  cross-game-generalization language during the paper pass.
+  completed local P7 rewrite, final-intake-validated K-B output, and the bounded K-A expanded
+  intake report.
+- Do not add unverified VLM AUROC numbers, broad K-A superiority language, locked-test language,
+  or cross-game-generalization language during the paper pass.
 - Keep all paper-facing numbers, figures, and conclusions synchronized with
   `docs/research/16_claim_registry.md`.
 - Keep locked test closed and preserve the P5/P6 claim boundary: qualitative timelines are allowed,
@@ -75,7 +79,7 @@ The current execution roadmap is `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v4.md`
 - No new performance, superiority, SIGReg-benefit, action-benefit, cross-game, temporal-
   localization, SOTA, or neural locked-test claim may appear until a supporting artifact is
   validated.
-- No broad WOB/R5-XGame detection-performance, cross-game, action-conditioning, or
+- No broad K-A, WOB, or R5-XGame detection-performance, cross-game, action-conditioning, or
   SIGReg-benefit claim outside the exact qualified non-locked bundles.
 
 ## Required Checks
