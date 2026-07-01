@@ -283,7 +283,13 @@ def planned_output_paths(output_dir: Path, seeds: Sequence[int]) -> list[str]:
 def _lewm_window_scores(row: dict[str, str]) -> dict[str, float]:
     mse = [float(row[field]) for field in ("mse_t1", "mse_t2", "mse_t3")]
     l2 = [float(row[field]) for field in ("l2_t1", "l2_t2", "l2_t3")]
-    cosine_gap = [float(row[field]) for field in ("cosine_gap_t1", "cosine_gap_t2", "cosine_gap_t3")]
+    # cosine_gap fields are optional: WOB scoring pipeline does not emit them.
+    # Fall back to 0.0 so cosine_gap scorers return a neutral (non-discriminating)
+    # score rather than raising KeyError.
+    cosine_gap = [
+        float(row.get(field, "0.0"))
+        for field in ("cosine_gap_t1", "cosine_gap_t2", "cosine_gap_t3")
+    ]
     return {
         "lewm_mse_mean": float(mean(mse)),
         "lewm_mse_max": float(max(mse)),
