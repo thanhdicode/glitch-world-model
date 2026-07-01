@@ -1,15 +1,21 @@
 \begin{table}[t]
-\caption{Dataset and evidence-role inventory. Result families are reported separately.}
+\caption{Dataset and evidence-role inventory. All evaluation is non-locked unless stated.
+R5-WOB is positive-probe only; no binary AUROC is defined for it. Phase~6D/6E results are
+excluded from this paper (see Appendix~\ref{app:claim_map}).}
 \label{tab:dataset-inventory}
 \centering
-\small
-\begin{tabularx}{\textwidth}{@{}lcccX@{}}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabularx}{\textwidth}{@{}lccccXl@{}}
 \toprule
-Surface & Train normal & Calibration normal & Evaluation & Scope \\
+Evidence family & Train-normal & Cal.-normal & Eval neg & Eval pos & Safe claim boundary & Locked? \\
 \midrule
-TempGlitch follow-up & 36 source episodes & 2 episodes & 12 normal + 22 buggy & Main pair-disjoint, non-locked binary evidence across five source categories \\
-R5-XGame & 36 episodes & 12 episodes & 12 normal + 60 buggy & Secondary positive-heavy non-locked binary evidence \\
-R5-WOB & validated training artifacts & 12 episodes & 60 buggy, 0 normal & Positive-probe only; not a binary benchmark \\
+TempGlitch R5 follow-up & 36 ep & 2 ep & 12 & 22 & AUROC 0.716, CI [0.535,\,0.877]; not sig.\ vs baseline & No \\
+K-A TempGlitch expanded & 36 ep & 2 ep & 29 & 38 & AUROC 0.701; robustness check only & No \\
+R5-XGame & 36 ep & 12 ep & 12 & 60 & AUROC 0.910, CI [0.828,\,0.972]; class-imbalanced & No \\
+K2 GlitchBench slice & — & — & — & 24 images & Negative finding; AUROC 0.50 (image-level) & No \\
+K3 ablation & matched & matched & \multicolumn{2}{c}{6 matched rows} & Null SIGReg/action finding & No \\
+R5-WOB (positive-probe) & artifacts & 12 ep & \textbf{0} & 60 & F1 0.947 on positives only; no AUROC & No \\
 \bottomrule
 \end{tabularx}
 \end{table}
