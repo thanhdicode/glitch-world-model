@@ -11,36 +11,45 @@
 \usepackage{enumitem}
 \usepackage[hidelinks]{hyperref}
 \usepackage{microtype}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric,arrows.meta,positioning,fit,backgrounds,calc}
 
 \title{Latent World Models for Video Game Glitch Detection: A JEPA-based Approach}
 \titlerunning{LeWM-Glitch: JEPA Latent Prediction for Game Glitch Detection}
 
-\author{Anonymous Submission}
-\authorrunning{Anonymous Submission}
-\institute{Institution withheld for double-blind review}
+% HUMAN BLOCKER: Replace the line below with real author names and affiliations before submission.
+% FISAT 2026 uses SINGLE-BLIND review. Author identity must be disclosed.
+\author{[AUTHOR NAMES REQUIRED BEFORE SUBMISSION]}
+\authorrunning{[AUTHORS]}
+\institute{[AFFILIATION REQUIRED BEFORE SUBMISSION] \\
+\email{[EMAIL REQUIRED]}}
 
 \begin{document}
 \maketitle
 
 \begin{abstract}
-We propose \textbf{LeWM-Glitch}, a label-free gameplay glitch detector that uses the latent
-prediction error of a JEPA-style world model trained only on normal gameplay. The method scores
-each video window by the distance between predicted and observed latent states, aggregates this
-surprise signal to the episode level, and calibrates thresholds using normal-only episodes. We
-instantiate LeWM-Glitch from artifact-backed LeWorldModel~\cite{lewm} checkpoints and evaluate it
-with source-, pair-, and episode-disjoint roles before windowing.
+We propose \textbf{LeWM-Glitch}, a label-free gameplay glitch detector that exploits the latent
+prediction error of a JEPA-style world model trained exclusively on normal gameplay.
+Each video window is scored by the distance between the model's predicted and observed latent
+states; window scores are aggregated to the episode level and thresholded against normal-only
+calibration percentiles.
+We instantiate LeWM-Glitch from artifact-backed LeWorldModel~\cite{lewm} checkpoints and evaluate
+it under source-, pair-, and episode-disjoint role separation before windowing.
 
-On the frozen pair-disjoint TempGlitch follow-up (12 normal-negative, 22 buggy-positive
-episodes), the best LeWM-Glitch row achieves AUROC 0.7159 and AUPRC 0.8026, above the strongest
-CNN-LSTM baseline AUROC 0.6136~\cite{tempglitch}. An auxiliary expanded TempGlitch run increases
-the evaluation support to 67 episodes and records AUROC 0.7005. On the frozen R5-XGame split
-(12 normal-negative, 60 buggy-positive episodes), LeWM-Glitch achieves AUROC 0.9097 and AUPRC
-0.9814, compared with 0.7681 for feature distance and 0.7167 for frame difference. We also report
-honest negative findings: LeWM-Glitch reaches only AUROC 0.5 on the image-level GlitchBench K2
-split, and K3 finds no measurable SIGReg or real-action benefit. All evidence is non-locked and
-split-bounded; we make no claims of broad superiority, cross-game generalization, temporal
-localization, or deployment readiness.
-\keywords{gameplay glitch detection \and latent world models \and JEPA \and latent prediction error \and leakage-aware evaluation}
+On a frozen pair-disjoint TempGlitch follow-up (12 normal-negative, 22 buggy-positive episodes),
+the best LeWM-Glitch configuration achieves AUROC~0.716 (95\%~CI [0.535,\,0.877]); the strongest
+simple baseline reaches AUROC~0.614 on the same support. The difference is numerically positive
+but not statistically significant (DeLong $p{=}0.21$). An expanded TempGlitch run (29 normal,
+38 buggy) yields AUROC~0.701, providing a robustness check on a larger support. On a secondary
+frozen R5-XGame split (12 normal-negative, 60 buggy-positive episodes), LeWM-Glitch achieves
+AUROC~0.910 (95\%~CI [0.828,\,0.972]) versus 0.768 for the best simple baseline.
+We also report two bounded negative findings: LeWM-Glitch reaches only AUROC~0.50 on the
+image-level GlitchBench K2 slice, and a mechanistic ablation (K3) finds no measurable benefit
+from SIGReg regularization or real-action conditioning at this evaluation scale.
+All evidence is non-locked and split-bounded; we make no claims of broad superiority,
+cross-game generalization, temporal localization, or deployment readiness.
+\keywords{gameplay glitch detection \and latent world models \and JEPA \and
+latent prediction error \and leakage-aware evaluation \and video anomaly detection}
 \end{abstract}
 
 \input{sections/01_introduction}
@@ -52,6 +61,7 @@ localization, or deployment readiness.
 \input{sections/07_experiments}
 \input{sections/08_results}
 \input{sections/08a_discussion}
+\input{sections/08b_reproducibility}
 \input{sections/09_limitations}
 \input{sections/10_conclusion}
 
@@ -60,5 +70,21 @@ localization, or deployment readiness.
 \bibliographystyle{splncs04}
 \bibliography{references}
 \endgroup
+
+\appendix
+
+\section{Claim Map and Evidence Boundaries}
+\label{app:claim_map}
+Table~\ref{tab:claim_map} records the evidence boundary for every major claim in this paper.
+Readers and reviewers are encouraged to consult this map when evaluating the scope of any
+individual result.
+\input{tables/claim_map}
+
+\section{Artifact Hashes and Provenance}
+\label{app:hashes}
+Table~\ref{tab:artifact_hashes} lists the SHA-256 digests of primary result artifacts
+used in this paper. These hashes allow independent verification that the reported metrics
+correspond to the committed artifacts.
+\input{tables/artifact_hashes}
 
 \end{document}
