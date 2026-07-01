@@ -1,23 +1,62 @@
 \section{Problem Formulation}
-\label{sec:problem-formulation}
+\label{sec:problem}
 
-Let episode $e$ contain an ordered set of video windows
-$\mathcal{W}_e=\{w_{e,1},\ldots,w_{e,T_e}\}$ and a binary episode label
-$y_e\in\{0,1\}$, where 0 denotes normal and 1 denotes buggy. A scorer $s$ assigns a scalar anomaly
-value $s(w_{e,t})$ to each window. An aggregation function $A$ produces one episode score
+\subsection{Episodes, Windows, and Roles}
+
+Let a gameplay \emph{episode} $e$ be a contiguous sequence of video frames
+$\mathbf{x}_e = (x_1, x_2, \ldots, x_T)$ recorded during a single play session.
+We say episode $e$ is \emph{normal} if it was recorded without any programmatic bug injection
+and \emph{buggy-positive} otherwise.
+All episodes are partitioned into three non-overlapping roles before any window is generated:
+\begin{itemize}
+  \item $\mathcal{E}_{\text{train}}$: normal episodes used to fit any train-dependent model
+  component (in our setting, none beyond the pretrained LeWM checkpoint).
+  \item $\mathcal{E}_{\text{cal}}$: normal episodes used only to set the detection threshold;
+  no metric from these episodes is reported.
+  \item $\mathcal{E}_{\text{eval}}$: held-out episodes (normal-negative and buggy-positive)
+  used to compute all reported metrics.
+\end{itemize}
+Role assignment is performed at the \emph{source} and \emph{pair} level before episode
+enumeration, so no source or pair straddles two roles.
+
+\subsection{Window Scoring}
+
+Each episode is divided into non-overlapping windows of $w$ consecutive frames.
+Let $f_\theta$ denote the frozen LeWorldModel encoder and $g_\phi$ the frozen JEPA predictor.
+For window $t$ in episode $e$, the window-level \emph{latent prediction error} (LPE) is:
 \begin{equation}
-S_e=A\left(s(w_{e,1}),\ldots,s(w_{e,T_e})\right).
+  d_{e,t} = \bigl\| g_\phi(f_\theta(x_t)) - f_\theta(x_{t+1}) \bigr\|_2^2
+  \label{eq:lpe}
 \end{equation}
-The recorded aggregation family includes mean, maximum, and the mean of the two largest window
-scores. Window values are diagnostic intermediates; episode scores are the reporting unit.
+where $x_t$ and $x_{t+1}$ are the anchor and target frames of the window.
+All model parameters are frozen at the pretrained LeWM checkpoint; no fine-tuning is performed.
 
-For thresholded metrics, a threshold $\tau$ is computed exclusively from designated normal
-calibration episodes. Predictions are $\hat{y}_e=\mathbb{1}[S_e\geq\tau]$. Ranking metrics
-(AUROC and AUPRC) and threshold metrics (F1, precision, recall, balanced accuracy) are reported
-together with FPR@95TPR. This combination exposes both class separation and the false-positive
-cost near high recall.
+\subsection{Episode Aggregation}
 
-The question is deliberately narrow: on a frozen non-locked evaluation split, do recorded latent
-surprise configurations show useful same-support separation between normal and buggy episodes
-relative to named simple baselines? The formulation does not test temporal localization,
-deployment robustness, or generalization to an unspecified population of games.
+Window-level scores are aggregated to a scalar episode score:
+\begin{equation}
+  S_e = A\bigl(\{d_{e,t}\}_{t=1}^{N_e}\bigr)
+  \label{eq:aggregation}
+\end{equation}
+where $A$ is an aggregation function. We evaluate several options including \texttt{mean},
+\texttt{max}, and \texttt{top2\_mean} (mean of the top-2 scoring windows).
+The choice of $A$ is treated as a configuration dimension; results are reported per
+configuration without post-hoc selection on evaluation data.
+
+\subsection{Calibration and Decision Rule}
+
+The detection threshold $\tau$ is computed from the calibration-normal episodes only:
+\begin{equation}
+  \tau = \text{percentile}_{q}\bigl(\{S_e\}_{e \in \mathcal{E}_{\text{cal}}}\bigr)
+  \label{eq:threshold}
+\end{equation}
+where $q$ is a fixed quantile (e.g., 95th percentile) chosen before evaluation.
+An episode is classified as anomalous if $S_e \geq \tau$; otherwise it is classified as normal:
+\begin{equation}
+  \hat{y}_e = \mathbf{1}[S_e \geq \tau]
+  \label{eq:decision}
+\end{equation}
+
+Window scores $d_{e,t}$ are used for diagnostic visualization only.
+We do not assign temporal span labels to windows and do not evaluate temporal localization
+metrics, because no verified temporal span ground truth exists in the current benchmark splits.
