@@ -1,7 +1,7 @@
 # REPO_MAP.md
 
-Generated: 2026-07-01T09:13:08+00:00
-Commit: `5be9ede79fde67c04390b68af05c71cc558f097d`
+Generated: 2026-07-01T14:32:51+00:00
+Commit: `b1cb9c0d30fbb509cbd028cb9e4a36546198c8ff`
 Generator: `scripts/update_context_cache.py`
 
 ## Top-Level Map
@@ -124,7 +124,7 @@ Generator: `scripts/update_context_cache.py`
 | `scripts/validate_cloud_gpu_runtime.py` | _output_root, inspect_runtime, main | Python module. |
 | `scripts/validate_context_cache.py` | main | Python module. |
 | `scripts/validate_glitchbench_bundle.py` | _resolve_downloaded_kaggle_path, _protocol_manifest_from_package, validate_glitchbench_bundle, build_parser, main | Python module. |
-| `scripts/validate_kc_wob_binary_output.py` | _load_r5_validator, validate_kc_wob_binary, build_parser, main | Python module. |
+| `scripts/validate_kc_wob_binary_output.py` | _load_r5_validator, _load_readiness_validator, validate_kc_wob_binary, build_parser, main | Python module. |
 | `scripts/validate_learned_baselines.py` | _read_json, _read_sha256_sidecar, _clip_dir_signature, _resolve_downloaded_kaggle_path, _record_signature, _normalized_record_signature, _validate_scores_alignment, validate_learned_baselines, build_parser, main | Python module. |
 | `scripts/validate_lewm_gate6_artifacts.py` | main | Python module. |
 | `scripts/validate_lewm_gpu_profile_artifacts.py` | main | Python module. |

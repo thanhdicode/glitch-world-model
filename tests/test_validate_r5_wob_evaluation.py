@@ -20,7 +20,7 @@ def _build_bundle(tmp_path: Path) -> tuple[Path, Path]:
     output_dir = tmp_path / "outputs" / "r5_wob_identical_episode"
     output_dir.mkdir(parents=True, exist_ok=True)
     manifest_rows: list[dict[str, str]] = []
-    for index in range(12):
+    for index in range(6):
         manifest_rows.append(
             {
                 "dataset_id": "benedictwilkinsai/world-of-bugs-normal",
@@ -34,6 +34,22 @@ def _build_bundle(tmp_path: Path) -> tuple[Path, Path]:
                 "use_for_training": "False",
                 "materialize": "True",
                 "evaluation_role": "calibration_normal",
+            }
+        )
+    for index in range(6):
+        manifest_rows.append(
+            {
+                "dataset_id": "benedictwilkinsai/world-of-bugs-normal",
+                "source": f"NORMAL-TRAIN/ep-{index + 6:04d}/ep-{index + 6:04d}.tar",
+                "episode_id": f"normal/ep-{index + 6:04d}",
+                "pair_id": f"normal/ep-{index + 6:04d}",
+                "category": "Normal",
+                "label": "Normal",
+                "split": "validation",
+                "action_mode": "real",
+                "use_for_training": "False",
+                "materialize": "True",
+                "evaluation_role": "evaluation_normal",
             }
         )
     for index in range(60):
@@ -102,9 +118,9 @@ def _build_bundle(tmp_path: Path) -> tuple[Path, Path]:
                 "auprc": "0.7",
                 "f1": "0.5",
                 "fpr_at_95_tpr": "0.4",
-                "evaluation_episode_count": "60",
+                "evaluation_episode_count": "66",
                 "positive_episode_count": "60",
-                "negative_episode_count": "0",
+                "negative_episode_count": "6",
                 "calibration_episode_ids": "a",
                 "auroc_ci_lower": "0.5",
                 "auroc_ci_upper": "0.7",
@@ -129,9 +145,9 @@ def _build_bundle(tmp_path: Path) -> tuple[Path, Path]:
                 "auprc": "0.7",
                 "f1": "0.5",
                 "fpr_at_95_tpr": "0.4",
-                "evaluation_episode_count": "60",
+                "evaluation_episode_count": "66",
                 "positive_episode_count": "60",
-                "negative_episode_count": "0",
+                "negative_episode_count": "6",
                 "calibration_episode_ids": "a",
                 "auroc_ci_lower": "0.5",
                 "auroc_ci_upper": "0.7",

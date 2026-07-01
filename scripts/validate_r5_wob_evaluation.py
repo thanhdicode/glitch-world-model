@@ -12,6 +12,10 @@ DEFAULT_OUTPUT_DIR = ROOT / "outputs" / "r5_wob_identical_episode"
 DEFAULT_READINESS_JSON = ROOT / "configs" / "wob_protocol" / "wob_expansion_readiness.json"
 EXPECTED_SEEDS = {"42", "43", "44"}
 EXPECTED_BASELINES = {"frame_diff", "feature_distance"}
+EXPECTED_CALIBRATION_NORMAL = 6
+EXPECTED_EVALUATION_NORMAL = 6
+EXPECTED_EVALUATION_BUGGY = 60
+EXPECTED_EVALUATION_EPISODES = EXPECTED_EVALUATION_NORMAL + EXPECTED_EVALUATION_BUGGY
 
 
 def _read_json(path: Path) -> dict[str, Any]:
@@ -67,9 +71,27 @@ def validate_r5_wob(output_dir: Path, readiness_json: Path) -> dict[str, Any]:
         errors,
     )
     calibration = [row for row in manifest_rows if row["evaluation_role"] == "calibration_normal"]
-    evaluation = [row for row in manifest_rows if row["evaluation_role"] == "evaluation_buggy"]
-    _assert(len(calibration) == 12, "expected 12 calibration-normal rows", errors)
-    _assert(len(evaluation) == 60, "expected 60 evaluation-buggy rows", errors)
+    evaluation_normal = [
+        row for row in manifest_rows if row["evaluation_role"] == "evaluation_normal"
+    ]
+    evaluation_buggy = [
+        row for row in manifest_rows if row["evaluation_role"] == "evaluation_buggy"
+    ]
+    _assert(
+        len(calibration) == EXPECTED_CALIBRATION_NORMAL,
+        f"expected {EXPECTED_CALIBRATION_NORMAL} calibration-normal rows",
+        errors,
+    )
+    _assert(
+        len(evaluation_normal) == EXPECTED_EVALUATION_NORMAL,
+        f"expected {EXPECTED_EVALUATION_NORMAL} evaluation-normal rows",
+        errors,
+    )
+    _assert(
+        len(evaluation_buggy) == EXPECTED_EVALUATION_BUGGY,
+        f"expected {EXPECTED_EVALUATION_BUGGY} evaluation-buggy rows",
+        errors,
+    )
     _assert(
         not [row for row in manifest_rows if row["split"] == "train"], "train rows present", errors
     )
@@ -82,7 +104,14 @@ def validate_r5_wob(output_dir: Path, readiness_json: Path) -> dict[str, Any]:
         errors,
     )
     _assert(
-        all(row["label"] == "Buggy" for row in evaluation), "evaluation rows not all buggy", errors
+        all(row["label"] == "Normal" for row in evaluation_normal),
+        "evaluation-normal rows not all normal",
+        errors,
+    )
+    _assert(
+        all(row["label"] == "Buggy" for row in evaluation_buggy),
+        "evaluation-buggy rows not all buggy",
+        errors,
     )
 
     metrics = _read_json(required_files["metrics"])
@@ -124,6 +153,21 @@ def validate_r5_wob(output_dir: Path, readiness_json: Path) -> dict[str, Any]:
     )
 
     for row in comparison_rows:
+        _assert(
+            int(row["evaluation_episode_count"]) == EXPECTED_EVALUATION_EPISODES,
+            f"comparison evaluation_episode_count must be {EXPECTED_EVALUATION_EPISODES}: {row}",
+            errors,
+        )
+        _assert(
+            int(row["positive_episode_count"]) == EXPECTED_EVALUATION_BUGGY,
+            f"comparison positive_episode_count must be {EXPECTED_EVALUATION_BUGGY}: {row}",
+            errors,
+        )
+        _assert(
+            int(row["negative_episode_count"]) == EXPECTED_EVALUATION_NORMAL,
+            f"comparison negative_episode_count must be {EXPECTED_EVALUATION_NORMAL}: {row}",
+            errors,
+        )
         for field in (
             "auroc",
             "auprc",
@@ -139,6 +183,8 @@ def validate_r5_wob(output_dir: Path, readiness_json: Path) -> dict[str, Any]:
                 f"comparison field {field} is not finite or blank: {row}",
                 errors,
             )
+        for field in ("auroc", "fpr_at_95_tpr"):
+            _assert(row[field] != "", f"comparison field {field} must not be blank", errors)
 
     outputs = provenance.get("outputs", {})
     for key in (

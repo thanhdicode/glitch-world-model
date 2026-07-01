@@ -53,11 +53,13 @@ def _rehash_manifest(eval_manifest: Path, readiness_json: Path) -> None:
 def test_prepare_selects_72_validation_rows_excludes_locked_and_train():
     rows = build_eval_manifest_rows(_read_split_rows())
     assert len(rows) == 72
-    assert sum(r["evaluation_role"] == "calibration_normal" for r in rows) == 12
+    assert sum(r["evaluation_role"] == "calibration_normal" for r in rows) == 6
+    assert sum(r["evaluation_role"] == "evaluation_normal" for r in rows) == 6
     assert sum(r["evaluation_role"] == "evaluation_buggy" for r in rows) == 60
     # No locked (split=test) or train rows leak into the evaluation manifest.
     assert all(r["split"] == "validation" for r in rows)
     assert all(r["label"] == "Normal" for r in rows if r["evaluation_role"] == "calibration_normal")
+    assert all(r["label"] == "Normal" for r in rows if r["evaluation_role"] == "evaluation_normal")
     assert all(r["label"] == "Buggy" for r in rows if r["evaluation_role"] == "evaluation_buggy")
 
 
@@ -72,7 +74,8 @@ def test_prepare_flags_false_and_validate_round_trip(tmp_path: Path):
 
     result = validate_readiness(readiness_json, repo_root=tmp_path)
     assert result["status"] == "wob_expansion_readiness_passed"
-    assert result["calibration_normal_count"] == 12
+    assert result["calibration_normal_count"] == 6
+    assert result["evaluation_normal_count"] == 6
     assert result["evaluation_buggy_count"] == 60
     assert result["locked_rows_excluded"] == 59
 

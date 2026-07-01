@@ -13,6 +13,9 @@ from .kaggle_automation import FingerprintBuilder
 from .lewm_adapter import ActionMode, LeWMAdapter, LeWMCheckpointSpec, sha256_file
 from .lewm_lance_eval import (
     BUGGY_DATASET_NAME,
+    CALIBRATION_ROLE,
+    EVALUATION_BUGGY_ROLES,
+    EVALUATION_NORMAL_ROLES,
     MANIFEST_FIELDS,
     NORMAL_DATASET_NAME,
     ResourceTelemetry,
@@ -261,8 +264,9 @@ def _build_window_manifest(
     by later stages).
     """
     calibration_episodes = {
-        row["episode_id"] for row in eval_rows if row["evaluation_role"] == "calibration_normal"
+        row["episode_id"] for row in eval_rows if row["evaluation_role"] == CALIBRATION_ROLE
     }
+    role_by_episode = {row["episode_id"]: row["evaluation_role"] for row in eval_rows}
     fingerprints = {
         NORMAL_DATASET_NAME: FingerprintBuilder.inventory_sha256(normal_lance),
         BUGGY_DATASET_NAME: FingerprintBuilder.inventory_sha256(buggy_lance),
@@ -272,6 +276,7 @@ def _build_window_manifest(
     output_path.parent.mkdir(parents=True, exist_ok=True)
     seen_window_ids: set[str] = set()
     observed_calibration: set[str] = set()
+    observed_evaluation_normal: set[str] = set()
     row_count = 0
     with output_path.open("w", newline="", encoding="utf-8") as handle:
         writer = csv.DictWriter(handle, fieldnames=MANIFEST_FIELDS, extrasaction="ignore")
@@ -291,9 +296,18 @@ def _build_window_manifest(
                         sample=sample,
                         calibration_episodes=calibration_episodes,
                     )
+                    episode_id = row["source_episode_id"]
+                    if episode_id not in role_by_episode:
+                        raise ValueError(
+                            "Window manifest episode not present in frozen eval manifest: "
+                            f"{episode_id}"
+                        )
+                    row["evaluation_role"] = role_by_episode[episode_id]
                     validate_manifest_row(row, seen_window_ids=seen_window_ids)
-                    if row["evaluation_role"] == "calibration_normal":
-                        observed_calibration.add(row["source_episode_id"])
+                    if row["evaluation_role"] == CALIBRATION_ROLE:
+                        observed_calibration.add(episode_id)
+                    if row["evaluation_role"] in EVALUATION_NORMAL_ROLES:
+                        observed_evaluation_normal.add(episode_id)
                     writer.writerow(row)
                     row_count += 1
             finally:
@@ -306,6 +320,11 @@ def _build_window_manifest(
         observed_calibration,
         expected_calibration_episode_count=len(calibration_episodes),
     )
+    if not observed_evaluation_normal:
+        raise ValueError(
+            "Manifest must have at least 1 evaluation_normal episode for AUROC computation. "
+            "Found 0. All normal episodes are currently calibration_normal only."
+        )
     telemetry.record("complete", row_count=row_count)
     telemetry.write(output_path.parent / "resource_telemetry_materialize_lance.json")
     return row_count, fingerprints
@@ -322,11 +341,16 @@ def _release_cuda_memory() -> None:
 
 
 def _smoke_eval_rows(eval_rows: list[dict[str, str]]) -> list[dict[str, str]]:
-    calibration = [row for row in eval_rows if row["evaluation_role"] == "calibration_normal"][:2]
-    buggy = [row for row in eval_rows if row["evaluation_role"] == "evaluation_buggy"][:3]
-    if len(calibration) < 2 or len(buggy) < 2:
-        raise ValueError("Smoke mode needs at least 2 calibration-normal and 2 buggy rows.")
-    return [*calibration, *buggy]
+    calibration = [row for row in eval_rows if row["evaluation_role"] == CALIBRATION_ROLE][:2]
+    evaluation_normal = [
+        row for row in eval_rows if row["evaluation_role"] in EVALUATION_NORMAL_ROLES
+    ][:1]
+    buggy = [row for row in eval_rows if row["evaluation_role"] in EVALUATION_BUGGY_ROLES][:2]
+    if len(calibration) < 2 or len(evaluation_normal) < 1 or len(buggy) < 2:
+        raise ValueError(
+            "Smoke mode needs at least 2 calibration-normal, 1 evaluation-normal, and 2 buggy rows."
+        )
+    return [*calibration, *evaluation_normal, *buggy]
 
 
 def _write_stage_marker(
@@ -546,9 +570,14 @@ def run_materialize_lance(
     frozen_manifest_path = output_dir / "r5_wob_manifest.csv"
     frozen_manifest_path.write_text(_render_eval_manifest(selected_eval_rows), encoding="utf-8")
     normal_rows = [
-        row for row in selected_eval_rows if row["evaluation_role"] == "calibration_normal"
+        row
+        for row in selected_eval_rows
+        if row["evaluation_role"] == CALIBRATION_ROLE
+        or row["evaluation_role"] in EVALUATION_NORMAL_ROLES
     ]
-    buggy_rows = [row for row in selected_eval_rows if row["evaluation_role"] == "evaluation_buggy"]
+    buggy_rows = [
+        row for row in selected_eval_rows if row["evaluation_role"] in EVALUATION_BUGGY_ROLES
+    ]
     _progress(
         f"materialize_lance: train lance start rows={len(train_rows)} "
         f"output={output_dir / TRAIN_LANCE_NAME}"
@@ -1086,6 +1115,16 @@ def run_validate_package(
         success_tarball.unlink()
     if success_sha.exists():
         success_sha.unlink()
+    preliminary_payload = {
+        "status": "validate_package_complete",
+        "smoke": False,
+        "validator_result": validator_result,
+        "files": {},
+        "validation_buggy_used_for_fit_select": False,
+        "locked_test_materialized": False,
+        "locked_test_scored": False,
+    }
+    _write_stage_marker(output_dir, stage="validate_package", payload=preliminary_payload)
     with tarfile.open(success_tarball, "w:gz") as archive:
         for name in (
             "r5_wob_manifest.csv",
@@ -1097,6 +1136,9 @@ def run_validate_package(
             "R5_WOB_REPORT.md",
         ):
             archive.add(output_dir / name, arcname=name)
+        for stage in STAGE_ORDER:
+            marker_name = f"stage_{stage}.json"
+            archive.add(output_dir / marker_name, arcname=marker_name)
     success_sha.write_text(
         f"{sha256_file(success_tarball)}  {success_tarball.name}\n",
         encoding="utf-8",

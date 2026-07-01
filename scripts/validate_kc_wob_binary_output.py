@@ -31,6 +31,18 @@ def _load_r5_validator() -> Any:
     return module
 
 
+def _load_readiness_validator() -> Any:
+    module_path = Path(__file__).resolve().with_name("validate_wob_expansion_readiness.py")
+    spec = importlib.util.spec_from_file_location(
+        "_kc_validate_wob_expansion_readiness", module_path
+    )
+    if spec is None or spec.loader is None:
+        raise ImportError(f"Unable to load readiness validator module: {module_path}")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
 def validate_kc_wob_binary(output_dir: Path, readiness_json: Path) -> dict[str, Any]:
     """Validate a full K-C WOB binary output directory without weakening R5-WOB gates."""
     core = _load_r5_validator().validate_r5_wob(output_dir, readiness_json)
@@ -61,11 +73,29 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR)
     parser.add_argument("--readiness-json", type=Path, default=DEFAULT_READINESS_JSON)
+    parser.add_argument("--dry-run", action="store_true")
     return parser
 
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
+    if args.dry_run:
+        readiness = _load_readiness_validator().validate_readiness(
+            args.readiness_json,
+            repo_root=REPO_ROOT,
+        )
+        print(
+            json.dumps(
+                {
+                    "status": "kc_wob_binary_validator_dry_run",
+                    "readiness_validator": readiness,
+                    "output_dir": str(args.output_dir),
+                    "full_output_validation_run": False,
+                },
+                indent=2,
+            )
+        )
+        return 0
     print(json.dumps(validate_kc_wob_binary(args.output_dir, args.readiness_json), indent=2))
     return 0
 

@@ -34,7 +34,7 @@ def _make_readiness_bundle(tmp_path: Path) -> tuple[Path, Path, Path]:
             }
         )
     eval_rows: list[dict[str, str]] = []
-    for index in range(12):
+    for index in range(6):
         eval_rows.append(
             {
                 "dataset_id": "benedictwilkinsai/world-of-bugs-normal",
@@ -48,6 +48,22 @@ def _make_readiness_bundle(tmp_path: Path) -> tuple[Path, Path, Path]:
                 "use_for_training": "False",
                 "materialize": "True",
                 "evaluation_role": "calibration_normal",
+            }
+        )
+    for index in range(6):
+        eval_rows.append(
+            {
+                "dataset_id": "benedictwilkinsai/world-of-bugs-normal",
+                "source": f"NORMAL-TRAIN/ep-{106 + index:04d}/ep-{106 + index:04d}.tar",
+                "episode_id": f"normal/ep-{106 + index:04d}",
+                "pair_id": f"normal/ep-{106 + index:04d}",
+                "category": "Normal",
+                "label": "Normal",
+                "split": "validation",
+                "action_mode": "real",
+                "use_for_training": "False",
+                "materialize": "True",
+                "evaluation_role": "evaluation_normal",
             }
         )
     for index in range(60):
@@ -77,8 +93,9 @@ def _make_readiness_bundle(tmp_path: Path) -> tuple[Path, Path, Path]:
         "eval_manifest_path": str(manifest_path.relative_to(tmp_path)).replace("\\", "/"),
         "eval_manifest_sha256": hashlib.sha256(manifest_path.read_bytes()).hexdigest(),
         "eval_manifest_row_count": 72,
-        "calibration": {"count": 12},
-        "evaluation": {"count": 60},
+        "calibration": {"count": 6},
+        "evaluation_normal": {"count": 6},
+        "evaluation_buggy": {"count": 60},
         "locked_rows_excluded": 59,
         "train_rows_excluded": 48,
         "recorded_artifact_hashes": {

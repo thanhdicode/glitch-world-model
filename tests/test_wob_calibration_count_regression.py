@@ -5,10 +5,10 @@ The Kaggle run failed at baseline_scores with:
 
 Root cause: run_gate8_baselines_from_lance.run_gate8_baselines() called
 validate_manifest_rows(manifest_rows) without expected_calibration_episode_count,
-so it used the TempGlitch default of 2. The WOB expansion protocol has 12 calibration
-episodes.
+so it used the TempGlitch default of 2. The revised WOB binary protocol has 6
+calibration episodes and 6 held-out normal evaluation episodes.
 
-Fix: added _WOB_CALIBRATION_EPISODE_COUNT = 12 constant and passed it explicitly.
+Fix: keep _WOB_CALIBRATION_EPISODE_COUNT protocol-specific and pass it explicitly.
 """
 
 from __future__ import annotations
@@ -26,18 +26,19 @@ from scripts.run_gate8_baselines_from_lance import (
     run_gate8_baselines,
 )
 
-_N_WOB_CALIBRATION_EPISODES = 12
+_N_WOB_CALIBRATION_EPISODES = 6
+_N_WOB_EVALUATION_NORMAL = 6
 _N_WOB_EVALUATION_BUGGY = 60
 
 
 def _make_wob_manifest_rows() -> list[dict[str, str]]:
     """Build a minimal WOB expansion canonical manifest fixture.
 
-    12 calibration_normal episodes (normal label) and 60 evaluation_buggy rows
-    (buggy label), matching the shape of wob_expansion_eval_manifest.csv.
+    6 calibration_normal episodes, 6 evaluation_normal episodes, and 60
+    evaluation_buggy rows, matching wob_expansion_eval_manifest.csv.
     """
     rows: list[dict[str, str]] = []
-    # 12 calibration_normal episodes, 1 window each
+    # 6 calibration_normal episodes, 1 window each
     for ep_index in range(_N_WOB_CALIBRATION_EPISODES):
         rows.append(
             {
@@ -55,6 +56,24 @@ def _make_wob_manifest_rows() -> list[dict[str, str]]:
                 "evaluation_role": "calibration_normal",
             }
         )
+    # 6 evaluation_normal episodes, 1 window each
+    for ep_index in range(_N_WOB_EVALUATION_NORMAL):
+        rows.append(
+            {
+                "window_id": f"eval_normal_ep{ep_index:02d}_w0",
+                "source_episode_id": f"wob_eval_normal_ep{ep_index:02d}",
+                "dataset_name": "normal_validation",
+                "dataset_fingerprint": "aabbcc",
+                "dataset_window_index": "0",
+                "source": "wob-normal",
+                "pair_id": f"pair_eval{ep_index:02d}",
+                "category": "rendering",
+                "label": "Normal",
+                "split": "validation",
+                "action_mode": "zero_action",
+                "evaluation_role": "evaluation_normal",
+            }
+        )
     # 60 evaluation_buggy rows, 1 window each
     for bug_index in range(_N_WOB_EVALUATION_BUGGY):
         rows.append(
@@ -70,15 +89,15 @@ def _make_wob_manifest_rows() -> list[dict[str, str]]:
                 "label": "Buggy",
                 "split": "validation",
                 "action_mode": "zero_action",
-                "evaluation_role": "evaluation",
+                "evaluation_role": "evaluation_buggy",
             }
         )
     return rows
 
 
 class TestWobCalibrationEpisodeCountConstant:
-    def test_wob_calibration_episode_count_constant_is_12(self):
-        assert _WOB_CALIBRATION_EPISODE_COUNT == 12
+    def test_wob_calibration_episode_count_constant_is_6(self):
+        assert _WOB_CALIBRATION_EPISODE_COUNT == 6
 
     def test_run_gate8_baselines_passes_wob_count_not_tempglitch_default(self):
         """Prove the call site still defaults to WOB while allowing protocol overrides."""
@@ -103,29 +122,37 @@ class TestWobCalibrationEpisodeCountConstant:
 
 
 class TestValidateManifestRowsWobCalibrationCount:
-    def test_wob_manifest_12_calibration_episodes_is_accepted(self):
+    def test_wob_manifest_6_calibration_episodes_is_accepted(self):
         rows = _make_wob_manifest_rows()
-        validate_manifest_rows(rows, expected_calibration_episode_count=12)
+        validate_manifest_rows(
+            rows,
+            expected_calibration_episode_count=6,
+            minimum_evaluation_normal_episode_count=1,
+        )
 
     def test_wob_manifest_rejects_tempglitch_default_of_2(self):
         """This reproduces the exact Kaggle failure mode."""
         rows = _make_wob_manifest_rows()
-        with pytest.raises(ValueError, match="12"):
+        with pytest.raises(ValueError, match="6"):
             validate_manifest_rows(rows, expected_calibration_episode_count=2)
 
     def test_wob_manifest_rejects_wrong_count_of_1(self):
         rows = _make_wob_manifest_rows()
-        with pytest.raises(ValueError, match="12"):
+        with pytest.raises(ValueError, match="6"):
             validate_manifest_rows(rows, expected_calibration_episode_count=1)
 
-    def test_wob_manifest_rejects_wrong_count_of_11(self):
+    def test_wob_manifest_rejects_wrong_count_of_5(self):
         rows = _make_wob_manifest_rows()
-        with pytest.raises(ValueError, match="12"):
-            validate_manifest_rows(rows, expected_calibration_episode_count=11)
+        with pytest.raises(ValueError, match="6"):
+            validate_manifest_rows(rows, expected_calibration_episode_count=5)
 
     def test_wob_manifest_has_correct_total_row_count(self):
         rows = _make_wob_manifest_rows()
-        assert len(rows) == _N_WOB_CALIBRATION_EPISODES + _N_WOB_EVALUATION_BUGGY == 72
+        assert (
+            len(rows)
+            == _N_WOB_CALIBRATION_EPISODES + _N_WOB_EVALUATION_NORMAL + _N_WOB_EVALUATION_BUGGY
+            == 72
+        )
 
     def test_wob_manifest_all_window_ids_are_unique(self):
         rows = _make_wob_manifest_rows()
@@ -141,8 +168,14 @@ class TestValidateManifestRowsWobCalibrationCount:
     def test_wob_manifest_evaluation_buggy_rows_have_buggy_label(self):
         rows = _make_wob_manifest_rows()
         for row in rows:
-            if row["evaluation_role"] == "evaluation":
+            if row["evaluation_role"] == "evaluation_buggy":
                 assert row["label"].lower() == "buggy"
+
+    def test_wob_manifest_evaluation_normal_rows_have_normal_label(self):
+        rows = _make_wob_manifest_rows()
+        for row in rows:
+            if row["evaluation_role"] == "evaluation_normal":
+                assert row["label"].lower() == "normal"
 
     def test_wob_manifest_no_locked_test_rows(self):
         rows = _make_wob_manifest_rows()
@@ -150,27 +183,27 @@ class TestValidateManifestRowsWobCalibrationCount:
             assert "locked" not in row["split"].lower()
             assert row["split"].lower() != "test"
 
-    def test_wob_manifest_exactly_12_unique_calibration_source_episode_ids(self):
+    def test_wob_manifest_exactly_6_unique_calibration_source_episode_ids(self):
         rows = _make_wob_manifest_rows()
         calib_eps = {
             r["source_episode_id"] for r in rows if r["evaluation_role"] == "calibration_normal"
         }
-        assert len(calib_eps) == 12
+        assert len(calib_eps) == 6
 
-    def test_11_calibration_episodes_triggers_kaggle_error_message(self):
+    def test_5_calibration_episodes_triggers_kaggle_error_message(self):
         """Verify the exact error message shape from the Kaggle failure."""
         rows = _make_wob_manifest_rows()
-        rows_11 = [r for r in rows if r["evaluation_role"] != "calibration_normal"]
-        for ep_index in range(11):
-            rows_11.append(
+        rows_5 = [r for r in rows if r["evaluation_role"] != "calibration_normal"]
+        for ep_index in range(5):
+            rows_5.append(
                 {
-                    "window_id": f"calib_11_ep{ep_index:02d}_w0",
-                    "source_episode_id": f"ep11_{ep_index:02d}",
+                    "window_id": f"calib_5_ep{ep_index:02d}_w0",
+                    "source_episode_id": f"ep5_{ep_index:02d}",
                     "dataset_name": "normal_validation",
                     "dataset_fingerprint": "aabbcc",
                     "dataset_window_index": "0",
                     "source": "wob-normal",
-                    "pair_id": f"pair11_{ep_index:02d}",
+                    "pair_id": f"pair5_{ep_index:02d}",
                     "category": "rendering",
                     "label": "Normal",
                     "split": "validation",
@@ -178,8 +211,8 @@ class TestValidateManifestRowsWobCalibrationCount:
                     "evaluation_role": "calibration_normal",
                 }
             )
-        with pytest.raises(ValueError, match="invalid calibration episode count: 11"):
-            validate_manifest_rows(rows_11, expected_calibration_episode_count=12)
+        with pytest.raises(ValueError, match="invalid calibration episode count: 5"):
+            validate_manifest_rows(rows_5, expected_calibration_episode_count=6)
 
 
 def _make_tempglitch_r5_manifest_rows() -> list[dict[str, str]]:

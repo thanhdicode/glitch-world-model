@@ -147,6 +147,7 @@ def test_materialize_lance_logs_dataset_boundaries_and_counts(tmp_path: Path):
     }
     eval_rows = [
         {"evaluation_role": "calibration_normal", "episode_id": "n1"},
+        {"evaluation_role": "evaluation_normal", "episode_id": "n2"},
         {"evaluation_role": "evaluation_buggy", "episode_id": "b1"},
     ]
     train_rows = [{"episode_id": "t1"}]
@@ -210,8 +211,8 @@ def test_materialize_lance_logs_dataset_boundaries_and_counts(tmp_path: Path):
     assert result["status"] == "materialize_complete"
     assert any("train lance start rows=1" in message for message in progress_messages)
     assert any("train lance complete rows=1" in message for message in progress_messages)
-    assert any("normal lance start rows=1" in message for message in progress_messages)
-    assert any("normal lance complete rows=1" in message for message in progress_messages)
+    assert any("normal lance start rows=2" in message for message in progress_messages)
+    assert any("normal lance complete rows=2" in message for message in progress_messages)
     assert any("buggy lance start rows=1" in message for message in progress_messages)
     assert any("buggy lance complete rows=1" in message for message in progress_messages)
     assert any("window manifest complete rows=1" in message for message in progress_messages)
@@ -277,8 +278,8 @@ def test_build_window_manifest_streams_to_csv_without_pixels(tmp_path: Path, mon
 
     eval_rows = [
         {"episode_id": "normal-a", "evaluation_role": "calibration_normal"},
-        {"episode_id": "normal-b", "evaluation_role": "calibration_normal"},
-        {"episode_id": "buggy-a", "evaluation_role": "evaluation"},
+        {"episode_id": "normal-b", "evaluation_role": "evaluation_normal"},
+        {"episode_id": "buggy-a", "evaluation_role": "evaluation_buggy"},
     ]
     output_path = tmp_path / "_window_manifest.csv"
 

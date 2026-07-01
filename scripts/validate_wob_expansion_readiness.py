@@ -7,7 +7,7 @@ This refuses unless every readiness invariant holds:
 * The frozen evaluation manifest exists and its SHA256 matches the readiness record
   (frozen-before-scoring).
 * The evaluation manifest contains zero locked rows (``split == "test"``); counts are exactly
-  12 calibration-normal + 60 evaluation-buggy = 72.
+  6 calibration-normal + 6 evaluation-normal + 60 evaluation-buggy = 72.
 * ``validation_buggy_used_for_fit_select`` is false and the calibration set is normal-only.
 * The seed42 selected-checkpoint metadata block is present and consistent.
 * Reporting/output paths are frozen and non-empty.
@@ -38,14 +38,18 @@ EXPECTED_WOB_P1_SEED42_ARTIFACT_SHA256 = (
     "54bb2b606233e35ca2f23607d0bf07d8101c040080c15154dacb7c9cd4c62f03"
 )
 
-EXPECTED_CALIBRATION_NORMAL = 12
+EXPECTED_CALIBRATION_NORMAL = 6
+EXPECTED_EVALUATION_NORMAL = 6
 EXPECTED_EVALUATION_BUGGY = 60
-EXPECTED_VALIDATION_TOTAL = EXPECTED_CALIBRATION_NORMAL + EXPECTED_EVALUATION_BUGGY
+EXPECTED_VALIDATION_TOTAL = (
+    EXPECTED_CALIBRATION_NORMAL + EXPECTED_EVALUATION_NORMAL + EXPECTED_EVALUATION_BUGGY
+)
 EXPECTED_LOCKED_EXCLUDED = 59
 EXPECTED_TRAIN_EXCLUDED = 48
 
 CALIBRATION_ROLE = "calibration_normal"
-EVALUATION_ROLE = "evaluation_buggy"
+EVALUATION_NORMAL_ROLE = "evaluation_normal"
+EVALUATION_BUGGY_ROLE = "evaluation_buggy"
 
 LOCKED_SPLIT_TOKEN = "test"
 
@@ -116,15 +120,25 @@ def validate_readiness(readiness_json: Path, *, repo_root: Path) -> dict[str, An
         _assert(not non_validation, "eval manifest contains non-validation rows", errors)
 
         calibration = [r for r in manifest_rows if r.get("evaluation_role") == CALIBRATION_ROLE]
-        evaluation = [r for r in manifest_rows if r.get("evaluation_role") == EVALUATION_ROLE]
+        evaluation_normal = [
+            r for r in manifest_rows if r.get("evaluation_role") == EVALUATION_NORMAL_ROLE
+        ]
+        evaluation_buggy = [
+            r for r in manifest_rows if r.get("evaluation_role") == EVALUATION_BUGGY_ROLE
+        ]
         _assert(
             len(calibration) == EXPECTED_CALIBRATION_NORMAL,
             f"calibration row count mismatch: {len(calibration)}",
             errors,
         )
         _assert(
-            len(evaluation) == EXPECTED_EVALUATION_BUGGY,
-            f"evaluation row count mismatch: {len(evaluation)}",
+            len(evaluation_normal) == EXPECTED_EVALUATION_NORMAL,
+            f"evaluation-normal row count mismatch: {len(evaluation_normal)}",
+            errors,
+        )
+        _assert(
+            len(evaluation_buggy) == EXPECTED_EVALUATION_BUGGY,
+            f"evaluation-buggy row count mismatch: {len(evaluation_buggy)}",
             errors,
         )
         _assert(
@@ -138,8 +152,13 @@ def validate_readiness(readiness_json: Path, *, repo_root: Path) -> dict[str, An
             errors,
         )
         _assert(
-            all(r.get("label") == "Buggy" for r in evaluation),
-            "evaluation set contains non-buggy rows",
+            all(r.get("label") == "Normal" for r in evaluation_normal),
+            "evaluation-normal set contains non-normal rows",
+            errors,
+        )
+        _assert(
+            all(r.get("label") == "Buggy" for r in evaluation_buggy),
+            "evaluation-buggy set contains non-buggy rows",
             errors,
         )
 
@@ -149,15 +168,21 @@ def validate_readiness(readiness_json: Path, *, repo_root: Path) -> dict[str, An
         errors,
     )
     calibration_block = readiness.get("calibration", {})
-    evaluation_block = readiness.get("evaluation", {})
+    evaluation_normal_block = readiness.get("evaluation_normal", {})
+    evaluation_buggy_block = readiness.get("evaluation_buggy", readiness.get("evaluation", {}))
     _assert(
         calibration_block.get("count") == EXPECTED_CALIBRATION_NORMAL,
         "readiness calibration count mismatch",
         errors,
     )
     _assert(
-        evaluation_block.get("count") == EXPECTED_EVALUATION_BUGGY,
-        "readiness evaluation count mismatch",
+        evaluation_normal_block.get("count") == EXPECTED_EVALUATION_NORMAL,
+        "readiness evaluation-normal count mismatch",
+        errors,
+    )
+    _assert(
+        evaluation_buggy_block.get("count") == EXPECTED_EVALUATION_BUGGY,
+        "readiness evaluation-buggy count mismatch",
         errors,
     )
     _assert(
@@ -210,6 +235,7 @@ def validate_readiness(readiness_json: Path, *, repo_root: Path) -> dict[str, An
         "eval_manifest_path": manifest_rel,
         "eval_manifest_sha256": readiness.get("eval_manifest_sha256"),
         "calibration_normal_count": EXPECTED_CALIBRATION_NORMAL,
+        "evaluation_normal_count": EXPECTED_EVALUATION_NORMAL,
         "evaluation_buggy_count": EXPECTED_EVALUATION_BUGGY,
         "locked_rows_excluded": EXPECTED_LOCKED_EXCLUDED,
         "train_rows_excluded": EXPECTED_TRAIN_EXCLUDED,

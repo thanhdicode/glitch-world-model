@@ -14,6 +14,8 @@ from .evaluate import auroc, average_precision, binary_metrics
 from .kaggle_automation import FingerprintBuilder
 from .lewm_adapter import sha256_file
 from .lewm_lance_eval import (
+    CALIBRATION_ROLE,
+    EVALUATION_ROLES,
     MANIFEST_FIELDS,
     build_canonical_manifest,
     read_csv_rows,
@@ -446,10 +448,8 @@ def evaluate_episode_configuration(
     bootstrap_seed: int = 42,
     n_bootstrap: int = 1000,
 ) -> dict[str, Any]:
-    calibration_rows = [
-        row for row in episode_rows if row["evaluation_role"] == "calibration_normal"
-    ]
-    evaluation_rows = [row for row in episode_rows if row["evaluation_role"] == "evaluation"]
+    calibration_rows = [row for row in episode_rows if row["evaluation_role"] == CALIBRATION_ROLE]
+    evaluation_rows = [row for row in episode_rows if row["evaluation_role"] in EVALUATION_ROLES]
     if not calibration_rows:
         raise ValueError("R5 episode evaluation requires calibration-normal episodes.")
     if not evaluation_rows:

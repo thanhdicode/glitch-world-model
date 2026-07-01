@@ -1,18 +1,23 @@
 {
   "action_synchronization_verified": false,
   "calibration": {
-    "count": 12,
+    "count": 6,
     "evaluation_role": "calibration_normal",
     "label": "Normal"
   },
   "claim_boundary": "The WOB evaluation-readiness gate freezes the seed42 non-locked WOB evaluation manifest, role split, recorded artifact hashes, reporting paths, and claim boundary as metadata only. It runs no WOB evaluation and supports no WOB detection-performance, cross-game generalization, action-conditioning-benefit, SIGReg-benefit, superiority, or locked-test claim. WOB result claims may only be made after the R5-WOB evaluation artifacts exist.",
   "eval_manifest_path": "configs/wob_protocol/wob_expansion_eval_manifest.csv",
   "eval_manifest_row_count": 72,
-  "eval_manifest_sha256": "f7dbd85876809a1c2437cf5827ce4c27f289078ca0904ed70c1d75908a1bcec6",
-  "evaluation": {
+  "eval_manifest_sha256": "38f2e0a686600914d841b5f2a63740b9f4b33d3e4d31f2b70d1f02c4243179c1",
+  "evaluation_buggy": {
     "count": 60,
     "evaluation_role": "evaluation_buggy",
     "label": "Buggy"
+  },
+  "evaluation_normal": {
+    "count": 6,
+    "evaluation_role": "evaluation_normal",
+    "label": "Normal"
   },
   "evaluation_run": false,
   "forbidden_claims": [

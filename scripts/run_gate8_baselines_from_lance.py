@@ -25,7 +25,7 @@ from glitch_detection.lewm_lance_eval import (
 
 BASELINE_SCORE_FIELDS = ("window_id", "frame_diff", "feature_distance")
 
-_WOB_CALIBRATION_EPISODE_COUNT = 12
+_WOB_CALIBRATION_EPISODE_COUNT = 6
 
 
 def baseline_values(pixels: np.ndarray) -> tuple[np.ndarray, np.ndarray]:

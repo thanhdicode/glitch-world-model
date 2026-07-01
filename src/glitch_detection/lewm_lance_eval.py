@@ -53,6 +53,14 @@ METADATA_KEYS = (
     "split",
     "action_mode",
 )
+CALIBRATION_ROLE = "calibration_normal"
+GENERIC_EVALUATION_ROLE = "evaluation"
+EVALUATION_NORMAL_ROLES = frozenset({"evaluation_normal", "evaluation_normal_negative"})
+EVALUATION_BUGGY_ROLES = frozenset({"evaluation_buggy", "evaluation_buggy_positive"})
+EVALUATION_ROLES = frozenset(
+    {GENERIC_EVALUATION_ROLE, *EVALUATION_NORMAL_ROLES, *EVALUATION_BUGGY_ROLES}
+)
+SUPPORTED_EVALUATION_ROLES = frozenset({CALIBRATION_ROLE, *EVALUATION_ROLES})
 
 
 def runtime_provenance(*, include_lewm: bool) -> dict[str, str]:
@@ -157,19 +165,33 @@ def validate_manifest_rows(
     rows: Sequence[dict[str, str]],
     *,
     expected_calibration_episode_count: int = 2,
+    minimum_evaluation_normal_episode_count: int = 0,
 ) -> None:
     if not rows:
         raise ValueError("Canonical Gate 7 manifest is empty.")
     seen_window_ids: set[str] = set()
     calibration_episodes: set[str] = set()
+    evaluation_normal_episodes: set[str] = set()
     for row in rows:
         validate_manifest_row(row, seen_window_ids=seen_window_ids)
-        if row["evaluation_role"] == "calibration_normal":
+        role = row["evaluation_role"]
+        label = row["label"].lower()
+        if role == CALIBRATION_ROLE:
             calibration_episodes.add(row["source_episode_id"])
+        if role in EVALUATION_NORMAL_ROLES or (
+            role == GENERIC_EVALUATION_ROLE and label == "normal"
+        ):
+            evaluation_normal_episodes.add(row["source_episode_id"])
     validate_calibration_episode_count(
         calibration_episodes,
         expected_calibration_episode_count=expected_calibration_episode_count,
     )
+    if len(evaluation_normal_episodes) < minimum_evaluation_normal_episode_count:
+        raise ValueError(
+            "Manifest must have at least 1 evaluation_normal episode for AUROC computation. "
+            f"Found {len(evaluation_normal_episodes)}. All normal episodes are currently "
+            "calibration_normal only."
+        )
 
 
 def validate_manifest_row(row: dict[str, str], *, seen_window_ids: set[str]) -> None:
@@ -189,10 +211,16 @@ def validate_manifest_row(row: dict[str, str], *, seen_window_ids: set[str]) -> 
     role = row["evaluation_role"]
     if label not in {"normal", "buggy"}:
         raise ValueError(f"Unsupported Gate 7 label: {row['label']}")
-    if label == "buggy" and role != "evaluation":
-        raise ValueError("Buggy rows must not be used for threshold calibration.")
-    if role not in {"calibration_normal", "evaluation"}:
+    if role not in SUPPORTED_EVALUATION_ROLES:
         raise ValueError(f"Unsupported Gate 7 evaluation role: {role}")
+    if role == CALIBRATION_ROLE and label != "normal":
+        raise ValueError("Only normal rows may be used for threshold calibration.")
+    if role in EVALUATION_NORMAL_ROLES and label != "normal":
+        raise ValueError("evaluation_normal rows must have a normal label.")
+    if role in EVALUATION_BUGGY_ROLES and label != "buggy":
+        raise ValueError("evaluation_buggy rows must have a buggy label.")
+    if label == "buggy" and role == CALIBRATION_ROLE:
+        raise ValueError("Buggy rows must not be used for threshold calibration.")
 
 
 def validate_calibration_episode_count(

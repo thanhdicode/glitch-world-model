@@ -33,14 +33,18 @@ WOB_P0_KAGGLE_AUDIT_SHA256 = "e08e683ecdf59662092116495fbb4f10ab74225c5414ae7acf
 WOB_P1_SEED42_ARTIFACT_SHA256 = "54bb2b606233e35ca2f23607d0bf07d8101c040080c15154dacb7c9cd4c62f03"
 
 # Frozen non-locked protocol counts derived from configs/wob_protocol/split.csv.
-EXPECTED_CALIBRATION_NORMAL = 12
+EXPECTED_CALIBRATION_NORMAL = 6
+EXPECTED_EVALUATION_NORMAL = 6
 EXPECTED_EVALUATION_BUGGY = 60
-EXPECTED_VALIDATION_TOTAL = EXPECTED_CALIBRATION_NORMAL + EXPECTED_EVALUATION_BUGGY
+EXPECTED_VALIDATION_TOTAL = (
+    EXPECTED_CALIBRATION_NORMAL + EXPECTED_EVALUATION_NORMAL + EXPECTED_EVALUATION_BUGGY
+)
 EXPECTED_LOCKED_EXCLUDED = 59
 EXPECTED_TRAIN_EXCLUDED = 48
 
 CALIBRATION_ROLE = "calibration_normal"
-EVALUATION_ROLE = "evaluation_buggy"
+EVALUATION_NORMAL_ROLE = "evaluation_normal"
+EVALUATION_BUGGY_ROLE = "evaluation_buggy"
 
 # seed42 WOB-P1 selected-checkpoint expectations (mirror validate_wob_seed42_artifacts.py).
 SEED42_CHECKPOINT = {
@@ -117,12 +121,27 @@ def build_eval_manifest_rows(split_rows: list[dict[str, str]]) -> list[dict[str,
     upstream ``source`` directory naming (``TEST/...``) is never used to decide locked status.
     """
 
+    normal_rows = [
+        row
+        for row in split_rows
+        if row.get("split") == "validation" and row.get("label") == "Normal"
+    ]
+    calibration_episode_ids = {
+        row["episode_id"] for row in normal_rows[:EXPECTED_CALIBRATION_NORMAL]
+    }
     rows: list[dict[str, str]] = []
     for row in split_rows:
         if row.get("split") != "validation":
             continue
         label = row.get("label", "")
-        role = CALIBRATION_ROLE if label == "Normal" else EVALUATION_ROLE
+        if label == "Normal":
+            role = (
+                CALIBRATION_ROLE
+                if row.get("episode_id", "") in calibration_episode_ids
+                else EVALUATION_NORMAL_ROLE
+            )
+        else:
+            role = EVALUATION_BUGGY_ROLE
         rows.append(
             {
                 **{key: row.get(key, "") for key in EVAL_MANIFEST_FIELDS[:-1]},
@@ -150,7 +169,8 @@ def build_readiness(
 ) -> dict[str, Any]:
     manifest_rows = build_eval_manifest_rows(split_rows)
     calibration = [r for r in manifest_rows if r["evaluation_role"] == CALIBRATION_ROLE]
-    evaluation = [r for r in manifest_rows if r["evaluation_role"] == EVALUATION_ROLE]
+    evaluation_normal = [r for r in manifest_rows if r["evaluation_role"] == EVALUATION_NORMAL_ROLE]
+    evaluation_buggy = [r for r in manifest_rows if r["evaluation_role"] == EVALUATION_BUGGY_ROLE]
     locked_excluded = [r for r in split_rows if r.get("split") == "test"]
     train_excluded = [r for r in split_rows if r.get("split") == "train"]
 
@@ -170,10 +190,15 @@ def build_readiness(
             "label": "Normal",
             "count": len(calibration),
         },
-        "evaluation": {
-            "evaluation_role": EVALUATION_ROLE,
+        "evaluation_normal": {
+            "evaluation_role": EVALUATION_NORMAL_ROLE,
+            "label": "Normal",
+            "count": len(evaluation_normal),
+        },
+        "evaluation_buggy": {
+            "evaluation_role": EVALUATION_BUGGY_ROLE,
             "label": "Buggy",
-            "count": len(evaluation),
+            "count": len(evaluation_buggy),
         },
         "locked_rows_excluded": len(locked_excluded),
         "train_rows_excluded": len(train_excluded),
@@ -244,7 +269,8 @@ def prepare(
         "eval_manifest_sha256": readiness["eval_manifest_sha256"],
         "eval_manifest_row_count": readiness["eval_manifest_row_count"],
         "calibration_count": readiness["calibration"]["count"],
-        "evaluation_count": readiness["evaluation"]["count"],
+        "evaluation_normal_count": readiness["evaluation_normal"]["count"],
+        "evaluation_buggy_count": readiness["evaluation_buggy"]["count"],
         "locked_rows_excluded": readiness["locked_rows_excluded"],
         "train_rows_excluded": readiness["train_rows_excluded"],
         "readiness_json_path": readiness_json.resolve().relative_to(repo_root).as_posix(),

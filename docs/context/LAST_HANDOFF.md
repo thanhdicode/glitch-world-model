@@ -1,76 +1,84 @@
 # LAST_HANDOFF.md
 
-Last completed task: Diagnose and harden K-C/WOB scorer schema after Kaggle Fix #3 failure
-Commit: `5be9ede79fde67c04390b68af05c71cc558f097d`
-Date: 2026-07-01T00:00:00+07:00
+Last completed task: Fix K-C/WOB binary protocol to include held-out normal evaluation episodes
+Commit: pending
+Date: 2026-07-01T21:32:22+07:00
 
 ## What Changed
 
-- Diagnosed the Kaggle Fix #3 Version 4 failure as a scorer-schema mismatch: K-C/WOB LeWM score
-  CSVs emit `mse_t*` and `l2_t*` fields but not `cosine_gap_t*`, while the aggregation path tried
-  to evaluate every scorer in `LEWM_WINDOW_SCORERS`.
-- Replaced the previous neutral `0.0` cosine-gap fallback with schema-aware scorer selection:
-  unavailable scorers are omitted with explicit `missing_required_score_fields` metadata rather
-  than reported as fake constant metrics.
-- Added `available_lewm_window_scorers`, `omitted_lewm_window_scorers`, and
-  `lewm_window_scorer_schema` helpers in `src/glitch_detection/r5_tempglitch_eval.py`.
-- Updated TempGlitch, WOB non-staged, K-C/WOB staged, and R5-XGame staged aggregation paths to
-  aggregate only available LeWM window scorers and fail if no usable LeWM scorer exists.
-- Added scorer-schema metadata to WOB/K-C metrics, provenance, stage markers, and seed outputs.
-- Added regression tests proving missing cosine-gap fields are omitted, present cosine-gap fields
-  are still evaluated, and R5-XGame does not synthesize cosine-gap rows from WOB-style score CSVs.
+- Re-froze `configs/wob_protocol/wob_expansion_eval_manifest.csv` as a true binary validation
+  manifest: 6 `calibration_normal`, 6 `evaluation_normal`, and 60 `evaluation_buggy` rows.
+- Regenerated `configs/wob_protocol/wob_expansion_readiness.json`; the frozen manifest SHA256 is
+  `38f2e0a686600914d841b5f2a63740b9f4b33d3e4d31f2b70d1f02c4243179c1`.
+- Updated shared manifest validation to support explicit WOB/XGame evaluation roles while keeping
+  TempGlitch's generic `evaluation` role compatible.
+- Updated WOB non-staged and K-C staged materialization so normal Lance datasets include both
+  calibration-normal and evaluation-normal rows, and window manifests preserve roles from the
+  frozen eval manifest.
+- Updated episode evaluation so AUROC/FPR are computed from held-out normal and buggy evaluation
+  episodes, not from calibration rows.
+- Hardened WOB/K-C validators to reject positive-only bundles: comparison rows must have 66
+  evaluation episodes, 60 positives, 6 negatives, and nonblank AUROC/FPR.
+- Added `--dry-run` to `scripts/validate_kc_wob_binary_output.py` for readiness-level preflight.
+- Packaged staged K-C success tarballs with stage marker JSON files so downloaded bundles can pass
+  local K-C intake after extraction.
+- Updated tests and claim registry C-072 to reflect the new WOB readiness split.
 
 ## Checks Passed
 
-- `python -m pytest`
+- `python -m pytest -q`
 - `python -m ruff check .`
 - `python -m ruff format --check .`
-- `python scripts/check_claim_registry.py`
 - `python scripts/validate_research_release.py --ci`
-- `python scripts/doctor.py`
-- `python scripts/update_context_cache.py --refresh-boot`
-- `python scripts/validate_context_cache.py`
-- `pre-commit run --all-files`
+- `python scripts/check_claim_registry.py`
+- `python scripts/validate_wob_expansion_readiness.py`
+- `python scripts/validate_kc_wob_binary_output.py --dry-run`
 
 ## Safety Status
 
 - No GPU training, Kaggle launch, window rescoring, locked-test materialization, or locked-test
   scoring was performed.
-- No K-C/WOB binary result is claimed yet; the next Kaggle run must use the updated commit and its
-  downloaded tarball plus SHA sidecar must pass local intake before any result claim.
-- The change improves artifact honesty: K-C/WOB outputs should report only real emitted LeWM
-  scorers and explicitly document omitted cosine-gap scorer families.
+- No WOB binary result is claimed yet; this is a protocol/tooling fix plus frozen-manifest update.
+- The previous R5-WOB success bundle remains a positive-probe artifact only because it had zero
+  held-out normal evaluation episodes.
+- Locked test remains closed.
 - Output artifacts, checkpoints, Lance datasets, caches, credentials, and Kaggle files remain
   uncommitted.
 - The existing `_kaggle_upload/` directory remains untracked and uncommitted.
 
 ## Gate Status After Task
 
-- K-C/WOB binary remains pending until a successful Kaggle run is downloaded and validated.
+- K-C/WOB binary is ready for a new Kaggle rerun from the fixed commit once pushed.
+- Expected K-C manifest shape after rerun: 6 calibration-normal, 6 evaluation-normal, 60
+  evaluation-buggy episodes.
+- A valid K-C result must report true binary metrics, including AUROC and FPR@95TPR, with
+  `negative_episode_count=6`.
 - Locked test remains closed.
-- Current next gate remains evidence-safe paper revision plus K-C intake-preparation.
 
 ## Open Blockers
 
-- K-C output cannot be claimed until `kc_wob_binary_outputs.tar.gz` plus `.sha256` are downloaded
-  and pass local intake.
-- The next Kaggle cell must checkout/use a commit containing the schema-aware scorer fix; rerunning
-  commit `77623fb` will reproduce the old `KeyError: 'cosine_gap_t1'`.
-- Any paper wording must avoid treating omitted cosine-gap scorer families as evaluated metrics.
+- K-C output cannot be claimed until the rerun tarball plus `.sha256` are downloaded and pass
+  local intake.
+- The next Kaggle run must use a commit containing this binary-manifest fix; rerunning older
+  commits will reproduce the positive-only WOB bundle problem.
+- Any paper wording must keep old R5-WOB positive-probe evidence separate from future K-C binary
+  metrics.
 
 ## Next Recommended Task
 
-- Commit/push the schema-aware scorer fix.
-- Rerun the K-C WOB binary Kaggle job from the new commit.
-- If Kaggle succeeds, download `kc_wob_binary_outputs.tar.gz` and `.sha256`, then run local intake
-  validation before updating any claim registry or paper text.
+- Commit and push the WOB binary protocol fix.
+- Rerun the K-C WOB binary Kaggle notebook from the pushed commit.
+- Download `kc_wob_binary_outputs.tar.gz` and `.sha256`, extract/validate locally, then update
+  claims and paper only if the validator passes.
 
 ## Files Likely Relevant Next
 
-- `src/glitch_detection/r5_tempglitch_eval.py`
+- `configs/wob_protocol/wob_expansion_eval_manifest.csv`
+- `configs/wob_protocol/wob_expansion_readiness.json`
+- `src/glitch_detection/lewm_lance_eval.py`
 - `src/glitch_detection/r5_wob_staged.py`
-- `scripts/run_r5_xgame_staged.py`
-- `tests/test_r5_tempglitch_eval.py`
-- `tests/test_r5_xgame_runner.py`
+- `src/glitch_detection/r5_wob_eval.py`
+- `src/glitch_detection/r5_tempglitch_eval.py`
 - `scripts/validate_kc_wob_binary_output.py`
+- `scripts/validate_r5_wob_evaluation.py`
 - `kaggle/kc_wob_binary/KAGGLE_K_C_WOB_BINARY.md`

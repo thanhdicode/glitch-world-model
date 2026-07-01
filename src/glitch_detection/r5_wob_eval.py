@@ -13,6 +13,9 @@ from .lewm_adapter import ActionMode, LeWMAdapter, LeWMCheckpointSpec, sha256_fi
 from .lewm_data import episode_from_wob_tar, write_lance_dataset
 from .lewm_lance_eval import (
     BUGGY_DATASET_NAME,
+    CALIBRATION_ROLE,
+    EVALUATION_BUGGY_ROLES,
+    EVALUATION_NORMAL_ROLES,
     MANIFEST_FIELDS,
     NORMAL_DATASET_NAME,
     _score_dataset,
@@ -265,7 +268,13 @@ def _build_window_manifest(
             calibration_episodes=calibration_episodes,
         ),
     ]
-    validate_manifest_rows(manifest_rows, expected_calibration_episode_count=12)
+    for row in manifest_rows:
+        row["evaluation_role"] = role_by_episode[row["source_episode_id"]]
+    validate_manifest_rows(
+        manifest_rows,
+        expected_calibration_episode_count=len(calibration_episodes),
+        minimum_evaluation_normal_episode_count=1,
+    )
     write_csv_rows(output_path, manifest_rows, MANIFEST_FIELDS)
     return manifest_rows, fingerprints
 
@@ -353,7 +362,7 @@ def build_r5_wob_report(
         f"- Frozen eval manifest SHA256: `{eval_manifest_sha256}`",
         f"- Readiness JSON SHA256: `{readiness_sha256}`",
         f"- Metrics SHA256: `{metrics_sha256}`",
-        "- Evaluation rows: 12 calibration-normal episodes + 60 evaluation-buggy episodes.",
+        "- Evaluation rows: calibration-normal, evaluation-normal, and evaluation-buggy episodes frozen by the manifest.",
         "- Train rows: excluded.",
         "- Locked rows: excluded and unscored.",
         "",
@@ -448,8 +457,13 @@ def run_r5_wob_identical_episode_evaluation(
         test_root=test_root,
         output_path=output_dir / "_wob_train_normal.lance",
     )
-    normal_eval_rows = [row for row in eval_rows if row["evaluation_role"] == "calibration_normal"]
-    buggy_eval_rows = [row for row in eval_rows if row["evaluation_role"] == "evaluation_buggy"]
+    normal_eval_rows = [
+        row
+        for row in eval_rows
+        if row["evaluation_role"] == CALIBRATION_ROLE
+        or row["evaluation_role"] in EVALUATION_NORMAL_ROLES
+    ]
+    buggy_eval_rows = [row for row in eval_rows if row["evaluation_role"] in EVALUATION_BUGGY_ROLES]
     normal_lance = _build_lance_from_rows(
         normal_eval_rows,
         normal_root=normal_root,
