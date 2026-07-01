@@ -151,6 +151,16 @@ class LeWMAdapter:
                 return error.pow(2).mean(dim=-1)
             if distance == "l2":
                 return error.pow(2).sum(dim=-1).sqrt()
+            if distance == "cosine_gap":
+                # 1 - cosine_similarity(predicted, target).
+                # Direction-sensitive: detects representational drift that
+                # magnitude-only metrics (L2/MSE) miss when zero_action
+                # inflates prediction error uniformly across normal and buggy
+                # frames. Range: [0, 2], higher = more anomalous.
+                pred_norm = predicted / predicted.norm(dim=-1, keepdim=True).clamp_min(1e-8)
+                tgt_norm = target / target.norm(dim=-1, keepdim=True).clamp_min(1e-8)
+                cosine_sim = (pred_norm * tgt_norm).sum(dim=-1)
+                return 1.0 - cosine_sim
             raise LeWMIntegrationError(f"Unsupported LeWM surprise distance: {distance}")
 
     def audit(self) -> dict[str, Any]:

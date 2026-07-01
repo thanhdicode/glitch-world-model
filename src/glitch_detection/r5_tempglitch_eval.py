@@ -31,11 +31,18 @@ MANIFEST_SEED = 42
 # n=5 gives stable p95 estimate while leaving ≥7 negatives on R5-original
 # (12-5=7) and ≥26 negatives on K-A expanded (31-5=26).
 CALIBRATION_EPISODE_COUNT = 5
-# Fix 2: Added max_plus_std and percentile95.
+# Fix 2: Added max_plus_std, percentile95, and ewm_max.
+# ewm_max = max of exponential-weighted-mean series (alpha=0.3).
+# Smooths single-frame noise while preserving multi-frame glitch bursts
+# that persist across >=3 consecutive windows.
 # max_plus_std = max + 0.5*std captures sustained anomaly bursts without
 # being dominated by a single spike window.
 # percentile95 is robust to window-level noise while emphasising peaks.
-EPISODE_AGGREGATIONS = ("mean", "max", "top2_mean", "max_plus_std", "percentile95")
+EPISODE_AGGREGATIONS = ("mean", "max", "top2_mean", "max_plus_std", "percentile95", "ewm_max")
+# Fix 1 (scorer): add cosine_gap variants.
+# cosine_gap = 1 - cosine_similarity(predicted, target).
+# Direction-sensitive: captures representational drift that L2/MSE
+# magnitude metrics miss under zero_action distribution shift.
 LEWM_WINDOW_SCORERS = (
     "lewm_mse_mean",
     "lewm_mse_max",
@@ -43,6 +50,9 @@ LEWM_WINDOW_SCORERS = (
     "lewm_l2_mean",
     "lewm_l2_max",
     "lewm_l2_top2_mean",
+    "lewm_cosine_gap_mean",
+    "lewm_cosine_gap_max",
+    "lewm_cosine_gap_top2_mean",
 )
 BASELINE_WINDOW_SCORERS = ("frame_diff", "feature_distance")
 EPISODE_SCORE_FIELDS = (
@@ -158,6 +168,18 @@ def _aggregate(values: Sequence[float], aggregation: str) -> float:
         return float(max(values)) + 0.5 * std
     if aggregation == "percentile95":
         return _percentile(values, 0.95)
+    if aggregation == "ewm_max":
+        # Exponential weighted mean (alpha=0.3) then max over the series.
+        # Smooths single-frame noise while preserving glitch bursts spanning
+        # >= 3 consecutive windows; isolated 1-frame spikes attenuated ~0.49x.
+        alpha = 0.3
+        ewm_val = values[0]
+        ewm_max_val = ewm_val
+        for v in values[1:]:
+            ewm_val = alpha * v + (1.0 - alpha) * ewm_val
+            if ewm_val > ewm_max_val:
+                ewm_max_val = ewm_val
+        return float(ewm_max_val)
     raise ValueError(
         f"Unsupported episode aggregation: {aggregation}. Expected one of {EPISODE_AGGREGATIONS}."
     )
@@ -261,6 +283,7 @@ def planned_output_paths(output_dir: Path, seeds: Sequence[int]) -> list[str]:
 def _lewm_window_scores(row: dict[str, str]) -> dict[str, float]:
     mse = [float(row[field]) for field in ("mse_t1", "mse_t2", "mse_t3")]
     l2 = [float(row[field]) for field in ("l2_t1", "l2_t2", "l2_t3")]
+    cosine_gap = [float(row[field]) for field in ("cosine_gap_t1", "cosine_gap_t2", "cosine_gap_t3")]
     return {
         "lewm_mse_mean": float(mean(mse)),
         "lewm_mse_max": float(max(mse)),
@@ -268,6 +291,9 @@ def _lewm_window_scores(row: dict[str, str]) -> dict[str, float]:
         "lewm_l2_mean": float(mean(l2)),
         "lewm_l2_max": float(max(l2)),
         "lewm_l2_top2_mean": float(mean(sorted(l2, reverse=True)[:2])),
+        "lewm_cosine_gap_mean": float(mean(cosine_gap)),
+        "lewm_cosine_gap_max": float(max(cosine_gap)),
+        "lewm_cosine_gap_top2_mean": float(mean(sorted(cosine_gap, reverse=True)[:2])),
     }
 
 

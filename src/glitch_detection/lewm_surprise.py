@@ -40,6 +40,17 @@ def aggregate_scores(values: Iterable[float], aggregation: str) -> float:
         # Peak surprise plus dispersion: sensitive to both short spikes and
         # sustained variance in the per-window surprise series.
         return float(array.max() + 0.5 * array.std())
+    if aggregation == "ewm_max":
+        # Exponential weighted mean (alpha=0.3) then max.
+        # Smooths single-frame noise while preserving multi-frame glitch bursts.
+        # A glitch spanning >=3 consecutive windows will survive smoothing;
+        # an isolated 1-frame spike is attenuated by factor (1-alpha)^2 ~= 0.49.
+        alpha = 0.3
+        ewm = np.empty_like(array)
+        ewm[0] = array[0]
+        for i in range(1, len(array)):
+            ewm[i] = alpha * array[i] + (1.0 - alpha) * ewm[i - 1]
+        return float(ewm.max())
     raise ValueError(f"Unknown LeWM surprise aggregation: {aggregation}")
 
 
