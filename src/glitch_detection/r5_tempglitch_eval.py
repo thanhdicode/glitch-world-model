@@ -25,11 +25,12 @@ from .lewm_lance_eval import (
 from .statistics import bootstrap_metric_ci
 
 MANIFEST_SEED = 42
-# Fix 1: Increased from 2 → 10.
-# With n=2 calibration episodes, _percentile(scores, 0.95) ≈ max(s1, s2),
-# making the threshold extremely sensitive to a single outlier (±40% shift).
-# 10 episodes yields a stable p95 estimate, directly improving AUROC.
-CALIBRATION_EPISODE_COUNT = 10
+# Fix 1 (revised): 2 → 5 (safe for all known TempGlitch splits).
+# n=2 made threshold ≈ max(s1,s2), unstable under single outliers (±40% shift).
+# n=10 broke R5-original validation-normal (12 eps → only 2 negatives left).
+# n=5 gives stable p95 estimate while leaving ≥7 negatives on R5-original
+# (12-5=7) and ≥26 negatives on K-A expanded (31-5=26).
+CALIBRATION_EPISODE_COUNT = 5
 # Fix 2: Added max_plus_std and percentile95.
 # max_plus_std = max + 0.5*std captures sustained anomaly bursts without
 # being dominated by a single spike window.
