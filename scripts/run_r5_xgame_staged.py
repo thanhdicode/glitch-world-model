@@ -27,10 +27,10 @@ from glitch_detection.r5_tempglitch_eval import (
     BASELINE_WINDOW_SCORERS,
     EPISODE_AGGREGATIONS,
     EPISODE_SCORE_FIELDS,
-    LEWM_WINDOW_SCORERS,
     _float_text,
     _lewm_window_scores,
     aggregate_episode_scores,
+    lewm_window_scorer_schema,
 )
 from glitch_detection.r5_wob_eval import (
     _build_lance_from_rows,
@@ -677,9 +677,13 @@ def run_lewm_score(
 
 
 def _score_rows_for_lewm(raw_rows: Sequence[dict[str, str]]) -> dict[str, list[dict[str, str]]]:
-    result: dict[str, list[dict[str, str]]] = {name: [] for name in LEWM_WINDOW_SCORERS}
+    schema = lewm_window_scorer_schema(raw_rows[0].keys() if raw_rows else ())
+    available_scorers = tuple(schema["available_window_scorers"])
+    if not available_scorers:
+        raise ValueError("R5-XGame LeWM score rows expose no usable window scorers.")
+    result: dict[str, list[dict[str, str]]] = {name: [] for name in available_scorers}
     for row in raw_rows:
-        for scorer, value in _lewm_window_scores(row).items():
+        for scorer, value in _lewm_window_scores(row, window_scorers=available_scorers).items():
             result[scorer].append({"window_id": row["window_id"], "score": f"{value:.12g}"})
     return result
 
@@ -689,9 +693,13 @@ def run_aggregate_episode(*, output_dir: Path, seeds: Sequence[int]) -> dict[str
     manifest_rows = read_csv_rows(output_dir / WINDOW_MANIFEST_NAME)
     baseline_rows = read_csv_rows(output_dir / BASELINE_SCORE_NAME)
     per_method_rows: list[dict[str, str]] = []
+    lewm_scorer_schemas: dict[str, dict[str, Any]] = {}
     for seed in selected_seeds:
         score_info = validate_existing_lewm_score_file(output_dir, manifest_rows, seed=seed)
         raw_rows = read_csv_rows(Path(score_info["path"]))
+        lewm_scorer_schemas[str(seed)] = lewm_window_scorer_schema(
+            raw_rows[0].keys() if raw_rows else ()
+        )
         for window_scorer, aligned_rows in _score_rows_for_lewm(raw_rows).items():
             for aggregation in EPISODE_AGGREGATIONS:
                 per_method_rows.extend(
@@ -728,6 +736,7 @@ def run_aggregate_episode(*, output_dir: Path, seeds: Sequence[int]) -> dict[str
         {
             "status": "aggregate_episode_complete",
             "episode_score_rows": len(per_method_rows),
+            "lewm_window_scorer_schemas": lewm_scorer_schemas,
             "files": {EPISODE_SCORE_NAME: _file_record(path)},
             "validation_buggy_used_for_fit_select": False,
             "locked_test_materialized": False,

@@ -27,6 +27,33 @@ def _validator():
     return module
 
 
+def test_xgame_lewm_score_rows_omit_unavailable_cosine_gap_scorers():
+    runner = _runner()
+    rows = [
+        {
+            "window_id": "w1",
+            "mse_t1": "1.0",
+            "mse_t2": "2.0",
+            "mse_t3": "3.0",
+            "l2_t1": "4.0",
+            "l2_t2": "5.0",
+            "l2_t3": "6.0",
+        }
+    ]
+
+    scorer_rows = runner._score_rows_for_lewm(rows)
+
+    assert set(scorer_rows) == {
+        "lewm_mse_mean",
+        "lewm_mse_max",
+        "lewm_mse_top2_mean",
+        "lewm_l2_mean",
+        "lewm_l2_max",
+        "lewm_l2_top2_mean",
+    }
+    assert all("cosine_gap" not in scorer for scorer in scorer_rows)
+
+
 def _prepare_valid_package_input(runner, output: Path, manifest: Path) -> None:
     output.mkdir()
     (output / "r5_xgame_manifest.csv").write_bytes(manifest.read_bytes())

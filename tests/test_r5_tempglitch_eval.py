@@ -9,9 +9,13 @@ from pathlib import Path
 import pytest
 
 from glitch_detection.r5_tempglitch_eval import (
+    _lewm_window_scores,
     aggregate_episode_scores,
+    available_lewm_window_scorers,
     evaluate_episode_configuration,
+    lewm_window_scorer_schema,
     load_verified_r5_metrics_artifact,
+    omitted_lewm_window_scorers,
     parse_seed_artifact_roots,
     planned_output_paths,
     refuse_locked_test_path,
@@ -180,6 +184,75 @@ def test_planned_output_paths_include_seed_specific_lewm_files(tmp_path: Path):
     assert str(tmp_path / "lewm_scores_seed43.csv") in outputs
     assert str(tmp_path / "lewm_scores_seed44.csv") in outputs
     assert str(tmp_path / "r5_metrics.json") in outputs
+
+
+def test_lewm_window_scorer_schema_omits_missing_cosine_gap_without_fake_scores():
+    row = {
+        "window_id": "w1",
+        "mse_t1": "1.0",
+        "mse_t2": "2.0",
+        "mse_t3": "3.0",
+        "l2_t1": "4.0",
+        "l2_t2": "5.0",
+        "l2_t3": "6.0",
+    }
+
+    available = available_lewm_window_scorers(row.keys())
+    omitted = omitted_lewm_window_scorers(row.keys())
+    schema = lewm_window_scorer_schema(row.keys())
+    scores = _lewm_window_scores(row, window_scorers=available)
+
+    assert available == (
+        "lewm_mse_mean",
+        "lewm_mse_max",
+        "lewm_mse_top2_mean",
+        "lewm_l2_mean",
+        "lewm_l2_max",
+        "lewm_l2_top2_mean",
+    )
+    assert all("cosine_gap" not in scorer for scorer in scores)
+    assert {item["window_scorer"] for item in omitted} == {
+        "lewm_cosine_gap_mean",
+        "lewm_cosine_gap_max",
+        "lewm_cosine_gap_top2_mean",
+    }
+    assert schema["available_window_scorers"] == list(available)
+
+
+def test_lewm_window_scores_include_cosine_gap_when_fields_exist():
+    row = {
+        "window_id": "w1",
+        "mse_t1": "1.0",
+        "mse_t2": "2.0",
+        "mse_t3": "3.0",
+        "l2_t1": "4.0",
+        "l2_t2": "5.0",
+        "l2_t3": "6.0",
+        "cosine_gap_t1": "0.1",
+        "cosine_gap_t2": "0.2",
+        "cosine_gap_t3": "0.6",
+    }
+
+    scores = _lewm_window_scores(
+        row,
+        window_scorers=available_lewm_window_scorers(row.keys()),
+    )
+
+    assert scores["lewm_cosine_gap_mean"] == pytest.approx(0.3)
+    assert scores["lewm_cosine_gap_max"] == pytest.approx(0.6)
+    assert scores["lewm_cosine_gap_top2_mean"] == pytest.approx(0.4)
+
+
+def test_lewm_window_scores_fail_if_requested_fields_are_missing():
+    row = {
+        "window_id": "w1",
+        "mse_t1": "1.0",
+        "mse_t2": "2.0",
+        "mse_t3": "3.0",
+    }
+
+    with pytest.raises(ValueError, match="missing required scorer fields"):
+        _lewm_window_scores(row, window_scorers=("lewm_l2_mean",))
 
 
 def test_r5_dry_run_prints_planned_output_structure(tmp_path: Path):

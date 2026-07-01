@@ -30,11 +30,11 @@ from .r5_tempglitch_eval import (
     COMPARISON_FIELDS,
     EPISODE_AGGREGATIONS,
     EPISODE_SCORE_FIELDS,
-    LEWM_WINDOW_SCORERS,
     _float_text,
     _lewm_window_scores,
     aggregate_episode_scores,
     evaluate_episode_configuration,
+    lewm_window_scorer_schema,
 )
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -486,6 +486,7 @@ def run_r5_wob_identical_episode_evaluation(
     per_method_rows: list[dict[str, str]] = []
     comparison_rows: list[dict[str, str]] = []
     lewm_outputs: list[dict[str, Any]] = []
+    lewm_scorer_schemas: dict[str, dict[str, Any]] = {}
 
     for artifact in artifact_infos:
         seed = int(artifact["seed"])
@@ -516,16 +517,24 @@ def run_r5_wob_identical_episode_evaluation(
             raw_score_rows,
             ("window_id", "mse_t1", "mse_t2", "mse_t3", "l2_t1", "l2_t2", "l2_t3"),
         )
+        lewm_scorer_schema = lewm_window_scorer_schema(
+            raw_score_rows[0].keys() if raw_score_rows else ()
+        )
+        lewm_scorer_schemas[str(seed)] = lewm_scorer_schema
+        available_scorers = tuple(lewm_scorer_schema["available_window_scorers"])
+        if not available_scorers:
+            raise ValueError(f"Seed {seed} produced no usable LeWM window scorers.")
         lewm_outputs.append(
             {
                 **artifact,
                 "raw_score_path": str(raw_score_path),
                 "raw_score_sha256": sha256_file(raw_score_path),
+                "lewm_window_scorer_schema": lewm_scorer_schema,
             }
         )
-        scorer_rows: dict[str, list[dict[str, str]]] = {name: [] for name in LEWM_WINDOW_SCORERS}
+        scorer_rows: dict[str, list[dict[str, str]]] = {name: [] for name in available_scorers}
         for row in raw_score_rows:
-            for scorer, value in _lewm_window_scores(row).items():
+            for scorer, value in _lewm_window_scores(row, window_scorers=available_scorers).items():
                 scorer_rows[scorer].append(
                     {"window_id": row["window_id"], "score": f"{value:.12g}"}
                 )
@@ -674,6 +683,7 @@ def run_r5_wob_identical_episode_evaluation(
         },
         "dataset_fingerprints": dataset_fingerprints,
         "baseline_metadata": baseline_metadata,
+        "lewm_window_scorer_schemas": lewm_scorer_schemas,
         "train_coverage": train_coverage,
         "eval_coverage": eval_coverage,
         "validation_buggy_used_for_fit_select": False,
@@ -708,6 +718,7 @@ def run_r5_wob_identical_episode_evaluation(
         "window_manifest_sha256": sha256_file(window_manifest_path),
         "seed_artifacts": artifact_infos,
         "baseline_metadata": baseline_metadata,
+        "lewm_window_scorer_schemas": lewm_scorer_schemas,
         "dataset_fingerprints": dataset_fingerprints,
         "validation_buggy_used_for_fit_select": False,
         "locked_test_materialized": False,

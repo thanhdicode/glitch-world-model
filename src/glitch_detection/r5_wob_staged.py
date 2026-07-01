@@ -32,11 +32,11 @@ from .r5_tempglitch_eval import (
     COMPARISON_FIELDS,
     EPISODE_AGGREGATIONS,
     EPISODE_SCORE_FIELDS,
-    LEWM_WINDOW_SCORERS,
     _float_text,
     _lewm_window_scores,
     aggregate_episode_scores,
     evaluate_episode_configuration,
+    lewm_window_scorer_schema,
 )
 from .r5_wob_eval import (
     DEFAULT_EVAL_MANIFEST,
@@ -648,11 +648,13 @@ def run_baseline_scores(
     # mode (count=2) and full runs (count=12) both working correctly.
     manifest_path = Path(materialize["files"][WINDOW_MANIFEST_NAME]["path"])
     manifest_rows_for_count = read_csv_rows(manifest_path)
-    calibration_episode_count = len({
-        row["source_episode_id"]
-        for row in manifest_rows_for_count
-        if row["evaluation_role"] == "calibration_normal"
-    })
+    calibration_episode_count = len(
+        {
+            row["source_episode_id"]
+            for row in manifest_rows_for_count
+            if row["evaluation_role"] == "calibration_normal"
+        }
+    )
 
     baseline_metadata = gate8_module.run_gate8_baselines(
         manifest_path=manifest_path,
@@ -776,12 +778,20 @@ def assemble_r5_wob_from_stages(
     per_method_rows: list[dict[str, str]] = []
     comparison_rows: list[dict[str, str]] = []
     lewm_outputs: list[dict[str, Any]] = []
+    lewm_scorer_schemas: dict[str, dict[str, Any]] = {}
 
     for seed in SUPPORTED_SEEDS:
         stage = _validate_stage_marker(output_dir, f"lewm_seed{seed}", expected_smoke=smoke)
         raw_score_path = Path(stage["files"][f"lewm_scores_seed{seed}.csv"]["path"])
         raw_score_rows = read_csv_rows(raw_score_path)
         validate_score_alignment(manifest_rows, raw_score_rows)
+        lewm_scorer_schema = lewm_window_scorer_schema(
+            raw_score_rows[0].keys() if raw_score_rows else ()
+        )
+        lewm_scorer_schemas[str(seed)] = lewm_scorer_schema
+        available_scorers = tuple(lewm_scorer_schema["available_window_scorers"])
+        if not available_scorers:
+            raise ValueError(f"Seed {seed} produced no usable LeWM window scorers.")
         artifact = next(
             item for item in preflight["seed_artifacts"] if int(item["seed"]) == int(seed)
         )
@@ -790,11 +800,12 @@ def assemble_r5_wob_from_stages(
                 **artifact,
                 "raw_score_path": str(raw_score_path),
                 "raw_score_sha256": sha256_file(raw_score_path),
+                "lewm_window_scorer_schema": lewm_scorer_schema,
             }
         )
-        scorer_rows: dict[str, list[dict[str, str]]] = {name: [] for name in LEWM_WINDOW_SCORERS}
+        scorer_rows: dict[str, list[dict[str, str]]] = {name: [] for name in available_scorers}
         for row in raw_score_rows:
-            for scorer, value in _lewm_window_scores(row).items():
+            for scorer, value in _lewm_window_scores(row, window_scorers=available_scorers).items():
                 scorer_rows[scorer].append(
                     {"window_id": row["window_id"], "score": f"{value:.12g}"}
                 )
@@ -946,6 +957,7 @@ def assemble_r5_wob_from_stages(
         },
         "dataset_fingerprints": materialize["dataset_fingerprints"],
         "baseline_metadata": baseline_stage["baseline_metadata"],
+        "lewm_window_scorer_schemas": lewm_scorer_schemas,
         "train_coverage": preflight["train_coverage"],
         "eval_coverage": preflight["eval_coverage"],
         "validation_buggy_used_for_fit_select": False,
@@ -982,6 +994,7 @@ def assemble_r5_wob_from_stages(
         "window_manifest_sha256": sha256_file(output_dir / WINDOW_MANIFEST_NAME),
         "seed_artifacts": preflight["seed_artifacts"],
         "baseline_metadata": baseline_stage["baseline_metadata"],
+        "lewm_window_scorer_schemas": lewm_scorer_schemas,
         "dataset_fingerprints": materialize["dataset_fingerprints"],
         "validation_buggy_used_for_fit_select": False,
         "locked_test_materialized": False,
@@ -998,6 +1011,7 @@ def assemble_r5_wob_from_stages(
         "report_path": report_path,
         "provenance_path": provenance_path,
         "seed_outputs": lewm_outputs,
+        "lewm_window_scorer_schemas": lewm_scorer_schemas,
     }
 
 
@@ -1025,6 +1039,7 @@ def run_aggregate_metrics(
         "smoke": smoke,
         "bootstrap_seed": bootstrap_seed,
         "n_bootstrap": n_bootstrap,
+        "lewm_window_scorer_schemas": assembled["lewm_window_scorer_schemas"],
         "files": {
             "episode_scores.csv": _file_record(assembled["episode_scores_path"]),
             "r5_wob_comparison.csv": _file_record(assembled["comparison_path"]),

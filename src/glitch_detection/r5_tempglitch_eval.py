@@ -8,7 +8,7 @@ import shutil
 from collections import defaultdict
 from pathlib import Path
 from statistics import mean, stdev
-from typing import Any, Sequence
+from typing import Any, Iterable, Sequence
 
 from .evaluate import auroc, average_precision, binary_metrics
 from .kaggle_automation import FingerprintBuilder
@@ -54,6 +54,17 @@ LEWM_WINDOW_SCORERS = (
     "lewm_cosine_gap_max",
     "lewm_cosine_gap_top2_mean",
 )
+LEWM_WINDOW_SCORER_FIELDS = {
+    "lewm_mse_mean": ("mse_t1", "mse_t2", "mse_t3"),
+    "lewm_mse_max": ("mse_t1", "mse_t2", "mse_t3"),
+    "lewm_mse_top2_mean": ("mse_t1", "mse_t2", "mse_t3"),
+    "lewm_l2_mean": ("l2_t1", "l2_t2", "l2_t3"),
+    "lewm_l2_max": ("l2_t1", "l2_t2", "l2_t3"),
+    "lewm_l2_top2_mean": ("l2_t1", "l2_t2", "l2_t3"),
+    "lewm_cosine_gap_mean": ("cosine_gap_t1", "cosine_gap_t2", "cosine_gap_t3"),
+    "lewm_cosine_gap_max": ("cosine_gap_t1", "cosine_gap_t2", "cosine_gap_t3"),
+    "lewm_cosine_gap_top2_mean": ("cosine_gap_t1", "cosine_gap_t2", "cosine_gap_t3"),
+}
 BASELINE_WINDOW_SCORERS = ("frame_diff", "feature_distance")
 EPISODE_SCORE_FIELDS = (
     "method_family",
@@ -280,27 +291,87 @@ def planned_output_paths(output_dir: Path, seeds: Sequence[int]) -> list[str]:
     ]
 
 
-def _lewm_window_scores(row: dict[str, str]) -> dict[str, float]:
-    mse = [float(row[field]) for field in ("mse_t1", "mse_t2", "mse_t3")]
-    l2 = [float(row[field]) for field in ("l2_t1", "l2_t2", "l2_t3")]
-    # cosine_gap fields are optional: WOB scoring pipeline does not emit them.
-    # Fall back to 0.0 so cosine_gap scorers return a neutral (non-discriminating)
-    # score rather than raising KeyError.
-    cosine_gap = [
-        float(row.get(field, "0.0"))
-        for field in ("cosine_gap_t1", "cosine_gap_t2", "cosine_gap_t3")
-    ]
+def available_lewm_window_scorers(fieldnames: Iterable[str]) -> tuple[str, ...]:
+    fields = set(fieldnames)
+    return tuple(
+        scorer
+        for scorer in LEWM_WINDOW_SCORERS
+        if all(field in fields for field in LEWM_WINDOW_SCORER_FIELDS[scorer])
+    )
+
+
+def omitted_lewm_window_scorers(fieldnames: Iterable[str]) -> list[dict[str, Any]]:
+    fields = set(fieldnames)
+    omitted: list[dict[str, Any]] = []
+    for scorer in LEWM_WINDOW_SCORERS:
+        missing = [field for field in LEWM_WINDOW_SCORER_FIELDS[scorer] if field not in fields]
+        if missing:
+            omitted.append(
+                {
+                    "window_scorer": scorer,
+                    "missing_fields": missing,
+                    "reason": "missing_required_score_fields",
+                }
+            )
+    return omitted
+
+
+def lewm_window_scorer_schema(fieldnames: Iterable[str]) -> dict[str, Any]:
+    available = available_lewm_window_scorers(fieldnames)
     return {
-        "lewm_mse_mean": float(mean(mse)),
-        "lewm_mse_max": float(max(mse)),
-        "lewm_mse_top2_mean": float(mean(sorted(mse, reverse=True)[:2])),
-        "lewm_l2_mean": float(mean(l2)),
-        "lewm_l2_max": float(max(l2)),
-        "lewm_l2_top2_mean": float(mean(sorted(l2, reverse=True)[:2])),
-        "lewm_cosine_gap_mean": float(mean(cosine_gap)),
-        "lewm_cosine_gap_max": float(max(cosine_gap)),
-        "lewm_cosine_gap_top2_mean": float(mean(sorted(cosine_gap, reverse=True)[:2])),
+        "available_window_scorers": list(available),
+        "omitted_window_scorers": omitted_lewm_window_scorers(fieldnames),
     }
+
+
+def _lewm_window_scores(
+    row: dict[str, str],
+    *,
+    window_scorers: Iterable[str] | None = None,
+) -> dict[str, float]:
+    selected = tuple(window_scorers) if window_scorers is not None else LEWM_WINDOW_SCORERS
+    unknown = [scorer for scorer in selected if scorer not in LEWM_WINDOW_SCORER_FIELDS]
+    if unknown:
+        raise ValueError(f"Unknown LeWM window scorer(s): {unknown}")
+    missing = {
+        scorer: [field for field in LEWM_WINDOW_SCORER_FIELDS[scorer] if field not in row]
+        for scorer in selected
+    }
+    missing = {scorer: fields for scorer, fields in missing.items() if fields}
+    if missing:
+        raise ValueError(f"LeWM score row is missing required scorer fields: {missing}")
+
+    scores: dict[str, float] = {}
+    if any(scorer.startswith("lewm_mse_") for scorer in selected):
+        mse = [float(row[field]) for field in ("mse_t1", "mse_t2", "mse_t3")]
+        scores.update(
+            {
+                "lewm_mse_mean": float(mean(mse)),
+                "lewm_mse_max": float(max(mse)),
+                "lewm_mse_top2_mean": float(mean(sorted(mse, reverse=True)[:2])),
+            }
+        )
+    if any(scorer.startswith("lewm_l2_") for scorer in selected):
+        l2 = [float(row[field]) for field in ("l2_t1", "l2_t2", "l2_t3")]
+        scores.update(
+            {
+                "lewm_l2_mean": float(mean(l2)),
+                "lewm_l2_max": float(max(l2)),
+                "lewm_l2_top2_mean": float(mean(sorted(l2, reverse=True)[:2])),
+            }
+        )
+    if any(scorer.startswith("lewm_cosine_gap_") for scorer in selected):
+        cosine_gap = [
+            float(row[field]) for field in ("cosine_gap_t1", "cosine_gap_t2", "cosine_gap_t3")
+        ]
+        scores.update(
+            {
+                "lewm_cosine_gap_mean": float(mean(cosine_gap)),
+                "lewm_cosine_gap_max": float(max(cosine_gap)),
+                "lewm_cosine_gap_top2_mean": float(mean(sorted(cosine_gap, reverse=True)[:2])),
+            }
+        )
+    return {scorer: scores[scorer] for scorer in selected}
 
 
 def aggregate_episode_scores(
@@ -580,19 +651,22 @@ def run_r5_tempglitch_identical_episode_evaluation(
         lewm_rows = read_csv_rows(root_score_path)
         if [row["window_id"] for row in manifest_rows] != [row["window_id"] for row in lewm_rows]:
             raise ValueError(f"LeWM scores for seed {seed} do not align to the R5 manifest.")
+        lewm_scorer_schema = lewm_window_scorer_schema(lewm_rows[0].keys() if lewm_rows else ())
+        available_scorers = tuple(lewm_scorer_schema["available_window_scorers"])
+        if not available_scorers:
+            raise ValueError(f"Seed {seed} produced no usable LeWM window scorers.")
         lewm_outputs.append(
             {
                 **info,
                 "raw_score_path": str(root_score_path),
                 "raw_score_sha256": sha256_file(root_score_path),
                 "gate7_metadata": metadata,
+                "lewm_window_scorer_schema": lewm_scorer_schema,
             }
         )
-        scorer_rows: dict[str, list[dict[str, str]]] = {
-            scorer: [] for scorer in LEWM_WINDOW_SCORERS
-        }
+        scorer_rows: dict[str, list[dict[str, str]]] = {scorer: [] for scorer in available_scorers}
         for row in lewm_rows:
-            for scorer, value in _lewm_window_scores(row).items():
+            for scorer, value in _lewm_window_scores(row, window_scorers=available_scorers).items():
                 scorer_rows[scorer].append(
                     {"window_id": row["window_id"], "score": f"{value:.12g}"}
                 )

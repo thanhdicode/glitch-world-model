@@ -1,11 +1,12 @@
 # NEXT_ACTION.md
 
-Last updated: 2026-06-30T00:00:00+07:00
-Commit: `5b45fb656bebde09d8788772f7b02c28be27c8c4`
+Last updated: 2026-07-01T09:13:08+00:00
+Commit: `5be9ede79fde67c04390b68af05c71cc558f097d`
 
 ## Current Priority
 Continue the evidence-safe paper revision and K-C intake-preparation lane after integrating the
 locally intake-reviewed K-A expanded TempGlitch output into the manuscript as auxiliary evidence.
+Use `CODEX_MASTER_PROMPT_LeWM_v6.md` as the paper-pass prompt.
 Authority roadmap: `docs/roadmap/MASTER_ROADMAP_LeWM_Glitch_v4.md`.
 
 ## Next Gate (Paper Revision V6)

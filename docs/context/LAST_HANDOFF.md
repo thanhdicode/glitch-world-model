@@ -1,85 +1,76 @@
 # LAST_HANDOFF.md
 
-Last completed task: TempGlitch selection reporting audit and helper
-Commit: `7085370e097ef233382c07809f9e8705090e1aa3`
+Last completed task: Diagnose and harden K-C/WOB scorer schema after Kaggle Fix #3 failure
+Commit: `5be9ede79fde67c04390b68af05c71cc558f097d`
 Date: 2026-07-01T00:00:00+07:00
 
 ## What Changed
 
-- Added a no-GPU TempGlitch selection summary helper that ranks comparison rows and distinguishes
-  window scorers from episode aggregations.
-- Added focused tests for ranking, malformed comparisons, non-finite metrics, and locked-test
-  safety metadata.
-- Wrote the TempGlitch selection reporting audit report in
-  `docs/research/130_tempglitch_selection_reporting_audit_2026_07_01.md`.
-- Confirmed the immediate issue is reporting hardening, not adding a missing TempGlitch scorer.
+- Diagnosed the Kaggle Fix #3 Version 4 failure as a scorer-schema mismatch: K-C/WOB LeWM score
+  CSVs emit `mse_t*` and `l2_t*` fields but not `cosine_gap_t*`, while the aggregation path tried
+  to evaluate every scorer in `LEWM_WINDOW_SCORERS`.
+- Replaced the previous neutral `0.0` cosine-gap fallback with schema-aware scorer selection:
+  unavailable scorers are omitted with explicit `missing_required_score_fields` metadata rather
+  than reported as fake constant metrics.
+- Added `available_lewm_window_scorers`, `omitted_lewm_window_scorers`, and
+  `lewm_window_scorer_schema` helpers in `src/glitch_detection/r5_tempglitch_eval.py`.
+- Updated TempGlitch, WOB non-staged, K-C/WOB staged, and R5-XGame staged aggregation paths to
+  aggregate only available LeWM window scorers and fail if no usable LeWM scorer exists.
+- Added scorer-schema metadata to WOB/K-C metrics, provenance, stage markers, and seed outputs.
+- Added regression tests proving missing cosine-gap fields are omitted, present cosine-gap fields
+  are still evaluated, and R5-XGame does not synthesize cosine-gap rows from WOB-style score CSVs.
 
 ## Checks Passed
 
-- `python scripts/update_context_cache.py --refresh-boot`
-- `python scripts/validate_context_cache.py`
-- `python -m pytest tests/test_summarize_tempglitch_selection.py tests/test_research_release_tools.py tests/test_context_cache.py -q`
-- `python -m ruff check scripts/summarize_tempglitch_selection.py tests/test_summarize_tempglitch_selection.py`
-- `python -m ruff format --check scripts/summarize_tempglitch_selection.py tests/test_summarize_tempglitch_selection.py`
+- `python -m pytest`
+- `python -m ruff check .`
+- `python -m ruff format --check .`
 - `python scripts/check_claim_registry.py`
 - `python scripts/validate_research_release.py --ci`
 - `python scripts/doctor.py`
-- `python -m ruff check .`
-- `python -m ruff format --check .`
-- `git diff --check`
+- `python scripts/update_context_cache.py --refresh-boot`
+- `python scripts/validate_context_cache.py`
 - `pre-commit run --all-files`
-
-## Checks Attempted / Failed
-
-- Full `python -m pytest` was attempted and passed 654 tests, but failed one out-of-scope WOB
-  staging test because `tests/test_r5_wob_stage.py` expected `repacked_extracted_folder` while
-  `src/glitch_detection/r5_wob_staged.py` returned `repacked_extracted_root`.
 
 ## Safety Status
 
 - No GPU training, Kaggle launch, window rescoring, locked-test materialization, or locked-test
   scoring was performed.
+- No K-C/WOB binary result is claimed yet; the next Kaggle run must use the updated commit and its
+  downloaded tarball plus SHA sidecar must pass local intake before any result claim.
+- The change improves artifact honesty: K-C/WOB outputs should report only real emitted LeWM
+  scorers and explicitly document omitted cosine-gap scorer families.
 - Output artifacts, checkpoints, Lance datasets, caches, credentials, and Kaggle files remain
   uncommitted.
-- The TempGlitch audit remains bounded to existing validated non-locked artifacts and does not
-  introduce broad performance, superiority, temporal-localization, cross-game, SIGReg-benefit, or
-  locked-test claims.
 - The existing `_kaggle_upload/` directory remains untracked and uncommitted.
 
 ## Gate Status After Task
 
-- TempGlitch selection reporting now has a focused helper and audit record that make the scorer
-  versus aggregation axes explicit.
-- R5 identical-episode, pair-disjoint TempGlitch, and K-A expanded TempGlitch reporting should
-  continue to describe `lewm_l2_max` as a window scorer and episode `mean` as the best-row
-  aggregation where applicable.
-- K-C WOB binary remains pending until a success tarball plus SHA sidecar are available and pass
-  local intake.
+- K-C/WOB binary remains pending until a successful Kaggle run is downloaded and validated.
 - Locked test remains closed.
+- Current next gate remains evidence-safe paper revision plus K-C intake-preparation.
 
 ## Open Blockers
 
 - K-C output cannot be claimed until `kc_wob_binary_outputs.tar.gz` plus `.sha256` are downloaded
   and pass local intake.
-- Any GPU retraining or architecture/history-size lane should wait until the K-C intake status and
-  paper narrative gap are known.
-- The full test suite has one out-of-scope WOB staging expectation mismatch:
-  `tests/test_r5_wob_stage.py::test_resolve_seed_inputs_repacks_extracted_seed_folder`.
-- Locked test remains closed and requires a separate direct user command.
+- The next Kaggle cell must checkout/use a commit containing the schema-aware scorer fix; rerunning
+  commit `77623fb` will reproduce the old `KeyError: 'cosine_gap_t1'`.
+- Any paper wording must avoid treating omitted cosine-gap scorer families as evaluated metrics.
 
 ## Next Recommended Task
 
-- Continue the evidence-safe paper revision plus K-C intake-preparation lane.
-- Run K-C WOB binary intake if the success tarball and SHA sidecar are available.
-- Consider GPU retraining only after K-C status and paper narrative gaps are known.
+- Commit/push the schema-aware scorer fix.
+- Rerun the K-C WOB binary Kaggle job from the new commit.
+- If Kaggle succeeds, download `kc_wob_binary_outputs.tar.gz` and `.sha256`, then run local intake
+  validation before updating any claim registry or paper text.
 
 ## Files Likely Relevant Next
 
-- `docs/research/130_tempglitch_selection_reporting_audit_2026_07_01.md`
-- `scripts/summarize_tempglitch_selection.py`
-- `tests/test_summarize_tempglitch_selection.py`
-- `docs/research/16_claim_registry.md`
-- `docs/research/101_tempglitch_followup_results.md`
-- `docs/research/129_ka_tempglitch_expanded_intake_2026_06_30.md`
+- `src/glitch_detection/r5_tempglitch_eval.py`
+- `src/glitch_detection/r5_wob_staged.py`
+- `scripts/run_r5_xgame_staged.py`
+- `tests/test_r5_tempglitch_eval.py`
+- `tests/test_r5_xgame_runner.py`
 - `scripts/validate_kc_wob_binary_output.py`
 - `kaggle/kc_wob_binary/KAGGLE_K_C_WOB_BINARY.md`
