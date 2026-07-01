@@ -642,15 +642,28 @@ def run_baseline_scores(
         return cached
     materialize = _validate_stage_marker(output_dir, "materialize_lance", expected_smoke=smoke)
     gate8_module = _load_script_module("run_gate8_baselines_from_lance")
+
+    # Derive the actual calibration episode count from the already-written window
+    # manifest rather than relying on any hard-coded constant. This keeps smoke
+    # mode (count=2) and full runs (count=12) both working correctly.
+    manifest_path = Path(materialize["files"][WINDOW_MANIFEST_NAME]["path"])
+    manifest_rows_for_count = read_csv_rows(manifest_path)
+    calibration_episode_count = len({
+        row["source_episode_id"]
+        for row in manifest_rows_for_count
+        if row["evaluation_role"] == "calibration_normal"
+    })
+
     baseline_metadata = gate8_module.run_gate8_baselines(
-        manifest_path=Path(materialize["files"][WINDOW_MANIFEST_NAME]["path"]),
+        manifest_path=manifest_path,
         train_lance=Path(materialize["files"][TRAIN_LANCE_NAME]["path"]),
         normal_lance=Path(materialize["files"][NORMAL_LANCE_NAME]["path"]),
         buggy_lance=Path(materialize["files"][BUGGY_LANCE_NAME]["path"]),
         output_dir=output_dir,
         batch_size=baseline_batch_size,
+        expected_calibration_episode_count=calibration_episode_count,
     )
-    manifest_rows = read_csv_rows(Path(materialize["files"][WINDOW_MANIFEST_NAME]["path"]))
+    manifest_rows = read_csv_rows(manifest_path)
     baseline_path = output_dir / "baseline_scores.csv"
     baseline_rows = read_csv_rows(baseline_path)
     gate8_module.validate_baseline_alignment(manifest_rows, baseline_rows)
