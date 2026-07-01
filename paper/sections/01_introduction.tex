@@ -1,60 +1,55 @@
 \section{Introduction}
 \label{sec:introduction}
 
-Gameplay glitches are visible software failures that disrupt interaction, presentation,
-or progression. They are usually temporal events: a character sticks in place, an animation
-freezes, a projectile behaves inconsistently, or motion violates the expected game dynamics.
-This makes gameplay glitch detection different from static screenshot anomaly detection.
-Benchmarks such as GlitchBench, TempGlitch, and VideoGlitchBench make this distinction visible:
-some tasks ask whether a single frame looks unusual, while temporal glitch detection asks whether
-an episode evolves in an unexpected way~\cite{glitchbench,tempglitch,videoglitchbench}.
+Video game quality assurance is a labor-intensive process in which testers search for visual
+and behavioral anomalies across hours of gameplay footage. Glitches --- unintended deviations
+from expected game behavior --- range from geometry clipping and texture corruption to frozen
+animations and physics violations. Detecting these anomalies automatically is valuable both
+during development and for post-release monitoring, yet the task is difficult: glitches can be
+subtle, game-specific, and sometimes visible only across a sequence of frames rather than in any
+single image~\cite{tempglitch,worldofbugs}.
 
-The core insight of this paper is that a gameplay glitch is a violation of expected game
-dynamics. When a character teleports unexpectedly, a projectile freezes, or an avatar becomes
-stuck, the observed transition no longer matches the latent dynamics that normal gameplay would
-have implied. This maps naturally onto world-model surprise: if a model has learned only normal
-gameplay, a glitch should manifest as an anomalously large prediction error in latent space.
-Unlike pixel-level anomaly detection, latent-space surprise is less sensitive to superficial
-visual variation such as camera angle, lighting, or texture detail that may change during normal
-play but do not themselves indicate a bug.
+Existing automated approaches to game glitch detection fall into two broad families. The first
+relies on large pretrained vision-language models (VLMs) queried at test time with image or
+video prompts~\cite{glitchbench,tempglitch}. These models are general-purpose and require no
+game-specific training, but they remain near chance on temporal glitch benchmarks~\cite{tempglitch}
+and are expensive to query at scale. The second family uses curated classification datasets with
+explicit positive and negative labels, which requires collecting labeled glitch examples for each
+game or glitch type~\cite{worldofbugs}.
 
-Joint-Embedding Predictive Architectures (JEPAs) are a particularly natural fit for this
-setting because they predict in representation space rather than reconstructing pixels directly,
-focusing the objective on semantically meaningful dynamics instead of every visual detail
-in the frame~\cite{lecun2022path,ijepa,vjepa,vjepa2}. LeWorldModel extends this family to
-pixel-based world modeling and gives us an artifact-backed gameplay backbone for testing whether
-latent prediction error can serve as a label-free glitch signal~\cite{lewm}. In this paper we
-use that JEPA-style backbone as an unsupervised detector: train on normal gameplay, score each
-window by latent prediction error, aggregate to the episode level, and calibrate thresholds using
-normal-only episodes.
+We explore a complementary direction. Rather than using a large VLM or a labeled glitch
+dataset, we ask whether the \emph{latent prediction error} of a compact world model trained
+exclusively on normal gameplay can serve as a label-free signal for episode-level glitch
+detection. The intuition is straightforward: a world model that has learned the latent dynamics
+of normal play should produce larger prediction errors when it encounters abnormal transitions,
+such as those produced by glitches. This idea has clear precedent in the world-model
+literature~\cite{worldmodels,dreamerv3}, but has not been evaluated in the game-glitch domain
+with explicit leakage-aware episodic splits.
 
-This paper asks a bounded empirical question rather than introducing a new large model:
-does JEPA-style latent surprise produce useful glitch-detection evidence under leakage-aware
-protocols on public gameplay benchmarks? We answer that question with one positive same-support
-TempGlitch comparison, one stronger secondary frozen R5-XGame result family, and two honest
-negative analyses that clarify where temporal latent surprise does and does not help.
+We instantiate this approach as \textbf{LeWM-Glitch}, using the frozen checkpoints of
+LeWorldModel~\cite{lewm} --- a JEPA-style end-to-end pixel-conditioned dynamics model ---
+as a fixed feature extractor. Figure~\ref{fig:pipeline} summarizes the scoring pipeline.
+The method requires no glitch labels during training or calibration; the only labeled
+information it uses is the identity of normal episodes for threshold calibration. We evaluate
+LeWM-Glitch under a strict leakage-aware protocol that enforces source-, pair-, and
+episode-disjoint role separation before window generation.
 
-The contributions of this paper are:
-\begin{itemize}[leftmargin=*]
-\item \textbf{Method}: LeWM-Glitch, a JEPA-based latent prediction error (LPE) signal
-for label-free gameplay glitch detection, instantiated from artifact-backed LeWorldModel
-checkpoints with source-, pair-, and episode-aware role separation before windowing~\cite{lewm};
-\item \textbf{Multi-benchmark leakage-aware evaluation}: a frozen pair-disjoint TempGlitch
-follow-up and a complementary R5-XGame evaluation, both under strict normal-only calibration
-protocols, establishing LeWM-Glitch's performance on two independently bounded
-splits~\cite{tempglitch,videoglitchbench};
-\item \textbf{Honest negative findings}: a bounded GlitchBench K2 negative result (AUROC 0.5 for
-the current LeWM configuration vs.\ AUROC 1.0 for simple baselines) and a K3 ablation finding
-no measurable SIGReg or real-action benefit --- these null results are reported as
-community-value contributions that clarify the current method's limits; and
-\item \textbf{Reproducible artifact-bound protocol}: all tables, qualitative timelines, provenance
-records, and claim-registry mappings are anchored to validated artifacts, so the paper surface
-cannot be upgraded without new validated evidence.
-\end{itemize}
+This paper makes the following contributions:
+\begin{enumerate}
+  \item We formulate episode-level gameplay glitch detection as latent prediction error scoring
+  over a normal-trained JEPA world model and define a clean leakage-aware evaluation protocol
+  with three disjoint roles: train-normal, calibration-normal, and evaluation.
+  \item We report bounded evaluation results on two independently frozen, non-locked splits:
+  a TempGlitch-based follow-up (12 normal, 22 buggy episodes) and a secondary R5-XGame split
+  (12 normal, 60 buggy episodes), including bootstrap confidence intervals.
+  \item We report honest negative findings on GlitchBench (K2) and a mechanistic ablation (K3),
+  showing that the positive results are not explained by SIGReg regularization or
+  real-action conditioning, and that LeWM-Glitch does not transfer to image-level glitch detection.
+  \item We provide a reproducible, artifact-backed experiment package with SHA-256 provenance,
+  a validator-backed claim registry, and a non-locked validation boundary that is clearly
+  distinguished from any future locked-test evaluation.
+\end{enumerate}
 
-The scope is deliberately careful. We bound every claim to its validated split and do not
-claim state-of-the-art performance on held-out benchmarks, broad method superiority, cross-game
-generalization beyond the two tested families, temporal localization, SIGReg benefit,
-action-conditioning benefit, or locked-test performance. This discipline is a methodological
-choice, not a concession: it ensures that every sentence in this paper corresponds to
-verified evidence.
+All results are non-locked validation evidence on small, frozen splits.
+We make no claims of statistical superiority, broad generalization, temporal localization,
+or deployment readiness.

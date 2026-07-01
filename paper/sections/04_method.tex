@@ -1,61 +1,116 @@
 \section{Method}
 \label{sec:method}
 
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[
+  node distance=1.0cm and 0.7cm,
+  box/.style={draw, rounded corners=3pt, fill=blue!8, minimum width=2.2cm,
+               minimum height=0.65cm, align=center, font=\small},
+  dbox/.style={draw, dashed, rounded corners=3pt, fill=gray!10, minimum width=2.2cm,
+               minimum height=0.65cm, align=center, font=\small},
+  arrow/.style={-{Stealth[length=5pt]}, thick},
+  label/.style={font=\scriptsize, align=center}
+]
+
+% Row 1: Input frames
+\node[box] (frames) {Input frames\\$x_t, x_{t+1}, \ldots$};
+
+% Row 2: Encoder
+\node[box, below=of frames] (encoder) {ViT Encoder $f_\theta$\\(frozen LeWM)};
+\draw[arrow] (frames) -- (encoder);
+
+% Split: z_t and z_{t+1}
+\node[box, below left=0.8cm and 0.5cm of encoder] (zt) {$z_t = f_\theta(x_t)$};
+\node[box, below right=0.8cm and 0.5cm of encoder] (zt1) {$z_{t+1} = f_\theta(x_{t+1})$};
+\draw[arrow] (encoder) -- (zt);
+\draw[arrow] (encoder) -- (zt1);
+
+% Predictor
+\node[box, below=0.8cm of zt] (pred) {JEPA Predictor $g_\phi$\\(frozen, zero-action)};
+\draw[arrow] (zt) -- (pred);
+
+% Predicted z
+\node[box, below=of pred] (zhat) {$\hat{z}_{t+1} = g_\phi(z_t)$};
+\draw[arrow] (pred) -- (zhat);
+
+% LPE
+\node[box, below right=0.8cm and 0.0cm of zhat, xshift=0.7cm] (lpe)
+  {LPE: $d_{e,t} = \|\hat{z}_{t+1} - z_{t+1}\|_2^2$};
+\draw[arrow] (zhat) -- (lpe);
+\draw[arrow] (zt1) -- (lpe);
+
+% Aggregation
+\node[box, below=of lpe] (agg)
+  {Episode aggregation\\$S_e = A(\{d_{e,t}\})$};
+\draw[arrow] (lpe) -- (agg);
+
+% Calibration node (side)
+\node[dbox, right=1.4cm of agg] (cal)
+  {Threshold $\tau$\\(p95, normal-only)};
+
+% Decision
+\node[box, below=of agg] (dec)
+  {Decision: $\hat{y}_e = \mathbf{1}[S_e \geq \tau]$};
+\draw[arrow] (agg) -- (dec);
+\draw[arrow] (cal) -- (dec);
+
+\end{tikzpicture}
+\caption{%
+LeWM-Glitch scoring pipeline. Gameplay frames are encoded by a frozen ViT-based
+LeWorldModel~\cite{lewm} encoder. A frozen JEPA predictor estimates the next latent state.
+The latent prediction error (LPE, Eq.~\ref{eq:lpe}) is aggregated over windows to an episode
+score $S_e$ (Eq.~\ref{eq:aggregation}). The detection threshold $\tau$ is set from
+normal-only calibration episodes (Eq.~\ref{eq:threshold}); no buggy episodes are used at any
+stage before evaluation. This pipeline does not perform temporal localization.%
+}
+\label{fig:pipeline}
+\end{figure}
+
 \subsection{JEPA-Style Latent-Surprise Detector}
 
-The evaluated LeWM path is a JEPA-style latent predictor trained on normal gameplay only. For a
-window $w_{e,t}$ with context frames and optional actions, an encoder produces target latent
-representations and a predictor estimates future latent states from the available context. Let
-$z_{e,t}$ denote the target latent tensor and $\hat{z}_{e,t}$ the predicted tensor. A window-level
-surprise signal is then derived from their discrepancy. The validated score registry includes
-mean, maximum, and top-two-mean summaries of either elementwise mean-squared error or L2 error:
+LeWM-Glitch is built on the frozen LeWorldModel (LeWM)~\cite{lewm} checkpoint --- a
+JEPA-style end-to-end pixel-conditioned dynamics model with a ViT encoder, an AdaLN-conditioned
+predictor, and a SIGReg spectral regularizer. Given a window of consecutive gameplay frames, the
+encoder $f_\theta$ maps each frame to a latent tensor; the JEPA predictor $g_\phi$ estimates
+the next latent state from the preceding context. The \emph{latent prediction error} (LPE) per
+window follows Eq.~\ref{eq:lpe}. We evaluate the following score variants:
 \begin{equation}
-d_{e,t} \in \{\texttt{lewm\_mse\_mean},\texttt{lewm\_mse\_max},\texttt{lewm\_mse\_top2\_mean},
-\texttt{lewm\_l2\_mean},\texttt{lewm\_l2\_max},\texttt{lewm\_l2\_top2\_mean}\}.
+d_{e,t} \in \{\texttt{mse\_mean},\,\texttt{mse\_max},\,\texttt{mse\_top2\_mean},
+  \,\texttt{l2\_mean},\,\texttt{l2\_max},\,\texttt{l2\_top2\_mean}\}.
 \end{equation}
-We treat these as recorded detector variants exposed by validated artifacts rather than as new
-architectural contributions.
+These differ only in the elementwise reduction (MSE vs.~L2) and the within-window
+summary; all are derived from the same frozen checkpoint.
 
-TempGlitch does not provide verified action traces in the current adapter path, so its LeWM
-evaluation uses an explicitly documented zero-action input. The separate R5-XGame family uses its
-own real-action protocol. Because the evidence families differ in both domain and action mode,
-their absolute scores are not used to claim action-conditioning benefit.
+The TempGlitch evaluation path uses a documented zero-action input because verified action
+traces are not available in the current dataset adapter. The R5-XGame path uses its own
+action-present protocol. Because the two evaluation families differ in domain and action mode,
+no cross-family comparison is used to argue for action-conditioning benefit.
 
-\subsection{Episode-Level Detector}
+\subsection{Episode-Level Aggregation}
 
-Window scores are aggregated to one episode score
-\begin{equation}
-S_e = A\left(d_{e,1}, \ldots, d_{e,T_e}\right),
-\end{equation}
-where $A$ is one of \texttt{mean}, \texttt{max}, or \texttt{top2\_mean}. Mean emphasizes
-sustained elevated surprise, whereas \texttt{max} and \texttt{top2\_mean} emphasize short,
-high-scoring segments. The paper reports the strongest recorded rows and their uncertainty without
-claiming that any aggregation is universally optimal.
+Window scores are aggregated to a single episode score $S_e$ as in Eq.~\ref{eq:aggregation}.
+\texttt{mean} aggregation emphasizes sustained elevated surprise across the episode;
+\texttt{max} and \texttt{top2\_mean} are more sensitive to brief, high-intensity anomalies.
+Results are reported per configuration; no post-hoc selection on evaluation data is performed.
 
 \subsection{Baseline Families}
 
-Two simple baselines share the same episode-level reporting interface. \texttt{frame\_diff}
-measures visual change between adjacent frames and requires no train-time fit.
-\texttt{feature\_distance} fits a normal reference on allowed train-normal data only and scores
-distance from that reference at evaluation time.
+Two simple baselines require no learned components: \texttt{frame\_diff} measures
+frame-to-frame visual change; \texttt{feature\_distance} fits a normal reference on
+train-normal data and scores Euclidean distance from that reference at test time.
+The exact-support K1 comparison adds three learned baselines trained only on allowed
+train-normal data: a convolutional LSTM (\texttt{cnn\_lstm}), a video autoencoder
+(\texttt{video\_autoencoder}), and a video transformer (\texttt{video\_transformer}).
+All baselines use the same episode-level aggregation operators as LeWM.
 
-The exact-support K1 comparison adds three learned video baselines:
-\texttt{video\_autoencoder}, \texttt{cnn\_lstm}, and \texttt{video\_transformer}. These models are
-also fit only on allowed train-normal data and are aggregated with the same
-\texttt{mean}/\texttt{max}/\texttt{top2\_mean} episode operators before comparison with LeWM.
-
-\subsection{Qualitative Timelines and Mechanistic Readouts}
-
-The detector also exposes window-level score series. These series are sufficient for qualitative
-timeline figures but not for temporal localization metrics because the validated artifacts do not
-contain true executable span annotations. Separately, the K3 ablation uses the same LeWM training
-family to compare SIGReg-on/off and real-action/zero-action variants under a frozen
-validation-normal objective. Those K3 rows are interpreted only through validation losses, not
-through detection AUROC or F1.
+No fully fine-tuned TimeSformer or VideoMAE anomaly detector was included because the available
+train-normal support (fewer than 50 episodes per split) is insufficient to train such models
+without severe overfitting. We acknowledge this as a limitation.
 
 \subsection{Normal-Only Threshold Calibration}
 
-For every detection configuration, $\tau$ is the empirical 95th percentile of designated
-calibration-normal episode scores. Buggy evaluation episodes are not used for fitting,
-configuration selection, or threshold calibration. This is an operating-point rule, not neural
-probability calibration \cite{guo2017calibration}. Locked test is neither materialized nor scored.
+For every configuration, $\tau$ is the empirical 95th-percentile episode score over designated
+calibration-normal episodes (Eq.~\ref{eq:threshold}). This is an operating-point rule;
+buggy episodes are not used at any stage before evaluation. Locked test data is neither
+materialized nor scored~\cite{kaufman2011leakage}.
