@@ -1,25 +1,27 @@
+% Artifact hashes table — uses 12-character SHA-256 prefixes for readability.
+% Full hashes are retained in docs/research/ and the source-package provenance files.
 \begin{table}[t]
-\caption{Key SHA256 identifiers for the main TempGlitch and R5-XGame evidence. Generated evidence
-files remain outside Git; hashes and exact summaries are tracked.}
+\caption{SHA-256 prefix identifiers (first 12 characters) for primary result artifacts.
+Full digests are tracked in the source repository under \path{docs/research/}.}
 \label{tab:artifact-hashes}
 \centering
-\scriptsize
-\begin{tabularx}{\textwidth}{@{}lX@{}}
+\small
+\begin{tabularx}{\textwidth}{@{}lll@{}}
 \toprule
-Artifact & SHA256 \\
+Artifact & SHA-256 prefix & Evidence family \\
 \midrule
-Follow-up manifest & \texttt{f9e38950dc0c9f156d58a7d228ff0172ec65c86c4063ab4f918006bffc9f1d25} \\
-Episode scores & \texttt{7e1a6f3390c933fdd8cfd70adc579e0b464049e3aab92d28e56f97f8ea09103e} \\
-Comparison table & \texttt{81dcfe164d19906f1cb82e7e4108c848778a5f50fdb65303448ad7896b15cdae} \\
-Metrics JSON & \texttt{51ad3b860c0b8354adec74376dc9e9fcc87d172aed399a73c0a284d0bd8b8831} \\
-Provenance JSON & \texttt{14701a28ab92f2c3244df2f6a2d8cb7d5eac2f35cf38e446cc668be3a0ff5852} \\
-Validator receipt & \texttt{706d93c781e85ec03a013a1eb84aa5311a0f080d5ce1e05bb091fd3d72e14ae1} \\
-Seed44 raw LeWM scores & \texttt{6dc1f0646380f279125c018b630c7abc3a162ab55a2f062564410919b2061019} \\
-Baseline raw scores & \texttt{cf6fb7f2caaac7b9c91cf9d1956fbddb09eed64333335700d088c9a35538b66d} \\
-K-B R5-XGame tarball & \texttt{e41b5940a6a79713c25b03437fa76e360308fa310db9c35f812b4864ec6fff02} \\
-K-B R5-XGame metrics JSON & \texttt{6ec94af80a40eeff718aefa285be870694eeadeaaefa6624babe3a5ee84f8474} \\
-K-A expanded comparison table & \texttt{030546425030d95b3d798283c6d4ea01e92d10012e30c75228e63ed3255d2b16} \\
-K-A expanded metrics JSON & \texttt{36ff9ee84cc1bfd313c33d29f7a5e70b6480ec83e7073d01cbea0152f049aa9e} \\
+Follow-up manifest       & \texttt{f9e38950dc0c} & TempGlitch R5 \\
+Episode scores           & \texttt{7e1a6f3390c9} & TempGlitch R5 \\
+Comparison table         & \texttt{81dcfe164d19} & TempGlitch R5 \\
+Metrics JSON             & \texttt{51ad3b860c0b} & TempGlitch R5 \\
+Provenance JSON          & \texttt{14701a28ab92} & TempGlitch R5 \\
+Validator receipt        & \texttt{706d93c781e8} & TempGlitch R5 \\
+Seed\,44 raw LeWM scores & \texttt{6dc1f0646380} & TempGlitch R5 \\
+Baseline raw scores      & \texttt{cf6fb7f2caaa} & TempGlitch R5 \\
+K-B R5-XGame tarball     & \texttt{e41b5940a6a7} & R5-XGame \\
+K-B R5-XGame metrics JSON & \texttt{6ec94af80a40} & R5-XGame \\
+K-A expanded comparison  & \texttt{030546425030} & K-A TempGlitch \\
+K-A expanded metrics JSON & \texttt{36ff9ee84cc1} & K-A TempGlitch \\
 \bottomrule
 \end{tabularx}
 \end{table}
