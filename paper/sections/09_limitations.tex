@@ -24,12 +24,16 @@ episodes and remains positive-probe evidence only.
 The study contains no locked-test result, no broad cross-game generalization result, no real-time
 latency study, and no deployment trial. K3 also does not show a positive SIGReg or
 action-conditioning readout for the specific validated artifact, so any broader claim in those
-directions remains unsupported. Reproducibility controls are retained in the source package through
-validator receipts, artifact hashes, and the claim registry rather than expanded in the main text.
-The current manuscript builds in a local official-template sandbox, but final camera-ready page
-fit, bibliography style, and PDF metadata still require the conference submission toolchain.
+directions remains unsupported. The experiments in this paper were conducted on a single compute
+platform (Kaggle T4\,$\times$\,2); latency, throughput, and scalability to larger video archives
+are not evaluated.
 
 The current results also do not include a full TimeSformer or fully fine-tuned VideoMAE anomaly
 detector. The included VideoMAE-small feature-distance row is a bounded learned baseline on the
 current support, but larger video transformers remain future work under a matched compute and
 selection protocol.
+
+Table~\ref{tab:limitations-claim-boundary} summarizes the principal limitations and their
+implication for claim scope.
+
+\input{tables/limitations_claim_boundary}
