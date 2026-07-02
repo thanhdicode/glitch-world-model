@@ -156,6 +156,10 @@ change readiness JSON, eval manifest, split CSV, or seed artifacts.
 
 ## Cell 5: Validate And Package Download Bundle
 
+This must be a Bash cell. The first line must be exactly `%%bash`; otherwise Kaggle executes
+`python scripts/...` as Python syntax and reports a false notebook failure after the K-C run has
+already produced a valid bundle.
+
 ```bash
 %%bash
 set -euo pipefail
@@ -209,6 +213,6 @@ The success tarball should contain:
 - `r5_wob_provenance.json`
 - `R5_WOB_REPORT.md`
 
-The validated full run has 12 calibration-normal WOB episodes and 60 evaluation-buggy WOB episodes.
-It is non-locked binary evidence, not locked-test evidence and not a cross-game generalization claim
-by itself.
+The validated full run has 6 calibration-normal, 6 held-out evaluation-normal, and 60
+evaluation-buggy WOB episodes. It is non-locked binary evidence, not locked-test evidence and not a
+cross-game generalization claim by itself.
